@@ -38,3 +38,23 @@ pub fn cobs_encode(src: &[u8], dst: &mut [u8]) -> Result<usize, ProtocolError> {
             dst[code_idx] = code;
             code_idx = write_idx;
             if write_idx >= dst.len() {
+                return Err(ProtocolError::BufferTooSmall);
+            }
+            write_idx += 1;
+            code = 1;
+        } else {
+            if write_idx >= dst.len() {
+                return Err(ProtocolError::BufferTooSmall);
+            }
+            dst[write_idx] = byte;
+            write_idx += 1;
+            code += 1;
+            if code == 0xFF {
+                dst[code_idx] = code;
+                if i + 1 < src.len() {
+                    code_idx = write_idx;
+                    if write_idx >= dst.len() {
+                        return Err(ProtocolError::BufferTooSmall);
+                    }
+                    write_idx += 1;
+                    code = 1;
