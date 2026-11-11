@@ -138,3 +138,23 @@ pub struct NavTelemetry {
     pub vel_ned_mps: [f32; 3],
     pub euler_rad: [f32; 3],
     pub status: u8,
+}
+
+impl NavTelemetry {
+    pub const RAW_SIZE: usize = 41;
+    pub const MAX_UART_FRAME_LEN: usize = 64;
+
+    pub fn validate_finite(&self) -> Result<(), ProtocolError> {
+        let all_floats = [
+            self.pos_ned_m[0],
+            self.pos_ned_m[1],
+            self.pos_ned_m[2],
+            self.vel_ned_mps[0],
+            self.vel_ned_mps[1],
+            self.vel_ned_mps[2],
+            self.euler_rad[0],
+            self.euler_rad[1],
+            self.euler_rad[2],
+        ];
+        for val in all_floats {
+            if !val.is_finite() {
