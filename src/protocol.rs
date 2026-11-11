@@ -358,3 +358,23 @@ mod tests {
     #[test]
     fn test_cobs_errors() {
         let mut dst = [0u8; 2];
+        let src = [1, 2, 3];
+        assert_eq!(
+            cobs_encode(&src, &mut dst),
+            Err(ProtocolError::BufferTooSmall)
+        );
+        let empty_src: [u8; 0] = [];
+        let mut dec = [0u8; 10];
+        assert_eq!(
+            cobs_decode(&empty_src, &mut dec),
+            Err(ProtocolError::InvalidCobsEncoding)
+        );
+        let bad_cobs = [0x00, 0x01];
+        assert_eq!(
+            cobs_decode(&bad_cobs, &mut dec),
+            Err(ProtocolError::InvalidCobsEncoding)
+        );
+    }
+
+    #[test]
+    fn test_can_frame_validation() {
