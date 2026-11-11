@@ -38,3 +38,11 @@ flowchart LR
 **Hard/soft-iron heading.** The calibrated field is `b_cal = S * (b_raw - h)`, with soft-iron matrix `S` and hard-iron offset `h`.
 
 The field is rotated into the horizontal plane with roll and pitch, and yaw is `atan2(-by_h, bx_h)`.
+
+**Joseph-form update.** Covariance is updated as `P = (I - K H) P (I - K H)^T + K R K^T` and then symmetrized, which keeps `P` positive semi-definite under rounding.
+
+Measurements are accepted only if `NIS = y^T S^-1 y` is below the chi-square gate.
+
+**Framing.** Telemetry is protected by CRC-16-CCITT (`poly 0x1021`, `init 0xFFFF`, check value `0x29B1` for `123456789`).
+
+UART frames are COBS-encoded and terminated by `0x00`. CAN frames use 29-bit extended identifiers and at most 8 data bytes.
