@@ -78,3 +78,23 @@ pub fn cobs_decode(src: &[u8], dst: &mut [u8]) -> Result<usize, ProtocolError> {
     let mut dst_idx = 0usize;
 
     while src_idx < src.len() {
+        let code = src[src_idx];
+        if code == 0 {
+            return Err(ProtocolError::InvalidCobsEncoding);
+        }
+        src_idx += 1;
+        for _ in 1..code {
+            if src_idx >= src.len() {
+                return Err(ProtocolError::InvalidCobsEncoding);
+            }
+            let byte = src[src_idx];
+            if byte == 0 {
+                return Err(ProtocolError::InvalidCobsEncoding);
+            }
+            if dst_idx >= dst.len() {
+                return Err(ProtocolError::BufferTooSmall);
+            }
+            dst[dst_idx] = byte;
+            dst_idx += 1;
+            src_idx += 1;
+        }
