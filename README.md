@@ -47,6 +47,21 @@ Measurements are accepted only if `NIS = y^T S^-1 y` is below the chi-square gat
 
 UART frames are COBS-encoded and terminated by `0x00`. CAN frames use 29-bit extended identifiers and at most 8 data bytes.
 
+## HIL trajectory results
+
+`tests/hil_trajectory.rs` runs a deterministic 60 s figure-eight (100 Hz IMU, 10 Hz magnetometer, 5 Hz GNSS) with a 5 s GNSS outage.
+
+Every epoch is round-tripped through the COBS/CRC-16 UART and CAN 2.0B codecs.
+
+| Metric | Measured | Test bound |
+| --- | --- | --- |
+| Horizontal position RMSE under GNSS lock | 0.060 m | < 1.0 m |
+| Max position drift during 5 s outage | 0.094 m | < 5.0 m |
+| Position error after reacquisition | 0.010 m | < 1.0 m |
+| Gyro Z bias error at end of flight | 0.000038 rad/s | < 0.005 rad/s |
+
+Measured on a host build with a fixed `XorShift64` seed, so the values are reproducible.
+
 ## Build and verification
 
 ```sh
