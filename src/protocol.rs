@@ -98,3 +98,23 @@ pub fn cobs_decode(src: &[u8], dst: &mut [u8]) -> Result<usize, ProtocolError> {
             dst_idx += 1;
             src_idx += 1;
         }
+        if code < 0xFF && src_idx < src.len() {
+            if dst_idx >= dst.len() {
+                return Err(ProtocolError::BufferTooSmall);
+            }
+            dst[dst_idx] = 0;
+            dst_idx += 1;
+        }
+    }
+    Ok(dst_idx)
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CanFrame20B {
+    pub id: u32,
+    pub dlc: u8,
+    pub data: [u8; 8],
+}
+
+impl CanFrame20B {
+    pub const MAX_EXT_ID: u32 = 0x1FFF_FFFF;
