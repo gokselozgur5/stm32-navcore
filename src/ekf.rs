@@ -236,13 +236,15 @@ impl NavEkf {
         gate: f32,
     ) -> Result<[f32; 3], EkfError> {
         check_finite_3(p_obs)?;
+        let mut trial = *self;
         let mut nis = [0.0f32; 3];
         for i in 0..3 {
             let mut h = [0.0f32; STATE_DIM];
             h[i] = 1.0;
-            let y = p_obs[i] - self.p_ned_m[i];
-            nis[i] = self.update_joseph_scalar(h, y, r_pos, gate)?;
+            let y = p_obs[i] - trial.p_ned_m[i];
+            nis[i] = trial.update_joseph_scalar(h, y, r_pos, gate)?;
         }
+        *self = trial;
         Ok(nis)
     }
 }
@@ -255,13 +257,15 @@ impl NavEkf {
         gate: f32,
     ) -> Result<[f32; 3], EkfError> {
         check_finite_3(v_obs)?;
+        let mut trial = *self;
         let mut nis = [0.0f32; 3];
         for i in 0..3 {
             let mut h = [0.0f32; STATE_DIM];
             h[3 + i] = 1.0;
-            let y = v_obs[i] - self.v_ned_mps[i];
-            nis[i] = self.update_joseph_scalar(h, y, r_vel, gate)?;
+            let y = v_obs[i] - trial.v_ned_mps[i];
+            nis[i] = trial.update_joseph_scalar(h, y, r_vel, gate)?;
         }
+        *self = trial;
         Ok(nis)
     }
 }
