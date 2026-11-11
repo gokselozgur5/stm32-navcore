@@ -67,3 +67,16 @@ impl<const R: usize, const C: usize> Mat<R, C> {
         Mat(out)
     }
 }
+
+impl<const R: usize, const C: usize> Mat<R, C> {
+    #[allow(clippy::needless_range_loop)]
+    pub fn transpose(&self) -> Mat<C, R> {
+        let mut out = [[0.0; R]; C];
+        for r in 0..R {
+            for c in 0..C {
+                out[c][r] = self.0[r][c];
+            }
+        }
+        Mat(out)
+    }
+}
