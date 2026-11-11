@@ -45,3 +45,11 @@ impl Default for NavEkf {
         Self::new()
     }
 }
+
+fn check_finite_3(v: [f32; 3]) -> Result<(), EkfError> {
+    if v[0].is_finite() && v[1].is_finite() && v[2].is_finite() {
+        Ok(())
+    } else {
+        Err(EkfError::InvalidInput)
+    }
+}
