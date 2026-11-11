@@ -309,4 +309,20 @@ mod tests {
         let c = a.matmul(&b);
         assert_eq!(c.0, [[19.0, 22.0], [43.0, 50.0]]);
     }
+
+    #[test]
+    fn test_mat_inversions() {
+        let m1 = Mat([[4.0]]);
+        assert_eq!(m1.inv_1x1().unwrap().0, [[0.25]]);
+        assert!(Mat([[0.0]]).inv_1x1().is_none());
+
+        let m2 = Mat([[4.0, 7.0], [2.0, 6.0]]);
+        let inv2 = m2.inv_2x2().unwrap();
+        let prod2 = m2.matmul(&inv2);
+        assert!((prod2.0[0][0] - 1.0).abs() < 1e-5);
+        assert!(prod2.0[0][1].abs() < 1e-5);
+        assert!(prod2.0[1][0].abs() < 1e-5);
+        assert!((prod2.0[1][1] - 1.0).abs() < 1e-5);
+        assert!(Mat([[1.0, 2.0], [2.0, 4.0]]).inv_2x2().is_none());
+    }
 }
