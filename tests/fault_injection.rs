@@ -105,6 +105,7 @@ fn test_high_magnitude_finite_imu_predict() {
     assert!(ekf.p_ned_m[0] > 1.0e34);
 }
 
+#[allow(clippy::manual_is_multiple_of)]
 fn step_stress_ekf(ekf: &mut NavEkf, s: usize, dt: f32) -> bool {
     let t = s as f32 * dt;
     let ax = 5.0 * libm::sinf(2.0 * t);
