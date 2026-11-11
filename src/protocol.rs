@@ -58,3 +58,23 @@ pub fn cobs_encode(src: &[u8], dst: &mut [u8]) -> Result<usize, ProtocolError> {
                     }
                     write_idx += 1;
                     code = 1;
+                } else {
+                    code = 0;
+                }
+            }
+        }
+    }
+    if code != 0 {
+        dst[code_idx] = code;
+    }
+    Ok(write_idx)
+}
+
+pub fn cobs_decode(src: &[u8], dst: &mut [u8]) -> Result<usize, ProtocolError> {
+    if src.is_empty() {
+        return Err(ProtocolError::InvalidCobsEncoding);
+    }
+    let mut src_idx = 0usize;
+    let mut dst_idx = 0usize;
+
+    while src_idx < src.len() {
