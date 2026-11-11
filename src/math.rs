@@ -436,7 +436,11 @@ mod tests {
     fn test_non_finite_rejections() {
         assert!(Mat([[f32::NAN]]).inv_1x1().is_none());
         assert!(Mat([[f32::NAN, 0.0], [0.0, 1.0]]).inv_2x2().is_none());
-        assert!(Mat([[f32::NAN, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).inv_3x3().is_none());
+        assert!(
+            Mat([[f32::NAN, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+                .inv_3x3()
+                .is_none()
+        );
 
         let q = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
         assert_eq!(q.normalize(), Err(MathError::InvalidNorm));
