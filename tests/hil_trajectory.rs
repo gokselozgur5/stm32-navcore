@@ -138,3 +138,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
             let bz = bn * sy * sr + (bn * cy * sp + bd * cp) * cr;
             let uncal = inv_soft.matmul(&Mat([[bx], [by], [bz]]));
             let raw = [
+                uncal.0[0][0] + hard_iron[0] + rng.next_gaussian_approx(0.1),
+                uncal.0[1][0] + hard_iron[1] + rng.next_gaussian_approx(0.1),
+                uncal.0[2][0] + hard_iron[2] + rng.next_gaussian_approx(0.1),
+            ];
+
+            let (roll, pitch, _) = ekf.att.to_euler_zyx();
+            if let Ok(heading) = tilt_compensated_yaw(raw, hard_iron, soft_iron, roll, pitch) {
+                let _ = ekf.update_mag_yaw(heading, 0.02, 9.0);
+            }
+        }
+
+        let is_gnss_outage = (25.0..30.0).contains(&t);
+
+        if !is_gnss_outage && step % 20 == 0 {
+            let gnss_p = [
+                p_n + rng.next_gaussian_approx(0.1),
+                p_e + rng.next_gaussian_approx(0.1),
+                p_d + rng.next_gaussian_approx(0.1),
+            ];
+            let gnss_v = [
