@@ -79,3 +79,19 @@ fn test_adversarial_gnss_vel_burst_rejection() {
     );
     assert_eq!(ekf, before);
 }
+
+#[test]
+fn test_adversarial_mag_yaw_rejection() {
+    let mut ekf = NavEkf::new();
+    let before = ekf;
+    assert_eq!(
+        ekf.update_mag_yaw(f32::NAN, 0.05, 16.0),
+        Err(EkfError::InvalidInput)
+    );
+    assert_eq!(ekf, before);
+    assert_eq!(
+        ekf.update_mag_yaw(f32::INFINITY, 0.05, 16.0),
+        Err(EkfError::InvalidInput)
+    );
+    assert_eq!(ekf, before);
+}
