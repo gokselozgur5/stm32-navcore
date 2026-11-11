@@ -238,3 +238,23 @@ impl NavTelemetry {
         let mut decoded = [0u8; Self::RAW_SIZE + 2];
         let dec_len = cobs_decode(frame, &mut decoded)?;
         if dec_len != Self::RAW_SIZE + 2 {
+            return Err(ProtocolError::InvalidCobsEncoding);
+        }
+        let mut raw = [0u8; Self::RAW_SIZE];
+        raw.copy_from_slice(&decoded[..Self::RAW_SIZE]);
+        let expected_crc =
+            u16::from_be_bytes([decoded[Self::RAW_SIZE], decoded[Self::RAW_SIZE + 1]]);
+        if crc16_ccitt(&raw) != expected_crc {
+            return Err(ProtocolError::CrcMismatch);
+        }
+        Self::deserialize_raw(&raw)
+    }
+
+    pub const CAN_BASE_ID: u32 = 0x1000_0000;
+
+    pub fn pack_can(&self) -> Result<[CanFrame20B; 6], ProtocolError> {
+        let mut raw = [0u8; Self::RAW_SIZE];
+        self.serialize_raw(&mut raw)?;
+        let crc = crc16_ccitt(&raw);
+        let crc_bytes = crc.to_be_bytes();
+
