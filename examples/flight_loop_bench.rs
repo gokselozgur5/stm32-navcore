@@ -30,3 +30,19 @@ struct BenchMetrics {
 fn synthetic_imu(step: usize) -> ([f32; 3], [f32; 3]) {
     let phase = (step as f32) * 0.001;
     let accel = [libm::sinf(phase) * 0.1, libm::cosf(phase) * 0.1, -9.80665];
+    let gyro = [0.005 * libm::cosf(phase), -0.005 * libm::sinf(phase), 0.01];
+    (accel, gyro)
+}
+
+fn synthetic_mag(step: usize) -> [f32; 3] {
+    let heading = (step as f32) * 0.001 * 0.01;
+    [libm::cosf(heading) * 25.0, libm::sinf(heading) * 25.0, 42.0]
+}
+
+fn synthetic_gnss(step: usize) -> ([f32; 3], [f32; 3]) {
+    let t = (step as f32) * 0.001;
+    let pos = [t * 0.5, t * 0.1, -10.0];
+    let vel = [0.5, 0.1, 0.0];
+    (pos, vel)
+}
+
