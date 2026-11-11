@@ -30,3 +30,11 @@ flowchart LR
     COBS --> UART[UART bus]
     CAN --> BUS[CAN bus]
 ```
+
+## Mathematical summary
+
+**Strapdown attitude.** The quaternion `q` is advanced with the exact finite-angle rotation `dq = [cos(|w|dt/2), sin(|w|dt/2) * w/|w|]` and renormalized.
+
+**Hard/soft-iron heading.** The calibrated field is `b_cal = S * (b_raw - h)`, with soft-iron matrix `S` and hard-iron offset `h`.
+
+The field is rotated into the horizontal plane with roll and pitch, and yaw is `atan2(-by_h, bx_h)`.
