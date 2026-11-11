@@ -174,3 +174,18 @@ fn main() {
         "  Predict Steps: {} / {}",
         metrics.predict_accepted, metrics.iterations
     );
+    println!(
+        "  Mag Updates  : {} accepted, {} rejected",
+        metrics.mag_accepted, metrics.mag_rejected
+    );
+    println!(
+        "  GNSS Pos Upd : {} accepted, {} rejected",
+        metrics.gnss_pos_accepted, metrics.gnss_pos_rejected
+    );
+    println!(
+        "  GNSS Vel Upd : {} accepted, {} rejected",
+        metrics.gnss_vel_accepted, metrics.gnss_vel_rejected
+    );
+    println!("  Checksum     : {:016X}", checksum);
+    println!("============================================================");
+}
