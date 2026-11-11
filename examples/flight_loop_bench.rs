@@ -62,3 +62,19 @@ fn run_benchmark(iterations: usize) -> (BenchMetrics, u64) {
     let mut gnss_pos_accepted = 0;
     let mut gnss_pos_rejected = 0;
     let mut gnss_vel_accepted = 0;
+    let mut gnss_vel_rejected = 0;
+
+    let t_start = Instant::now();
+    for step in 0..iterations {
+        let step_start = Instant::now();
+        let (accel, gyro) = synthetic_imu(step);
+        if ekf.predict(accel, gyro, dt).is_ok() {
+            predict_accepted += 1;
+        }
+
+        if step % 10 == 0 {
+            let mag = synthetic_mag(step);
+            let (roll, pitch, _) = ekf.att.to_euler_zyx();
+            if let Ok(yaw_meas) = tilt_compensated_yaw(mag, hard_iron, soft_iron, roll, pitch) {
+                match ekf.update_mag_yaw(yaw_meas, 0.05, 9.0) {
+                    Ok(_) => mag_accepted += 1,
