@@ -198,3 +198,21 @@ impl Quaternion {
         })
     }
 }
+
+impl Quaternion {
+    pub fn integrate_gyro(&self, omega_rad_s: [f32; 3], dt_s: f32) -> Result<Self, MathError> {
+        let wx = omega_rad_s[0];
+        let wy = omega_rad_s[1];
+        let wz = omega_rad_s[2];
+        let theta = libm::sqrtf(wx * wx + wy * wy + wz * wz) * dt_s;
+        let delta = if theta < 1e-6 {
+            let half_dt = 0.5 * dt_s;
+            Quaternion::new(1.0, wx * half_dt, wy * half_dt, wz * half_dt)
+        } else {
+            let half_theta = 0.5 * theta;
+            let sin_term = libm::sinf(half_theta) / (theta / dt_s);
+            Quaternion::new(libm::cosf(half_theta), wx * sin_term, wy * sin_term, wz * sin_term)
+        };
+        self.mul(&delta).normalize()
+    }
+}
