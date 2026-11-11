@@ -278,3 +278,23 @@ impl NavTelemetry {
 
     pub fn unpack_can(frames: &[CanFrame20B; 6]) -> Result<Self, ProtocolError> {
         let mut raw = [0u8; Self::RAW_SIZE];
+        for (i, frame) in frames.iter().enumerate().take(5) {
+            if frame.id != Self::CAN_BASE_ID + i as u32 {
+                return Err(ProtocolError::InvalidCanId);
+            }
+            if frame.dlc != 8 {
+                return Err(ProtocolError::InvalidCanDlc);
+            }
+            raw[i * 8..(i + 1) * 8].copy_from_slice(&frame.data);
+        }
+        if frames[5].id != Self::CAN_BASE_ID + 5 {
+            return Err(ProtocolError::InvalidCanId);
+        }
+        if frames[5].dlc != 3 {
+            return Err(ProtocolError::InvalidCanDlc);
+        }
+        raw[40] = frames[5].data[0];
+        let expected_crc = u16::from_be_bytes([frames[5].data[1], frames[5].data[2]]);
+        if crc16_ccitt(&raw) != expected_crc {
+            return Err(ProtocolError::CrcMismatch);
+        }
