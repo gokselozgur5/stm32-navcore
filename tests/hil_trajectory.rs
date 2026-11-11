@@ -118,3 +118,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
             true_gyro_b[0] + rng.next_gaussian_approx(0.001),
             true_gyro_b[1] + rng.next_gaussian_approx(0.001),
             true_gyro_b[2] + true_gyro_bias_z + rng.next_gaussian_approx(0.001),
+        ];
+
+        if step == 0 {
+            ekf.p_ned_m = [p_n, p_e, p_d];
+            ekf.v_ned_mps = [v_n, v_e, v_d];
+            ekf.att = q_true;
+        }
+
+        ekf.predict(meas_accel_b, meas_gyro_b, dt)
+            .expect("EKF predict must succeed");
+
+        if step % 10 == 0 {
+            let (r, p) = (0.0f32, 0.0f32);
+            let (sr, cr, sp, cp) = (libm::sinf(r), libm::cosf(r), libm::sinf(p), libm::cosf(p));
+            let (cy, sy) = (libm::cosf(yaw), libm::sinf(yaw));
+            let bx = bn * cy * cp - bd * sp;
+            let by = -bn * sy * cr + (bn * cy * sp + bd * cp) * sr;
+            let bz = bn * sy * sr + (bn * cy * sp + bd * cp) * cr;
+            let uncal = inv_soft.matmul(&Mat([[bx], [by], [bz]]));
+            let raw = [
