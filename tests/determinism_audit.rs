@@ -143,3 +143,29 @@ fn test_bit_exact_protocol_encoding_determinism() {
             euler_rad: [r_a, p_a, y_a],
             status: 1,
         };
+        let telem_b = NavTelemetry {
+            timestamp_ms: (step * 10) as u32,
+            pos_ned_m: ekf_b.p_ned_m,
+            vel_ned_mps: ekf_b.v_ned_mps,
+            euler_rad: [r_b, p_b, y_b],
+            status: 1,
+        };
+
+        let len_a = telem_a.pack_uart(&mut uart_buf_a).expect("pack uart");
+        let len_b = telem_b.pack_uart(&mut uart_buf_b).expect("pack uart");
+        assert_eq!(len_a, len_b);
+        assert_eq!(&uart_buf_a[..len_a], &uart_buf_b[..len_b]);
+
+        let dec_a = NavTelemetry::unpack_uart(&uart_buf_a[..len_a]).expect("unpack uart");
+        let dec_b = NavTelemetry::unpack_uart(&uart_buf_b[..len_b]).expect("unpack uart");
+        assert_eq!(dec_a, dec_b);
+
+        let can_a = telem_a.pack_can().expect("pack can");
+        let can_b = telem_b.pack_can().expect("pack can");
+        assert_eq!(can_a, can_b);
+
+        let dec_can_a = NavTelemetry::unpack_can(&can_a).expect("unpack can");
+        let dec_can_b = NavTelemetry::unpack_can(&can_b).expect("unpack can");
+        assert_eq!(dec_can_a, dec_can_b);
+    }
+}
