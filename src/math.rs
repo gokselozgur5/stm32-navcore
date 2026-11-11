@@ -358,4 +358,15 @@ mod tests {
         assert!((norm.norm() - 1.0).abs() < 1e-6);
         assert_eq!(norm.w, 0.5);
     }
+
+    #[test]
+    fn test_quaternion_integrate_invariance() {
+        let mut q = Quaternion::IDENTITY;
+        let omega = [0.1, -0.2, 0.05];
+        let dt = 0.01;
+        for _ in 0..1000 {
+            q = q.integrate_gyro(omega, dt).unwrap();
+            assert!((q.norm() - 1.0).abs() < 1e-5);
+        }
+    }
 }
