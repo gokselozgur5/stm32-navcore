@@ -178,3 +178,23 @@ impl NavTelemetry {
         for (i, &euler_val) in self.euler_rad.iter().enumerate() {
             let s = 28 + i * 4;
             out[s..s + 4].copy_from_slice(&euler_val.to_bits().to_be_bytes());
+        }
+        out[40] = self.status;
+        Ok(())
+    }
+
+    pub fn deserialize_raw(buf: &[u8; Self::RAW_SIZE]) -> Result<Self, ProtocolError> {
+        let timestamp_ms = u32::from_be_bytes([buf[0], buf[1], buf[2], buf[3]]);
+        let mut pos = [0.0f32; 3];
+        for (i, slot) in pos.iter_mut().enumerate() {
+            let s = 4 + i * 4;
+            let bits = u32::from_be_bytes([buf[s], buf[s + 1], buf[s + 2], buf[s + 3]]);
+            *slot = f32::from_bits(bits);
+        }
+        let mut vel = [0.0f32; 3];
+        for (i, slot) in vel.iter_mut().enumerate() {
+            let s = 16 + i * 4;
+            let bits = u32::from_be_bytes([buf[s], buf[s + 1], buf[s + 2], buf[s + 3]]);
+            *slot = f32::from_bits(bits);
+        }
+        let mut euler = [0.0f32; 3];
