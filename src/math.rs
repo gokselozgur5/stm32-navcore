@@ -384,4 +384,15 @@ mod tests {
         assert!(pitch.abs() < 1e-5);
         assert!((yaw - core::f32::consts::FRAC_PI_2).abs() < 1e-5);
     }
+
+    #[test]
+    fn test_mag_calibration() {
+        let hard = [10.0, -5.0, 2.0];
+        let soft = Mat([[1.1, 0.0, 0.0], [0.0, 0.9, 0.0], [0.0, 0.0, 1.0]]);
+        let raw = [11.0, -4.0, 3.0];
+        let cal = calibrate_magnetometer(raw, hard, soft);
+        assert!((cal[0] - 1.1).abs() < 1e-6);
+        assert!((cal[1] - 0.9).abs() < 1e-6);
+        assert!((cal[2] - 1.0).abs() < 1e-6);
+    }
 }
