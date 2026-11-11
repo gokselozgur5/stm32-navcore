@@ -158,3 +158,19 @@ fn main() {
     );
 
     let (metrics, checksum) = run_benchmark(ITERATIONS);
+
+    println!("============================================================");
+    println!("Flight Loop Benchmark Results (50,000 Closed-Loop Steps):");
+    println!("  Iterations   : {}", metrics.iterations);
+    println!(
+        "  Total Time   : {:.3} ms",
+        (metrics.total_micros as f64) / 1000.0
+    );
+    println!("  Throughput   : {:.2} Hz", metrics.throughput_hz);
+    println!("  Mean Latency : {} ns", metrics.mean_ns);
+    println!("  p50 Latency  : {} ns", metrics.p50_ns);
+    println!("  p99 Latency  : {} ns", metrics.p99_ns);
+    println!(
+        "  Predict Steps: {} / {}",
+        metrics.predict_accepted, metrics.iterations
+    );
