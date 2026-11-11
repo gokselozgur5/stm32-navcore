@@ -258,3 +258,23 @@ impl NavTelemetry {
         let crc = crc16_ccitt(&raw);
         let crc_bytes = crc.to_be_bytes();
 
+        let mut frames = [CanFrame20B {
+            id: 0,
+            dlc: 0,
+            data: [0u8; 8],
+        }; 6];
+        for i in 0..5 {
+            let mut data = [0u8; 8];
+            data.copy_from_slice(&raw[i * 8..(i + 1) * 8]);
+            frames[i] = CanFrame20B::new(Self::CAN_BASE_ID + i as u32, 8, data)?;
+        }
+        let mut last_data = [0u8; 8];
+        last_data[0] = raw[40];
+        last_data[1] = crc_bytes[0];
+        last_data[2] = crc_bytes[1];
+        frames[5] = CanFrame20B::new(Self::CAN_BASE_ID + 5, 3, last_data)?;
+        Ok(frames)
+    }
+
+    pub fn unpack_can(frames: &[CanFrame20B; 6]) -> Result<Self, ProtocolError> {
+        let mut raw = [0u8; Self::RAW_SIZE];
