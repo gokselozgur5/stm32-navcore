@@ -223,3 +223,17 @@ impl NavEkf {
         Ok(nis)
     }
 }
+
+impl NavEkf {
+    pub fn update_gnss_vel(&mut self, v_obs: [f32; 3], r_vel: f32, gate: f32) -> Result<[f32; 3], EkfError> {
+        check_finite_3(v_obs)?;
+        let mut nis = [0.0f32; 3];
+        for i in 0..3 {
+            let mut h = [0.0f32; STATE_DIM];
+            h[3 + i] = 1.0;
+            let y = v_obs[i] - self.v_ned_mps[i];
+            nis[i] = self.update_joseph_scalar(h, y, r_vel, gate)?;
+        }
+        Ok(nis)
+    }
+}
