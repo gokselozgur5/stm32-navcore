@@ -158,3 +158,23 @@ impl NavTelemetry {
         ];
         for val in all_floats {
             if !val.is_finite() {
+                return Err(ProtocolError::NonFiniteFloat);
+            }
+        }
+        Ok(())
+    }
+
+    pub fn serialize_raw(&self, out: &mut [u8; Self::RAW_SIZE]) -> Result<(), ProtocolError> {
+        self.validate_finite()?;
+        out[0..4].copy_from_slice(&self.timestamp_ms.to_be_bytes());
+        for (i, &pos_val) in self.pos_ned_m.iter().enumerate() {
+            let s = 4 + i * 4;
+            out[s..s + 4].copy_from_slice(&pos_val.to_bits().to_be_bytes());
+        }
+        for (i, &vel_val) in self.vel_ned_mps.iter().enumerate() {
+            let s = 16 + i * 4;
+            out[s..s + 4].copy_from_slice(&vel_val.to_bits().to_be_bytes());
+        }
+        for (i, &euler_val) in self.euler_rad.iter().enumerate() {
+            let s = 28 + i * 4;
+            out[s..s + 4].copy_from_slice(&euler_val.to_bits().to_be_bytes());
