@@ -101,3 +101,23 @@ fn test_bit_exact_ekf_simulation_determinism() {
             h = fnv1a_feed(h, &ekf_a.cov.0[row][col].to_bits().to_le_bytes());
         }
     }
+    let (r, p, y) = ekf_a.att.to_euler_zyx();
+    let telem = NavTelemetry {
+        timestamp_ms: (TEST_STEPS * 10) as u32,
+        pos_ned_m: ekf_a.p_ned_m,
+        vel_ned_mps: ekf_a.v_ned_mps,
+        euler_rad: [r, p, y],
+        status: 1,
+    };
+    let mut uart_buf = [0u8; 128];
+    let u_len = telem.pack_uart(&mut uart_buf).expect("pack uart");
+    h = fnv1a_feed(h, &uart_buf[..u_len]);
+
+    let can_frames = telem.pack_can().expect("pack can");
+    for frame in &can_frames {
+        h = fnv1a_feed(h, &frame.id.to_le_bytes());
+        h = fnv1a_feed(h, &[frame.dlc]);
+        h = fnv1a_feed(h, &frame.data);
+    }
+    assert_eq!(h, GOLDEN_FNV1A_DIGEST);
+}
