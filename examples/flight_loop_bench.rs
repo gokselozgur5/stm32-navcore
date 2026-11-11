@@ -94,3 +94,19 @@ fn run_benchmark(iterations: usize) -> (BenchMetrics, u64) {
                 Err(_) => gnss_vel_rejected += 1,
             }
         }
+
+        let (roll, pitch, yaw) = ekf.att.to_euler_zyx();
+        let telem = NavTelemetry {
+            timestamp_ms: (step as u32).wrapping_mul(10),
+            pos_ned_m: ekf.p_ned_m,
+            vel_ned_mps: ekf.v_ned_mps,
+            euler_rad: [roll, pitch, yaw],
+            status: 0x01,
+        };
+
+        let uart_len = telem.pack_uart(&mut uart_buf).unwrap();
+        let decoded_uart = NavTelemetry::unpack_uart(&uart_buf[..uart_len]).unwrap();
+        dummy_checksum = dummy_checksum.wrapping_add(decoded_uart.timestamp_ms as u64);
+
+        let can_frames = telem.pack_can().unwrap();
+        let decoded_can = NavTelemetry::unpack_can(&can_frames).unwrap();
