@@ -325,4 +325,19 @@ mod tests {
         assert!((prod2.0[1][1] - 1.0).abs() < 1e-5);
         assert!(Mat([[1.0, 2.0], [2.0, 4.0]]).inv_2x2().is_none());
     }
+
+    #[test]
+    fn test_mat_inv_3x3() {
+        let m3 = Mat([[3.0, 0.0, 2.0], [2.0, 0.0, -2.0], [0.0, 1.0, 1.0]]);
+        let inv3 = m3.inv_3x3().unwrap();
+        let prod3 = m3.matmul(&inv3);
+        for i in 0..3 {
+            for j in 0..3 {
+                let expected = if i == j { 1.0 } else { 0.0 };
+                assert!((prod3.0[i][j] - expected).abs() < 1e-5);
+            }
+        }
+        let singular = Mat([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+        assert!(singular.inv_3x3().is_none());
+    }
 }
