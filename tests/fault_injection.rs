@@ -104,3 +104,20 @@ fn test_high_magnitude_finite_imu_predict() {
     assert!(ekf.p_ned_m[0].is_finite());
     assert!(ekf.p_ned_m[0] > 1.0e34);
 }
+
+fn step_stress_ekf(ekf: &mut NavEkf, s: usize, dt: f32) -> bool {
+    let t = s as f32 * dt;
+    let ax = 5.0 * libm::sinf(2.0 * t);
+    let az = -9.80665 + libm::sinf(t);
+    ekf.predict([ax, 0.0, az], [0.0, 0.0, 0.5], dt).unwrap();
+    if s % 20 == 0 {
+        let obs = if s % 200 == 0 {
+            [500.0, 0.0, 0.0]
+        } else {
+            [ax * 0.1, 0.0, 0.0]
+        };
+        ekf.update_gnss_pos(obs, 1.0, 25.0).is_ok()
+    } else {
+        true
+    }
+}
