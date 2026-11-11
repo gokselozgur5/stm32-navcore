@@ -395,4 +395,22 @@ mod tests {
         assert!((cal[1] - 0.9).abs() < 1e-6);
         assert!((cal[2] - 1.0).abs() < 1e-6);
     }
+
+    #[test]
+    fn test_tilt_compensated_heading_recovery() {
+        let hard = [20.0, -15.0, 5.0];
+        let soft = Mat([[1.05, 0.02, 0.0], [0.02, 0.98, 0.0], [0.0, 0.0, 1.0]]);
+        let inv_soft = soft.inv_3x3().unwrap();
+        let (r, p) = (20.0f32.to_radians(), 15.0f32.to_radians());
+        let yaw = 45.0f32.to_radians();
+        let (sr, cr, sp, cp) = (r.sin(), r.cos(), p.sin(), p.cos());
+        let (cy, sy) = (yaw.cos(), yaw.sin());
+        let bx = cy * cp;
+        let by = -sy * cr + cy * sp * sr;
+        let bz = sy * sr + cy * sp * cr;
+        let uncal = inv_soft.matmul(&Mat([[bx], [by], [bz]]));
+        let raw = [uncal.0[0][0] + hard[0], uncal.0[1][0] + hard[1], uncal.0[2][0] + hard[2]];
+        let est = tilt_compensated_yaw(raw, hard, soft, r, p).unwrap();
+        assert!((est - yaw).abs().to_degrees() < 0.5);
+    }
 }
