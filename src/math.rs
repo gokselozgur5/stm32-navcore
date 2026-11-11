@@ -93,3 +93,15 @@ impl<const N: usize> Mat<N, N> {
         Mat(out)
     }
 }
+
+impl Mat<1, 1> {
+    pub fn inv_1x1(&self) -> Option<Self> {
+        let v = self.0[0][0];
+        let abs_v = if v < 0.0 { -v } else { v };
+        if abs_v < 1e-12 {
+            None
+        } else {
+            Some(Mat([[1.0 / v]]))
+        }
+    }
+}
