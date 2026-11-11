@@ -98,7 +98,7 @@ impl Mat<1, 1> {
     pub fn inv_1x1(&self) -> Option<Self> {
         let v = self.0[0][0];
         let abs_v = if v < 0.0 { -v } else { v };
-        if abs_v < 1e-12 {
+        if !v.is_finite() || abs_v < 1e-12 {
             None
         } else {
             Some(Mat([[1.0 / v]]))
@@ -110,7 +110,7 @@ impl Mat<2, 2> {
     pub fn inv_2x2(&self) -> Option<Self> {
         let det = self.0[0][0] * self.0[1][1] - self.0[0][1] * self.0[1][0];
         let abs_det = if det < 0.0 { -det } else { det };
-        if abs_det < 1e-12 {
+        if !det.is_finite() || abs_det < 1e-12 {
             return None;
         }
         let inv_det = 1.0 / det;
@@ -129,7 +129,7 @@ impl Mat<3, 3> {
         let c02 = m[1][0] * m[2][1] - m[1][1] * m[2][0];
         let det = m[0][0] * c00 + m[0][1] * c01 + m[0][2] * c02;
         let abs_det = if det < 0.0 { -det } else { det };
-        if abs_det < 1e-12 {
+        if !det.is_finite() || abs_det < 1e-12 {
             return None;
         }
         let inv_det = 1.0 / det;
