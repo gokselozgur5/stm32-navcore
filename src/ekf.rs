@@ -184,3 +184,28 @@ fn validate_scalar_update(h: &[f32; STATE_DIM], y: f32, r: f32, g: f32) -> Resul
     }
     Ok(())
 }
+
+impl NavEkf {
+    pub fn update_joseph_scalar(
+        &mut self,
+        h: [f32; STATE_DIM],
+        y: f32,
+        r: f32,
+        nis_gate: f32,
+    ) -> Result<f32, EkfError> {
+        validate_scalar_update(&h, y, r, nis_gate)?;
+        let (ph_t, s) = self.compute_ph_t_and_s(h, r)?;
+        let nis = (y * y) / s;
+        if nis > nis_gate {
+            return Err(EkfError::OutlierRejected);
+        }
+        let inv_s = 1.0 / s;
+        let mut k = [0.0f32; STATE_DIM];
+        for i in 0..STATE_DIM {
+            k[i] = ph_t[i] * inv_s;
+        }
+        self.apply_scalar_correction(k, y);
+        self.apply_scalar_joseph_cov(k, h, r);
+        Ok(nis)
+    }
+}
