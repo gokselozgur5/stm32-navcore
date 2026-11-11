@@ -26,3 +26,27 @@ impl<const R: usize, const C: usize> Mat<R, C> {
         Self(out)
     }
 }
+
+impl<const R: usize, const C: usize> Mat<R, C> {
+    #[allow(clippy::needless_range_loop)]
+    pub fn add(&self, other: &Self) -> Self {
+        let mut out = [[0.0; C]; R];
+        for r in 0..R {
+            for c in 0..C {
+                out[r][c] = self.0[r][c] + other.0[r][c];
+            }
+        }
+        Self(out)
+    }
+
+    #[allow(clippy::needless_range_loop)]
+    pub fn sub(&self, other: &Self) -> Self {
+        let mut out = [[0.0; C]; R];
+        for r in 0..R {
+            for c in 0..C {
+                out[r][c] = self.0[r][c] - other.0[r][c];
+            }
+        }
+        Self(out)
+    }
+}
