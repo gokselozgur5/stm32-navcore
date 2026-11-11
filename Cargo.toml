@@ -1,0 +1,10 @@
+[package]
+name = "stm32-navcore"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libm = { version = "0.2", default-features = false }
+
+[lib]
+crate-type = ["rlib"]
