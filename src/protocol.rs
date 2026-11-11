@@ -378,3 +378,23 @@ mod tests {
 
     #[test]
     fn test_can_frame_validation() {
+        let ok_frame = CanFrame20B::new(0x1FFF_FFFF, 8, [0u8; 8]);
+        assert!(ok_frame.is_ok());
+        let bad_id = CanFrame20B::new(0x2000_0000, 8, [0u8; 8]);
+        assert_eq!(bad_id, Err(ProtocolError::InvalidCanId));
+        let bad_dlc = CanFrame20B::new(0x100, 9, [0u8; 8]);
+        assert_eq!(bad_dlc, Err(ProtocolError::InvalidCanDlc));
+    }
+
+    #[test]
+    fn test_telemetry_roundtrip_and_corruption() {
+        let telem = NavTelemetry {
+            timestamp_ms: 12345678,
+            pos_ned_m: [10.5, -20.25, 100.125],
+            vel_ned_mps: [1.2, -0.5, 0.0],
+            euler_rad: [0.1, -0.2, 1.57],
+            status: 0x42,
+        };
+        let mut uart_buf = [0u8; NavTelemetry::MAX_UART_FRAME_LEN];
+        let uart_len = telem.pack_uart(&mut uart_buf).unwrap();
+        let unpacked = NavTelemetry::unpack_uart(&uart_buf[..uart_len]).unwrap();
