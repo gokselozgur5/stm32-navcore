@@ -338,3 +338,23 @@ mod tests {
         assert_eq!(enc255[0], 0xFF);
         assert_eq!(enc255[255], 0x02);
         assert_eq!(enc255[256], 0x55);
+        let mut dec255 = [0u8; 300];
+        let dec_n255 = cobs_decode(&enc255[..n255], &mut dec255).unwrap();
+        assert_eq!(&dec255[..dec_n255], &block255[..]);
+
+        let mut block254_zero = [0x55u8; 255];
+        block254_zero[254] = 0x00;
+        let mut enc254_zero = [0u8; 300];
+        let n254_zero = cobs_encode(&block254_zero, &mut enc254_zero).unwrap();
+        assert_eq!(n254_zero, 257);
+        assert_eq!(enc254_zero[0], 0xFF);
+        assert_eq!(enc254_zero[255], 0x01);
+        assert_eq!(enc254_zero[256], 0x01);
+        let mut dec254_zero = [0u8; 300];
+        let dec_n254_0 = cobs_decode(&enc254_zero[..n254_zero], &mut dec254_zero).unwrap();
+        assert_eq!(&dec254_zero[..dec_n254_0], &block254_zero[..]);
+    }
+
+    #[test]
+    fn test_cobs_errors() {
+        let mut dst = [0u8; 2];
