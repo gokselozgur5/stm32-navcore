@@ -142,3 +142,19 @@ fn run_benchmark(iterations: usize) -> (BenchMetrics, u64) {
         predict_accepted,
         mag_accepted,
         mag_rejected,
+        gnss_pos_accepted,
+        gnss_pos_rejected,
+        gnss_vel_accepted,
+        gnss_vel_rejected,
+    };
+    (metrics, dummy_checksum)
+}
+
+fn main() {
+    const ITERATIONS: usize = 50_000;
+    println!(
+        "Running deterministic flight loop benchmark ({} steps)...",
+        ITERATIONS
+    );
+
+    let (metrics, checksum) = run_benchmark(ITERATIONS);
