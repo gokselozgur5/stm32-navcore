@@ -237,3 +237,26 @@ impl NavEkf {
         Ok(nis)
     }
 }
+
+impl NavEkf {
+    pub fn update_mag_yaw(&mut self, yaw_obs: f32, r_yaw: f32, gate: f32) -> Result<f32, EkfError> {
+        if !yaw_obs.is_finite() {
+            return Err(EkfError::InvalidInput);
+        }
+        let (_, _, current_yaw) = self.att.to_euler_zyx();
+        let mut y = yaw_obs - current_yaw;
+        while y > core::f32::consts::PI {
+            y -= 2.0 * core::f32::consts::PI;
+        }
+        while y < -core::f32::consts::PI {
+            y += 2.0 * core::f32::consts::PI;
+        }
+        let mut h = [0.0f32; STATE_DIM];
+        h[6] = 1.0;
+        let nis = self.update_joseph_scalar(h, y, r_yaw, gate)?;
+        let half_y = 0.5 * y * 0.1;
+        let d_q = Quaternion::new(libm::cosf(half_y), 0.0, 0.0, libm::sinf(half_y));
+        self.att = self.att.mul(&d_q).normalize().map_err(|_| EkfError::InvalidInput)?;
+        Ok(nis)
+    }
+}
