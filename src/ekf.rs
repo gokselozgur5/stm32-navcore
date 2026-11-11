@@ -39,3 +39,9 @@ impl NavEkf {
         }
     }
 }
+
+impl Default for NavEkf {
+    fn default() -> Self {
+        Self::new()
+    }
+}
