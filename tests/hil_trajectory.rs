@@ -38,3 +38,23 @@ impl XorShift64 {
             sum += self.next_f32();
         }
         (sum - 6.0) * std_dev
+    }
+}
+
+fn wrap_pi(mut a: f32) -> f32 {
+    while a > PI {
+        a -= 2.0 * PI;
+    }
+    while a < -PI {
+        a += 2.0 * PI;
+    }
+    a
+}
+
+#[test]
+fn test_closed_loop_hil_trajectory_and_gnss_outage() {
+    let mut rng = XorShift64::new(42);
+    let mut ekf = NavEkf::new();
+
+    let total_steps = 6000;
+    let dt = 0.01f32;
