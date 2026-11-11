@@ -318,3 +318,23 @@ mod tests {
         let enc_len = cobs_encode(&empty_src, &mut dst).unwrap();
         assert_eq!(enc_len, 1);
         assert_eq!(dst[0], 0x01);
+        let mut dec = [0u8; 10];
+        let dec_len = cobs_decode(&dst[..enc_len], &mut dec).unwrap();
+        assert_eq!(dec_len, 0);
+
+        let block254 = [0x55u8; 254];
+        let mut enc254 = [0u8; 300];
+        let n254 = cobs_encode(&block254, &mut enc254).unwrap();
+        assert_eq!(n254, 255);
+        assert_eq!(enc254[0], 0xFF);
+        let mut dec254 = [0u8; 300];
+        let dec_n254 = cobs_decode(&enc254[..n254], &mut dec254).unwrap();
+        assert_eq!(&dec254[..dec_n254], &block254[..]);
+
+        let block255 = [0x55u8; 255];
+        let mut enc255 = [0u8; 300];
+        let n255 = cobs_encode(&block255, &mut enc255).unwrap();
+        assert_eq!(n255, 257);
+        assert_eq!(enc255[0], 0xFF);
+        assert_eq!(enc255[255], 0x02);
+        assert_eq!(enc255[256], 0x55);
