@@ -46,3 +46,22 @@ fn fnv1a_feed(mut hash: u64, bytes: &[u8]) -> u64 {
     }
     hash
 }
+
+#[test]
+fn test_bit_exact_ekf_simulation_determinism() {
+    let mut ekf_a = NavEkf::new();
+    let mut ekf_b = NavEkf::new();
+
+    for step in 0..TEST_STEPS {
+        let (accel, gyro, yaw, gnss) = synthetic_sensor_sample(step);
+        ekf_a.predict(accel, gyro, DT).expect("predict failed");
+        ekf_b.predict(accel, gyro, DT).expect("predict failed");
+
+        if step % 5 == 0 {
+            ekf_a.update_mag_yaw(yaw, 0.02, 16.0).expect("mag");
+            ekf_b.update_mag_yaw(yaw, 0.02, 16.0).expect("mag");
+        }
+        if step % 10 == 0 {
+            ekf_a.update_gnss_pos(gnss, 2.5, 16.0).expect("gnss");
+            ekf_b.update_gnss_pos(gnss, 2.5, 16.0).expect("gnss");
+        }
