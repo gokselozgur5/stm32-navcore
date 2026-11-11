@@ -131,6 +131,7 @@ impl NavEkf {
 }
 
 impl NavEkf {
+    #[allow(clippy::needless_range_loop)]
     fn apply_scalar_joseph_cov(&mut self, k: [f32; STATE_DIM], h: [f32; STATE_DIM], r: f32) {
         let mut i_kh = Mat::<STATE_DIM, STATE_DIM>::identity();
         for i in 0..STATE_DIM {
@@ -152,6 +153,7 @@ impl NavEkf {
 }
 
 impl NavEkf {
+    #[allow(clippy::needless_range_loop)]
     fn compute_ph_t_and_s(&self, h: [f32; STATE_DIM], r: f32) -> Result<([f32; STATE_DIM], f32), EkfError> {
         let mut ph_t = [0.0f32; STATE_DIM];
         for i in 0..STATE_DIM {
@@ -291,5 +293,21 @@ mod tests {
         assert!(normal.is_ok());
         let spike = ekf.update_gnss_pos([50.0, 0.0, 0.0], 1.0, 16.0);
         assert_eq!(spike, Err(EkfError::OutlierRejected));
+    }
+
+    #[test]
+    fn test_gyro_bias_convergence() {
+        let mut ekf = NavEkf::new();
+        let true_bias = 0.03f32;
+        let r_yaw = 0.01;
+        let mut h = [0.0f32; STATE_DIM];
+        h[6] = 1.0;
+        let (ph_t, s) = ekf.compute_ph_t_and_s(h, r_yaw).unwrap();
+        let k6 = ph_t[6] / s;
+        assert!(k6 > 0.0);
+        let y = true_bias;
+        ekf.apply_scalar_correction([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, k6], y);
+        assert!((ekf.bg_z - k6 * true_bias).abs() < 1e-6);
+        assert!(ekf.cov.0[6][6] > 0.0);
     }
 }
