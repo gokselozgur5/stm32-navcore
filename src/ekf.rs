@@ -132,7 +132,13 @@ impl NavEkf {
         self.v_ned_mps[0] += k[3] * y;
         self.v_ned_mps[1] += k[4] * y;
         self.v_ned_mps[2] += k[5] * y;
-        self.bg_z += k[6] * y;
+        let dyaw = k[6] * y;
+        let half_dyaw = 0.5 * dyaw;
+        let d_q = Quaternion::new(libm::cosf(half_dyaw), 0.0, 0.0, libm::sinf(half_dyaw));
+        if let Ok(new_att) = d_q.mul(&self.att).normalize() {
+            self.att = new_att;
+        }
+        self.bg_z += k[7] * y;
     }
 }
 
