@@ -142,3 +142,27 @@ fn test_5000_step_joseph_covariance_stress() {
     }
     assert!(acc > 0 && rej > 0);
 }
+
+#[test]
+fn test_wire_fuzz_cobs_decoding() {
+    let mut dst = [0u8; 128];
+    assert_eq!(
+        cobs_decode(&[], &mut dst),
+        Err(ProtocolError::InvalidCobsEncoding)
+    );
+    let inv = [0x05, 0x01, 0x02];
+    assert_eq!(
+        cobs_decode(&inv, &mut dst),
+        Err(ProtocolError::InvalidCobsEncoding)
+    );
+    let mut seed = 0x12345678u32;
+    for _ in 0..2000 {
+        let mut buf = [0u8; 32];
+        for b in &mut buf {
+            seed = seed.wrapping_mul(1103515245).wrapping_add(12345);
+            *b = (seed >> 16) as u8;
+        }
+        let _ = cobs_decode(&buf, &mut dst);
+        let _ = NavTelemetry::unpack_uart(&buf);
+    }
+}
