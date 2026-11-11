@@ -398,3 +398,23 @@ mod tests {
         let mut uart_buf = [0u8; NavTelemetry::MAX_UART_FRAME_LEN];
         let uart_len = telem.pack_uart(&mut uart_buf).unwrap();
         let unpacked = NavTelemetry::unpack_uart(&uart_buf[..uart_len]).unwrap();
+        assert_eq!(unpacked, telem);
+
+        let mut corrupted = uart_buf;
+        corrupted[10] ^= 0x01;
+        assert_eq!(
+            NavTelemetry::unpack_uart(&corrupted[..uart_len]),
+            Err(ProtocolError::CrcMismatch)
+        );
+
+        let mut can_frames = telem.pack_can().unwrap();
+        assert_eq!(can_frames[5].dlc, 3);
+        let unpacked_can = NavTelemetry::unpack_can(&can_frames).unwrap();
+        assert_eq!(unpacked_can, telem);
+
+        can_frames[5].dlc = 4;
+        assert_eq!(
+            NavTelemetry::unpack_can(&can_frames),
+            Err(ProtocolError::InvalidCanDlc)
+        );
+        can_frames[5].dlc = 3;
