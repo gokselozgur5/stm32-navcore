@@ -53,3 +53,29 @@ fn check_finite_3(v: [f32; 3]) -> Result<(), EkfError> {
         Err(EkfError::InvalidInput)
     }
 }
+
+impl NavEkf {
+    pub fn update_kinematics(
+        &mut self,
+        accel_body_mps2: [f32; 3],
+        gyro_body_rads: [f32; 3],
+        dt_s: f32,
+    ) -> Result<(), EkfError> {
+        let corrected_gyro = [
+            gyro_body_rads[0],
+            gyro_body_rads[1],
+            gyro_body_rads[2] - self.bg_z,
+        ];
+        self.att = self.att.integrate_gyro(corrected_gyro, dt_s).map_err(|_| EkfError::InvalidInput)?;
+        let a_nav = self.att.rotate_vec(accel_body_mps2);
+        let a_eff = [a_nav[0], a_nav[1], a_nav[2] + 9.80665];
+        let half_dt2 = 0.5 * dt_s * dt_s;
+        self.p_ned_m[0] += self.v_ned_mps[0] * dt_s + a_eff[0] * half_dt2;
+        self.p_ned_m[1] += self.v_ned_mps[1] * dt_s + a_eff[1] * half_dt2;
+        self.p_ned_m[2] += self.v_ned_mps[2] * dt_s + a_eff[2] * half_dt2;
+        self.v_ned_mps[0] += a_eff[0] * dt_s;
+        self.v_ned_mps[1] += a_eff[1] * dt_s;
+        self.v_ned_mps[2] += a_eff[2] * dt_s;
+        Ok(())
+    }
+}
