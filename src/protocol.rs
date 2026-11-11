@@ -218,3 +218,23 @@ impl NavTelemetry {
         let mut payload = [0u8; Self::RAW_SIZE + 2];
         let mut raw = [0u8; Self::RAW_SIZE];
         self.serialize_raw(&mut raw)?;
+        payload[..Self::RAW_SIZE].copy_from_slice(&raw);
+        let crc = crc16_ccitt(&raw);
+        payload[Self::RAW_SIZE..].copy_from_slice(&crc.to_be_bytes());
+        let encoded_len = cobs_encode(&payload, dst)?;
+        if encoded_len >= dst.len() {
+            return Err(ProtocolError::BufferTooSmall);
+        }
+        dst[encoded_len] = 0x00;
+        Ok(encoded_len + 1)
+    }
+
+    pub fn unpack_uart(src: &[u8]) -> Result<Self, ProtocolError> {
+        let frame = if src.ends_with(&[0x00]) {
+            &src[..src.len() - 1]
+        } else {
+            src
+        };
+        let mut decoded = [0u8; Self::RAW_SIZE + 2];
+        let dec_len = cobs_decode(frame, &mut decoded)?;
+        if dec_len != Self::RAW_SIZE + 2 {
