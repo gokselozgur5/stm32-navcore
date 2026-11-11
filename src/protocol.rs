@@ -118,3 +118,23 @@ pub struct CanFrame20B {
 
 impl CanFrame20B {
     pub const MAX_EXT_ID: u32 = 0x1FFF_FFFF;
+    pub const MAX_DLC: u8 = 8;
+
+    pub fn new(id: u32, dlc: u8, data: [u8; 8]) -> Result<Self, ProtocolError> {
+        if id > Self::MAX_EXT_ID {
+            return Err(ProtocolError::InvalidCanId);
+        }
+        if dlc > Self::MAX_DLC {
+            return Err(ProtocolError::InvalidCanDlc);
+        }
+        Ok(Self { id, dlc, data })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct NavTelemetry {
+    pub timestamp_ms: u32,
+    pub pos_ned_m: [f32; 3],
+    pub vel_ned_mps: [f32; 3],
+    pub euler_rad: [f32; 3],
+    pub status: u8,
