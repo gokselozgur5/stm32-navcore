@@ -120,3 +120,29 @@ impl Mat<2, 2> {
         ]))
     }
 }
+
+impl Mat<3, 3> {
+    pub fn inv_3x3(&self) -> Option<Self> {
+        let m = &self.0;
+        let c00 = m[1][1] * m[2][2] - m[1][2] * m[2][1];
+        let c01 = m[1][2] * m[2][0] - m[1][0] * m[2][2];
+        let c02 = m[1][0] * m[2][1] - m[1][1] * m[2][0];
+        let det = m[0][0] * c00 + m[0][1] * c01 + m[0][2] * c02;
+        let abs_det = if det < 0.0 { -det } else { det };
+        if abs_det < 1e-12 {
+            return None;
+        }
+        let inv_det = 1.0 / det;
+        let c10 = m[0][2] * m[2][1] - m[0][1] * m[2][2];
+        let c11 = m[0][0] * m[2][2] - m[0][2] * m[2][0];
+        let c12 = m[0][1] * m[2][0] - m[0][0] * m[2][1];
+        let c20 = m[0][1] * m[1][2] - m[0][2] * m[1][1];
+        let c21 = m[0][2] * m[1][0] - m[0][0] * m[1][2];
+        let c22 = m[0][0] * m[1][1] - m[0][1] * m[1][0];
+        Some(Mat([
+            [c00 * inv_det, c10 * inv_det, c20 * inv_det],
+            [c01 * inv_det, c11 * inv_det, c21 * inv_det],
+            [c02 * inv_det, c12 * inv_det, c22 * inv_det],
+        ]))
+    }
+}
