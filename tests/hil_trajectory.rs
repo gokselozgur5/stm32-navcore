@@ -238,3 +238,6 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
     assert!(
         (ekf.bg_z - true_gyro_bias_z).abs() < 0.005,
         "End-of-flight gyro bias error must be < 0.005 rad/s, got {}",
+        (ekf.bg_z - true_gyro_bias_z).abs()
+    );
+}
