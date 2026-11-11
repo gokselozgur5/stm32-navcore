@@ -298,3 +298,23 @@ impl NavTelemetry {
         if crc16_ccitt(&raw) != expected_crc {
             return Err(ProtocolError::CrcMismatch);
         }
+        Self::deserialize_raw(&raw)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_crc16_standard_vector() {
+        assert_eq!(crc16_ccitt(b"123456789"), 0x29B1);
+    }
+
+    #[test]
+    fn test_cobs_boundaries_and_empty() {
+        let empty_src: [u8; 0] = [];
+        let mut dst = [0u8; 10];
+        let enc_len = cobs_encode(&empty_src, &mut dst).unwrap();
+        assert_eq!(enc_len, 1);
+        assert_eq!(dst[0], 0x01);
