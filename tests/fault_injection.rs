@@ -95,3 +95,12 @@ fn test_adversarial_mag_yaw_rejection() {
     );
     assert_eq!(ekf, before);
 }
+
+#[test]
+fn test_high_magnitude_finite_imu_predict() {
+    let mut ekf = NavEkf::new();
+    let res = ekf.predict([3.0e38, 0.0, -9.80665], [0.0; 3], 0.01);
+    assert!(res.is_ok());
+    assert!(ekf.p_ned_m[0].is_finite());
+    assert!(ekf.p_ned_m[0] > 1.0e34);
+}
