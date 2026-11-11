@@ -218,3 +218,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
     );
 
     assert!(
+        end_outage_p_var > pre_outage_p_var,
+        "Covariance must grow during GNSS outage"
+    );
+
+    assert!(
+        max_pos_drift_outage < 5.0,
+        "Position drift during 5s outage should be bounded < 5.0m, got {max_pos_drift_outage}"
+    );
+
+    let final_err_n = ekf.p_ned_m[0] - (r_traj * libm::sinf(omega * 59.99));
+    let final_err_e = ekf.p_ned_m[1] - (r_traj * libm::sinf(2.0 * omega * 59.99));
+    let final_err_xy = libm::sqrtf(final_err_n * final_err_n + final_err_e * final_err_e);
+    assert!(
+        final_err_xy < 1.0,
+        "Post-outage reacquisition should recover position error < 1.0m, got {final_err_xy}"
+    );
+
+    assert!(
+        (ekf.bg_z - true_gyro_bias_z).abs() < 0.005,
+        "End-of-flight gyro bias error must be < 0.005 rad/s, got {}",
