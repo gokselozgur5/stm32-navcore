@@ -91,3 +91,13 @@ fn test_bit_exact_ekf_simulation_determinism() {
     for x in &ekf_a.v_ned_mps {
         h = fnv1a_feed(h, &x.to_bits().to_le_bytes());
     }
+    h = fnv1a_feed(h, &ekf_a.att.w.to_bits().to_le_bytes());
+    h = fnv1a_feed(h, &ekf_a.att.x.to_bits().to_le_bytes());
+    h = fnv1a_feed(h, &ekf_a.att.y.to_bits().to_le_bytes());
+    h = fnv1a_feed(h, &ekf_a.att.z.to_bits().to_le_bytes());
+    h = fnv1a_feed(h, &ekf_a.bg_z.to_bits().to_le_bytes());
+    for row in 0..8 {
+        for col in 0..8 {
+            h = fnv1a_feed(h, &ekf_a.cov.0[row][col].to_bits().to_le_bytes());
+        }
+    }
