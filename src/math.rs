@@ -418,9 +418,10 @@ mod tests {
         let yaw = 45.0f32.to_radians();
         let (sr, cr, sp, cp) = (r.sin(), r.cos(), p.sin(), p.cos());
         let (cy, sy) = (yaw.cos(), yaw.sin());
-        let bx = cy * cp;
-        let by = -sy * cr + cy * sp * sr;
-        let bz = sy * sr + cy * sp * cr;
+        let (bn, bd) = (20.0f32, 40.0f32);
+        let bx = bn * cy * cp - bd * sp;
+        let by = -bn * sy * cr + (bn * cy * sp + bd * cp) * sr;
+        let bz = bn * sy * sr + (bn * cy * sp + bd * cp) * cr;
         let uncal = inv_soft.matmul(&Mat([[bx], [by], [bz]]));
         let raw = [
             uncal.0[0][0] + hard[0],
