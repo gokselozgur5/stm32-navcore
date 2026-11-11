@@ -78,3 +78,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
     let mut pre_outage_p_var = 0.0f32;
     let mut end_outage_p_var = 0.0f32;
     let mut max_pos_drift_outage = 0.0f32;
+
+    for step in 0..total_steps {
+        let t = step as f32 * dt;
+        let p_n = r_traj * libm::sinf(omega * t);
+        let p_e = r_traj * libm::sinf(2.0 * omega * t);
+        let p_d = -5.0f32;
+
+        let v_n = r_traj * omega * libm::cosf(omega * t);
+        let v_e = 2.0 * r_traj * omega * libm::cosf(2.0 * omega * t);
+        let v_d = 0.0f32;
+
+        let a_n = -r_traj * omega * omega * libm::sinf(omega * t);
+        let a_e = -4.0 * r_traj * omega * omega * libm::sinf(2.0 * omega * t);
+        let a_d = 0.0f32;
+
+        let yaw = libm::atan2f(v_e, v_n);
+        let next_t = (step + 1) as f32 * dt;
+        let next_vn = r_traj * omega * libm::cosf(omega * next_t);
+        let next_ve = 2.0 * r_traj * omega * libm::cosf(2.0 * omega * next_t);
+        let next_yaw = libm::atan2f(next_ve, next_vn);
