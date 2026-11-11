@@ -211,7 +211,12 @@ impl Quaternion {
         } else {
             let half_theta = 0.5 * theta;
             let sin_term = libm::sinf(half_theta) / (theta / dt_s);
-            Quaternion::new(libm::cosf(half_theta), wx * sin_term, wy * sin_term, wz * sin_term)
+            Quaternion::new(
+                libm::cosf(half_theta),
+                wx * sin_term,
+                wy * sin_term,
+                wz * sin_term,
+            )
         };
         self.mul(&delta).normalize()
     }
@@ -372,7 +377,12 @@ mod tests {
 
     #[test]
     fn test_quaternion_rotation_and_euler() {
-        let q = Quaternion::new(core::f32::consts::FRAC_1_SQRT_2, 0.0, 0.0, core::f32::consts::FRAC_1_SQRT_2);
+        let q = Quaternion::new(
+            core::f32::consts::FRAC_1_SQRT_2,
+            0.0,
+            0.0,
+            core::f32::consts::FRAC_1_SQRT_2,
+        );
         let v = [1.0, 0.0, 0.0];
         let v_rot = q.rotate_vec(v);
         assert!(v_rot[0].abs() < 1e-5);
@@ -409,7 +419,11 @@ mod tests {
         let by = -sy * cr + cy * sp * sr;
         let bz = sy * sr + cy * sp * cr;
         let uncal = inv_soft.matmul(&Mat([[bx], [by], [bz]]));
-        let raw = [uncal.0[0][0] + hard[0], uncal.0[1][0] + hard[1], uncal.0[2][0] + hard[2]];
+        let raw = [
+            uncal.0[0][0] + hard[0],
+            uncal.0[1][0] + hard[1],
+            uncal.0[2][0] + hard[2],
+        ];
         let est = tilt_compensated_yaw(raw, hard, soft, r, p).unwrap();
         assert!((est - yaw).abs().to_degrees() < 0.5);
     }
