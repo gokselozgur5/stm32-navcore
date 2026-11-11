@@ -150,3 +150,25 @@ impl NavEkf {
         self.cov = term1.add(&term2).symmetrize();
     }
 }
+
+impl NavEkf {
+    fn compute_ph_t_and_s(&self, h: [f32; STATE_DIM], r: f32) -> Result<([f32; STATE_DIM], f32), EkfError> {
+        let mut ph_t = [0.0f32; STATE_DIM];
+        for i in 0..STATE_DIM {
+            let mut sum = 0.0f32;
+            for j in 0..STATE_DIM {
+                sum += self.cov.0[i][j] * h[j];
+            }
+            ph_t[i] = sum;
+        }
+        let mut s = r;
+        for i in 0..STATE_DIM {
+            s += h[i] * ph_t[i];
+        }
+        if !s.is_finite() || s < 1e-12 {
+            Err(EkfError::SingularInnovation)
+        } else {
+            Ok((ph_t, s))
+        }
+    }
+}
