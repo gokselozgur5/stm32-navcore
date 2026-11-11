@@ -281,15 +281,7 @@ impl NavEkf {
         }
         let mut h = [0.0f32; STATE_DIM];
         h[6] = 1.0;
-        let nis = self.update_joseph_scalar(h, y, r_yaw, gate)?;
-        let half_y = 0.5 * y * 0.1;
-        let d_q = Quaternion::new(libm::cosf(half_y), 0.0, 0.0, libm::sinf(half_y));
-        self.att = self
-            .att
-            .mul(&d_q)
-            .normalize()
-            .map_err(|_| EkfError::InvalidInput)?;
-        Ok(nis)
+        self.update_joseph_scalar(h, y, r_yaw, gate)
     }
 }
 
