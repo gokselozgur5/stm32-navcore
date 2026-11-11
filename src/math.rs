@@ -80,3 +80,16 @@ impl<const R: usize, const C: usize> Mat<R, C> {
         Mat(out)
     }
 }
+
+impl<const N: usize> Mat<N, N> {
+    #[allow(clippy::needless_range_loop)]
+    pub fn symmetrize(&self) -> Self {
+        let mut out = [[0.0; N]; N];
+        for r in 0..N {
+            for c in 0..N {
+                out[r][c] = 0.5 * (self.0[r][c] + self.0[c][r]);
+            }
+        }
+        Mat(out)
+    }
+}
