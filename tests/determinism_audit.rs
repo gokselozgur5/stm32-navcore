@@ -84,3 +84,10 @@ fn test_bit_exact_ekf_simulation_determinism() {
             }
         }
     }
+    let mut h: u64 = 0xcbf29ce484222325;
+    for x in &ekf_a.p_ned_m {
+        h = fnv1a_feed(h, &x.to_bits().to_le_bytes());
+    }
+    for x in &ekf_a.v_ned_mps {
+        h = fnv1a_feed(h, &x.to_bits().to_le_bytes());
+    }
