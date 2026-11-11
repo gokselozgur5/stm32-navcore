@@ -187,3 +187,24 @@ fn test_exhaustive_bit_flip_rejection_uart() {
         }
     }
 }
+
+#[test]
+fn test_exhaustive_bit_flip_rejection_can() {
+    let telemetry = NavTelemetry {
+        timestamp_ms: 123456,
+        pos_ned_m: [10.5, -20.2, -5.0],
+        vel_ned_mps: [1.2, -0.5, 0.1],
+        euler_rad: [0.05, -0.02, 1.57],
+        status: 0x03,
+    };
+    let frames = telemetry.pack_can().unwrap();
+    for frame_idx in 0..6 {
+        for byte_idx in 0..frames[frame_idx].dlc as usize {
+            for bit_idx in 0..8 {
+                let mut corrupted = frames;
+                corrupted[frame_idx].data[byte_idx] ^= 1 << bit_idx;
+                assert!(NavTelemetry::unpack_can(&corrupted).is_err());
+            }
+        }
+    }
+}
