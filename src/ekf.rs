@@ -260,3 +260,26 @@ impl NavEkf {
         Ok(nis)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_predict_and_symmetry_positive_diagonal() {
+        let mut ekf = NavEkf::new();
+        let dt = 0.01;
+        let accel = [0.0, 0.0, -9.80665];
+        let gyro = [0.0, 0.0, 0.0];
+        for _ in 0..500 {
+            ekf.predict(accel, gyro, dt).unwrap();
+            let _ = ekf.update_gnss_pos([0.0, 0.0, 0.0], 1.0, 16.0);
+            for i in 0..STATE_DIM {
+                assert!(ekf.cov.0[i][i] > 0.0);
+                for j in 0..STATE_DIM {
+                    assert!((ekf.cov.0[i][j] - ekf.cov.0[j][i]).abs() < 1e-4);
+                }
+            }
+        }
+    }
+}
