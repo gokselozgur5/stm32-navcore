@@ -105,3 +105,18 @@ impl Mat<1, 1> {
         }
     }
 }
+
+impl Mat<2, 2> {
+    pub fn inv_2x2(&self) -> Option<Self> {
+        let det = self.0[0][0] * self.0[1][1] - self.0[0][1] * self.0[1][0];
+        let abs_det = if det < 0.0 { -det } else { det };
+        if abs_det < 1e-12 {
+            return None;
+        }
+        let inv_det = 1.0 / det;
+        Some(Mat([
+            [self.0[1][1] * inv_det, -self.0[0][1] * inv_det],
+            [-self.0[1][0] * inv_det, self.0[0][0] * inv_det],
+        ]))
+    }
+}
