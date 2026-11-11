@@ -198,3 +198,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
             euler_rad: [roll, pitch, ekf_yaw],
             status: if is_gnss_outage { 0x02 } else { 0x01 },
         };
+
+        let uart_bytes = telem
+            .pack_uart(&mut uart_buf)
+            .expect("UART pack must succeed");
+        let unpacked_uart =
+            NavTelemetry::unpack_uart(&uart_buf[..uart_bytes]).expect("UART unpack must succeed");
+        assert_eq!(unpacked_uart, telem);
+
+        let can_frames = telem.pack_can().expect("CAN pack must succeed");
+        let unpacked_can = NavTelemetry::unpack_can(&can_frames).expect("CAN unpack must succeed");
+        assert_eq!(unpacked_can, telem);
+    }
+
+    let rmse_xy = libm::sqrtf(error_pos_xy_sum_sq / (count_pos_xy as f32));
+    assert!(
+        rmse_xy < 1.0,
+        "Horizontal position RMSE under GNSS lock should be < 1.0m, got {rmse_xy}"
+    );
+
+    assert!(
