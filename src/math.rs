@@ -297,4 +297,16 @@ mod tests {
         let id = Mat::<2, 2>::identity();
         assert_eq!(id.0, [[1.0, 0.0], [0.0, 1.0]]);
     }
+
+    #[test]
+    fn test_mat_ops() {
+        let a = Mat([[1.0, 2.0], [3.0, 4.0]]);
+        let b = Mat([[5.0, 6.0], [7.0, 8.0]]);
+        assert_eq!(a.add(&b).0, [[6.0, 8.0], [10.0, 12.0]]);
+        assert_eq!(b.sub(&a).0, [[4.0, 4.0], [4.0, 4.0]]);
+        assert_eq!(a.transpose().0, [[1.0, 3.0], [2.0, 4.0]]);
+        assert_eq!(a.symmetrize().0, [[1.0, 2.5], [2.5, 4.0]]);
+        let c = a.matmul(&b);
+        assert_eq!(c.0, [[19.0, 22.0], [43.0, 50.0]]);
+    }
 }
