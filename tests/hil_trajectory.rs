@@ -18,3 +18,23 @@ impl XorShift64 {
         }
     }
 
+    fn next_u64(&mut self) -> u64 {
+        let mut x = self.state;
+        x ^= x << 13;
+        x ^= x >> 7;
+        x ^= x << 17;
+        self.state = x;
+        x
+    }
+
+    fn next_f32(&mut self) -> f32 {
+        let val = (self.next_u64() >> 40) as u32;
+        val as f32 / 16777216.0
+    }
+
+    fn next_gaussian_approx(&mut self, std_dev: f32) -> f32 {
+        let mut sum = 0.0f32;
+        for _ in 0..12 {
+            sum += self.next_f32();
+        }
+        (sum - 6.0) * std_dev
