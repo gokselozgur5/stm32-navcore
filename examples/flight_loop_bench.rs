@@ -14,3 +14,19 @@ use stm32_navcore::protocol::NavTelemetry;
 struct BenchMetrics {
     iterations: usize,
     total_micros: u128,
+    p50_ns: u64,
+    p99_ns: u64,
+    mean_ns: u64,
+    throughput_hz: f64,
+    predict_accepted: usize,
+    mag_accepted: usize,
+    mag_rejected: usize,
+    gnss_pos_accepted: usize,
+    gnss_pos_rejected: usize,
+    gnss_vel_accepted: usize,
+    gnss_vel_rejected: usize,
+}
+
+fn synthetic_imu(step: usize) -> ([f32; 3], [f32; 3]) {
+    let phase = (step as f32) * 0.001;
+    let accel = [libm::sinf(phase) * 0.1, libm::cosf(phase) * 0.1, -9.80665];
