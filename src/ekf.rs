@@ -331,4 +331,22 @@ mod tests {
         }
         assert!((ekf.bg_z - true_bias).abs() < 0.015, "bg_z={}", ekf.bg_z);
     }
+
+    #[test]
+    fn test_gnss_update_atomicity() {
+        let mut ekf = NavEkf::new();
+        let before_pos = ekf;
+        assert_eq!(
+            ekf.update_gnss_pos([0.5, 5000.0, 0.0], 1.0, 16.0),
+            Err(EkfError::OutlierRejected)
+        );
+        assert_eq!(ekf, before_pos);
+
+        let before_vel = ekf;
+        assert_eq!(
+            ekf.update_gnss_vel([0.5, 5000.0, 0.0], 1.0, 16.0),
+            Err(EkfError::OutlierRejected)
+        );
+        assert_eq!(ekf, before_vel);
+    }
 }
