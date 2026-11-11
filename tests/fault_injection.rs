@@ -63,3 +63,19 @@ fn test_adversarial_gnss_pos_variance_rejection() {
     );
     assert_eq!(ekf, before);
 }
+
+#[test]
+fn test_adversarial_gnss_vel_burst_rejection() {
+    let mut ekf = NavEkf::new();
+    let before = ekf;
+    assert_eq!(
+        ekf.update_gnss_vel([0.0, 0.0, f32::NAN], 0.5, 16.0),
+        Err(EkfError::InvalidInput)
+    );
+    assert_eq!(ekf, before);
+    assert_eq!(
+        ekf.update_gnss_vel([0.0, 0.0, f32::NEG_INFINITY], 0.5, 16.0),
+        Err(EkfError::InvalidInput)
+    );
+    assert_eq!(ekf, before);
+}
