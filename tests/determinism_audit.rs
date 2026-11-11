@@ -121,3 +121,25 @@ fn test_bit_exact_ekf_simulation_determinism() {
     }
     assert_eq!(h, GOLDEN_FNV1A_DIGEST);
 }
+
+#[test]
+fn test_bit_exact_protocol_encoding_determinism() {
+    let mut ekf_a = NavEkf::new();
+    let mut ekf_b = NavEkf::new();
+    let mut uart_buf_a = [0u8; 128];
+    let mut uart_buf_b = [0u8; 128];
+
+    for step in 0..100 {
+        let (accel, gyro, _, _) = synthetic_sensor_sample(step);
+        ekf_a.predict(accel, gyro, DT).expect("predict failed");
+        ekf_b.predict(accel, gyro, DT).expect("predict failed");
+
+        let (r_a, p_a, y_a) = ekf_a.att.to_euler_zyx();
+        let (r_b, p_b, y_b) = ekf_b.att.to_euler_zyx();
+        let telem_a = NavTelemetry {
+            timestamp_ms: (step * 10) as u32,
+            pos_ned_m: ekf_a.p_ned_m,
+            vel_ned_mps: ekf_a.v_ned_mps,
+            euler_rad: [r_a, p_a, y_a],
+            status: 1,
+        };
