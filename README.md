@@ -62,6 +62,20 @@ Every epoch is round-tripped through the COBS/CRC-16 UART and CAN 2.0B codecs.
 
 Measured on a host build with a fixed `XorShift64` seed, so the values are reproducible.
 
+## Flight loop benchmark
+
+`cargo run --release --example flight_loop_bench` runs 50,000 closed-loop steps (predict, magnetometer, GNSS position and velocity updates, UART and CAN telemetry round-trip).
+
+Host results on macOS arm64 (release build), across three independent runs:
+
+| Metric | Range |
+| --- | --- |
+| Throughput | 534 - 579 kHz |
+| p50 step latency | 1.63 - 1.75 us |
+| p99 step latency | 2.92 - 3.17 us |
+
+The run is deterministic: checksum `00000005D216F788`, with no rejected updates. Timings are host figures and are not Cortex-M4F timings.
+
 ## Build and verification
 
 ```sh
