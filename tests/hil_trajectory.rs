@@ -158,3 +158,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
                 p_d + rng.next_gaussian_approx(0.1),
             ];
             let gnss_v = [
+                v_n + rng.next_gaussian_approx(0.02),
+                v_e + rng.next_gaussian_approx(0.02),
+                v_d + rng.next_gaussian_approx(0.02),
+            ];
+            let _ = ekf.update_gnss_pos(gnss_p, 0.02, 16.0);
+            let _ = ekf.update_gnss_vel(gnss_v, 0.005, 16.0);
+        }
+
+        if t < 25.0 && t > 5.0 {
+            let err_n = ekf.p_ned_m[0] - p_n;
+            let err_e = ekf.p_ned_m[1] - p_e;
+            error_pos_xy_sum_sq += err_n * err_n + err_e * err_e;
+            count_pos_xy += 1;
+        }
+
+        if (t - 24.99).abs() < 0.005 {
+            pre_outage_p_var = ekf.cov.0[0][0] + ekf.cov.0[1][1];
+        }
+
+        if is_gnss_outage {
