@@ -322,15 +322,13 @@ mod tests {
     fn test_gyro_bias_convergence() {
         let mut ekf = NavEkf::new();
         let true_bias = 0.03f32;
-        let r_yaw = 0.01;
-        let mut h = [0.0f32; STATE_DIM];
-        h[6] = 1.0;
-        let (ph_t, s) = ekf.compute_ph_t_and_s(h, r_yaw).unwrap();
-        let k6 = ph_t[6] / s;
-        assert!(k6 > 0.0);
-        let y = true_bias;
-        ekf.apply_scalar_correction([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, k6], y);
-        assert!((ekf.bg_z - k6 * true_bias).abs() < 1e-6);
-        assert!(ekf.cov.0[6][6] > 0.0);
+        let dt = 0.02f32;
+        let true_yaw = 0.0f32;
+        for _ in 0..400 {
+            let omega = [0.0, 0.0, true_bias];
+            ekf.predict([0.0, 0.0, -9.80665], omega, dt).unwrap();
+            let _ = ekf.update_mag_yaw(true_yaw, 0.001, 100.0);
+        }
+        assert!((ekf.bg_z - true_bias).abs() < 0.015, "bg_z={}", ekf.bg_z);
     }
 }
