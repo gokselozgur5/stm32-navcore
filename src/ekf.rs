@@ -66,7 +66,10 @@ impl NavEkf {
             gyro_body_rads[1],
             gyro_body_rads[2] - self.bg_z,
         ];
-        self.att = self.att.integrate_gyro(corrected_gyro, dt_s).map_err(|_| EkfError::InvalidInput)?;
+        self.att = self
+            .att
+            .integrate_gyro(corrected_gyro, dt_s)
+            .map_err(|_| EkfError::InvalidInput)?;
         let a_nav = self.att.rotate_vec(accel_body_mps2);
         let a_eff = [a_nav[0], a_nav[1], a_nav[2] + 9.80665];
         let half_dt2 = 0.5 * dt_s * dt_s;
@@ -154,7 +157,11 @@ impl NavEkf {
 
 impl NavEkf {
     #[allow(clippy::needless_range_loop)]
-    fn compute_ph_t_and_s(&self, h: [f32; STATE_DIM], r: f32) -> Result<([f32; STATE_DIM], f32), EkfError> {
+    fn compute_ph_t_and_s(
+        &self,
+        h: [f32; STATE_DIM],
+        r: f32,
+    ) -> Result<([f32; STATE_DIM], f32), EkfError> {
         let mut ph_t = [0.0f32; STATE_DIM];
         for i in 0..STATE_DIM {
             let mut sum = 0.0f32;
