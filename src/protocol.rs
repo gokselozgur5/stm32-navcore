@@ -418,3 +418,20 @@ mod tests {
             Err(ProtocolError::InvalidCanDlc)
         );
         can_frames[5].dlc = 3;
+        can_frames[5].data[1] ^= 0x01;
+        assert_eq!(
+            NavTelemetry::unpack_can(&can_frames),
+            Err(ProtocolError::CrcMismatch)
+        );
+
+        let nan_telem = NavTelemetry {
+            pos_ned_m: [f32::NAN, 0.0, 0.0],
+            ..telem
+        };
+        let mut dummy = [0u8; 64];
+        assert_eq!(
+            nan_telem.pack_uart(&mut dummy),
+            Err(ProtocolError::NonFiniteFloat)
+        );
+    }
+}
