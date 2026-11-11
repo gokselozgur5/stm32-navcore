@@ -65,3 +65,22 @@ fn test_bit_exact_ekf_simulation_determinism() {
             ekf_a.update_gnss_pos(gnss, 2.5, 16.0).expect("gnss");
             ekf_b.update_gnss_pos(gnss, 2.5, 16.0).expect("gnss");
         }
+        for i in 0..3 {
+            assert_eq!(ekf_a.p_ned_m[i].to_bits(), ekf_b.p_ned_m[i].to_bits());
+            assert_eq!(ekf_a.v_ned_mps[i].to_bits(), ekf_b.v_ned_mps[i].to_bits());
+        }
+        assert_eq!(ekf_a.att.w.to_bits(), ekf_b.att.w.to_bits());
+        assert_eq!(ekf_a.att.x.to_bits(), ekf_b.att.x.to_bits());
+        assert_eq!(ekf_a.att.y.to_bits(), ekf_b.att.y.to_bits());
+        assert_eq!(ekf_a.att.z.to_bits(), ekf_b.att.z.to_bits());
+        assert_eq!(ekf_a.bg_z.to_bits(), ekf_b.bg_z.to_bits());
+
+        for row in 0..8 {
+            for col in 0..8 {
+                assert_eq!(
+                    ekf_a.cov.0[row][col].to_bits(),
+                    ekf_b.cov.0[row][col].to_bits()
+                );
+            }
+        }
+    }
