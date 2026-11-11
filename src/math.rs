@@ -50,3 +50,20 @@ impl<const R: usize, const C: usize> Mat<R, C> {
         Self(out)
     }
 }
+
+impl<const R: usize, const C: usize> Mat<R, C> {
+    #[allow(clippy::needless_range_loop)]
+    pub fn matmul<const K: usize>(&self, other: &Mat<C, K>) -> Mat<R, K> {
+        let mut out = [[0.0; K]; R];
+        for r in 0..R {
+            for k in 0..K {
+                let mut sum = 0.0f32;
+                for c in 0..C {
+                    sum += self.0[r][c] * other.0[c][k];
+                }
+                out[r][k] = sum;
+            }
+        }
+        Mat(out)
+    }
+}
