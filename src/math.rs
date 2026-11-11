@@ -340,4 +340,22 @@ mod tests {
         let singular = Mat([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
         assert!(singular.inv_3x3().is_none());
     }
+
+    #[test]
+    fn test_quaternion_hamilton_and_norm() {
+        let q1 = Quaternion::IDENTITY;
+        let q2 = Quaternion::new(0.0, 1.0, 0.0, 0.0);
+        assert_eq!(q1.mul(&q2), q2);
+        assert_eq!(q2.mul(&q1), q2);
+
+        let i = Quaternion::new(0.0, 1.0, 0.0, 0.0);
+        let j = Quaternion::new(0.0, 0.0, 1.0, 0.0);
+        let k = Quaternion::new(0.0, 0.0, 0.0, 1.0);
+        assert_eq!(i.mul(&j), k);
+
+        let unnorm = Quaternion::new(1.0, 1.0, 1.0, 1.0);
+        let norm = unnorm.normalize().unwrap();
+        assert!((norm.norm() - 1.0).abs() < 1e-6);
+        assert_eq!(norm.w, 0.5);
+    }
 }
