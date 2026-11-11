@@ -46,3 +46,19 @@ fn synthetic_gnss(step: usize) -> ([f32; 3], [f32; 3]) {
     (pos, vel)
 }
 
+/// Execute closed-loop navigation iterations and record step latencies.
+fn run_benchmark(iterations: usize) -> (BenchMetrics, u64) {
+    let mut ekf = NavEkf::new();
+    let mut latencies_ns = Vec::with_capacity(iterations);
+    let mut dummy_checksum: u64 = 0;
+    let mut uart_buf = [0u8; 64];
+    let dt = 0.001;
+    let hard_iron = [0.0f32; 3];
+    let soft_iron = Mat::identity();
+
+    let mut predict_accepted = 0;
+    let mut mag_accepted = 0;
+    let mut mag_rejected = 0;
+    let mut gnss_pos_accepted = 0;
+    let mut gnss_pos_rejected = 0;
+    let mut gnss_vel_accepted = 0;
