@@ -263,3 +263,25 @@ pub fn calibrate_magnetometer(
     let cal = soft_iron.matmul(&diff_mat);
     [cal.0[0][0], cal.0[1][0], cal.0[2][0]]
 }
+
+pub fn tilt_compensated_yaw(
+    b_raw: [f32; 3],
+    hard_iron: [f32; 3],
+    soft_iron: Mat<3, 3>,
+    roll: f32,
+    pitch: f32,
+) -> Result<f32, MathError> {
+    let cp = libm::cosf(pitch);
+    if (if cp < 0.0 { -cp } else { cp }) < 1e-4 {
+        return Err(MathError::GimbalLock);
+    }
+    let b = calibrate_magnetometer(b_raw, hard_iron, soft_iron);
+    let (sr, cr) = (libm::sinf(roll), libm::cosf(roll));
+    let sp = libm::sinf(pitch);
+    let b_xh = b[0] * cp + b[1] * sp * sr + b[2] * sp * cr;
+    let b_yh = b[1] * cr - b[2] * sr;
+    if libm::sqrtf(b_xh * b_xh + b_yh * b_yh) < 1e-6 {
+        return Err(MathError::InvalidNorm);
+    }
+    Ok(libm::atan2f(-b_yh, b_xh))
+}
