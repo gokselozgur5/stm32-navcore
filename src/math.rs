@@ -216,3 +216,12 @@ impl Quaternion {
         self.mul(&delta).normalize()
     }
 }
+
+impl Quaternion {
+    pub fn rotate_vec(&self, v: [f32; 3]) -> [f32; 3] {
+        let p = Quaternion::new(0.0, v[0], v[1], v[2]);
+        let conj = Quaternion::new(self.w, -self.x, -self.y, -self.z);
+        let res = self.mul(&p).mul(&conj);
+        [res.x, res.y, res.z]
+    }
+}
