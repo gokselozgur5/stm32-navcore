@@ -58,3 +58,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
 
     let total_steps = 6000;
     let dt = 0.01f32;
+    let omega = 2.0 * PI / 60.0;
+    let r_traj = 20.0f32;
+
+    let hard_iron = [20.0f32, -15.0, 5.0];
+    let soft_iron = Mat::<3, 3>([
+        [1.05f32, 0.02, 0.0],
+        [0.02, 0.98f32, 0.0],
+        [0.0, 0.0, 1.0f32],
+    ]);
+    let inv_soft = soft_iron.inv_3x3().unwrap();
+    let (bn, bd) = (20.0f32, 40.0f32);
+    let true_gyro_bias_z = 0.005f32;
+
+    let mut uart_buf = [0u8; NavTelemetry::MAX_UART_FRAME_LEN];
+    let mut error_pos_xy_sum_sq = 0.0f32;
+    let mut count_pos_xy = 0;
+
+    let mut pre_outage_p_var = 0.0f32;
+    let mut end_outage_p_var = 0.0f32;
+    let mut max_pos_drift_outage = 0.0f32;
