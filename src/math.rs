@@ -178,3 +178,23 @@ impl Quaternion {
         }
     }
 }
+
+impl Quaternion {
+    pub fn norm(&self) -> f32 {
+        libm::sqrtf(self.w * self.w + self.x * self.x + self.y * self.y + self.z * self.z)
+    }
+
+    pub fn normalize(&self) -> Result<Self, MathError> {
+        let n = self.norm();
+        if n < 1e-9 {
+            return Err(MathError::InvalidNorm);
+        }
+        let inv_n = 1.0 / n;
+        Ok(Self {
+            w: self.w * inv_n,
+            x: self.x * inv_n,
+            y: self.y * inv_n,
+            z: self.z * inv_n,
+        })
+    }
+}
