@@ -129,3 +129,24 @@ impl NavEkf {
         self.bg_z += k[6] * y;
     }
 }
+
+impl NavEkf {
+    fn apply_scalar_joseph_cov(&mut self, k: [f32; STATE_DIM], h: [f32; STATE_DIM], r: f32) {
+        let mut i_kh = Mat::<STATE_DIM, STATE_DIM>::identity();
+        for i in 0..STATE_DIM {
+            for j in 0..STATE_DIM {
+                i_kh.0[i][j] -= k[i] * h[j];
+            }
+        }
+        let ikh_p = i_kh.matmul(&self.cov);
+        let ikh_t = i_kh.transpose();
+        let term1 = ikh_p.matmul(&ikh_t);
+        let mut term2 = Mat::<STATE_DIM, STATE_DIM>::zeros();
+        for i in 0..STATE_DIM {
+            for j in 0..STATE_DIM {
+                term2.0[i][j] = k[i] * k[j] * r;
+            }
+        }
+        self.cov = term1.add(&term2).symmetrize();
+    }
+}
