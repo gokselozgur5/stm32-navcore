@@ -121,3 +121,24 @@ fn step_stress_ekf(ekf: &mut NavEkf, s: usize, dt: f32) -> bool {
         true
     }
 }
+
+#[test]
+fn test_5000_step_joseph_covariance_stress() {
+    let mut ekf = NavEkf::new();
+    let dt = 0.01;
+    let (mut acc, mut rej) = (0, 0);
+    for s in 0..5000 {
+        if step_stress_ekf(&mut ekf, s, dt) {
+            acc += 1;
+        } else {
+            rej += 1;
+        }
+        for i in 0..STATE_DIM {
+            assert!(ekf.cov.0[i][i] > 0.0 && ekf.cov.0[i][i].is_finite());
+            for j in 0..STATE_DIM {
+                assert_eq!(ekf.cov.0[i][j], ekf.cov.0[j][i]);
+            }
+        }
+    }
+    assert!(acc > 0 && rej > 0);
+}
