@@ -282,4 +282,14 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn test_nis_spike_rejection() {
+        let mut ekf = NavEkf::new();
+        ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], 0.1).unwrap();
+        let normal = ekf.update_gnss_pos([0.5, -0.2, 0.1], 1.0, 16.0);
+        assert!(normal.is_ok());
+        let spike = ekf.update_gnss_pos([50.0, 0.0, 0.0], 1.0, 16.0);
+        assert_eq!(spike, Err(EkfError::OutlierRejected));
+    }
 }
