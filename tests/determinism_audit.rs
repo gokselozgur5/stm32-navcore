@@ -38,3 +38,11 @@ fn synthetic_sensor_sample(step: usize) -> ([f32; 3], [f32; 3], f32, [f32; 3]) {
     ];
     (accel, gyro, yaw, gnss)
 }
+
+fn fnv1a_feed(mut hash: u64, bytes: &[u8]) -> u64 {
+    for &b in bytes {
+        hash ^= b as u64;
+        hash = hash.wrapping_mul(0x100000001b3);
+    }
+    hash
+}
