@@ -79,3 +79,23 @@ impl NavEkf {
         Ok(())
     }
 }
+
+impl NavEkf {
+    pub fn propagate_covariance(&mut self, dt_s: f32) {
+        let mut f = Mat::<STATE_DIM, STATE_DIM>::identity();
+        f.0[0][3] = dt_s;
+        f.0[1][4] = dt_s;
+        f.0[2][5] = dt_s;
+        let mut q = Mat::<STATE_DIM, STATE_DIM>::zeros();
+        q.0[0][0] = 0.01 * dt_s;
+        q.0[1][1] = 0.01 * dt_s;
+        q.0[2][2] = 0.01 * dt_s;
+        q.0[3][3] = 0.1 * dt_s;
+        q.0[4][4] = 0.1 * dt_s;
+        q.0[5][5] = 0.1 * dt_s;
+        q.0[6][6] = 1e-6 * dt_s;
+        let fp = f.matmul(&self.cov);
+        let ft = f.transpose();
+        self.cov = fp.matmul(&ft).add(&q).symmetrize();
+    }
+}
