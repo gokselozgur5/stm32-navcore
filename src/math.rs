@@ -186,7 +186,7 @@ impl Quaternion {
 
     pub fn normalize(&self) -> Result<Self, MathError> {
         let n = self.norm();
-        if n < 1e-9 {
+        if !n.is_finite() || n < 1e-9 {
             return Err(MathError::InvalidNorm);
         }
         let inv_n = 1.0 / n;
@@ -201,9 +201,11 @@ impl Quaternion {
 
 impl Quaternion {
     pub fn integrate_gyro(&self, omega_rad_s: [f32; 3], dt_s: f32) -> Result<Self, MathError> {
-        let wx = omega_rad_s[0];
-        let wy = omega_rad_s[1];
-        let wz = omega_rad_s[2];
+        let (wx, wy, wz) = (omega_rad_s[0], omega_rad_s[1], omega_rad_s[2]);
+        if !dt_s.is_finite() || dt_s < 0.0 || !wx.is_finite() || !wy.is_finite() || !wz.is_finite()
+        {
+            return Err(MathError::InvalidNorm);
+        }
         let theta = libm::sqrtf(wx * wx + wy * wy + wz * wz) * dt_s;
         let delta = if theta < 1e-6 {
             let half_dt = 0.5 * dt_s;
@@ -277,7 +279,7 @@ pub fn tilt_compensated_yaw(
     pitch: f32,
 ) -> Result<f32, MathError> {
     let cp = libm::cosf(pitch);
-    if (if cp < 0.0 { -cp } else { cp }) < 1e-4 {
+    if !roll.is_finite() || !pitch.is_finite() || (if cp < 0.0 { -cp } else { cp }) < 1e-4 {
         return Err(MathError::GimbalLock);
     }
     let b = calibrate_magnetometer(b_raw, hard_iron, soft_iron);
@@ -285,7 +287,8 @@ pub fn tilt_compensated_yaw(
     let sp = libm::sinf(pitch);
     let b_xh = b[0] * cp + b[1] * sp * sr + b[2] * sp * cr;
     let b_yh = b[1] * cr - b[2] * sr;
-    if libm::sqrtf(b_xh * b_xh + b_yh * b_yh) < 1e-6 {
+    let norm_h = libm::sqrtf(b_xh * b_xh + b_yh * b_yh);
+    if !norm_h.is_finite() || norm_h < 1e-6 {
         return Err(MathError::InvalidNorm);
     }
     Ok(libm::atan2f(-b_yh, b_xh))
