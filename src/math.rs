@@ -285,3 +285,16 @@ pub fn tilt_compensated_yaw(
     }
     Ok(libm::atan2f(-b_yh, b_xh))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_mat_zeros_identity() {
+        let z = Mat::<2, 2>::zeros();
+        assert_eq!(z.0, [[0.0, 0.0], [0.0, 0.0]]);
+        let id = Mat::<2, 2>::identity();
+        assert_eq!(id.0, [[1.0, 0.0], [0.0, 1.0]]);
+    }
+}
