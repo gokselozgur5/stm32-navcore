@@ -46,3 +46,17 @@ Measurements are accepted only if `NIS = y^T S^-1 y` is below the chi-square gat
 **Framing.** Telemetry is protected by CRC-16-CCITT (`poly 0x1021`, `init 0xFFFF`, check value `0x29B1` for `123456789`).
 
 UART frames are COBS-encoded and terminated by `0x00`. CAN frames use 29-bit extended identifiers and at most 8 data bytes.
+
+## Build and verification
+
+```sh
+cargo fmt --all -- --check
+cargo clippy --all-targets -- -D warnings
+cargo test --all-targets
+rustup target add thumbv7em-none-eabihf
+cargo check --target thumbv7em-none-eabihf
+```
+
+## License
+
+MIT. See `LICENSE`.
