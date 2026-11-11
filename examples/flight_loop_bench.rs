@@ -78,3 +78,19 @@ fn run_benchmark(iterations: usize) -> (BenchMetrics, u64) {
             if let Ok(yaw_meas) = tilt_compensated_yaw(mag, hard_iron, soft_iron, roll, pitch) {
                 match ekf.update_mag_yaw(yaw_meas, 0.05, 9.0) {
                     Ok(_) => mag_accepted += 1,
+                    Err(_) => mag_rejected += 1,
+                }
+            }
+        }
+
+        if step % 50 == 0 {
+            let (pos_m, vel_m) = synthetic_gnss(step);
+            match ekf.update_gnss_pos(pos_m, 1.0, 16.0) {
+                Ok(_) => gnss_pos_accepted += 1,
+                Err(_) => gnss_pos_rejected += 1,
+            }
+            match ekf.update_gnss_vel(vel_m, 0.1, 16.0) {
+                Ok(_) => gnss_vel_accepted += 1,
+                Err(_) => gnss_vel_rejected += 1,
+            }
+        }
