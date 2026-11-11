@@ -126,3 +126,19 @@ fn run_benchmark(iterations: usize) -> (BenchMetrics, u64) {
     latencies_ns.sort_unstable();
 
     let p50_ns = latencies_ns[iterations / 2];
+    let p99_index = (iterations as f64 * 0.99) as usize;
+    let p99_ns = latencies_ns[p99_index.min(iterations - 1)];
+    let sum_ns: u128 = latencies_ns.iter().map(|&x| x as u128).sum();
+    let mean_ns = (sum_ns / (iterations as u128)) as u64;
+    let throughput_hz = (iterations as f64) / (total_micros as f64 / 1_000_000.0);
+
+    let metrics = BenchMetrics {
+        iterations,
+        total_micros,
+        p50_ns,
+        p99_ns,
+        mean_ns,
+        throughput_hz,
+        predict_accepted,
+        mag_accepted,
+        mag_rejected,
