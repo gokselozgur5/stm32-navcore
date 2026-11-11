@@ -9,7 +9,7 @@ pub enum EkfError {
     OutlierRejected,
 }
 
-pub const STATE_DIM: usize = 7;
+pub const STATE_DIM: usize = 8;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct NavEkf {
@@ -29,7 +29,8 @@ impl NavEkf {
         cov.0[3][3] = 25.0;
         cov.0[4][4] = 25.0;
         cov.0[5][5] = 25.0;
-        cov.0[6][6] = 0.01;
+        cov.0[6][6] = 0.1;
+        cov.0[7][7] = 0.01;
         Self {
             att: Quaternion::IDENTITY,
             p_ned_m: [0.0; 3],
