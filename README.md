@@ -57,6 +57,18 @@ rustup target add thumbv7em-none-eabihf
 cargo check --target thumbv7em-none-eabihf
 ```
 
+## Memory footprint
+
+Sizes measured with `core::mem::size_of` (all fields are `f32`, 4-byte aligned, so the layout matches `thumbv7em-none-eabihf`).
+
+| Type | Bytes |
+| --- | --- |
+| `NavEkf` | 300 |
+| `Quaternion` | 16 |
+| `Mat<3, 3>` | 36 |
+
+A unit test asserts `size_of::<NavEkf>() < 2048`.
+
 ## License
 
 MIT. See `LICENSE`.
