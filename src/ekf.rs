@@ -117,3 +117,15 @@ impl NavEkf {
         Ok(())
     }
 }
+
+impl NavEkf {
+    fn apply_scalar_correction(&mut self, k: [f32; STATE_DIM], y: f32) {
+        self.p_ned_m[0] += k[0] * y;
+        self.p_ned_m[1] += k[1] * y;
+        self.p_ned_m[2] += k[2] * y;
+        self.v_ned_mps[0] += k[3] * y;
+        self.v_ned_mps[1] += k[4] * y;
+        self.v_ned_mps[2] += k[5] * y;
+        self.bg_z += k[6] * y;
+    }
+}
