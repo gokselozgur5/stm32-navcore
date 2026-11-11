@@ -369,4 +369,19 @@ mod tests {
             assert!((q.norm() - 1.0).abs() < 1e-5);
         }
     }
+
+    #[test]
+    fn test_quaternion_rotation_and_euler() {
+        let q = Quaternion::new(core::f32::consts::FRAC_1_SQRT_2, 0.0, 0.0, core::f32::consts::FRAC_1_SQRT_2);
+        let v = [1.0, 0.0, 0.0];
+        let v_rot = q.rotate_vec(v);
+        assert!(v_rot[0].abs() < 1e-5);
+        assert!((v_rot[1] - 1.0).abs() < 1e-5);
+        assert!(v_rot[2].abs() < 1e-5);
+
+        let (roll, pitch, yaw) = q.to_euler_zyx();
+        assert!(roll.abs() < 1e-5);
+        assert!(pitch.abs() < 1e-5);
+        assert!((yaw - core::f32::consts::FRAC_PI_2).abs() < 1e-5);
+    }
 }
