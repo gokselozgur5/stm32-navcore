@@ -248,3 +248,18 @@ impl Quaternion {
         (roll, pitch, yaw)
     }
 }
+
+pub fn calibrate_magnetometer(
+    b_raw: [f32; 3],
+    hard_iron: [f32; 3],
+    soft_iron: Mat<3, 3>,
+) -> [f32; 3] {
+    let unb = [
+        b_raw[0] - hard_iron[0],
+        b_raw[1] - hard_iron[1],
+        b_raw[2] - hard_iron[2],
+    ];
+    let diff_mat = Mat([[unb[0]], [unb[1]], [unb[2]]]);
+    let cal = soft_iron.matmul(&diff_mat);
+    [cal.0[0][0], cal.0[1][0], cal.0[2][0]]
+}
