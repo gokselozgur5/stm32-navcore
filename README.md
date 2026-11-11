@@ -13,3 +13,20 @@ The only dependency is `libm`. Library code never touches `std` or the heap.
 | `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading |
 | `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating |
 | `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    IMU[IMU 100 Hz] --> STRAP[Strapdown SO3]
+    MAG[Magnetometer 10 Hz] --> CAL[Hard/soft-iron + tilt yaw]
+    GNSS[GNSS 5 Hz] --> GATE[NIS gate]
+    STRAP --> EKF[Joseph-form EKF]
+    CAL --> GATE
+    GATE --> EKF
+    EKF --> TLM[NavTelemetry]
+    TLM --> COBS[COBS + CRC-16]
+    TLM --> CAN[CAN 2.0B frames]
+    COBS --> UART[UART bus]
+    CAN --> BUS[CAN bus]
+```
