@@ -98,3 +98,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
         let next_vn = r_traj * omega * libm::cosf(omega * next_t);
         let next_ve = 2.0 * r_traj * omega * libm::cosf(2.0 * omega * next_t);
         let next_yaw = libm::atan2f(next_ve, next_vn);
+        let yaw_rate = wrap_pi(next_yaw - yaw) / dt;
+
+        let half_yaw = yaw * 0.5;
+        let q_true = Quaternion::new(libm::cosf(half_yaw), 0.0, 0.0, libm::sinf(half_yaw));
+        let q_conj = Quaternion::new(q_true.w, -q_true.x, -q_true.y, -q_true.z);
+
+        let a_grav_ned = [a_n, a_e, a_d - 9.80665];
+        let true_accel_b = q_conj.rotate_vec(a_grav_ned);
+        let true_gyro_b = [0.0, 0.0, yaw_rate];
+
+        let meas_accel_b = [
+            true_accel_b[0] + rng.next_gaussian_approx(0.02),
+            true_accel_b[1] + rng.next_gaussian_approx(0.02),
+            true_accel_b[2] + rng.next_gaussian_approx(0.02),
+        ];
+
+        let meas_gyro_b = [
+            true_gyro_b[0] + rng.next_gaussian_approx(0.001),
+            true_gyro_b[1] + rng.next_gaussian_approx(0.001),
+            true_gyro_b[2] + true_gyro_bias_z + rng.next_gaussian_approx(0.001),
