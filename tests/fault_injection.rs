@@ -47,3 +47,19 @@ fn test_adversarial_gnss_pos_burst_rejection() {
     );
     assert_eq!(ekf, before);
 }
+
+#[test]
+fn test_adversarial_gnss_pos_variance_rejection() {
+    let mut ekf = NavEkf::new();
+    let before = ekf;
+    assert_eq!(
+        ekf.update_gnss_pos([1.0, 1.0, 1.0], -1.0, 16.0),
+        Err(EkfError::InvalidInput)
+    );
+    assert_eq!(ekf, before);
+    assert_eq!(
+        ekf.update_gnss_pos([1.0, 1.0, 1.0], 1.0, -16.0),
+        Err(EkfError::InvalidInput)
+    );
+    assert_eq!(ekf, before);
+}
