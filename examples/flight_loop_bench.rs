@@ -110,3 +110,19 @@ fn run_benchmark(iterations: usize) -> (BenchMetrics, u64) {
 
         let can_frames = telem.pack_can().unwrap();
         let decoded_can = NavTelemetry::unpack_can(&can_frames).unwrap();
+        dummy_checksum = dummy_checksum.wrapping_add(decoded_can.timestamp_ms as u64);
+
+        let step_elapsed = step_start.elapsed().as_nanos() as u64;
+        latencies_ns.push(step_elapsed);
+    }
+
+    dummy_checksum = dummy_checksum
+        .wrapping_add(predict_accepted as u64)
+        .wrapping_add(mag_accepted as u64)
+        .wrapping_add(gnss_pos_accepted as u64)
+        .wrapping_add(gnss_vel_accepted as u64);
+
+    let total_micros = t_start.elapsed().as_micros();
+    latencies_ns.sort_unstable();
+
+    let p50_ns = latencies_ns[iterations / 2];
