@@ -431,4 +431,30 @@ mod tests {
         let est = tilt_compensated_yaw(raw, hard, soft, r, p).unwrap();
         assert!((est - yaw).abs().to_degrees() < 0.5);
     }
+
+    #[test]
+    fn test_non_finite_rejections() {
+        assert!(Mat([[f32::NAN]]).inv_1x1().is_none());
+        assert!(Mat([[f32::NAN, 0.0], [0.0, 1.0]]).inv_2x2().is_none());
+        assert!(Mat([[f32::NAN, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).inv_3x3().is_none());
+
+        let q = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
+        assert_eq!(q.normalize(), Err(MathError::InvalidNorm));
+
+        let q_id = Quaternion::IDENTITY;
+        assert_eq!(
+            q_id.integrate_gyro([0.0, 0.0, 0.0], -0.01),
+            Err(MathError::InvalidNorm)
+        );
+        assert_eq!(
+            q_id.integrate_gyro([f32::NAN, 0.0, 0.0], 0.01),
+            Err(MathError::InvalidNorm)
+        );
+
+        let soft = Mat::<3, 3>::identity();
+        assert_eq!(
+            tilt_compensated_yaw([1.0, 0.0, 0.0], [0.0, 0.0, 0.0], soft, f32::NAN, 0.0),
+            Err(MathError::GimbalLock)
+        );
+    }
 }
