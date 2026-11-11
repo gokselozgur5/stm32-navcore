@@ -178,3 +178,23 @@ fn test_closed_loop_hil_trajectory_and_gnss_outage() {
         }
 
         if is_gnss_outage {
+            let err_n = ekf.p_ned_m[0] - p_n;
+            let err_e = ekf.p_ned_m[1] - p_e;
+            let drift = libm::sqrtf(err_n * err_n + err_e * err_e);
+            if drift > max_pos_drift_outage {
+                max_pos_drift_outage = drift;
+            }
+        }
+
+        if (t - 29.99).abs() < 0.005 {
+            end_outage_p_var = ekf.cov.0[0][0] + ekf.cov.0[1][1];
+        }
+
+        let (roll, pitch, ekf_yaw) = ekf.att.to_euler_zyx();
+        let telem = NavTelemetry {
+            timestamp_ms: (t * 1000.0) as u32,
+            pos_ned_m: ekf.p_ned_m,
+            vel_ned_mps: ekf.v_ned_mps,
+            euler_rad: [roll, pitch, ekf_yaw],
+            status: if is_gnss_outage { 0x02 } else { 0x01 },
+        };
