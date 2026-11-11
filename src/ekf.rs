@@ -220,7 +220,12 @@ impl NavEkf {
 }
 
 impl NavEkf {
-    pub fn update_gnss_pos(&mut self, p_obs: [f32; 3], r_pos: f32, gate: f32) -> Result<[f32; 3], EkfError> {
+    pub fn update_gnss_pos(
+        &mut self,
+        p_obs: [f32; 3],
+        r_pos: f32,
+        gate: f32,
+    ) -> Result<[f32; 3], EkfError> {
         check_finite_3(p_obs)?;
         let mut nis = [0.0f32; 3];
         for i in 0..3 {
@@ -234,7 +239,12 @@ impl NavEkf {
 }
 
 impl NavEkf {
-    pub fn update_gnss_vel(&mut self, v_obs: [f32; 3], r_vel: f32, gate: f32) -> Result<[f32; 3], EkfError> {
+    pub fn update_gnss_vel(
+        &mut self,
+        v_obs: [f32; 3],
+        r_vel: f32,
+        gate: f32,
+    ) -> Result<[f32; 3], EkfError> {
         check_finite_3(v_obs)?;
         let mut nis = [0.0f32; 3];
         for i in 0..3 {
@@ -265,7 +275,11 @@ impl NavEkf {
         let nis = self.update_joseph_scalar(h, y, r_yaw, gate)?;
         let half_y = 0.5 * y * 0.1;
         let d_q = Quaternion::new(libm::cosf(half_y), 0.0, 0.0, libm::sinf(half_y));
-        self.att = self.att.mul(&d_q).normalize().map_err(|_| EkfError::InvalidInput)?;
+        self.att = self
+            .att
+            .mul(&d_q)
+            .normalize()
+            .map_err(|_| EkfError::InvalidInput)?;
         Ok(nis)
     }
 }
@@ -295,7 +309,8 @@ mod tests {
     #[test]
     fn test_nis_spike_rejection() {
         let mut ekf = NavEkf::new();
-        ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], 0.1).unwrap();
+        ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], 0.1)
+            .unwrap();
         let normal = ekf.update_gnss_pos([0.5, -0.2, 0.1], 1.0, 16.0);
         assert!(normal.is_ok());
         let spike = ekf.update_gnss_pos([50.0, 0.0, 0.0], 1.0, 16.0);
