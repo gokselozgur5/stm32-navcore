@@ -172,3 +172,15 @@ impl NavEkf {
         }
     }
 }
+
+fn validate_scalar_update(h: &[f32; STATE_DIM], y: f32, r: f32, g: f32) -> Result<(), EkfError> {
+    if !y.is_finite() || !r.is_finite() || r <= 0.0 || !g.is_finite() || g <= 0.0 {
+        return Err(EkfError::InvalidInput);
+    }
+    for v in h {
+        if !v.is_finite() {
+            return Err(EkfError::InvalidInput);
+        }
+    }
+    Ok(())
+}
