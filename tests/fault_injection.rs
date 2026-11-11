@@ -166,3 +166,24 @@ fn test_wire_fuzz_cobs_decoding() {
         let _ = NavTelemetry::unpack_uart(&buf);
     }
 }
+
+#[test]
+fn test_exhaustive_bit_flip_rejection_uart() {
+    let telemetry = NavTelemetry {
+        timestamp_ms: 123456,
+        pos_ned_m: [10.5, -20.2, -5.0],
+        vel_ned_mps: [1.2, -0.5, 0.1],
+        euler_rad: [0.05, -0.02, 1.57],
+        status: 0x03,
+    };
+    let mut uart_buf = [0u8; 64];
+    let len = telemetry.pack_uart(&mut uart_buf).unwrap();
+    for byte_idx in 0..len {
+        for bit_idx in 0..8 {
+            let mut corrupted = [0u8; 64];
+            corrupted[..len].copy_from_slice(&uart_buf[..len]);
+            corrupted[byte_idx] ^= 1 << bit_idx;
+            assert!(NavTelemetry::unpack_uart(&corrupted[..len]).is_err());
+        }
+    }
+}
