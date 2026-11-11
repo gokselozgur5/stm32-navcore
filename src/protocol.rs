@@ -198,3 +198,23 @@ impl NavTelemetry {
             *slot = f32::from_bits(bits);
         }
         let mut euler = [0.0f32; 3];
+        for (i, slot) in euler.iter_mut().enumerate() {
+            let s = 28 + i * 4;
+            let bits = u32::from_be_bytes([buf[s], buf[s + 1], buf[s + 2], buf[s + 3]]);
+            *slot = f32::from_bits(bits);
+        }
+        let telem = Self {
+            timestamp_ms,
+            pos_ned_m: pos,
+            vel_ned_mps: vel,
+            euler_rad: euler,
+            status: buf[40],
+        };
+        telem.validate_finite()?;
+        Ok(telem)
+    }
+
+    pub fn pack_uart(&self, dst: &mut [u8]) -> Result<usize, ProtocolError> {
+        let mut payload = [0u8; Self::RAW_SIZE + 2];
+        let mut raw = [0u8; Self::RAW_SIZE];
+        self.serialize_raw(&mut raw)?;
