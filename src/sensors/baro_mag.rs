@@ -45,3 +45,26 @@ pub struct Dps310Calib {
     pub c30: f32,
 }
 
+impl Dps310Calib {
+    /// Decodes factory calibration coefficients from 18 raw bytes (registers 0x10..=0x21).
+    pub fn from_raw_bytes(bytes: &[u8]) -> Result<Self, SensorError> {
+        if bytes.len() < 18 {
+            return Err(SensorError::BufferTooShort);
+        }
+
+        // c0: 12-bit signed: byte0[7:0] + byte1[7:4]
+        let c0_raw = ((bytes[0] as u16) << 4) | ((bytes[1] as u16) >> 4);
+        let c0 = sign_extend_12(c0_raw) as f32;
+
+        // c1: 12-bit signed: byte1[3:0] + byte2[7:0]
+        let c1_raw = ((bytes[1] as u16 & 0x0F) << 8) | (bytes[2] as u16);
+        let c1 = sign_extend_12(c1_raw) as f32;
+
+        // c00: 20-bit signed: byte3[7:0] + byte4[7:0] + byte5[7:4]
+        let c00_raw = ((bytes[3] as u32) << 12) | ((bytes[4] as u32) << 4) | ((bytes[5] as u32) >> 4);
+        let c00 = sign_extend_20(c00_raw) as f32;
+
+        // c10: 20-bit signed: byte5[3:0] + byte6[7:0] + byte7[7:0]
+        let c10_raw = (((bytes[5] as u32) & 0x0F) << 16) | ((bytes[6] as u32) << 8) | (bytes[7] as u32);
+        let c10 = sign_extend_20(c10_raw) as f32;
+
