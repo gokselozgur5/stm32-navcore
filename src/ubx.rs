@@ -309,7 +309,7 @@ impl UbxParser {
 
     /// Report a complete frame already buffered after a rejected frame.
     pub fn drain(&mut self) -> Result<Option<UbxMessage>, crate::protocol::ProtocolError> {
-        Ok(None)
+        self.try_frame()
     }
 
     pub fn process_byte(
@@ -334,6 +334,11 @@ impl UbxParser {
         }
         self.buf[self.len] = b;
         self.len += 1;
+        self.try_frame()
+    }
+
+    /// Evaluate the buffered bytes as at most one frame.
+    fn try_frame(&mut self) -> Result<Option<UbxMessage>, crate::protocol::ProtocolError> {
         if self.len < 6 {
             return Ok(None);
         }
