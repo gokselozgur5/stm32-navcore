@@ -845,3 +845,26 @@ mod accel_bias_tilt_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod accel_bias_reject_tests {
+    use super::*;
+
+    #[test]
+    fn invalid_input_leaves_estimator_unchanged() {
+        let mut est = AccelBiasEstimator::new(1.0, 0.01);
+        let id = Quaternion::IDENTITY;
+        est.update(&id, [0.1, 0.0, -9.7]).unwrap();
+        let before = est;
+        let bad = est.update(&id, [f32::NAN, 0.0, -9.8]);
+        assert_eq!(bad, Err(EkfError::InvalidInput));
+        let nan_att = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
+        let bad = est.update(&nan_att, [0.0, 0.0, -9.8]);
+        assert_eq!(bad, Err(EkfError::InvalidInput));
+        est.r_mps2_sq = 0.0;
+        let bad = est.update(&id, [0.0, 0.0, -9.8]);
+        assert_eq!(bad, Err(EkfError::InvalidInput));
+        est.r_mps2_sq = before.r_mps2_sq;
+        assert_eq!(est, before);
+    }
+}
