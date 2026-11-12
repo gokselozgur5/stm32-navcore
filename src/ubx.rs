@@ -23,6 +23,25 @@ pub fn ubx_checksum(bytes: &[u8]) -> (u8, u8) {
     (ck_a, ck_b)
 }
 
+/// RTK carrier-phase solution state reported by the receiver.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CarrierSolution {
+    None,
+    Float,
+    Fixed,
+}
+
+impl CarrierSolution {
+    /// Map the 2-bit `carrSoln` field; the reserved value 3 maps to `None`.
+    pub const fn from_bits(bits: u8) -> Self {
+        match bits & 0x03 {
+            1 => Self::Float,
+            2 => Self::Fixed,
+            _ => Self::None,
+        }
+    }
+}
+
 /// Decoded UBX-NAV-PVT payload data representation.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct UbxNavPvt {
