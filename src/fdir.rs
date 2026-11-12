@@ -90,14 +90,18 @@ impl DualImuManager {
         gyro_var: [f32; 3],
     ) -> ImuReading {
         let faulty = self.evaluate_sensors(p, s, gyro_var);
-        if faulty && self.primary_healthy {
+        self.secondary_healthy = reading_is_finite(s);
+        let primary_fault = faulty && (!reading_is_finite(p) || self.secondary_healthy);
+        if primary_fault && self.primary_healthy {
             self.consecutive_faults += 1;
             if self.consecutive_faults >= self.max_consecutive_faults {
                 self.primary_healthy = false;
-                self.active_imu = ImuId::Secondary;
             }
-        } else if !faulty {
+        } else if !primary_fault {
             self.consecutive_faults = 0;
+        }
+        if !self.primary_healthy && self.secondary_healthy {
+            self.active_imu = ImuId::Secondary;
         }
         if !self.primary_healthy && self.recovery_epochs > 0 {
             self.clean_epochs = if faulty { 0 } else { self.clean_epochs + 1 };
