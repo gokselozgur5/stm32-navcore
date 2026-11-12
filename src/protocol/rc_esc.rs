@@ -161,4 +161,20 @@ mod tests {
             Err(RcEscError::InvalidThrottleValue)
         );
     }
+
+    #[test]
+    fn test_crsf_decode_valid() {
+        let mut frame = [0u8; 26];
+        frame[0] = CRSF_SYNC_BYTE;
+        frame[1] = 24;
+        frame[2] = CRSF_FRAME_CHANNELS;
+        let mut i = 3;
+        while i < 25 {
+            frame[i] = 0xAA;
+            i += 1;
+        }
+        frame[25] = crc8_dvb_s2(&frame[2..25]);
+        let decoded = CrsfChannels::decode_frame(&frame).unwrap();
+        assert_eq!(decoded.channels.len(), 16);
+    }
 }
