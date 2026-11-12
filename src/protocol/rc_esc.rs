@@ -99,3 +99,18 @@ impl Default for CrsfParser {
         Self::new()
     }
 }
+
+impl CrsfParser {
+    /// Create a new CRSF stream parser with empty internal buffer.
+    pub const fn new() -> Self {
+        Self {
+            buffer: [0u8; 64],
+            len: 0,
+        }
+    }
+
+    /// Reset parser state and clear internal buffer.
+    pub fn reset(&mut self) {
+        self.len = 0;
+    }
+}
