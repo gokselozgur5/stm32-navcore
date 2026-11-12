@@ -411,6 +411,22 @@ mod tests {
     }
 
     #[test]
+    fn test_pressure_hpa_to_altitude_m() {
+        let alt0 = pressure_hpa_to_altitude_m(1013.25, 1013.25).unwrap();
+        assert!(alt0.abs() < 1e-4);
+        let alt_high = pressure_hpa_to_altitude_m(898.76, 1013.25).unwrap();
+        assert!((alt_high - 1000.0).abs() < 5.0);
+        assert_eq!(
+            pressure_hpa_to_altitude_m(0.0, 1013.25),
+            Err(MathError::InvalidPressure)
+        );
+        assert_eq!(
+            pressure_hpa_to_altitude_m(1013.25, -1.0),
+            Err(MathError::InvalidPressure)
+        );
+    }
+
+    #[test]
     fn test_mag_calibration() {
         let hard = [10.0, -5.0, 2.0];
         let soft = Mat([[1.1, 0.0, 0.0], [0.0, 0.9, 0.0], [0.0, 0.0, 1.0]]);
