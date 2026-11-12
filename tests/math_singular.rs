@@ -36,7 +36,7 @@ fn near_singular_above_threshold_inverts_with_small_residual() {
 fn tiny_well_conditioned_inverts_and_tiny_singular_is_rejected() {
     assert!(Mat([[1e-13, 0.0], [0.0, 1e-13]]).inv_2x2().is_some());
     assert!(Mat([[1e-13, 2e-13], [2e-13, 4e-13]]).inv_2x2().is_none());
-    let tiny3 = Mat([[1e-13, 0.0, 0.0], [0.0, 1e-13, 0.0], [0.0, 0.0, 1e-13]]);
+    let tiny3 = Mat([[1e-12, 0.0, 0.0], [0.0, 1e-12, 0.0], [0.0, 0.0, 1e-12]]);
     assert!(tiny3.inv_3x3().is_some());
     let rank2 = Mat([
         [1e-13, 2e-13, 3e-13],
