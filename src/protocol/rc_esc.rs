@@ -177,3 +177,32 @@ impl CrsfParser {
         Ok(CrsfFrame { raw_channels })
     }
 }
+
+impl CrsfParser {
+    /// Push a single byte into the stream parser; returns frame when complete.
+    pub fn push_byte(&mut self, byte: u8) -> Result<Option<CrsfFrame>, CrsfError> {
+        if self.len == 0 {
+            if byte == CRSF_SYNC_BYTE {
+                self.buffer[0] = byte;
+                self.len = 1;
+            }
+            return Ok(None);
+        }
+        if self.len < self.buffer.len() {
+            self.buffer[self.len] = byte;
+            self.len += 1;
+        } else {
+            self.reset();
+            return Err(CrsfError::BufferTooShort);
+        }
+        if self.len >= 2 {
+            let expected_total = (self.buffer[1] as usize) + 2;
+            if self.len == expected_total {
+                let res = Self::parse_frame(&self.buffer[..self.len]);
+                self.reset();
+                return res.map(Some);
+            }
+        }
+        Ok(None)
+    }
+}
