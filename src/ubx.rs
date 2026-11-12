@@ -198,3 +198,23 @@ impl UbxNavRelPosNed {
             rel_pos_hp_length_mm0_1,
             acc_n_mm0_1,
             acc_e_mm0_1,
+            acc_d_mm0_1,
+            acc_length_mm0_1,
+            acc_heading_dege5,
+            flags,
+        })
+    }
+}
+
+/// Decoded UBX message variant.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum UbxMessage {
+    NavPvt(UbxNavPvt),
+    NavRelPosNed(UbxNavRelPosNed),
+}
+
+/// Zero-alloc streaming UBX framing parser.
+pub struct UbxParser {
+    buf: [u8; 128],
+    len: usize,
+}
