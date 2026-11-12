@@ -205,3 +205,15 @@ pub fn verify_accel_chip_id(id: u8) -> Result<(), Bmi088Error> {
         })
     }
 }
+
+/// Verify BMI088 gyroscope chip ID register value.
+pub fn verify_gyro_chip_id(id: u8) -> Result<(), Bmi088Error> {
+    if id == BMI088_GYRO_CHIP_ID {
+        Ok(())
+    } else {
+        Err(Bmi088Error::InvalidChipId {
+            expected: BMI088_GYRO_CHIP_ID,
+            actual: id,
+        })
+    }
+}
