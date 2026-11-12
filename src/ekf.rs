@@ -106,6 +106,30 @@ impl NavEkf {
     }
 }
 
+#[allow(clippy::needless_range_loop)]
+fn cholesky_is_positive(m: &Mat<STATE_DIM, STATE_DIM>) -> bool {
+    let mut l = [[0.0f32; STATE_DIM]; STATE_DIM];
+    for j in 0..STATE_DIM {
+        let mut d = m.0[j][j];
+        for k in 0..j {
+            d -= l[j][k] * l[j][k];
+        }
+        if !d.is_finite() || d <= 0.0 {
+            return false;
+        }
+        let ljj = libm::sqrtf(d);
+        l[j][j] = ljj;
+        for i in (j + 1)..STATE_DIM {
+            let mut s = m.0[i][j];
+            for k in 0..j {
+                s -= l[i][k] * l[j][k];
+            }
+            l[i][j] = s / ljj;
+        }
+    }
+    true
+}
+
 impl NavEkf {
     pub fn predict(
         &mut self,
