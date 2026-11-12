@@ -237,6 +237,24 @@ impl NavEkf {
 }
 
 impl NavEkf {
+    /// Limits the gyro z-bias magnitude and returns true when clamping happened.
+    pub fn clamp_gyro_bias(&mut self, max_abs_rads: f32) -> bool {
+        if !max_abs_rads.is_finite() || max_abs_rads <= 0.0 || !self.bg_z.is_finite() {
+            return false;
+        }
+        if self.bg_z > max_abs_rads {
+            self.bg_z = max_abs_rads;
+            true
+        } else if self.bg_z < -max_abs_rads {
+            self.bg_z = -max_abs_rads;
+            true
+        } else {
+            false
+        }
+    }
+}
+
+impl NavEkf {
     #[allow(clippy::needless_range_loop)]
     fn apply_scalar_joseph_cov(&mut self, k: [f32; STATE_DIM], h: [f32; STATE_DIM], r: f32) {
         let mut i_kh = Mat::<STATE_DIM, STATE_DIM>::identity();
