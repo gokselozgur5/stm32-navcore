@@ -381,6 +381,16 @@ mod tests {
     }
 
     #[test]
+    fn test_ubx_parser_resyncs_after_false_sync_pair() {
+        let frame = relposned_frame();
+        let mut stream = [0u8; 2 + 72];
+        stream[..2].copy_from_slice(&[UBX_SYNC_1, UBX_SYNC_2]);
+        stream[2..].copy_from_slice(&frame);
+        let mut parser = UbxParser::new();
+        assert_eq!(count_relposned(&mut parser, &stream), 1);
+    }
+
+    #[test]
     fn test_ubx_streaming_parser_with_noise_and_crc_rejection() {
         let mut parser = UbxParser::new();
         let noise = [0xFF, 0x00, 0xAA, 0xB5, 0x11, 0x62];
