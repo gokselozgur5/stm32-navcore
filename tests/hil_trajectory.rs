@@ -170,6 +170,21 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         ekf.predict(meas_accel_b, meas_gyro_b, dt)
             .expect("EKF predict must succeed");
 
+        let is_stationary = zupt_detector.update(meas_accel_b, meas_gyro_b);
+        if is_stationary && t < 4.5 {
+            let _ = ekf.update_zupt(0.001, 25.0);
+            stationary_zupt_count += 1;
+        }
+
+        if step % 10 == 0 {
+            let true_alt = -p_d;
+            let p_meas =
+                altitude_to_pressure_hpa(true_alt, p0_hpa) + rng.next_gaussian_approx(0.05);
+            if let Ok(alt_calc) = pressure_hpa_to_altitude_m(p_meas, p0_hpa) {
+                let _ = ekf.update_baro_altitude(alt_calc, 0.05, 16.0);
+            }
+        }
+
         if step % 10 == 0 {
             let (r, p) = (0.0f32, 0.0f32);
             let (sr, cr, sp, cp) = (libm::sinf(r), libm::cosf(r), libm::sinf(p), libm::cosf(p));
