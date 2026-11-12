@@ -108,6 +108,19 @@ impl StuckDetector {
     }
 }
 
+impl StuckDetector {
+    /// Feeds one sample and returns true once it has repeated `limit` times.
+    pub fn update(&mut self, sample: [f32; 3]) -> bool {
+        if self.last == Some(sample) {
+            self.repeats = self.repeats.saturating_add(1);
+        } else {
+            self.repeats = 0;
+        }
+        self.last = Some(sample);
+        self.repeats >= self.limit
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
