@@ -288,3 +288,29 @@ mod tests {
         assert_ne!(c1, 0);
     }
 }
+
+#[cfg(test)]
+mod tests_unpack {
+    use super::*;
+
+    #[test]
+    fn test_crsf_channel_unpack_and_normalization() {
+        let mut payload = [0u8; 22];
+        payload[0] = 0b11000000;
+        payload[1] = 0b00000111;
+        let channels = CrsfParser::unpack_channels(&payload);
+        assert_eq!(channels[0], 0x07C0);
+        let frame = CrsfFrame {
+            raw_channels: [CRSF_CHANNEL_MID; 16],
+        };
+        assert_eq!(frame.normalized_channel(0), 0.0);
+        let frame_min = CrsfFrame {
+            raw_channels: [CRSF_CHANNEL_MIN; 16],
+        };
+        assert!((frame_min.normalized_channel(0) - (-1.0)).abs() < 1e-4);
+        let frame_max = CrsfFrame {
+            raw_channels: [CRSF_CHANNEL_MAX; 16],
+        };
+        assert!((frame_max.normalized_channel(0) - 1.0).abs() < 1e-4);
+    }
+}
