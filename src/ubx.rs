@@ -216,3 +216,12 @@ impl UbxParser {
         if self.len < total_expected {
             return Ok(None);
         }
+        let msg_class = self.buf[2];
+        let msg_id = self.buf[3];
+        let (calc_a, calc_b) = ubx_checksum(&self.buf[2..6 + payload_len]);
+        let (rx_a, rx_b) = (self.buf[6 + payload_len], self.buf[6 + payload_len + 1]);
+        self.len = 0;
+        if calc_a != rx_a || calc_b != rx_b {
+            return Err(crate::protocol::ProtocolError::CrcMismatch);
+        }
+        let payload = &self.buf[6..6 + payload_len];
