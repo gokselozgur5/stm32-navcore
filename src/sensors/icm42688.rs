@@ -233,11 +233,16 @@ impl Icm42688 {
 impl Icm42688 {
     /// Encode Accel Anti-Aliasing Filter (AAF) registers (STATIC2, 3, 4).
     pub fn encode_accel_aaf_regs(&self) -> Option<[[u8; 2]; 3]> {
-        self.aaf.map(|aaf| [
-            [aaf_reg::ACCEL_CONFIG_STATIC2, aaf.delt << 1],
-            [aaf_reg::ACCEL_CONFIG_STATIC3, (aaf.deltsqr & 0xFF) as u8],
-            [aaf_reg::ACCEL_CONFIG_STATIC4, (((aaf.deltsqr >> 8) & 0x0F) as u8) | (aaf.bitshift << 4)],
-        ])
+        self.aaf.map(|aaf| {
+            [
+                [aaf_reg::ACCEL_CONFIG_STATIC2, aaf.delt << 1],
+                [aaf_reg::ACCEL_CONFIG_STATIC3, (aaf.deltsqr & 0xFF) as u8],
+                [
+                    aaf_reg::ACCEL_CONFIG_STATIC4,
+                    (((aaf.deltsqr >> 8) & 0x0F) as u8) | (aaf.bitshift << 4),
+                ],
+            ]
+        })
     }
 }
 
