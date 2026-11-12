@@ -61,3 +61,25 @@ pub enum GyroRegister {
     Int34IoMap = 0x18,
     SelfTest = 0x3C,
 }
+
+/// BMI088 Accelerometer measurement range selection.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AccelRange {
+    Range3g = 0x00,
+    Range6g = 0x01,
+    Range12g = 0x02,
+    Range24g = 0x03,
+}
+
+impl AccelRange {
+    /// Return full-scale range in units of standard gravity (g).
+    pub const fn max_g(&self) -> f32 {
+        match self {
+            Self::Range3g => 3.0,
+            Self::Range6g => 6.0,
+            Self::Range12g => 12.0,
+            Self::Range24g => 24.0,
+        }
+    }
+}
