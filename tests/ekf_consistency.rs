@@ -88,3 +88,18 @@ fn stationary_run(seed: u64, steps: usize) -> (Vec<f32>, Vec<f32>) {
     }
     (innov, err_sq)
 }
+
+#[test]
+fn position_nees_below_chi_square_bound() {
+    let (_, err_sq) = stationary_run(42, 2000);
+    let tail = &err_sq[200..];
+    let mean_err = tail.iter().map(|&v| v as f64).sum::<f64>() / tail.len() as f64;
+    let mut ekf = NavEkf::new();
+    for _ in 0..2000 {
+        ekf.predict([0.0, 0.0, -9.80665], [0.0; 3], 0.1).unwrap();
+        ekf.update_gnss_pos([0.0; 3], 1.0, 100.0).unwrap();
+    }
+    let trace = (0..3).map(|i| ekf.cov.0[i][i] as f64).sum::<f64>();
+    let nees = mean_err / trace;
+    assert!(nees < 3.0, "position NEES per dof {nees}");
+}
