@@ -42,3 +42,25 @@ fn stationary_nis(seed: u64, steps: usize, warmup: usize) -> Vec<f32> {
     }
     out
 }
+
+#[test]
+fn rng_is_deterministic_and_unit_variance() {
+    let mut a = Rng(7);
+    let mut b = Rng(7);
+    let n = 20000;
+    let mut sum_sq = 0.0f64;
+    for _ in 0..n {
+        let x = a.gauss();
+        assert_eq!(x, b.gauss());
+        sum_sq += (x * x) as f64;
+    }
+    let var = sum_sq / n as f64;
+    assert!((0.95..1.05).contains(&var), "variance {var}");
+}
+
+#[test]
+fn mean_nis_is_chi_square_consistent() {
+    let nis = stationary_nis(42, 2000, 200);
+    let mean = nis.iter().map(|&v| v as f64).sum::<f64>() / nis.len() as f64;
+    assert!((0.8..1.2).contains(&mean), "mean NIS {mean}");
+}
