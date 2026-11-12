@@ -206,3 +206,26 @@ impl CrsfParser {
         Ok(None)
     }
 }
+
+/// DShot digital ESC protocol speed standard.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DshotSpeed {
+    /// DShot150 (150 kbit/s, bit time 6.67 us).
+    Dshot150,
+    /// DShot300 (300 kbit/s, bit time 3.33 us).
+    Dshot300,
+    /// DShot600 (600 kbit/s, bit time 1.67 us).
+    Dshot600,
+}
+
+impl DshotSpeed {
+    /// Return nominal bit duration in nanoseconds.
+    #[inline]
+    pub const fn bit_period_ns(&self) -> u32 {
+        match self {
+            Self::Dshot150 => 6667,
+            Self::Dshot300 => 3333,
+            Self::Dshot600 => 1667,
+        }
+    }
+}
