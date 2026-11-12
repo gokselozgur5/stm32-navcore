@@ -278,3 +278,23 @@ impl Icm42688 {
 }
 
 /// High-resolution 20-bit raw sample decoded from extended FIFO format.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct RawSample20Bit {
+    pub accel_20bit: [i32; 3],
+    pub gyro_20bit: [i32; 3],
+    pub temp: i16,
+}
+
+impl Icm42688 {
+    fn extract_20bit(msb: i16, lsb_nibble: u8) -> i32 {
+        ((msb as i32) << 4) | (lsb_nibble as i32 & 0x0F)
+    }
+}
+
+impl Icm42688 {
+    /// Parse 20-bit packet from extended FIFO (20 bytes).
+    pub fn parse_fifo_packet_20bit(buf: &[u8]) -> Option<RawSample20Bit> {
+        if buf.len() < 20 {
+            return None;
+        }
+        let a = [
