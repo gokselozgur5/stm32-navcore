@@ -23,7 +23,7 @@ fn invalid_pressure_is_rejected() {
 
 #[test]
 fn isa_temperature_matches_plain_altitude() {
-    let a = compensated_altitude_m(898.7, 1013.25, 15.0).unwrap();
+    let a = compensated_altitude_m(898.7, 1013.25, 8.5).unwrap();
     assert!((a - 1000.0).abs() < 5.0);
 }
 
