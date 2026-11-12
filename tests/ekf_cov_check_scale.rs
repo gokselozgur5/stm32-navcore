@@ -23,3 +23,18 @@ fn tiny_scale_sign_flipped_correlation_is_rejected() {
 fn tiny_scale_singular_block_is_rejected() {
     assert!(!block(1e-6, 1e-6, 1e-6).covariance_is_positive_definite());
 }
+
+#[test]
+fn tiny_scale_valid_block_is_accepted() {
+    assert!(block(1e-6, 4e-7, 4e-7).covariance_is_positive_definite());
+}
+
+#[test]
+fn large_scale_valid_block_is_accepted() {
+    assert!(block(1e4, 3e3, 3e3).covariance_is_positive_definite());
+}
+
+#[test]
+fn large_scale_indefinite_block_is_rejected() {
+    assert!(!block(1e4, 2e4, 2e4).covariance_is_positive_definite());
+}
