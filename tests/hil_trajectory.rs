@@ -267,7 +267,7 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
     );
     assert!(
         (ekf.bg_z - true_gyro_bias_z).abs() < 0.005,
-        "End-of-flight gyro bias error must be < 0.005 rad/s, got {}",
+        "Gyro bias z error should be bounded <0.005 rad/s, got {}",
         (ekf.bg_z - true_gyro_bias_z).abs()
     );
 }
