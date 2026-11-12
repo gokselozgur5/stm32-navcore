@@ -422,3 +422,18 @@ impl StationaryDetector {
         }
     }
 }
+
+impl NavEkf {
+    pub fn update_zupt(&mut self, r_zupt: f32, gate: f32) -> Result<[f32; 3], EkfError> {
+        let mut trial = *self;
+        let mut nis = [0.0f32; 3];
+        for i in 0..3 {
+            let mut h = [0.0f32; STATE_DIM];
+            h[3 + i] = 1.0;
+            let y = 0.0 - trial.v_ned_mps[i];
+            nis[i] = trial.update_joseph_scalar(h, y, r_zupt, gate)?;
+        }
+        *self = trial;
+        Ok(nis)
+    }
+}
