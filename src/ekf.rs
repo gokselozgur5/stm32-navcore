@@ -822,3 +822,26 @@ mod accel_bias_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod accel_bias_tilt_tests {
+    use super::*;
+
+    #[test]
+    #[allow(clippy::needless_range_loop)]
+    fn tilted_attitude_uses_rotated_gravity() {
+        let roll = 0.3f32;
+        let att = Quaternion::new(libm::cosf(0.5 * roll), libm::sinf(0.5 * roll), 0.0, 0.0);
+        let g = 9.80665f32;
+        let g_body = [0.0, -g * libm::sinf(roll), -g * libm::cosf(roll)];
+        let raw = [g_body[0] + 0.1, g_body[1] - 0.05, g_body[2] + 0.07];
+        let mut est = AccelBiasEstimator::new(1.0, 0.01);
+        for _ in 0..200 {
+            est.update(&att, raw).unwrap();
+        }
+        let c = est.corrected(raw);
+        for i in 0..3 {
+            assert!((c[i] - g_body[i]).abs() < 0.01, "axis {}", i);
+        }
+    }
+}
