@@ -35,3 +35,9 @@ fn gyro_bias_becomes_observable_with_heading_aiding() {
     let sigma = run_with_heading_aiding(0.0, 600).gyro_bias_sigma();
     assert!(sigma < 0.2 * initial, "sigma={}", sigma);
 }
+
+#[test]
+fn gyro_bias_converges_for_positive_bias() {
+    let ekf = run_with_heading_aiding(0.04, 600);
+    assert!((ekf.bg_z - 0.04).abs() < 0.01, "bg_z={}", ekf.bg_z);
+}
