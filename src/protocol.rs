@@ -529,6 +529,24 @@ mod tests {
     }
 
     #[test]
+    fn test_calibration_non_finite_rejection() {
+        let mut nan_cal = CalibrationBlock::default_calibrated();
+        nan_cal.mag_hard_iron[0] = f32::NAN;
+        let mut buf = [0u8; CalibrationBlock::TOTAL_SIZE];
+        assert_eq!(
+            nan_cal.serialize(&mut buf),
+            Err(ProtocolError::NonFiniteFloat)
+        );
+
+        let mut inf_cal = CalibrationBlock::default_calibrated();
+        inf_cal.gyro_bias_rps[1] = f32::INFINITY;
+        assert_eq!(
+            inf_cal.serialize(&mut buf),
+            Err(ProtocolError::NonFiniteFloat)
+        );
+    }
+
+    #[test]
     fn test_calibration_exhaustive_bit_flip_crc_rejection() {
         let cal = CalibrationBlock::default_calibrated();
         let mut buf = [0u8; CalibrationBlock::TOTAL_SIZE];
