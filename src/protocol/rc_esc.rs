@@ -229,3 +229,12 @@ impl DshotSpeed {
         }
     }
 }
+
+/// 16-bit DShot command frame (11-bit throttle, 1-bit telemetry, 4-bit CRC).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DshotFrame {
+    /// 11-bit throttle or command value (0..2047).
+    pub throttle: u16,
+    /// Telemetry request flag bit.
+    pub telemetry: bool,
+}
