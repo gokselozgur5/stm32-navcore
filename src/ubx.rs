@@ -118,3 +118,23 @@ impl UbxNavPvt {
             h_msl_mm,
             h_acc_mm,
             v_acc_mm,
+            vel_n_mmps,
+            vel_e_mmps,
+            vel_d_mmps,
+            g_speed_mmps,
+            head_mot_dege5,
+            s_acc_mmps,
+            head_acc_dege5,
+            p_dop,
+            flags3,
+            head_veh_dege5,
+        })
+    }
+}
+
+/// Decoded UBX-NAV-RELPOSNED relative positioning payload.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct UbxNavRelPosNed {
+    pub version: u8,
+    pub station_id: u16,
+    pub i_tow_ms: u32,
