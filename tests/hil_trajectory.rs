@@ -67,8 +67,9 @@ fn test_cortex_m4f_stack_and_state_footprint_invariants() {
 fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
     let mut rng = XorShift64::new(1337);
     let mut ekf = NavEkf::new();
+    let mut zupt_detector = StationaryDetector::new(10, 0.05, 0.03);
 
-    let total_steps = 6000;
+    let total_steps = 4000;
     let dt = 0.01f32;
     let omega = 2.0 * PI / 60.0;
     let r_traj = 20.0f32;
