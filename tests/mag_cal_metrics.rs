@@ -20,3 +20,14 @@ fn coverage_counts_octants() {
     assert!(full_coverage().is_full());
 }
 
+#[test]
+fn residual_rms_and_relative() {
+    let mut r = MagResidual::new();
+    assert_eq!(r.rms(), 0.0);
+    r.add([11.0, 0.0, 0.0], 10.0);
+    r.add([0.0, 9.0, 0.0], 10.0);
+    assert!((r.rms() - 1.0).abs() < 1e-6);
+    assert!((r.relative(10.0) - 0.1).abs() < 1e-6);
+    assert!(r.relative(0.0).is_infinite());
+}
+
