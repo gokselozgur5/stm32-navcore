@@ -9,6 +9,7 @@ pub use ekf::StationaryDetector;
 pub mod fdir;
 pub mod math;
 pub mod protocol;
+pub mod sensors;
 
 pub use fdir::{DualImuManager, ImuId, ImuReading};
 
