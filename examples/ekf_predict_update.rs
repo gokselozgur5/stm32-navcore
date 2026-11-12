@@ -41,3 +41,28 @@ fn print_estimate(time_s: f32, ekf: &NavEkf) {
         p[0], p[1], p[2]
     );
 }
+
+fn main() {
+    let mut ekf = NavEkf::new();
+    let dt_s = 1.0 / IMU_RATE_HZ;
+    let total_steps = (DURATION_S * IMU_RATE_HZ) as usize;
+    let mut fix_index = 0usize;
+
+    for step in 1..=total_steps {
+        if let Err(e) = ekf.predict(STATIC_ACCEL_MPS2, STATIC_GYRO_RADS, dt_s) {
+            panic!("predict rejected sample {step}: {e:?}");
+        }
+        if step.is_multiple_of(GNSS_EVERY_N_IMU) {
+            ekf.update_gnss_pos(gnss_fix(fix_index), GNSS_POS_VAR_M2, NIS_GATE)
+                .expect("GNSS update rejected");
+            fix_index += 1;
+        }
+        if step.is_multiple_of(IMU_RATE_HZ as usize) {
+            print_estimate(step as f32 * dt_s, &ekf);
+        }
+    }
+
+    let err = ekf.p_ned_m.iter().map(|v| v * v).sum::<f32>().sqrt();
+    println!("final position error to origin: {err:.4} m");
+    assert!(err < MAX_FINAL_ERROR_M, "estimate did not converge");
+}
