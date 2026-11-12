@@ -273,3 +273,18 @@ impl DshotFrame {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_crc8_dvb_s2_standard_vectors() {
+        assert_eq!(crc8_dvb_s2(&[]), 0x00);
+        assert_eq!(crc8_dvb_s2(&[0x00]), 0x00);
+        assert_eq!(crc8_dvb_s2(&[0x16, 0x00]), 0x8a);
+        let test_data = [0x16, 0x01, 0x02, 0x03, 0x04];
+        let c1 = crc8_dvb_s2(&test_data);
+        assert_ne!(c1, 0);
+    }
+}
