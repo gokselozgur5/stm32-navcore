@@ -24,3 +24,20 @@ impl Default for MagMinMax {
         Self::new()
     }
 }
+
+impl MagMinMax {
+    /// Folds one raw sample into the running extremes.
+    #[allow(clippy::needless_range_loop)]
+    pub fn update(&mut self, s: [f32; 3]) {
+        for i in 0..3 {
+            self.min[i] = self.min[i].min(s[i]);
+            self.max[i] = self.max[i].max(s[i]);
+        }
+        self.count = self.count.saturating_add(1);
+    }
+
+    /// Number of samples seen so far.
+    pub fn count(&self) -> u32 {
+        self.count
+    }
+}
