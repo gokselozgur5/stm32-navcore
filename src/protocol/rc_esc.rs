@@ -139,3 +139,25 @@ impl CrsfParser {
         ch
     }
 }
+
+impl CrsfParser {
+    fn validate_header(frame: &[u8]) -> Result<usize, CrsfError> {
+        if frame.len() < 4 {
+            return Err(CrsfError::BufferTooShort);
+        }
+        if frame[0] != CRSF_SYNC_BYTE {
+            return Err(CrsfError::InvalidSyncByte);
+        }
+        let len = frame[1] as usize;
+        if frame.len() < len + 2 {
+            return Err(CrsfError::BufferTooShort);
+        }
+        if frame[2] != CRSF_FRAME_TYPE_RC_CHANNELS {
+            return Err(CrsfError::UnsupportedFrameType);
+        }
+        if len != 24 {
+            return Err(CrsfError::InvalidLength);
+        }
+        Ok(len)
+    }
+}
