@@ -273,6 +273,22 @@ mod gyro_bias_clamp_tests {
     }
 }
 
+#[cfg(test)]
+mod gyro_bias_clamp_invalid_tests {
+    use super::*;
+
+    #[test]
+    fn invalid_limit_leaves_state_unchanged() {
+        let mut ekf = NavEkf::new();
+        ekf.bg_z = 0.3;
+        let before = ekf;
+        for &limit in &[0.0, -0.05, f32::NAN, f32::INFINITY] {
+            assert!(!ekf.clamp_gyro_bias(limit));
+            assert_eq!(ekf, before);
+        }
+    }
+}
+
 impl NavEkf {
     #[allow(clippy::needless_range_loop)]
     fn apply_scalar_joseph_cov(&mut self, k: [f32; STATE_DIM], h: [f32; STATE_DIM], r: f32) {
