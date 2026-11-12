@@ -75,3 +75,28 @@ fn turn_truth(t: f32) -> ([f32; 3], [f32; 3]) {
         [TURN_SPEED * c, TURN_SPEED * s, 0.0],
     )
 }
+
+#[test]
+fn coordinated_turn_bounds_position_and_yaw_error() {
+    let mut ekf = NavEkf::new();
+    ekf.v_ned_mps = [TURN_SPEED, 0.0, 0.0];
+    let mut worst = 0.0f32;
+    for step in 0..3000 {
+        let yaw = TURN_RATE * step as f32 * DT;
+        let ac = TURN_SPEED * TURN_RATE;
+        let a = [-ac * libm::sinf(yaw), ac * libm::cosf(yaw), 0.0];
+        let (ab, wb) = ideal_imu(a, yaw, TURN_RATE);
+        ekf.predict(ab, wb, DT).unwrap();
+        let (pos, vel) = turn_truth(yaw / TURN_RATE + DT);
+        if step % 20 == 0 {
+            let _ = ekf.update_gnss_pos(pos, 0.02, 16.0);
+            let _ = ekf.update_gnss_vel(vel, 0.005, 16.0);
+        }
+        worst = worst.max(libm::hypotf(
+            ekf.p_ned_m[0] - pos[0],
+            ekf.p_ned_m[1] - pos[1],
+        ));
+    }
+    assert!(worst < 1.0, "worst turn position error {worst}");
+    assert!(yaw_error(&ekf, TURN_RATE * 30.0) < 0.1);
+}
