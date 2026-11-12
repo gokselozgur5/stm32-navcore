@@ -65,6 +65,16 @@ impl CalibrationBlock {
         let mut idx = 0usize;
         dst[idx..idx + 2].copy_from_slice(&self.version.to_be_bytes());
         idx += 2;
+        for &v in &self.mag_hard_iron {
+            dst[idx..idx + 4].copy_from_slice(&v.to_be_bytes());
+            idx += 4;
+        }
+        for row in &self.mag_soft_iron {
+            for &v in row {
+                dst[idx..idx + 4].copy_from_slice(&v.to_be_bytes());
+                idx += 4;
+            }
+        }
         Ok(idx)
     }
 }
