@@ -50,3 +50,12 @@ fn reacquisition_pulls_position_back_and_shrinks_covariance() {
     assert!(final_err < 0.2, "final error {final_err}");
     assert!(ekf.cov.0[0][0] < outage_cov);
 }
+
+#[test]
+fn outage_attitude_stays_level_without_aiding() {
+    let mut ekf = NavEkf::new();
+    ekf.v_ned_mps = [SPEED, 0.0, 0.0];
+    cruise_north(&mut ekf, 0, 3000, false);
+    let (roll, pitch, yaw) = ekf.att.to_euler_zyx();
+    assert!(roll.abs() < 0.01 && pitch.abs() < 0.01 && yaw.abs() < 0.01);
+}
