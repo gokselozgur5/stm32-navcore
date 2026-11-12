@@ -24,3 +24,11 @@ pub fn crc8_dvb_s2(data: &[u8]) -> u8 {
     }
     crc
 }
+
+pub const CRSF_SYNC_BYTE: u8 = 0xC8;
+pub const CRSF_FRAME_CHANNELS: u8 = 0x16;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CrsfChannels {
+    pub channels: [f32; 16],
+}
