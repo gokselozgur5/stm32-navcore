@@ -36,3 +36,18 @@ pub fn crc8_dvb_s2(data: &[u8]) -> u8 {
     }
     crc
 }
+
+/// Decoded CRSF 16-channel RC frame with raw and normalized channels.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct CrsfFrame {
+    /// 16 analog channels in raw 11-bit integer form (172..1811).
+    pub raw_channels: [u16; 16],
+}
+
+impl Default for CrsfFrame {
+    fn default() -> Self {
+        Self {
+            raw_channels: [CRSF_CHANNEL_MID; 16],
+        }
+    }
+}
