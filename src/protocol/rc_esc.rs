@@ -177,4 +177,20 @@ mod tests {
         let decoded = CrsfChannels::decode_frame(&frame).unwrap();
         assert_eq!(decoded.channels.len(), 16);
     }
+
+    #[test]
+    fn test_crsf_header_errors() {
+        let mut frame = [0u8; 26];
+        frame[0] = 0xAA;
+        assert_eq!(
+            CrsfChannels::decode_frame(&frame),
+            Err(RcEscError::InvalidSyncByte)
+        );
+        frame[0] = CRSF_SYNC_BYTE;
+        frame[1] = 20;
+        assert_eq!(
+            CrsfChannels::decode_frame(&frame),
+            Err(RcEscError::InvalidFrameLength)
+        );
+    }
 }
