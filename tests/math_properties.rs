@@ -31,3 +31,16 @@ fn matmul_is_associative_within_tolerance() {
         assert!(close(&left, &right, 1e-5));
     }
 }
+
+#[test]
+fn transpose_identities_hold() {
+    let mut s = 7;
+    for _ in 0..200 {
+        let a: Mat<3, 4> = rand_mat(&mut s);
+        let b: Mat<4, 2> = rand_mat(&mut s);
+        assert_eq!(a.transpose().transpose(), a);
+        let lhs = a.matmul(&b).transpose();
+        let rhs = b.transpose().matmul(&a.transpose());
+        assert!(close(&lhs, &rhs, 1e-6));
+    }
+}
