@@ -20,3 +20,16 @@ fn nan_secondary_gyro_does_not_take_over() {
     assert!(mgr.primary_healthy);
     assert!(!mgr.secondary_healthy);
 }
+
+#[test]
+fn both_faulty_holds_active_imu() {
+    let mut mgr = DualImuManager::default_config();
+    for _ in 0..5 {
+        mgr.update_and_select(&NAN_GYRO, &NAN_GYRO, [0.01; 3]);
+    }
+    assert_eq!(mgr.active_imu, ImuId::Primary);
+    assert!(!mgr.primary_healthy);
+    assert!(!mgr.secondary_healthy);
+    mgr.update_and_select(&NAN_GYRO, &GOOD, [0.01; 3]);
+    assert_eq!(mgr.active_imu, ImuId::Secondary);
+}
