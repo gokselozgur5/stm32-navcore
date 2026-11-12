@@ -8,6 +8,7 @@ pub mod ekf;
 pub use ekf::StationaryDetector;
 pub mod math;
 pub mod protocol;
+pub mod sensors;
 
 pub use protocol::CalibrationBlock;
 
