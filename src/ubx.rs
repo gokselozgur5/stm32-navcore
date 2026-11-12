@@ -345,6 +345,31 @@ mod tests {
         assert_eq!(pvt.lat_dege7, 377749000);
     }
 
+    fn relposned_frame() -> [u8; 72] {
+        let mut frame = [0u8; 72];
+        frame[0] = UBX_SYNC_1;
+        frame[1] = UBX_SYNC_2;
+        frame[2] = UBX_CLASS_NAV;
+        frame[3] = UBX_ID_NAV_RELPOSNED;
+        frame[4..6].copy_from_slice(&(64u16).to_le_bytes());
+        let (ck_a, ck_b) = ubx_checksum(&frame[2..70]);
+        frame[70] = ck_a;
+        frame[71] = ck_b;
+        frame
+    }
+
+    fn count_relposned(parser: &mut UbxParser, bytes: &[u8]) -> usize {
+        bytes
+            .iter()
+            .filter(|&&b| {
+                matches!(
+                    parser.process_byte(b),
+                    Ok(Some(UbxMessage::NavRelPosNed(_)))
+                )
+            })
+            .count()
+    }
+
     #[test]
     fn test_ubx_streaming_parser_with_noise_and_crc_rejection() {
         let mut parser = UbxParser::new();
