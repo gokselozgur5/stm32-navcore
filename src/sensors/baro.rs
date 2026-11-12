@@ -24,3 +24,13 @@ impl BaroMeasurement {
         })
     }
 }
+
+/// ISA sea-level temperature in kelvin.
+pub const ISA_SEA_LEVEL_K: f32 = 288.15;
+
+/// Error from temperature-compensated altitude.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum BaroError {
+    Pressure(MathError),
+    Temperature,
+}
