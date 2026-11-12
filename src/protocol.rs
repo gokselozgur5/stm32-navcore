@@ -56,6 +56,17 @@ impl CalibrationBlock {
             accel_scale: [1.0; 3],
         }
     }
+
+    pub fn serialize(&self, dst: &mut [u8]) -> Result<usize, ProtocolError> {
+        if dst.len() < Self::TOTAL_SIZE {
+            return Err(ProtocolError::BufferTooSmall);
+        }
+        self.validate_finite()?;
+        let mut idx = 0usize;
+        dst[idx..idx + 2].copy_from_slice(&self.version.to_be_bytes());
+        idx += 2;
+        Ok(idx)
+    }
 }
 
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
