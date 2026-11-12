@@ -106,3 +106,32 @@ mod tests {
         assert_eq!(sel, imu1);
     }
 }
+
+#[test]
+fn test_primary_gyro_runaway_failover_within_3_epochs() {
+    let mut mgr = DualImuManager::default_config();
+    let good = ImuReading {
+        accel_mps2: [0.0, 0.0, -9.81],
+        gyro_rps: [0.0, 0.0, 0.0],
+    };
+    let runaway = ImuReading {
+        accel_mps2: [0.0, 0.0, -9.81],
+        gyro_rps: [2.5, -3.0, 1.8],
+    };
+    // Epoch 1
+    mgr.update_and_select(&runaway, &good, [0.01; 3]);
+    assert_eq!(mgr.consecutive_faults, 1);
+    assert_eq!(mgr.active_imu, ImuId::Primary);
+
+    // Epoch 2
+    mgr.update_and_select(&runaway, &good, [0.01; 3]);
+    assert_eq!(mgr.consecutive_faults, 2);
+    assert_eq!(mgr.active_imu, ImuId::Primary);
+
+    // Epoch 3 -> failover!
+    let sel = mgr.update_and_select(&runaway, &good, [0.01; 3]);
+    assert_eq!(mgr.consecutive_faults, 3);
+    assert_eq!(mgr.active_imu, ImuId::Secondary);
+    assert!(!mgr.primary_healthy);
+    assert_eq!(sel, good);
+}
