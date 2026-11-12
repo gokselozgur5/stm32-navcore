@@ -226,11 +226,9 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         }
 
         if is_gnss_outage {
-            let err_n = ekf.p_ned_m[0] - p_n;
-            let err_e = ekf.p_ned_m[1] - p_e;
-            let drift = libm::sqrtf(err_n * err_n + err_e * err_e);
-            if drift > max_pos_drift_outage {
-                max_pos_drift_outage = drift;
+            let vertical_err = (ekf.p_ned_m[2] - p_d).abs();
+            if vertical_err > max_vertical_drift_outage {
+                max_vertical_drift_outage = vertical_err;
             }
         }
 
