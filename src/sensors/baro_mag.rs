@@ -229,3 +229,26 @@ impl Dps310Driver {
     }
 
     /// Computes pressure altitude in meters relative to standard sea level pressure or given p0_hpa.
+    pub fn pressure_altitude_m(
+        &self,
+        raw_p: i32,
+        raw_t: i32,
+        p0_hpa: f32,
+    ) -> Result<f32, SensorError> {
+        let p_hpa = self.compensate_pressure_hpa(raw_p, raw_t)?;
+        let alt = pressure_hpa_to_altitude_m(p_hpa, p0_hpa)?;
+        Ok(alt)
+    }
+}
+
+/// Zero-alloc driver and DSP engine for iSentek IST8310 3-axis magnetometer.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Ist8310Driver {
+    /// Cross-axis sensitivity matrix (3x3 soft-iron and non-orthogonality correction).
+    pub sensitivity_matrix: Mat<3, 3>,
+    /// Hard-iron bias offset vector [Bx, By, Bz] in microteslas (uT).
+    pub bias: [f32; 3],
+    /// Sensitivity scale factor (uT per LSB). IST8310 default is 0.3 uT/LSB (3300 LSB/Gauss).
+    pub scale_ut_per_lsb: f32,
+}
+
