@@ -54,3 +54,22 @@ It returns `MathError::GimbalLock` when the pitch is too close to +/-90 degrees.
 
 `StationaryDetector` looks at accelerometer variance and gyro magnitude over a window.
 When it reports a stationary state, `NavEkf::update_zupt` can apply a zero-velocity update.
+
+## Telemetry framing
+
+`NavTelemetry::pack_uart` writes the 41-byte raw record followed by a big-endian CRC-16-CCITT (`poly 0x1021`, `init 0xFFFF`), COBS-encodes the 43-byte payload, and appends a `0x00` terminator.
+`NavTelemetry::unpack_uart` reverses these steps.
+
+`NavTelemetry::pack_can` places the same 43 bytes (raw record and CRC) into six `CanFrame20B` frames.
+Frame `i` uses extended identifier `CAN_BASE_ID + i`, and no frame carries more than 8 data bytes (`CanFrame20B::MAX_DLC`).
+
+`CalibrationBlock` is a fixed 76-byte record with a version word and a magic value.
+Its `serialize` and `deserialize` methods reject non-finite values through `validate_finite`.
+
+Both framings are exercised by `tests/hil_trajectory.rs`, which round-trips every epoch.
+
+## GNSS input
+
+`ubx::UbxParser` is a byte-at-a-time state machine with a 128-byte buffer.
+`process_byte` returns a complete `UbxMessage` once a frame passes its checksum.
+The decoders `UbxNavPvt::decode` and `UbxNavRelPosNed::decode` expect payloads of 92 and 64 bytes.
