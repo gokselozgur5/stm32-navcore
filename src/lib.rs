@@ -13,8 +13,8 @@ pub mod sensors;
 
 pub use fdir::{DualImuManager, ImuId, ImuReading};
 
-pub use protocol::CalibrationBlock;
 pub use protocol::rc_esc::{CrsfChannels, DShotFrame, RcEscError};
+pub use protocol::CalibrationBlock;
 
 #[cfg(test)]
 mod footprint {
@@ -25,4 +25,3 @@ mod footprint {
         assert!(core::mem::size_of::<NavEkf>() < 2048);
     }
 }
-
