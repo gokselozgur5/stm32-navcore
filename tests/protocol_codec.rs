@@ -14,3 +14,18 @@ fn small_vectors() {
     assert_eq!(enc(&[0, 0]), [1, 1, 1]);
     assert_eq!(enc(&[1, 0, 2]), [2, 1, 2, 2]);
 }
+
+#[test]
+fn run_of_254_nonzero_bytes() {
+    let e = enc(&[7u8; 254]);
+    assert_eq!(e.len(), 255);
+    assert_eq!(e[0], 0xFF);
+    assert_eq!(enc(&[7u8; 253])[0], 0xFE);
+}
+
+#[test]
+fn run_of_255_nonzero_bytes_splits() {
+    let e = enc(&[7u8; 255]);
+    assert_eq!(e.len(), 257);
+    assert_eq!((e[0], e[255], e[256]), (0xFF, 2, 7));
+}
