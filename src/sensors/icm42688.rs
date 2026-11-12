@@ -378,3 +378,7 @@ mod tests {
         };
         let scaled = imu.scale_sample(&raw);
         assert!((scaled.accel_m_s2[2] - 9.8).abs() < 0.1);
+        assert!(Icm42688::parse_fifo_packet_16bit(&[0x80; 16]).is_none());
+        assert!(Icm42688::parse_fifo_packet_16bit(&[0u8; 10]).is_none());
+    }
+}
