@@ -130,3 +130,12 @@ impl GyroRange {
         }
     }
 }
+
+impl GyroRange {
+    /// Convert raw 16-bit signed integer reading into rad/s.
+    pub fn scale_rad_s(&self, raw: i16) -> f32 {
+        let max_dps = self.max_dps();
+        let dps_val = (raw as f32 / 32768.0) * max_dps;
+        dps_val * (core::f32::consts::PI / 180.0)
+    }
+}
