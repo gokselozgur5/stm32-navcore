@@ -8,6 +8,8 @@ pub mod ekf;
 pub mod math;
 pub mod protocol;
 
+pub use protocol::CalibrationBlock;
+
 #[cfg(test)]
 mod footprint {
     use crate::ekf::NavEkf;
