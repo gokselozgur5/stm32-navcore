@@ -24,3 +24,5 @@ mod footprint {
         assert!(core::mem::size_of::<NavEkf>() < 2048);
     }
 }
+
+pub use protocol::rc_esc::{CrsfChannels, DShotFrame, RcEscError};
