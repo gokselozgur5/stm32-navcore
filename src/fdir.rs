@@ -20,3 +20,25 @@ impl ImuSample {
         }
     }
 }
+
+/// Identifier for redundant IMU sources.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ImuId {
+    /// Primary IMU (e.g. BMI088 or primary slot)
+    Primary = 0,
+    /// Secondary redundant IMU (e.g. ICM-42688-P or secondary slot)
+    Secondary = 1,
+}
+
+/// Operational health state of an individual IMU.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ImuHealth {
+    /// Sensor is healthy and within statistical bounds
+    Nominal,
+    /// Parity / innovation discrepancy observed but below trip count
+    Suspect(u8),
+    /// Sensor has suffered hard failure or chi-square trip; isolated
+    Faulted,
+}
+
+/// Configuration thresholds for dual-IMU FDIR.
