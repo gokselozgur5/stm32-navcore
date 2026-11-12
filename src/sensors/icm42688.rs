@@ -193,3 +193,15 @@ impl Icm42688 {
         [reg | 0x80, 0x00]
     }
 }
+
+impl Icm42688 {
+    /// Encode GyroConfig0 register value.
+    pub fn encode_gyro_config0(&self) -> u8 {
+        ((self.gyro_fsr as u8) << 5) | (self.odr as u8)
+    }
+
+    /// Encode AccelConfig0 register value.
+    pub fn encode_accel_config0(&self) -> u8 {
+        ((self.accel_fsr as u8) << 5) | (self.odr as u8)
+    }
+}
