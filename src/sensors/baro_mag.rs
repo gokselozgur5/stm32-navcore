@@ -436,3 +436,16 @@ mod tests {
     fn test_ist8310_cross_axis_compensation_and_tilt_yaw() {
         let mut driver = Ist8310Driver::new();
         driver.set_scale_ut_per_lsb(1.0);
+        driver.set_bias([10.0, -5.0, 2.0]);
+        // Slight cross-axis misalignment
+        let s = Mat([[1.0, 0.05, 0.0], [0.05, 1.0, 0.0], [0.0, 0.0, 1.0]]);
+        driver.set_cross_axis_matrix(s);
+
+        let raw = [110, -45, 102];
+        let b_comp = driver.compensate_mag(raw).unwrap();
+        assert!((b_comp[0] - (100.0 * 1.0 + (-40.0) * 0.05)).abs() < 1e-4);
+
+        let yaw = driver.tilt_compensated_yaw(raw, 0.0, 0.0).unwrap();
+        assert!(yaw.is_finite());
+    }
+}
