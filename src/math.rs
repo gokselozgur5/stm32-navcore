@@ -5,6 +5,7 @@ pub enum MathError {
     SingularMatrix,
     InvalidNorm,
     GimbalLock,
+    InvalidPressure,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
