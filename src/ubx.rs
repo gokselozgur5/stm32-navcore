@@ -252,7 +252,7 @@ impl UbxParser {
             if b == UBX_SYNC_2 {
                 self.buf[1] = b;
                 self.len = 2;
-            } else {
+            } else if b != UBX_SYNC_1 {
                 self.len = 0;
             }
             return Ok(None);
