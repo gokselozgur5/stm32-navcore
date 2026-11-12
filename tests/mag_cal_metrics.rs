@@ -31,3 +31,11 @@ fn residual_rms_and_relative() {
     assert!(r.relative(0.0).is_infinite());
 }
 
+#[test]
+fn validity_needs_coverage_and_low_residual() {
+    let mut r = MagResidual::new();
+    r.add([10.1, 0.0, 0.0], 10.0);
+    assert!(is_valid(&full_coverage(), &r, 10.0, 0.05));
+    assert!(!is_valid(&MagCoverage::new(), &r, 10.0, 0.05));
+    assert!(!is_valid(&full_coverage(), &r, 10.0, 0.001));
+}
