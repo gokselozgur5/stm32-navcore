@@ -338,3 +338,14 @@ mod tests {
         frame[4..6].copy_from_slice(&(64u16).to_le_bytes());
         frame[6 + 8..6 + 12].copy_from_slice(&(1500i32).to_le_bytes()); // rel_pos_n = 15m
         let (ck_a, ck_b) = ubx_checksum(&frame[2..6 + 64]);
+        frame[6 + 64] = ck_a;
+        frame[6 + 64 + 1] = ck_b;
+        let mut res = None;
+        for &b in &frame {
+            if let Some(msg) = parser.process_byte(b).unwrap() {
+                res = Some(msg);
+            }
+        }
+        assert!(matches!(res, Some(UbxMessage::NavRelPosNed(_))));
+    }
+}
