@@ -1,3 +1,4 @@
+use stm32_navcore::sensors::baro::{compensated_altitude_m, BaroError};
 use stm32_navcore::sensors::baro::{BaroMeasurement, ISA_SEA_LEVEL_HPA};
 
 #[test]
@@ -17,4 +18,31 @@ fn one_km_altitude_near_898_7_hpa() {
 fn invalid_pressure_is_rejected() {
     assert!(BaroMeasurement::from_pressure(0.0, ISA_SEA_LEVEL_HPA, 1.0).is_err());
     assert!(BaroMeasurement::from_pressure(f32::NAN, ISA_SEA_LEVEL_HPA, 1.0).is_err());
+}
+
+#[test]
+fn isa_temperature_matches_plain_altitude() {
+    let a = compensated_altitude_m(898.7, 1013.25, 15.0).unwrap();
+    assert!((a - 1000.0).abs() < 5.0);
+}
+
+#[test]
+fn warmer_air_gives_larger_altitude() {
+    let cold = compensated_altitude_m(898.7, 1013.25, 15.0).unwrap();
+    let warm = compensated_altitude_m(898.7, 1013.25, 35.0).unwrap();
+    assert!(warm > cold);
+}
+
+#[test]
+fn absolute_zero_is_rejected() {
+    let e = compensated_altitude_m(898.7, 1013.25, -273.15);
+    assert_eq!(e, Err(BaroError::Temperature));
+}
+
+#[test]
+fn bad_pressure_is_reported() {
+    assert!(matches!(
+        compensated_altitude_m(-1.0, 1013.25, 15.0),
+        Err(BaroError::Pressure(_))
+    ));
 }
