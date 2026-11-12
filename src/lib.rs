@@ -1,7 +1,6 @@
 //! Deterministic `no_std`, zero-alloc navigation core for STM32 Cortex-M4F.
 //!
-//! Modules: [`math`] (matrices, SO(3) quaternion, tilt-compensated heading),
-//! [`ekf`] (Joseph-form IMU/GNSS EKF) and [`protocol`] (COBS, CRC-16, CAN 2.0B).
+//! Modules: [`math`], [`ekf`], [`protocol`], and [`sensors`].
 #![cfg_attr(not(test), no_std)]
 
 pub mod ekf;
@@ -9,6 +8,7 @@ pub use ekf::StationaryDetector;
 pub mod fdir;
 pub mod math;
 pub mod protocol;
+pub mod sensors;
 
 pub use fdir::{DualImuManager, ImuId, ImuReading};
 
