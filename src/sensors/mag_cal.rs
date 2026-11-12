@@ -225,3 +225,20 @@ impl MagCoverage {
         self.mask |= 1 << bit;
     }
 }
+
+impl MagCoverage {
+    /// Number of octants visited, 0 to 8.
+    pub fn octants(&self) -> u32 {
+        self.mask.count_ones()
+    }
+
+    /// Fraction of octants visited, 0.0 to 1.0.
+    pub fn fraction(&self) -> f32 {
+        self.octants() as f32 / 8.0
+    }
+
+    /// True when every octant has been visited.
+    pub fn is_full(&self) -> bool {
+        self.mask == 0xFF
+    }
+}
