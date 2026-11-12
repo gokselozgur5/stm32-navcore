@@ -286,3 +286,8 @@ impl MagResidual {
         }
     }
 }
+
+/// A calibration is valid with full octant coverage and a small residual.
+pub fn is_valid(cov: &MagCoverage, res: &MagResidual, radius: f32, max_rel: f32) -> bool {
+    cov.is_full() && res.relative(radius) <= max_rel
+}
