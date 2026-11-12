@@ -325,7 +325,10 @@ mod tests {
     #[test]
     fn test_icm42688_register_encoding_and_aaf() {
         let imu = Icm42688::new();
-        assert_eq!(Icm42688::encode_write_reg(reg::PWR_MGMT0, 0x0F), [0x4E, 0x0F]);
+        assert_eq!(
+            Icm42688::encode_write_reg(reg::PWR_MGMT0, 0x0F),
+            [0x4E, 0x0F]
+        );
         assert_eq!(Icm42688::encode_read_reg(reg::WHO_AM_I), [0xF5, 0x00]);
         assert_eq!(imu.encode_gyro_config0(), 0x06);
         assert_eq!(imu.encode_accel_config0(), 0x06);
@@ -350,7 +353,11 @@ mod tests {
     #[test]
     fn test_icm42688_sample_scaling_and_rejection() {
         let imu = Icm42688::new();
-        let raw = RawSample { accel: [0, 0, 2046], gyro: [0, 0, 0], temp: 0 };
+        let raw = RawSample {
+            accel: [0, 0, 2046],
+            gyro: [0, 0, 0],
+            temp: 0,
+        };
         let scaled = imu.scale_sample(&raw);
         assert!((scaled.accel_m_s2[2] - 9.8).abs() < 0.1);
         assert!(Icm42688::parse_fifo_packet_16bit(&[0x80; 16]).is_none());
