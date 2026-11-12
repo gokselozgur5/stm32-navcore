@@ -72,3 +72,18 @@ impl<const N: usize, const L: usize> AllanEstimator<N, L> {
         self.avar(level).map(libm::sqrt)
     }
 }
+
+impl<const N: usize, const L: usize> AllanEstimator<N, L> {
+    /// Mean of `ln(adev) - slope * ln(tau)` over `lo..=hi`, if all levels have data.
+    fn mean_intercept(&self, lo: usize, hi: usize, slope: f64) -> Option<f64> {
+        if lo > hi || hi >= L {
+            return None;
+        }
+        let mut total = 0.0;
+        for level in lo..=hi {
+            let adev = self.adev(level).filter(|a| *a > 0.0)?;
+            total += libm::log(adev) - slope * libm::log(self.tau(level));
+        }
+        Some(total / (hi - lo + 1) as f64)
+    }
+}
