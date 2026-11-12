@@ -314,3 +314,31 @@ mod tests_unpack {
         assert!((frame_max.normalized_channel(0) - 1.0).abs() < 1e-4);
     }
 }
+
+#[cfg(test)]
+mod tests_parse {
+    use super::*;
+
+    #[test]
+    fn test_crsf_full_frame_roundtrip_and_errors() {
+        let mut frame = [0u8; 26];
+        frame[0] = CRSF_SYNC_BYTE;
+        frame[1] = 24;
+        frame[2] = CRSF_FRAME_TYPE_RC_CHANNELS;
+        let crc = crc8_dvb_s2(&frame[2..25]);
+        frame[25] = crc;
+        let parsed = CrsfParser::parse_frame(&frame).unwrap();
+        assert_eq!(parsed.raw_channels[0], 0);
+
+        frame[25] ^= 0x01;
+        assert_eq!(
+            CrsfParser::parse_frame(&frame),
+            Err(CrsfError::ChecksumMismatch)
+        );
+        frame[0] = 0xFF;
+        assert_eq!(
+            CrsfParser::parse_frame(&frame),
+            Err(CrsfError::InvalidSyncByte)
+        );
+    }
+}
