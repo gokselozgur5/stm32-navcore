@@ -1,8 +1,8 @@
 //! Compile-time checks that the crate-root re-exports stay importable.
 
 use stm32_navcore::{
-    CalibrationBlock, DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage,
-    UbxNavPvt, UbxNavRelPosNed, UbxParser,
+    CalibrationBlock, DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
+    UbxNavRelPosNed, UbxParser,
 };
 
 #[test]
