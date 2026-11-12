@@ -88,6 +88,24 @@ impl CalibrationBlock {
         idx += 2;
         Ok(idx)
     }
+
+    pub fn deserialize(src: &[u8]) -> Result<Self, ProtocolError> {
+        if src.len() < Self::TOTAL_SIZE {
+            return Err(ProtocolError::BufferTooSmall);
+        }
+        let payload = &src[..Self::PAYLOAD_SIZE];
+        let expected_crc =
+            u16::from_be_bytes([src[Self::PAYLOAD_SIZE], src[Self::PAYLOAD_SIZE + 1]]);
+        if crc16_ccitt(payload) != expected_crc {
+            return Err(ProtocolError::CrcMismatch);
+        }
+        let version = u16::from_be_bytes([payload[0], payload[1]]);
+        if version != Self::MAGIC_VERSION {
+            return Err(ProtocolError::VersionMismatch);
+        }
+        let mut idx = 2usize;
+        Self::deserialize_fields(version, payload, &mut idx)
+    }
 }
 
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
