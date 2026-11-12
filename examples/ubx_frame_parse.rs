@@ -32,3 +32,21 @@ fn build_pvt_payload(p: &mut [u8; UBX_NAV_PVT_LEN]) {
     p[24..28].copy_from_slice(&TEST_LON_DEGE7.to_le_bytes());
     p[28..32].copy_from_slice(&TEST_LAT_DEGE7.to_le_bytes());
 }
+
+/// Wraps `payload` in a UBX frame: sync bytes, class, id, length, checksum.
+///
+/// Returns the number of bytes written to `out`.
+fn build_frame(class: u8, id: u8, payload: &[u8], out: &mut [u8]) -> usize {
+    let len = payload.len();
+    out[0] = UBX_SYNC_1;
+    out[1] = UBX_SYNC_2;
+    out[2] = class;
+    out[3] = id;
+    out[4..6].copy_from_slice(&(len as u16).to_le_bytes());
+    out[6..6 + len].copy_from_slice(payload);
+    // The Fletcher checksum covers class, id, length, and payload.
+    let (ck_a, ck_b) = ubx_checksum(&out[2..6 + len]);
+    out[6 + len] = ck_a;
+    out[7 + len] = ck_b;
+    8 + len
+}
