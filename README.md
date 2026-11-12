@@ -13,6 +13,13 @@ The only dependency is `libm`. Library code never touches `std` or the heap.
 | `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading |
 | `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating |
 | `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames |
+| `fdir` | Dual-IMU fault detection and switchover (`DualImuManager`) |
+| `sensors` | Flight sensor drivers and codecs: BMI088, ICM-42688-P, DPS310, IST8310 |
+| `ubx` | Zero-alloc u-blox UBX parser for NAV-PVT and NAV-RELPOSNED |
+
+The crate root re-exports `StationaryDetector`, `DualImuManager`, `ImuId`, `ImuReading`, `CalibrationBlock`, `UbxMessage`, `UbxNavPvt`, `UbxNavRelPosNed`, and `UbxParser`.
+
+The data flow between these modules is described in [`docs/architecture.md`](docs/architecture.md).
 
 ## Architecture
 
@@ -88,15 +95,17 @@ cargo check --target thumbv7em-none-eabihf
 
 ## Memory footprint
 
-Sizes measured with `core::mem::size_of` (all fields are `f32`, 4-byte aligned, so the layout matches `thumbv7em-none-eabihf`).
+Sizes measured with `core::mem::size_of`. None of the listed types has a `usize` field, and each has 4-byte alignment, so the values match on `thumbv7em-none-eabihf`.
 
 | Type | Bytes |
 | --- | --- |
 | `NavEkf` | 300 |
 | `Quaternion` | 16 |
 | `Mat<3, 3>` | 36 |
+| `CalibrationBlock` | 76 |
+| `NavTelemetry` | 44 |
 
-A unit test asserts `size_of::<NavEkf>() < 2048`.
+`tests/public_api.rs` asserts these sizes and alignments exactly. A unit test in `src/lib.rs` asserts `size_of::<NavEkf>() < 2048`.
 
 ## License
 
