@@ -24,3 +24,21 @@ impl Rng {
         (-2.0 * u1.ln()).sqrt() * (core::f32::consts::TAU * u2).cos()
     }
 }
+
+const GRAVITY_UP: [f32; 3] = [0.0, 0.0, -9.80665];
+
+/// Stationary run at the origin; returns every scalar NIS after warm-up.
+fn stationary_nis(seed: u64, steps: usize, warmup: usize) -> Vec<f32> {
+    let mut rng = Rng(seed);
+    let mut ekf = NavEkf::new();
+    let mut out = Vec::new();
+    for k in 0..steps {
+        ekf.predict(GRAVITY_UP, [0.0; 3], 0.1).unwrap();
+        let z = [rng.gauss(), rng.gauss(), rng.gauss()];
+        let nis = ekf.update_gnss_pos(z, 1.0, 100.0).unwrap();
+        if k >= warmup {
+            out.extend_from_slice(&nis);
+        }
+    }
+    out
+}
