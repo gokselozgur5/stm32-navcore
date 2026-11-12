@@ -30,3 +30,21 @@ impl<const N: usize, const L: usize> AllanEstimator<N, L> {
         }
     }
 }
+
+impl<const N: usize, const L: usize> AllanEstimator<N, L> {
+    /// Feed one rate sample, updating every level that has enough history.
+    pub fn push(&mut self, rate: f64) {
+        self.acc += rate * self.tau0;
+        self.samples += 1;
+        let k = self.samples as usize;
+        self.phase[k % N] = self.acc;
+        for i in 0..L {
+            let m = 1usize << i;
+            if k >= 2 * m {
+                let d = self.acc - 2.0 * self.phase[(k - m) % N] + self.phase[(k - 2 * m) % N];
+                self.sum[i] += d * d;
+                self.count[i] += 1;
+            }
+        }
+    }
+}
