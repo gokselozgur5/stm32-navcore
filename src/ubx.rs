@@ -151,6 +151,18 @@ impl UbxNavPvt {
     }
 }
 
+impl UbxNavPvt {
+    /// Carrier solution from `flags` bits 6..7.
+    pub const fn carrier_solution(&self) -> CarrierSolution {
+        CarrierSolution::from_bits(self.flags >> 6)
+    }
+
+    /// `gnssFixOK` flag from `flags` bit 0.
+    pub const fn gnss_fix_ok(&self) -> bool {
+        self.flags & 0x01 != 0
+    }
+}
+
 /// Decoded UBX-NAV-RELPOSNED relative positioning payload.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct UbxNavRelPosNed {
