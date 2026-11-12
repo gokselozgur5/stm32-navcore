@@ -18,3 +18,15 @@ fn failed_over(recovery: u32) -> DualImuManager {
     m
 }
 
+#[test]
+fn primary_recovers_after_required_clean_epochs() {
+    let mut m = failed_over(4);
+    for _ in 0..3 {
+        m.update_and_select(&GOOD, &GOOD, [0.01; 3]);
+        assert_eq!(m.active_imu, ImuId::Secondary);
+    }
+    m.update_and_select(&GOOD, &GOOD, [0.01; 3]);
+    assert_eq!(m.active_imu, ImuId::Primary);
+    assert!(m.primary_healthy);
+}
+
