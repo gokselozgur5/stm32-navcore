@@ -41,3 +41,15 @@ fn composition_matches_sequential_rotation() {
         assert!((seq[i] - comp[i]).abs() < 1e-5);
     }
 }
+
+#[test]
+fn euler_angles_roundtrip_away_from_gimbal_lock() {
+    let (r, p, y) = (0.4_f32, -0.7_f32, 2.1_f32);
+    let qz = axis_angle([0.0, 0.0, 1.0], y);
+    let qy = axis_angle([0.0, 1.0, 0.0], p);
+    let qx = axis_angle([1.0, 0.0, 0.0], r);
+    let (r2, p2, y2) = qz.mul(&qy).mul(&qx).to_euler_zyx();
+    assert!((r - r2).abs() < 1e-5);
+    assert!((p - p2).abs() < 1e-5);
+    assert!((y - y2).abs() < 1e-5);
+}
