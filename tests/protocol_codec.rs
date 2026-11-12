@@ -29,3 +29,17 @@ fn run_of_255_nonzero_bytes_splits() {
     assert_eq!(e.len(), 257);
     assert_eq!((e[0], e[255], e[256]), (0xFF, 2, 7));
 }
+
+#[test]
+fn roundtrip_all_lengths() {
+    for len in 0..=300usize {
+        for fill in [0u8, 1, 0xAA] {
+            let src: Vec<u8> = (0..len).map(|i| if fill == 0xAA && i % 7 == 0 { 0 } else { fill }).collect();
+            let e = enc(&src);
+            assert!(!e.contains(&0));
+            let mut d = vec![0u8; len + 1];
+            let n = cobs_decode(&e, &mut d).unwrap();
+            assert_eq!(&d[..n], &src[..]);
+        }
+    }
+}
