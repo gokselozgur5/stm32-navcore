@@ -412,6 +412,23 @@ mod tests {
     }
 
     #[test]
+    fn test_vertical_drift_bounded_under_gnss_outage() {
+        let mut ekf = NavEkf::new();
+        ekf.p_ned_m[2] = -50.0;
+        ekf.cov.0[2][2] = 0.25;
+        let dt = 0.01;
+        for step in 0..1000 {
+            ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], dt)
+                .unwrap();
+            if step % 10 == 0 {
+                let _ = ekf.update_baro_altitude(50.0, 0.09, 16.0);
+            }
+        }
+        let z_err = (-ekf.p_ned_m[2] - 50.0).abs();
+        assert!(z_err < 0.5, "Vertical error {} >= 0.5m", z_err);
+    }
+
+    #[test]
     fn test_gyro_bias_convergence() {
         let mut ekf = NavEkf::new();
         let true_bias = 0.03f32;
