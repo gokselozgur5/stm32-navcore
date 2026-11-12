@@ -41,3 +41,21 @@ fn threshold_boundary_is_strictly_greater() {
     assert!(!m.evaluate_sensors(&imu([2.0, 0.0, 0.0]), &a, [1.0; 3]));
     assert!(m.evaluate_sensors(&imu([2.01, 0.0, 0.0]), &a, [1.0; 3]));
 }
+
+fn failed_over() -> DualImuManager {
+    let mut m = DualImuManager::default_config();
+    for _ in 0..3 {
+        m.update_and_select(&imu([5.0, 0.0, 0.0]), &imu([0.0; 3]), VAR);
+    }
+    m
+}
+
+#[test]
+fn failover_is_latched_on_clean_epochs() {
+    let mut m = failed_over();
+    let sel = m.update_and_select(&imu([0.0; 3]), &imu([0.0; 3]), VAR);
+    assert_eq!(m.active_imu, ImuId::Secondary);
+    assert!(!m.primary_healthy);
+    assert_eq!(m.consecutive_faults, 0);
+    assert_eq!(sel, imu([0.0; 3]));
+}
