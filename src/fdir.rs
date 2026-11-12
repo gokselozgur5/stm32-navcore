@@ -152,3 +152,25 @@ impl DualImuManager {
                     self.total_failovers = self.total_failovers.saturating_add(1);
                 } else if self.active_imu == ImuId::Secondary && self.primary_health != ImuHealth::Faulted {
                     self.secondary_health = ImuHealth::Faulted;
+                    self.active_imu = ImuId::Primary;
+                    self.total_failovers = self.total_failovers.saturating_add(1);
+                }
+            }
+        } else {
+            self.consecutive_discrepancies = 0;
+        }
+
+        let selected = match self.active_imu {
+            ImuId::Primary => *primary,
+            ImuId::Secondary => *secondary,
+        };
+
+        ekf.predict(selected.accel_mps2, selected.gyro_rads, dt_s)?;
+        Ok(selected)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
