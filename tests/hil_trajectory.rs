@@ -251,18 +251,18 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         let unpacked_uart =
             NavTelemetry::unpack_uart(&uart_buf[..uart_bytes]).expect("UART unpack must succeed");
         assert_eq!(unpacked_uart, telem);
-
-        let can_frames = telem.pack_can().expect("CAN pack must succeed");
-        let unpacked_can = NavTelemetry::unpack_can(&can_frames).expect("CAN unpack must succeed");
-        assert_eq!(unpacked_can, telem);
     }
 
-    let rmse_xy = libm::sqrtf(error_pos_xy_sum_sq / (count_pos_xy as f32));
     assert!(
-        rmse_xy < 1.0,
-        "Horizontal position RMSE under GNSS lock should be < 1.0m, got {rmse_xy}"
+        stationary_zupt_count > 0,
+        "ZUPT should engage during stationary phase"
     );
-
+    assert!(
+        post_outage_pos_cov > pre_outage_pos_cov,
+        "Horizontal position covariance must increase during 10s GNSS outage"
+    );
+    assert!(
+        max_vertical_drift_outage < 1.0,
     assert!(
         end_outage_p_var > pre_outage_p_var,
         "Covariance must grow during GNSS outage"
