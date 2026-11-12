@@ -237,6 +237,28 @@ impl UbxParser {
         self.len = 0;
     }
 
+    /// Total frame length declared by a buffered header.
+    fn frame_len(buf: &[u8; 128]) -> usize {
+        8 + u16::from_le_bytes([buf[4], buf[5]]) as usize
+    }
+
+    /// Drop `n` buffered bytes, then keep bytes from the next plausible sync.
+    fn discard(&mut self, mut n: usize) {
+        loop {
+            let len = self.len;
+            let buf = &self.buf;
+            let start = (n..len)
+                .find(|&i| buf[i] == UBX_SYNC_1 && (i + 1 == len || buf[i + 1] == UBX_SYNC_2))
+                .unwrap_or(len);
+            self.buf.copy_within(start..len, 0);
+            self.len = len - start;
+            if self.len < 6 || Self::frame_len(&self.buf) <= self.buf.len() {
+                return;
+            }
+            n = 1;
+        }
+    }
+
     pub fn process_byte(
         &mut self,
         b: u8,
@@ -265,7 +287,7 @@ impl UbxParser {
         let payload_len = u16::from_le_bytes([self.buf[4], self.buf[5]]) as usize;
         let total_expected = 6 + payload_len + 2;
         if total_expected > self.buf.len() {
-            self.len = 0;
+            self.discard(1);
             return Err(crate::protocol::ProtocolError::BufferTooSmall);
         }
         if self.len < total_expected {
