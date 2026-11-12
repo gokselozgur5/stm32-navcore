@@ -106,6 +106,11 @@ impl NavEkf {
     }
 }
 
+/// Multiple of machine epsilon, relative to the diagonal, below which a pivot is treated as zero.
+const PIVOT_FLOOR_EPS: f32 = 16.0;
+/// Symmetry tolerance relative to sqrt(P_ii * P_jj).
+const SYMMETRY_REL_TOL: f32 = 1e-4;
+
 #[allow(clippy::needless_range_loop)]
 fn cholesky_is_positive(m: &Mat<STATE_DIM, STATE_DIM>) -> bool {
     let mut l = [[0.0f32; STATE_DIM]; STATE_DIM];
@@ -114,7 +119,8 @@ fn cholesky_is_positive(m: &Mat<STATE_DIM, STATE_DIM>) -> bool {
         for k in 0..j {
             d -= l[j][k] * l[j][k];
         }
-        if !d.is_finite() || d <= 0.0 {
+        // Pivot must exceed a relative floor of the original diagonal entry.
+        if !d.is_finite() || d <= PIVOT_FLOOR_EPS * f32::EPSILON * libm::fabsf(m.0[j][j]) {
             return false;
         }
         let ljj = libm::sqrtf(d);
@@ -137,7 +143,8 @@ impl NavEkf {
             for j in 0..STATE_DIM {
                 let a = self.cov.0[i][j];
                 let b = self.cov.0[j][i];
-                if !a.is_finite() || libm::fabsf(a - b) > 1e-4 * (1.0 + libm::fabsf(a)) {
+                let scale = libm::sqrtf(libm::fabsf(self.cov.0[i][i] * self.cov.0[j][j]));
+                if !a.is_finite() || libm::fabsf(a - b) > SYMMETRY_REL_TOL * scale {
                     return false;
                 }
             }
