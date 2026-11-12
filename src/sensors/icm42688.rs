@@ -303,9 +303,21 @@ impl Icm42688 {
         ];
         let temp = i16::from_be_bytes([buf[13], buf[14]]);
         let (e1, e2, e3) = (buf[15], buf[16], buf[17]);
-        let accel_20bit = [Self::extract_20bit(a[0], e1 >> 4), Self::extract_20bit(a[1], e1), Self::extract_20bit(a[2], e2 >> 4)];
-        let gyro_20bit = [Self::extract_20bit(g[0], e2), Self::extract_20bit(g[1], e3 >> 4), Self::extract_20bit(g[2], e3)];
-        Some(RawSample20Bit { accel_20bit, gyro_20bit, temp })
+        let accel_20bit = [
+            Self::extract_20bit(a[0], e1 >> 4),
+            Self::extract_20bit(a[1], e1),
+            Self::extract_20bit(a[2], e2 >> 4),
+        ];
+        let gyro_20bit = [
+            Self::extract_20bit(g[0], e2),
+            Self::extract_20bit(g[1], e3 >> 4),
+            Self::extract_20bit(g[2], e3),
+        ];
+        Some(RawSample20Bit {
+            accel_20bit,
+            gyro_20bit,
+            temp,
+        })
     }
 }
 
