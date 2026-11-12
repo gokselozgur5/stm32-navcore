@@ -79,7 +79,11 @@ impl BaroFilter {
             self.state = Some(alt_m);
             return self.state;
         };
-        let jump = if alt_m > prev { alt_m - prev } else { prev - alt_m };
+        let jump = if alt_m > prev {
+            alt_m - prev
+        } else {
+            prev - alt_m
+        };
         if jump > self.gate_m && self.rejects < self.max_rejects {
             self.rejects += 1;
             return None;
