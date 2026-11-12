@@ -8,6 +8,8 @@ pub enum ProtocolError {
     InvalidCanId,
     InvalidCanDlc,
     NonFiniteFloat,
+    VersionMismatch,
+    CorruptedData,
 }
 
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
