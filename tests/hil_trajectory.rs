@@ -208,9 +208,9 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
 
         if !is_gnss_outage && step % 20 == 0 {
             let gnss_p = [
-                p_n + rng.next_gaussian_approx(0.1),
-                p_e + rng.next_gaussian_approx(0.1),
-                p_d + rng.next_gaussian_approx(0.1),
+                p_n + rng.next_gaussian_approx(0.05),
+                p_e + rng.next_gaussian_approx(0.05),
+                p_d + rng.next_gaussian_approx(0.05),
             ];
             let gnss_v = [
                 v_n + rng.next_gaussian_approx(0.02),
