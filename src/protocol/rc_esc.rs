@@ -72,3 +72,21 @@ impl CrsfChannels {
         (clamped as f32 - 992.0) / 819.0
     }
 }
+
+impl CrsfChannels {
+    fn check_header(buf: &[u8]) -> Result<(), RcEscError> {
+        if buf.len() < 26 {
+            return Err(RcEscError::BufferTooSmall);
+        }
+        if buf[0] != CRSF_SYNC_BYTE {
+            return Err(RcEscError::InvalidSyncByte);
+        }
+        if buf[1] != 24 {
+            return Err(RcEscError::InvalidFrameLength);
+        }
+        if buf[2] != CRSF_FRAME_CHANNELS {
+            return Err(RcEscError::InvalidFrameType);
+        }
+        Ok(())
+    }
+}
