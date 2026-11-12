@@ -390,3 +390,26 @@ mod tests {
     #[test]
     fn test_dps310_pressure_temperature_compensation() {
         // Known calibration parameters
+        let calib = Dps310Calib {
+            c0: 40.0,
+            c1: 1000.0,
+            c00: 101325.0,
+            c10: 200.0,
+            c01: -50.0,
+            c11: 10.0,
+            c20: 5.0,
+            c21: 1.0,
+            c30: 0.1,
+        };
+        let driver = Dps310Driver::new(calib);
+
+        let t_raw = 524288; // T_sc = 1.0
+        let p_raw = 524288; // P_sc = 1.0
+
+        let temp_c = driver.compensate_temperature(t_raw).unwrap();
+        assert!((temp_c - (40.0 * 0.5 + 1000.0 * 1.0)).abs() < 1e-4);
+
+        let p_pa = driver.compensate_pressure(p_raw, t_raw).unwrap();
+        assert!(p_pa > 100000.0 && p_pa < 105000.0);
+
+        let alt_m = driver.pressure_altitude_m(p_raw, t_raw, 1013.25).unwrap();
