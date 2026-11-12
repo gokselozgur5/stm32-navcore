@@ -107,11 +107,24 @@ impl Mat<1, 1> {
     }
 }
 
+/// Relative determinant threshold against the product of row absolute sums.
+const REL_DET_EPS: f32 = 1e-6;
+
+fn row_abs_sum<const N: usize>(row: &[f32; N]) -> f32 {
+    row.iter().map(|v| if *v < 0.0 { -*v } else { *v }).sum()
+}
+
+/// Scale-aware singularity test: `det` is compared with `scale * REL_DET_EPS`.
+fn is_singular(det: f32, scale: f32) -> bool {
+    let abs_det = if det < 0.0 { -det } else { det };
+    !det.is_finite() || !scale.is_finite() || abs_det <= scale * REL_DET_EPS
+}
+
 impl Mat<2, 2> {
     pub fn inv_2x2(&self) -> Option<Self> {
         let det = self.0[0][0] * self.0[1][1] - self.0[0][1] * self.0[1][0];
-        let abs_det = if det < 0.0 { -det } else { det };
-        if !det.is_finite() || abs_det < 1e-12 {
+        let scale = row_abs_sum(&self.0[0]) * row_abs_sum(&self.0[1]);
+        if is_singular(det, scale) {
             return None;
         }
         let inv_det = 1.0 / det;
@@ -129,8 +142,8 @@ impl Mat<3, 3> {
         let c01 = m[1][2] * m[2][0] - m[1][0] * m[2][2];
         let c02 = m[1][0] * m[2][1] - m[1][1] * m[2][0];
         let det = m[0][0] * c00 + m[0][1] * c01 + m[0][2] * c02;
-        let abs_det = if det < 0.0 { -det } else { det };
-        if !det.is_finite() || abs_det < 1e-12 {
+        let scale = row_abs_sum(&m[0]) * row_abs_sum(&m[1]) * row_abs_sum(&m[2]);
+        if is_singular(det, scale) {
             return None;
         }
         let inv_det = 1.0 / det;
