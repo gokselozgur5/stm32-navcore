@@ -146,6 +146,35 @@ impl NavEkf {
     }
 }
 
+#[cfg(test)]
+mod cov_pd_tests {
+    use super::*;
+
+    #[test]
+    fn default_covariance_is_positive_definite() {
+        assert!(NavEkf::new().covariance_is_positive_definite());
+    }
+
+    #[test]
+    fn indefinite_covariance_is_rejected() {
+        let mut ekf = NavEkf::new();
+        ekf.cov.0[0][3] = 60.0;
+        ekf.cov.0[3][0] = 60.0;
+        assert!(!ekf.covariance_is_positive_definite());
+    }
+
+    #[test]
+    fn asymmetric_or_non_finite_covariance_is_rejected() {
+        let mut ekf = NavEkf::new();
+        ekf.cov.0[2][5] = 1.0;
+        assert!(!ekf.covariance_is_positive_definite());
+        ekf.cov.0[5][2] = 1.0;
+        assert!(ekf.covariance_is_positive_definite());
+        ekf.cov.0[4][4] = f32::NAN;
+        assert!(!ekf.covariance_is_positive_definite());
+    }
+}
+
 impl NavEkf {
     pub fn predict(
         &mut self,
