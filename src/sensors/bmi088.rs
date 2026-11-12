@@ -92,3 +92,17 @@ impl AccelRange {
         g_val * 9.80665
     }
 }
+
+/// BMI088 Accelerometer Output Data Rate (ODR) and filter bandwidth.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AccelOdr {
+    Odr12_5Hz = 0x05,
+    Odr25Hz = 0x06,
+    Odr50Hz = 0x07,
+    Odr100Hz = 0x08,
+    Odr200Hz = 0x09,
+    Odr400Hz = 0x0A,
+    Odr800Hz = 0x0B,
+    Odr1600Hz = 0x0C,
+}
