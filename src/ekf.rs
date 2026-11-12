@@ -437,3 +437,20 @@ impl NavEkf {
         Ok(nis)
     }
 }
+
+#[cfg(test)]
+mod zupt_tests {
+    use super::*;
+
+    #[test]
+    fn test_stationary_detector_detects_static_motion() {
+        let mut detector = StationaryDetector::new(5, 0.05, 0.03);
+        let accel = [0.0, 0.0, -9.80665];
+        let gyro = [0.001, -0.001, 0.0];
+        let mut detected = false;
+        for _ in 0..5 {
+            detected = detector.update(accel, gyro);
+        }
+        assert!(detected);
+    }
+}
