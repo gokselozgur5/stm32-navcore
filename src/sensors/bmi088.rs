@@ -262,4 +262,14 @@ mod tests {
         let expected_rad_s = 2000.0f32 * (core::f32::consts::PI / 180.0);
         assert!((scaled_2000 - expected_rad_s).abs() < 0.01);
     }
+
+    #[test]
+    fn test_raw_byte_decoding() {
+        let raw_acc = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        let acc = decode_accel_bytes(&raw_acc, AccelRange::Range6g);
+        assert_eq!(acc.ax_m_s2, 0.0);
+        let raw_gyr = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        let gyr = decode_gyro_bytes(&raw_gyr, GyroRange::Range1000Dps);
+        assert_eq!(gyr.gx_rad_s, 0.0);
+    }
 }
