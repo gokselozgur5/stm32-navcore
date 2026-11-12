@@ -1,6 +1,6 @@
 use core::f32::consts::PI;
-use stm32_navcore::ekf::NavEkf;
-use stm32_navcore::math::{tilt_compensated_yaw, Mat, Quaternion};
+use stm32_navcore::ekf::{NavEkf, StationaryDetector};
+use stm32_navcore::math::{pressure_hpa_to_altitude_m, tilt_compensated_yaw, Mat, Quaternion};
 use stm32_navcore::protocol::NavTelemetry;
 
 struct XorShift64 {
