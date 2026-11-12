@@ -57,8 +57,15 @@ fn altitude_to_pressure_hpa(alt_m: f32, p0_hpa: f32) -> f32 {
 }
 
 #[test]
-fn test_closed_loop_hil_trajectory_and_gnss_outage() {
-    let mut rng = XorShift64::new(42);
+fn test_cortex_m4f_stack_and_state_footprint_invariants() {
+    assert!(core::mem::size_of::<NavEkf>() <= 1024);
+    assert!(core::mem::size_of::<StationaryDetector>() <= 64);
+    assert!(core::mem::size_of::<NavTelemetry>() <= 128);
+}
+
+#[test]
+fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
+    let mut rng = XorShift64::new(1337);
     let mut ekf = NavEkf::new();
 
     let total_steps = 6000;
