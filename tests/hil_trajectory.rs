@@ -71,8 +71,7 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
 
     let total_steps = 4000;
     let dt = 0.01f32;
-    let omega = 2.0 * PI / 60.0;
-    let r_traj = 20.0f32;
+    let p0_hpa = 1013.25f32;
 
     let hard_iron = [20.0f32, -15.0, 5.0];
     let soft_iron = Mat::<3, 3>([
