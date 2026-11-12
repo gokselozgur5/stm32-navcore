@@ -61,11 +61,13 @@ impl Dps310Calib {
         let c1 = sign_extend_12(c1_raw) as f32;
 
         // c00: 20-bit signed: byte3[7:0] + byte4[7:0] + byte5[7:4]
-        let c00_raw = ((bytes[3] as u32) << 12) | ((bytes[4] as u32) << 4) | ((bytes[5] as u32) >> 4);
+        let c00_raw =
+            ((bytes[3] as u32) << 12) | ((bytes[4] as u32) << 4) | ((bytes[5] as u32) >> 4);
         let c00 = sign_extend_20(c00_raw) as f32;
 
         // c10: 20-bit signed: byte5[3:0] + byte6[7:0] + byte7[7:0]
-        let c10_raw = (((bytes[5] as u32) & 0x0F) << 16) | ((bytes[6] as u32) << 8) | (bytes[7] as u32);
+        let c10_raw =
+            (((bytes[5] as u32) & 0x0F) << 16) | ((bytes[6] as u32) << 8) | (bytes[7] as u32);
         let c10 = sign_extend_20(c10_raw) as f32;
 
         // c01: 16-bit signed: byte8 + byte9
