@@ -174,3 +174,25 @@ impl DualImuManager {
 mod tests {
     use super::*;
 
+    #[test]
+    fn test_fdir_nominal_tracking() {
+        let mut fdir = DualImuManager::new(DualImuConfig::default());
+        let mut ekf = NavEkf::new();
+        let s = ImuSample::new([0.0, 0.0, -9.81], [0.0, 0.0, 0.0]);
+        let out = fdir.process_epoch(&s, &s, 0.01, &mut ekf).expect("fdir epoch");
+        assert_eq!(out, s);
+        assert_eq!(fdir.active_imu(), ImuId::Primary);
+        assert_eq!(fdir.total_failovers(), 0);
+    }
+
+    #[test]
+    fn test_fdir_primary_bias_runaway_failover() {
+        let mut fdir = DualImuManager::new(DualImuConfig::default());
+        let mut ekf = NavEkf::new();
+        let healthy = ImuSample::new([0.0, 0.0, -9.81], [0.0, 0.0, 0.0]);
+        let faulty = ImuSample::new([0.0, 0.0, -9.81], [0.5, 0.0, 0.0]);
+
+        // Step 1: Discrepancy detected
+        let _ = fdir.process_epoch(&faulty, &healthy, 0.01, &mut ekf);
+        assert_eq!(fdir.active_imu(), ImuId::Primary);
+
