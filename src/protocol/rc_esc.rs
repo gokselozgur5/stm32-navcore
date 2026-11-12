@@ -59,3 +59,16 @@ impl CrsfChannels {
         ch
     }
 }
+
+impl CrsfChannels {
+    pub fn normalize_channel(raw: u16) -> f32 {
+        let clamped = if raw < 172 {
+            172
+        } else if raw > 1811 {
+            1811
+        } else {
+            raw
+        };
+        (clamped as f32 - 992.0) / 819.0
+    }
+}
