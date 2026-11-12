@@ -298,3 +298,26 @@ impl Ist8310Driver {
     pub fn parse_raw_mag(bytes: &[u8]) -> Result<[i16; 3], SensorError> {
         if bytes.len() < 6 {
             return Err(SensorError::BufferTooShort);
+        }
+        let x = i16::from_le_bytes([bytes[0], bytes[1]]);
+        let y = i16::from_le_bytes([bytes[2], bytes[3]]);
+        let z = i16::from_le_bytes([bytes[4], bytes[5]]);
+        Ok([x, y, z])
+    }
+
+    /// Converts raw counts to calibrated magnetic field vector [uT] applying scale,
+    /// hard-iron bias removal, and cross-axis sensitivity matrix correction.
+    pub fn compensate_mag(&self, raw: [i16; 3]) -> Result<[f32; 3], SensorError> {
+        let bx_unscaled = (raw[0] as f32) * self.scale_ut_per_lsb - self.bias[0];
+        let by_unscaled = (raw[1] as f32) * self.scale_ut_per_lsb - self.bias[1];
+        let bz_unscaled = (raw[2] as f32) * self.scale_ut_per_lsb - self.bias[2];
+
+        // Apply cross-axis sensitivity correction: B_cal = S * B_unscaled
+        let s = self.sensitivity_matrix.0;
+        let bx = s[0][0] * bx_unscaled + s[0][1] * by_unscaled + s[0][2] * bz_unscaled;
+        let by = s[1][0] * bx_unscaled + s[1][1] * by_unscaled + s[1][2] * bz_unscaled;
+        let bz = s[2][0] * bx_unscaled + s[2][1] * by_unscaled + s[2][2] * bz_unscaled;
+
+        if !bx.is_finite() || !by.is_finite() || !bz.is_finite() {
+            return Err(SensorError::NonFinite);
+        }
