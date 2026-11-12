@@ -160,3 +160,24 @@ impl Icm42688 {
         (raw_temp as f32 / 132.48) + 25.0
     }
 }
+
+impl Icm42688 {
+    /// Scale raw sample into SI engineering units (m/s^2, rad/s, C).
+    pub fn scale_sample(&self, raw: &RawSample) -> ScaledSample {
+        let g_sens = self.gyro_sensitivity_rad_s();
+        let a_sens = self.accel_sensitivity_m_s2();
+        ScaledSample {
+            accel_m_s2: [
+                raw.accel[0] as f32 * a_sens,
+                raw.accel[1] as f32 * a_sens,
+                raw.accel[2] as f32 * a_sens,
+            ],
+            gyro_rad_s: [
+                raw.gyro[0] as f32 * g_sens,
+                raw.gyro[1] as f32 * g_sens,
+                raw.gyro[2] as f32 * g_sens,
+            ],
+            temp_c: Self::scale_temperature(raw.temp),
+        }
+    }
+}
