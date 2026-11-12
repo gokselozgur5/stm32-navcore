@@ -84,12 +84,10 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
     let true_gyro_bias_z = 0.005f32;
 
     let mut uart_buf = [0u8; NavTelemetry::MAX_UART_FRAME_LEN];
-    let mut error_pos_xy_sum_sq = 0.0f32;
-    let mut count_pos_xy = 0;
-
-    let mut pre_outage_p_var = 0.0f32;
-    let mut end_outage_p_var = 0.0f32;
-    let mut max_pos_drift_outage = 0.0f32;
+    let mut stationary_zupt_count = 0usize;
+    let mut max_vertical_drift_outage = 0.0f32;
+    let mut pre_outage_pos_cov = 0.0f32;
+    let mut post_outage_pos_cov = 0.0f32;
 
     for step in 0..total_steps {
         let t = step as f32 * dt;
