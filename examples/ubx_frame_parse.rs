@@ -18,3 +18,17 @@ const TEST_LAT_DEGE7: i32 = 525_200_000;
 const TEST_LON_DEGE7: i32 = 134_050_000;
 /// Full frame size: sync (2) + class and id (2) + length (2) + payload + checksum (2).
 const FRAME_LEN: usize = 8 + UBX_NAV_PVT_LEN;
+
+/// Fills a NAV-PVT payload with a fixed time, date, fix type, and position.
+///
+/// Offsets follow the u-blox interface description for UBX-NAV-PVT.
+fn build_pvt_payload(p: &mut [u8; UBX_NAV_PVT_LEN]) {
+    p[0..4].copy_from_slice(&TEST_ITOW_MS.to_le_bytes());
+    p[4..6].copy_from_slice(&2026u16.to_le_bytes());
+    p[6] = 11; // month
+    p[7] = 12; // day
+    p[20] = 3; // fixType: 3D fix
+    p[23] = 14; // numSV
+    p[24..28].copy_from_slice(&TEST_LON_DEGE7.to_le_bytes());
+    p[28..32].copy_from_slice(&TEST_LAT_DEGE7.to_le_bytes());
+}
