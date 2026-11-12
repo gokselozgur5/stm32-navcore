@@ -18,3 +18,16 @@ fn rand_mat<const R: usize, const C: usize>(s: &mut u32) -> Mat<R, C> {
 fn close<const R: usize, const C: usize>(a: &Mat<R, C>, b: &Mat<R, C>, tol: f32) -> bool {
     (0..R).all(|r| (0..C).all(|c| (a.0[r][c] - b.0[r][c]).abs() <= tol))
 }
+
+#[test]
+fn matmul_is_associative_within_tolerance() {
+    let mut s = 1;
+    for _ in 0..200 {
+        let a: Mat<3, 4> = rand_mat(&mut s);
+        let b: Mat<4, 2> = rand_mat(&mut s);
+        let c: Mat<2, 3> = rand_mat(&mut s);
+        let left = a.matmul(&b).matmul(&c);
+        let right = a.matmul(&b.matmul(&c));
+        assert!(close(&left, &right, 1e-5));
+    }
+}
