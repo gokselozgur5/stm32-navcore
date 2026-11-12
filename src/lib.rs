@@ -6,8 +6,11 @@
 
 pub mod ekf;
 pub use ekf::StationaryDetector;
+pub mod fdir;
 pub mod math;
 pub mod protocol;
+
+pub use fdir::{DualImuManager, ImuId, ImuReading};
 
 pub use protocol::CalibrationBlock;
 
