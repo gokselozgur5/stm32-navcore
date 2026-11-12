@@ -252,3 +252,26 @@ pub struct Ist8310Driver {
     pub scale_ut_per_lsb: f32,
 }
 
+impl Default for Ist8310Driver {
+    fn default() -> Self {
+        Self {
+            sensitivity_matrix: Mat::identity(),
+            bias: [0.0; 3],
+            scale_ut_per_lsb: 0.3,
+        }
+    }
+}
+
+impl Ist8310Driver {
+    /// Creates a new IST8310 driver with default 0.3 uT/LSB scale and identity cross-axis matrix.
+    pub fn new() -> Self {
+        Self {
+            sensitivity_matrix: Mat::identity(),
+            bias: [0.0; 3],
+            scale_ut_per_lsb: 0.3,
+        }
+    }
+
+    /// Sets cross-axis sensitivity correction matrix.
+    pub fn set_cross_axis_matrix(&mut self, matrix: Mat<3, 3>) {
+        self.sensitivity_matrix = matrix;
