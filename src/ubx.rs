@@ -438,3 +438,26 @@ mod tests {
         assert!(matches!(res, Some(UbxMessage::NavRelPosNed(_))));
     }
 }
+
+#[cfg(test)]
+mod corruption_tests {
+    use super::*;
+
+    fn frame(class: u8, id: u8, payload_len: usize) -> ([u8; 128], usize) {
+        let mut f = [0u8; 128];
+        f[..4].copy_from_slice(&[UBX_SYNC_1, UBX_SYNC_2, class, id]);
+        f[4..6].copy_from_slice(&(payload_len as u16).to_le_bytes());
+        f[10] = 0x5A;
+        let (ck_a, ck_b) = ubx_checksum(&f[2..6 + payload_len]);
+        f[6 + payload_len] = ck_a;
+        f[7 + payload_len] = ck_b;
+        (f, 8 + payload_len)
+    }
+
+    fn count_messages(parser: &mut UbxParser, bytes: &[u8]) -> usize {
+        bytes
+            .iter()
+            .filter(|&&b| matches!(parser.process_byte(b), Ok(Some(_))))
+            .count()
+    }
+}
