@@ -131,6 +131,22 @@ fn cholesky_is_positive(m: &Mat<STATE_DIM, STATE_DIM>) -> bool {
 }
 
 impl NavEkf {
+    /// Returns true when the covariance is finite, symmetric and positive-definite.
+    pub fn covariance_is_positive_definite(&self) -> bool {
+        for i in 0..STATE_DIM {
+            for j in 0..STATE_DIM {
+                let a = self.cov.0[i][j];
+                let b = self.cov.0[j][i];
+                if !a.is_finite() || libm::fabsf(a - b) > 1e-4 * (1.0 + libm::fabsf(a)) {
+                    return false;
+                }
+            }
+        }
+        cholesky_is_positive(&self.cov)
+    }
+}
+
+impl NavEkf {
     pub fn predict(
         &mut self,
         accel_body_mps2: [f32; 3],
