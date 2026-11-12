@@ -441,7 +441,7 @@ impl NavEkf {
 }
 
 impl NavEkf {
-    /// Scalar Joseph update for barometric altitude (Down axis: p_ned_m[2] = -alt).
+    /// Scalar Joseph update for barometric altitude (Down axis: `p_ned_m[2] = -alt`).
     pub fn update_baro_altitude(
         &mut self,
         alt_m: f32,
