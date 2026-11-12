@@ -147,3 +147,13 @@ fn covariance_stays_positive_and_finite() {
         assert!(d.is_finite() && d > 0.0, "diag {i} = {d}");
     }
 }
+
+#[test]
+fn fixed_seed_run_is_pinned() {
+    let ekf = converged(42, 2000);
+    let want = [-0.84797, -0.08911, -0.00741];
+    for (got, want) in ekf.p_ned_m.iter().zip(want) {
+        assert!((got - want).abs() < 1e-3, "position {got} vs {want}");
+    }
+    assert!((ekf.cov.0[0][0] - 0.13495).abs() < 1e-4);
+}
