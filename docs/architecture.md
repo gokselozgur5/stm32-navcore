@@ -36,3 +36,21 @@ It then packs the telemetry with `pack_uart` and `pack_can` and decodes both bac
 
 `DualImuManager` is a standalone component.
 The benchmark does not feed its output into `NavEkf`, so the wiring between FDIR and the filter is left to the integrator.
+
+## Attitude and state estimation
+
+`NavEkf` holds the attitude quaternion, NED position, NED velocity, the gyro Z bias, and the covariance `Mat<8, 8>` (`STATE_DIM` in `src/ekf.rs`).
+`NavEkf::predict` rejects a non-positive or non-finite `dt_s` with `EkfError::InvalidInput`.
+
+`Quaternion::integrate_gyro` applies the exact finite-angle rotation and renormalizes the result (`src/math.rs`).
+A small-angle branch avoids the division by a near-zero angle.
+
+Each measurement update is a scalar update in Joseph form, `update_joseph_scalar`, and the covariance is symmetrized after each update (`src/ekf.rs`).
+A measurement is accepted only when its normalized innovation squared is at or below the gate passed by the caller.
+The gate value is an argument to each `update_*` method, so the threshold is chosen by the caller.
+
+`tilt_compensated_yaw` applies the calibration in `calibrate_magnetometer` and then projects the field into the horizontal plane.
+It returns `MathError::GimbalLock` when the pitch is too close to +/-90 degrees.
+
+`StationaryDetector` looks at accelerometer variance and gyro magnitude over a window.
+When it reports a stationary state, `NavEkf::update_zupt` can apply a zero-velocity update.
