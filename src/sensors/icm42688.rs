@@ -358,3 +358,23 @@ mod tests {
     #[test]
     fn test_icm42688_fifo_packet_decoding() {
         let mut pkt = [0u8; 20];
+        pkt[0] = 0x00;
+        pkt[1..3].copy_from_slice(&1000i16.to_be_bytes());
+        pkt[7..9].copy_from_slice(&(-500i16).to_be_bytes());
+        pkt[13..15].copy_from_slice(&0i16.to_be_bytes());
+        let raw16 = Icm42688::parse_fifo_packet_16bit(&pkt).unwrap();
+        assert_eq!(raw16.accel[0], 1000);
+        assert_eq!(raw16.gyro[0], -500);
+        assert_eq!(Icm42688::scale_temperature(raw16.temp), 25.0);
+    }
+
+    #[test]
+    fn test_icm42688_sample_scaling_and_rejection() {
+        let imu = Icm42688::new();
+        let raw = RawSample {
+            accel: [0, 0, 2046],
+            gyro: [0, 0, 0],
+            temp: 0,
+        };
+        let scaled = imu.scale_sample(&raw);
+        assert!((scaled.accel_m_s2[2] - 9.8).abs() < 0.1);
