@@ -298,3 +298,23 @@ impl Icm42688 {
             return None;
         }
         let a = [
+            i16::from_be_bytes([buf[1], buf[2]]),
+            i16::from_be_bytes([buf[3], buf[4]]),
+            i16::from_be_bytes([buf[5], buf[6]]),
+        ];
+        let g = [
+            i16::from_be_bytes([buf[7], buf[8]]),
+            i16::from_be_bytes([buf[9], buf[10]]),
+            i16::from_be_bytes([buf[11], buf[12]]),
+        ];
+        let temp = i16::from_be_bytes([buf[13], buf[14]]);
+        let (e1, e2, e3) = (buf[15], buf[16], buf[17]);
+        let accel_20bit = [
+            Self::extract_20bit(a[0], e1 >> 4),
+            Self::extract_20bit(a[1], e1),
+            Self::extract_20bit(a[2], e2 >> 4),
+        ];
+        let gyro_20bit = [
+            Self::extract_20bit(g[0], e2),
+            Self::extract_20bit(g[1], e3 >> 4),
+            Self::extract_20bit(g[2], e3),
