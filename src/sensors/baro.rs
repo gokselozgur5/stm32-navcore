@@ -88,6 +88,11 @@ impl BaroFilter {
             self.rejects += 1;
             return None;
         }
+        if jump > self.gate_m {
+            self.rejects = 0;
+            self.state = Some(alt_m);
+            return self.state;
+        }
         self.rejects = 0;
         let next = prev + self.alpha * (alt_m - prev);
         self.state = Some(next);
