@@ -158,3 +158,23 @@ impl Icm42688 {
 impl Icm42688 {
     /// Accel sensitivity in (m/s^2) per LSB.
     pub fn accel_sensitivity_m_s2(&self) -> f32 {
+        let g = match self.accel_fsr {
+            AccelFsr::G16 => 16.0,
+            AccelFsr::G8 => 8.0,
+            AccelFsr::G4 => 4.0,
+            AccelFsr::G2 => 2.0,
+        };
+        (g / 32768.0) * 9.80665
+    }
+}
+
+impl Icm42688 {
+    /// Convert raw 16-bit temperature register value to degrees Celsius.
+    pub fn scale_temperature(raw_temp: i16) -> f32 {
+        (raw_temp as f32 / 132.48) + 25.0
+    }
+}
+
+impl Icm42688 {
+    /// Scale raw sample into SI engineering units (m/s^2, rad/s, C).
+    pub fn scale_sample(&self, raw: &RawSample) -> ScaledSample {
