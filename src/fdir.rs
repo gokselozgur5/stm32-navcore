@@ -85,3 +85,24 @@ impl DualImuManager {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dual_imu_normal_tracking() {
+        let mut mgr = DualImuManager::default_config();
+        let imu1 = ImuReading {
+            accel_mps2: [0.0, 0.0, -9.81],
+            gyro_rps: [0.01, -0.01, 0.0],
+        };
+        let imu2 = ImuReading {
+            accel_mps2: [0.0, 0.0, -9.81],
+            gyro_rps: [0.012, -0.009, 0.001],
+        };
+        let sel = mgr.update_and_select(&imu1, &imu2, [0.01; 3]);
+        assert_eq!(mgr.active_imu, ImuId::Primary);
+        assert_eq!(sel, imu1);
+    }
+}
