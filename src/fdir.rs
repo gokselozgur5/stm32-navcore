@@ -130,3 +130,25 @@ impl DualImuManager {
         &mut self,
         primary: &ImuSample,
         secondary: &ImuSample,
+        dt_s: f32,
+        ekf: &mut NavEkf,
+    ) -> Result<ImuSample, EkfError> {
+        let gyro_diff_sq = Self::vector_diff_norm_sq(&primary.gyro_rads, &secondary.gyro_rads);
+        let accel_diff_sq = Self::vector_diff_norm_sq(&primary.accel_mps2, &secondary.accel_mps2);
+
+        let gyro_thresh_sq = self.config.gyro_discrepancy_threshold_rads
+            * self.config.gyro_discrepancy_threshold_rads;
+        let accel_thresh_sq = self.config.accel_discrepancy_threshold_mps2
+            * self.config.accel_discrepancy_threshold_mps2;
+
+        let has_discrepancy = gyro_diff_sq > gyro_thresh_sq || accel_diff_sq > accel_thresh_sq;
+
+        if has_discrepancy {
+            self.consecutive_discrepancies = self.consecutive_discrepancies.saturating_add(1);
+            if self.consecutive_discrepancies >= self.config.consecutive_fault_limit {
+                if self.active_imu == ImuId::Primary && self.secondary_health != ImuHealth::Faulted {
+                    self.primary_health = ImuHealth::Faulted;
+                    self.active_imu = ImuId::Secondary;
+                    self.total_failovers = self.total_failovers.saturating_add(1);
+                } else if self.active_imu == ImuId::Secondary && self.primary_health != ImuHealth::Faulted {
+                    self.secondary_health = ImuHealth::Faulted;
