@@ -64,3 +64,25 @@ impl Default for DualImuConfig {
         }
     }
 }
+
+/// Dual IMU FDIR Manager.
+#[derive(Debug, Clone)]
+pub struct DualImuManager {
+    config: DualImuConfig,
+    active_imu: ImuId,
+    primary_health: ImuHealth,
+    secondary_health: ImuHealth,
+    consecutive_discrepancies: u8,
+    total_failovers: u32,
+}
+
+impl DualImuManager {
+    /// Create a new DualImuManager with given configuration.
+    pub fn new(config: DualImuConfig) -> Self {
+        Self {
+            config,
+            active_imu: ImuId::Primary,
+            primary_health: ImuHealth::Nominal,
+            secondary_health: ImuHealth::Nominal,
+            consecutive_discrepancies: 0,
+            total_failovers: 0,
