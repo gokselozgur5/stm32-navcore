@@ -37,6 +37,13 @@ impl CalibrationBlock {
                 return Err(ProtocolError::NonFiniteFloat);
             }
         }
+        for row in &self.mag_soft_iron {
+            for &v in row {
+                if !v.is_finite() {
+                    return Err(ProtocolError::NonFiniteFloat);
+                }
+            }
+        }
         Ok(())
     }
 }
