@@ -20,3 +20,6 @@ mod footprint {
         assert!(core::mem::size_of::<NavEkf>() < 2048);
     }
 }
+
+pub mod fdir;
+pub use fdir::{DualImuConfig, DualImuManager, ImuHealth, ImuId, ImuSample};
