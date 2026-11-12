@@ -221,15 +221,8 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
             let _ = ekf.update_gnss_vel(gnss_v, 0.005, 16.0);
         }
 
-        if t < 25.0 && t > 5.0 {
-            let err_n = ekf.p_ned_m[0] - p_n;
-            let err_e = ekf.p_ned_m[1] - p_e;
-            error_pos_xy_sum_sq += err_n * err_n + err_e * err_e;
-            count_pos_xy += 1;
-        }
-
-        if (t - 24.99).abs() < 0.005 {
-            pre_outage_p_var = ekf.cov.0[0][0] + ekf.cov.0[1][1];
+        if (t - 19.99).abs() < 0.005 {
+            pre_outage_pos_cov = ekf.cov.0[0][0] + ekf.cov.0[1][1];
         }
 
         if is_gnss_outage {
