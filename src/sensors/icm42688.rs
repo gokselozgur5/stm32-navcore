@@ -305,4 +305,17 @@ mod tests {
         assert_eq!(aaf[0], [0x0C, 6]);
         assert_eq!(aaf[1], [0x0D, 36]);
     }
+
+    #[test]
+    fn test_icm42688_fifo_packet_decoding() {
+        let mut pkt = [0u8; 20];
+        pkt[0] = 0x00;
+        pkt[1..3].copy_from_slice(&1000i16.to_be_bytes());
+        pkt[7..9].copy_from_slice(&(-500i16).to_be_bytes());
+        pkt[13..15].copy_from_slice(&0i16.to_be_bytes());
+        let raw16 = Icm42688::parse_fifo_packet_16bit(&pkt).unwrap();
+        assert_eq!(raw16.accel[0], 1000);
+        assert_eq!(raw16.gyro[0], -500);
+        assert_eq!(Icm42688::scale_temperature(raw16.temp), 25.0);
+    }
 }
