@@ -472,4 +472,26 @@ mod corruption_tests {
             assert_eq!(count_messages(&mut parser, &bad[..n]), 0, "bit {bit}");
         }
     }
+
+    #[test]
+    fn oversized_length_is_rejected_then_recovers() {
+        let mut parser = UbxParser::new();
+        let header = [
+            UBX_SYNC_1,
+            UBX_SYNC_2,
+            UBX_CLASS_NAV,
+            UBX_ID_NAV_PVT,
+            0xFF,
+            0xFF,
+        ];
+        for &b in &header[..5] {
+            assert_eq!(parser.process_byte(b), Ok(None));
+        }
+        assert_eq!(
+            parser.process_byte(header[5]),
+            Err(crate::protocol::ProtocolError::BufferTooSmall)
+        );
+        let (good, n) = frame(UBX_CLASS_NAV, UBX_ID_NAV_PVT, UBX_NAV_PVT_LEN);
+        assert_eq!(count_messages(&mut parser, &good[..n]), 1);
+    }
 }
