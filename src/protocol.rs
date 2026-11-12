@@ -75,6 +75,17 @@ impl CalibrationBlock {
                 idx += 4;
             }
         }
+        for &v in &self.gyro_bias_rps {
+            dst[idx..idx + 4].copy_from_slice(&v.to_be_bytes());
+            idx += 4;
+        }
+        for &v in &self.accel_scale {
+            dst[idx..idx + 4].copy_from_slice(&v.to_be_bytes());
+            idx += 4;
+        }
+        let crc = crc16_ccitt(&dst[..idx]);
+        dst[idx..idx + 2].copy_from_slice(&crc.to_be_bytes());
+        idx += 2;
         Ok(idx)
     }
 }
