@@ -59,3 +59,13 @@ fn failover_is_latched_on_clean_epochs() {
     assert_eq!(m.consecutive_faults, 0);
     assert_eq!(sel, imu([0.0; 3]));
 }
+
+#[test]
+fn faults_after_failover_do_not_change_state() {
+    let mut m = failed_over();
+    let count = m.consecutive_faults;
+    m.update_and_select(&imu([5.0, 0.0, 0.0]), &imu([0.0; 3]), VAR);
+    assert_eq!(m.active_imu, ImuId::Secondary);
+    assert_eq!(m.consecutive_faults, count);
+    assert!(m.secondary_healthy);
+}
