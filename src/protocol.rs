@@ -529,6 +529,21 @@ mod tests {
     }
 
     #[test]
+    fn test_calibration_version_mismatch_rejection() {
+        let cal = CalibrationBlock::default_calibrated();
+        let mut buf = [0u8; CalibrationBlock::TOTAL_SIZE];
+        cal.serialize(&mut buf).unwrap();
+        buf[0] = 0xDE;
+        buf[1] = 0xAD;
+        let crc = crc16_ccitt(&buf[..CalibrationBlock::PAYLOAD_SIZE]);
+        buf[CalibrationBlock::PAYLOAD_SIZE..].copy_from_slice(&crc.to_be_bytes());
+        assert_eq!(
+            CalibrationBlock::deserialize(&buf),
+            Err(ProtocolError::VersionMismatch)
+        );
+    }
+
+    #[test]
     fn test_calibration_buffer_size_rejection() {
         let cal = CalibrationBlock::default_calibrated();
         let mut small = [0u8; 70];
