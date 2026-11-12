@@ -58,3 +58,23 @@ pub struct UbxNavPvt {
     pub head_veh_dege5: i32,
 }
 
+impl UbxNavPvt {
+    /// Decode a 92-byte NAV-PVT payload buffer without allocation.
+    pub fn decode(payload: &[u8]) -> Result<Self, crate::protocol::ProtocolError> {
+        if payload.len() < UBX_NAV_PVT_LEN {
+            return Err(crate::protocol::ProtocolError::BufferTooSmall);
+        }
+        let i_tow_ms = u32::from_le_bytes([payload[0], payload[1], payload[2], payload[3]]);
+        let year = u16::from_le_bytes([payload[4], payload[5]]);
+        let month = payload[6];
+        let day = payload[7];
+        let hour = payload[8];
+        let min = payload[9];
+        let sec = payload[10];
+        let valid_flags = payload[11];
+        let t_acc_ns = u32::from_le_bytes([payload[12], payload[13], payload[14], payload[15]]);
+        let nano_ns = i32::from_le_bytes([payload[16], payload[17], payload[18], payload[19]]);
+        let fix_type = payload[20];
+        let flags = payload[21];
+        let flags2 = payload[22];
+        let num_sv = payload[23];
