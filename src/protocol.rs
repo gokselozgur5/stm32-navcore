@@ -46,6 +46,16 @@ impl CalibrationBlock {
         }
         Ok(())
     }
+
+    pub fn default_calibrated() -> Self {
+        Self {
+            version: Self::MAGIC_VERSION,
+            mag_hard_iron: [0.0; 3],
+            mag_soft_iron: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+            gyro_bias_rps: [0.0; 3],
+            accel_scale: [1.0; 3],
+        }
+    }
 }
 
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
