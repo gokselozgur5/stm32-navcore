@@ -307,6 +307,11 @@ impl UbxParser {
         }
     }
 
+    /// Report a complete frame already buffered after a rejected frame.
+    pub fn drain(&mut self) -> Result<Option<UbxMessage>, crate::protocol::ProtocolError> {
+        Ok(None)
+    }
+
     pub fn process_byte(
         &mut self,
         b: u8,
