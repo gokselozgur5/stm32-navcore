@@ -202,3 +202,17 @@ impl UbxParser {
             }
             return Ok(None);
         }
+        self.buf[self.len] = b;
+        self.len += 1;
+        if self.len < 6 {
+            return Ok(None);
+        }
+        let payload_len = u16::from_le_bytes([self.buf[4], self.buf[5]]) as usize;
+        let total_expected = 6 + payload_len + 2;
+        if total_expected > self.buf.len() {
+            self.len = 0;
+            return Err(crate::protocol::ProtocolError::BufferTooSmall);
+        }
+        if self.len < total_expected {
+            return Ok(None);
+        }
