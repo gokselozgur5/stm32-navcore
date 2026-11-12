@@ -47,3 +47,15 @@ impl CrsfChannels {
         (val & 0x07FF) as u16
     }
 }
+
+impl CrsfChannels {
+    pub fn unpack_channels(raw_22: &[u8; 22]) -> [u16; 16] {
+        let mut ch = [0u16; 16];
+        let mut i = 0;
+        while i < 16 {
+            ch[i] = Self::unpack_single_channel(raw_22, i * 11);
+            i += 1;
+        }
+        ch
+    }
+}
