@@ -86,3 +86,16 @@ pub enum CrsfError {
     /// DShot checksum error.
     DshotChecksumError,
 }
+
+/// Zero-allocation stream decoder for CRSF frames.
+#[derive(Debug, Clone)]
+pub struct CrsfParser {
+    buffer: [u8; 64],
+    len: usize,
+}
+
+impl Default for CrsfParser {
+    fn default() -> Self {
+        Self::new()
+    }
+}
