@@ -359,6 +359,18 @@ mod tests {
     }
 
     #[test]
+    fn test_baro_outlier_rejection() {
+        let mut ekf = NavEkf::new();
+        ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], 0.1)
+            .unwrap();
+        assert!(ekf.update_baro_altitude(0.2, 0.5, 9.0).is_ok());
+        let spike = ekf.update_baro_altitude(100.0, 0.5, 9.0);
+        assert_eq!(spike, Err(EkfError::OutlierRejected));
+        let bad = ekf.update_baro_altitude(f32::NAN, 0.5, 9.0);
+        assert_eq!(bad, Err(EkfError::InvalidInput));
+    }
+
+    #[test]
     fn test_gyro_bias_convergence() {
         let mut ekf = NavEkf::new();
         let true_bias = 0.03f32;
