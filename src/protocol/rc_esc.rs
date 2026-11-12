@@ -143,3 +143,22 @@ impl DShotFrame {
         ((self.raw >> 4) & 0x01) == 1
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dshot_encode_and_checksum() {
+        let frame = DShotFrame::encode(1000, true).unwrap();
+        assert_eq!(frame.throttle(), 1000);
+        assert!(frame.telemetry());
+        let frame_zero = DShotFrame::encode(0, false).unwrap();
+        assert_eq!(frame_zero.throttle(), 0);
+        assert!(!frame_zero.telemetry());
+        assert_eq!(
+            DShotFrame::encode(2048, false),
+            Err(RcEscError::InvalidThrottleValue)
+        );
+    }
+}
