@@ -244,4 +244,13 @@ mod tests {
         assert!(verify_gyro_chip_id(0x0F).is_ok());
         assert!(verify_gyro_chip_id(0xFF).is_err());
     }
+
+    #[test]
+    fn test_accel_range_scaling() {
+        assert_eq!(AccelRange::Range3g.max_g(), 3.0);
+        assert_eq!(AccelRange::Range24g.max_g(), 24.0);
+        let max_raw = 32767i16;
+        let scaled_24g = AccelRange::Range24g.scale_m_s2(max_raw);
+        assert!((scaled_24g - 24.0 * 9.80665).abs() < 0.05);
+    }
 }
