@@ -83,3 +83,12 @@ impl AccelRange {
         }
     }
 }
+
+impl AccelRange {
+    /// Convert raw 16-bit signed integer reading into m/s^2.
+    pub fn scale_m_s2(&self, raw: i16) -> f32 {
+        let max_g = self.max_g();
+        let g_val = (raw as f32 / 32768.0) * max_g;
+        g_val * 9.80665
+    }
+}
