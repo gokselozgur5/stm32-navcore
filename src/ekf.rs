@@ -767,3 +767,14 @@ impl AccelBiasEstimator {
         }
     }
 }
+
+impl AccelBiasEstimator {
+    /// Removes the estimated bias from a raw body-frame accelerometer sample.
+    pub fn corrected(&self, accel_body: [f32; 3]) -> [f32; 3] {
+        [
+            accel_body[0] - self.bias_mps2[0],
+            accel_body[1] - self.bias_mps2[1],
+            accel_body[2] - self.bias_mps2[2],
+        ]
+    }
+}
