@@ -193,3 +193,15 @@ pub fn decode_gyro_bytes(raw: &[u8; 6], range: GyroRange) -> GyroReading {
         gz_rad_s: range.scale_rad_s(raw_z),
     }
 }
+
+/// Verify BMI088 accelerometer chip ID register value.
+pub fn verify_accel_chip_id(id: u8) -> Result<(), Bmi088Error> {
+    if id == BMI088_ACCEL_CHIP_ID {
+        Ok(())
+    } else {
+        Err(Bmi088Error::InvalidChipId {
+            expected: BMI088_ACCEL_CHIP_ID,
+            actual: id,
+        })
+    }
+}
