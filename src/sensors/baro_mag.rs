@@ -137,3 +137,26 @@ impl Default for Dps310Driver {
         Self::new(Dps310Calib::default())
     }
 }
+
+impl Dps310Driver {
+    /// Creates a new DPS310 driver instance with default standard scaling (kP=524288, kT=524288).
+    pub const fn new(calib: Dps310Calib) -> Self {
+        Self {
+            calib,
+            p_scale: 524288.0,
+            t_scale: 524288.0,
+        }
+    }
+
+    /// Sets the temperature oversampling scale factor (e.g., 524288 for 1x, 1572864 for 4x, etc.).
+    pub fn set_temperature_scale(&mut self, scale: f32) {
+        if scale > 0.0 {
+            self.t_scale = scale;
+        }
+    }
+
+    /// Sets the pressure oversampling scale factor (e.g., 524288 for 1x, 3670016 for 8x, etc.).
+    pub fn set_pressure_scale(&mut self, scale: f32) {
+        if scale > 0.0 {
+            self.p_scale = scale;
+        }
