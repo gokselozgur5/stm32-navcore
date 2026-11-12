@@ -1,7 +1,15 @@
 //! Deterministic `no_std`, zero-alloc navigation core for STM32 Cortex-M4F.
 //!
-//! Modules: [`math`] (matrices, SO(3) quaternion, tilt-compensated heading),
-//! [`ekf`] (Joseph-form IMU/GNSS EKF) and [`protocol`] (COBS, CRC-16, CAN 2.0B).
+//! Modules:
+//!
+//! - [`math`]: fixed-size matrices, SO(3) quaternion, tilt-compensated heading.
+//! - [`ekf`]: Joseph-form IMU/GNSS extended Kalman filter.
+//! - [`fdir`]: dual-IMU fault detection and switchover.
+//! - [`sensors`]: flight sensor drivers and register codecs.
+//! - [`protocol`]: COBS, CRC-16-CCITT, CAN 2.0B and UART telemetry framing.
+//! - [`ubx`]: streaming u-blox UBX parser.
+//!
+//! See `docs/architecture.md` in the repository for the data flow between modules.
 #![cfg_attr(not(test), no_std)]
 
 pub mod ekf;
