@@ -77,21 +77,26 @@ impl MagMinMax {
         let max = half[0].max(half[1]).max(half[2]);
         half.map(|h| !(h > 1e-6 && h >= MIN_AXIS_FRACTION * max))
     }
-}
 
-impl MagMinMax {
     /// Diagonal soft-iron gains that equalise half-ranges to their mean.
     ///
-    /// A degenerate axis (no range) gets a gain of 1.0.
+    /// Under-excited axes keep a gain of 1.0 and are left out of the mean.
     pub fn scale(&self) -> [f32; 3] {
-        let mut half = [0.0f32; 3];
-        for (i, h) in half.iter_mut().enumerate() {
-            if self.count > 0 {
-                *h = 0.5 * (self.max[i] - self.min[i]);
+        let half = self.half_ranges();
+        let bad = self.under_excited();
+        let n = bad.iter().filter(|b| !**b).count();
+        if n == 0 {
+            return [1.0; 3];
+        }
+        let sum: f32 = (0..3).filter(|&i| !bad[i]).map(|i| half[i]).sum();
+        let avg = sum / n as f32;
+        let mut g = [1.0f32; 3];
+        for i in 0..3 {
+            if !bad[i] {
+                g[i] = avg / half[i];
             }
         }
-        let avg = (half[0] + half[1] + half[2]) / 3.0;
-        half.map(|h| if h > 1e-6 { avg / h } else { 1.0 })
+        g
     }
 }
 
