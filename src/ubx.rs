@@ -318,3 +318,23 @@ mod tests {
         assert_eq!(pvt.i_tow_ms, 123456789);
         assert_eq!(pvt.year, 2026);
         assert_eq!(pvt.month, 11);
+        assert_eq!(pvt.day, 12);
+        assert_eq!(pvt.fix_type, 3);
+        assert_eq!(pvt.lat_dege7, 377749000);
+    }
+
+    #[test]
+    fn test_ubx_streaming_parser_with_noise_and_crc_rejection() {
+        let mut parser = UbxParser::new();
+        let noise = [0xFF, 0x00, 0xAA, 0xB5, 0x11, 0x62];
+        for &b in &noise {
+            assert_eq!(parser.process_byte(b).unwrap(), None);
+        }
+        let mut frame = [0u8; 6 + 64 + 2];
+        frame[0] = UBX_SYNC_1;
+        frame[1] = UBX_SYNC_2;
+        frame[2] = UBX_CLASS_NAV;
+        frame[3] = UBX_ID_NAV_RELPOSNED;
+        frame[4..6].copy_from_slice(&(64u16).to_le_bytes());
+        frame[6 + 8..6 + 12].copy_from_slice(&(1500i32).to_le_bytes()); // rel_pos_n = 15m
+        let (ck_a, ck_b) = ubx_checksum(&frame[2..6 + 64]);
