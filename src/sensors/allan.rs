@@ -87,3 +87,16 @@ impl<const N: usize, const L: usize> AllanEstimator<N, L> {
         Some(total / (hi - lo + 1) as f64)
     }
 }
+
+impl<const N: usize, const L: usize> AllanEstimator<N, L> {
+    /// White-noise coefficient N (adev at tau = 1 s on a -1/2 slope).
+    pub fn white_noise_coeff(&self, lo: usize, hi: usize) -> Option<f64> {
+        self.mean_intercept(lo, hi, -0.5).map(libm::exp)
+    }
+
+    /// Random-walk coefficient K from `adev = K * sqrt(tau / 3)` on a +1/2 slope.
+    pub fn random_walk_coeff(&self, lo: usize, hi: usize) -> Option<f64> {
+        self.mean_intercept(lo, hi, 0.5)
+            .map(|c| libm::exp(c) * libm::sqrt(3.0))
+    }
+}
