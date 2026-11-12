@@ -13,6 +13,7 @@
 #![cfg_attr(not(test), no_std)]
 
 pub mod ekf;
+/// Zero-velocity detector over a sliding window of accelerometer and gyro samples.
 pub use ekf::StationaryDetector;
 pub mod fdir;
 pub mod math;
@@ -20,9 +21,12 @@ pub mod protocol;
 pub mod sensors;
 pub mod ubx;
 
+/// Dual-IMU fault detection types: IMU identity, a sample, and the switchover manager.
 pub use fdir::{DualImuManager, ImuId, ImuReading};
 
+/// Versioned, checksummed magnetometer and gyro calibration record.
 pub use protocol::CalibrationBlock;
+/// Decoded u-blox UBX messages and the streaming parser that produces them.
 pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 
 #[cfg(test)]
