@@ -177,3 +177,26 @@ fn solve4(mut a: [[f64; 5]; 4]) -> Option<[f64; 4]> {
     }
     Some([0, 1, 2, 3].map(|i| a[i][4] / a[i][i]))
 }
+
+impl SphereFit {
+    /// Solves for `(centre, radius)`; `None` with fewer than four samples
+    /// or a singular system.
+    #[allow(clippy::needless_range_loop)]
+    pub fn solve(&self) -> Option<([f32; 3], f32)> {
+        if self.count < 4 {
+            return None;
+        }
+        let mut aug = [[0.0; 5]; 4];
+        for i in 0..4 {
+            aug[i][..4].copy_from_slice(&self.ata[i]);
+            aug[i][4] = self.aty[i];
+        }
+        let p = solve4(aug)?;
+        let (a, b, c) = (0.5 * p[0], 0.5 * p[1], 0.5 * p[2]);
+        let r2 = p[3] + a * a + b * b + c * c;
+        if r2 <= 0.0 {
+            return None;
+        }
+        Some(([a as f32, b as f32, c as f32], libm::sqrt(r2) as f32))
+    }
+}
