@@ -38,3 +38,21 @@ fn decode_frame(frame: &[u8], out: &mut [u8]) -> Result<usize, ProtocolError> {
     }
     Ok(n - 2)
 }
+
+fn main() -> Result<(), ProtocolError> {
+    let mut wire = [0u8; 64];
+    let mut decoded = [0u8; 64];
+
+    let wire_len = encode_frame(&PAYLOAD, &mut wire)?;
+    println!("wire frame ({wire_len} bytes): {:02X?}", &wire[..wire_len]);
+    // The COBS body must contain no zero bytes; only the delimiter is zero.
+    assert!(
+        wire[..wire_len - 1].iter().all(|&b| b != 0),
+        "zero inside body"
+    );
+
+    let payload_len = decode_frame(&wire[..wire_len - 1], &mut decoded)?;
+    assert_eq!(&decoded[..payload_len], &PAYLOAD[..], "payload mismatch");
+    println!("decoded {payload_len} bytes, CRC ok");
+    Ok(())
+}
