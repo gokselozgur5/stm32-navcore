@@ -307,7 +307,7 @@ impl Ist8310Driver {
         Ok([x, y, z])
     }
 
-    /// Converts raw counts to calibrated magnetic field vector [uT] applying scale,
+    /// Converts raw counts to calibrated magnetic field vector `[uT]` applying scale,
     /// hard-iron bias removal, and cross-axis sensitivity matrix correction.
     pub fn compensate_mag(&self, raw: [i16; 3]) -> Result<[f32; 3], SensorError> {
         let bx_unscaled = (raw[0] as f32) * self.scale_ut_per_lsb - self.bias[0];
