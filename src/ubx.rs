@@ -494,4 +494,18 @@ mod corruption_tests {
         let (good, n) = frame(UBX_CLASS_NAV, UBX_ID_NAV_PVT, UBX_NAV_PVT_LEN);
         assert_eq!(count_messages(&mut parser, &good[..n]), 1);
     }
+
+    #[test]
+    fn pseudo_random_garbage_never_panics_or_emits() {
+        let mut parser = UbxParser::new();
+        let mut state: u32 = 0x1234_5678;
+        for _ in 0..200_000 {
+            state = state.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+            let b = (state >> 24) as u8;
+            assert!(!matches!(parser.process_byte(b), Ok(Some(_))));
+        }
+        parser.reset();
+        let (good, n) = frame(UBX_CLASS_NAV, UBX_ID_NAV_RELPOSNED, UBX_NAV_RELPOSNED_LEN);
+        assert_eq!(count_messages(&mut parser, &good[..n]), 1);
+    }
 }
