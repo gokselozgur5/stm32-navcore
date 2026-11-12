@@ -142,8 +142,10 @@ impl UbxNavRelPosNed {
         let rel_pos_n_cm = i32::from_le_bytes([payload[8], payload[9], payload[10], payload[11]]);
         let rel_pos_e_cm = i32::from_le_bytes([payload[12], payload[13], payload[14], payload[15]]);
         let rel_pos_d_cm = i32::from_le_bytes([payload[16], payload[17], payload[18], payload[19]]);
-        let rel_pos_length_cm = i32::from_le_bytes([payload[20], payload[21], payload[22], payload[23]]);
-        let rel_pos_heading_dege5 = i32::from_le_bytes([payload[24], payload[25], payload[26], payload[27]]);
+        let rel_pos_length_cm =
+            i32::from_le_bytes([payload[20], payload[21], payload[22], payload[23]]);
+        let rel_pos_heading_dege5 =
+            i32::from_le_bytes([payload[24], payload[25], payload[26], payload[27]]);
         let rel_pos_hp_n_mm0_1 = payload[32] as i8;
         let rel_pos_hp_e_mm0_1 = payload[33] as i8;
         let rel_pos_hp_d_mm0_1 = payload[34] as i8;
