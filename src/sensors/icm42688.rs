@@ -49,3 +49,20 @@ pub enum AccelFsr {
     G4 = 0x02,
     G2 = 0x03,
 }
+
+/// Output Data Rate (ODR) for Gyro and Accel.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Odr {
+    Odr32kHz = 0x01,
+    Odr16kHz = 0x02,
+    Odr8kHz = 0x03,
+    Odr4kHz = 0x04,
+    Odr2kHz = 0x05,
+    Odr1kHz = 0x06,
+    Odr200Hz = 0x07,
+    Odr100Hz = 0x08,
+    Odr50Hz = 0x09,
+    Odr25Hz = 0x0A,
+    Odr12_5Hz = 0x0B,
+}
