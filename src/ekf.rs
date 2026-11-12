@@ -391,6 +391,25 @@ mod tests {
     }
 
     #[test]
+    fn test_magnetic_anomaly_immunity() {
+        let mut ekf = NavEkf::new();
+        let true_yaw = 0.5f32;
+        let corrupted_mag_yaw = 2.5f32;
+        for _ in 0..50 {
+            ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], 0.02)
+                .unwrap();
+            let _ = ekf.fuse_heading_with_declination(
+                corrupted_mag_yaw,
+                1.0,
+                0.0,
+                Some((true_yaw, 0.005)),
+            );
+        }
+        let (_, _, est_yaw) = ekf.att.to_euler_zyx();
+        assert!((est_yaw - true_yaw).abs() < 0.05);
+    }
+
+    #[test]
     fn test_gnss_update_atomicity() {
         let mut ekf = NavEkf::new();
         let before_pos = ekf;
