@@ -193,4 +193,22 @@ mod tests {
             Err(RcEscError::InvalidFrameLength)
         );
     }
+
+    #[test]
+    fn test_crsf_type_and_crc_errors() {
+        let mut frame = [0u8; 26];
+        frame[0] = CRSF_SYNC_BYTE;
+        frame[1] = 24;
+        frame[2] = 0x28;
+        assert_eq!(
+            CrsfChannels::decode_frame(&frame),
+            Err(RcEscError::InvalidFrameType)
+        );
+        frame[2] = CRSF_FRAME_CHANNELS;
+        frame[25] = 0xFF;
+        assert_eq!(
+            CrsfChannels::decode_frame(&frame),
+            Err(RcEscError::CrcMismatch)
+        );
+    }
 }
