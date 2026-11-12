@@ -66,3 +66,11 @@ pub enum Odr {
     Odr25Hz = 0x0A,
     Odr12_5Hz = 0x0B,
 }
+
+/// Anti-Aliasing Filter (AAF) configuration.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct AafConfig {
+    pub delt: u8,
+    pub deltsqr: u16,
+    pub bitshift: u8,
+}
