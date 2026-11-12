@@ -394,3 +394,31 @@ impl Default for StationaryDetector {
         Self::new(10, 0.05, 0.03)
     }
 }
+
+impl StationaryDetector {
+    pub fn update(&mut self, accel_body: [f32; 3], gyro_body: [f32; 3]) -> bool {
+        let a_mag = libm::sqrtf(
+            accel_body[0] * accel_body[0]
+                + accel_body[1] * accel_body[1]
+                + accel_body[2] * accel_body[2],
+        );
+        let g_norm = libm::sqrtf(
+            gyro_body[0] * gyro_body[0] + gyro_body[1] * gyro_body[1] + gyro_body[2] * gyro_body[2],
+        );
+        self.sum_accel_mag += a_mag;
+        self.sum_accel_mag_sq += a_mag * a_mag;
+        if g_norm > self.max_gyro_norm {
+            self.max_gyro_norm = g_norm;
+        }
+        self.count += 1;
+        if self.count >= self.window_size {
+            let mean = self.sum_accel_mag / (self.count as f32);
+            let var = (self.sum_accel_mag_sq / (self.count as f32)) - (mean * mean);
+            let stat = var < self.var_accel_thresh && self.max_gyro_norm < self.norm_gyro_thresh;
+            self.reset();
+            stat
+        } else {
+            false
+        }
+    }
+}
