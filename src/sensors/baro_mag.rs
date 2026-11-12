@@ -160,3 +160,26 @@ impl Dps310Driver {
         if scale > 0.0 {
             self.p_scale = scale;
         }
+    }
+
+    /// Decodes raw 24-bit 2's complement temperature from 3 register bytes (0x03, 0x04, 0x05).
+    pub fn parse_raw_temperature(bytes: &[u8]) -> Result<i32, SensorError> {
+        if bytes.len() < 3 {
+            return Err(SensorError::BufferTooShort);
+        }
+        let raw = ((bytes[0] as u32) << 16) | ((bytes[1] as u32) << 8) | (bytes[2] as u32);
+        Ok(sign_extend_24(raw))
+    }
+
+    /// Decodes raw 24-bit 2's complement pressure from 3 register bytes (0x00, 0x01, 0x02).
+    pub fn parse_raw_pressure(bytes: &[u8]) -> Result<i32, SensorError> {
+        if bytes.len() < 3 {
+            return Err(SensorError::BufferTooShort);
+        }
+        let raw = ((bytes[0] as u32) << 16) | ((bytes[1] as u32) << 8) | (bytes[2] as u32);
+        Ok(sign_extend_24(raw))
+    }
+
+    /// Calculates scaled temperature T_raw / kT.
+    pub fn scale_temperature(&self, raw_t: i32) -> f32 {
+        (raw_t as f32) / self.t_scale
