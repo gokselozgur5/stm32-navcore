@@ -94,3 +94,11 @@ pub struct RawSample {
     pub gyro: [i16; 3],
     pub temp: i16,
 }
+
+/// Calibrated physical unit sample (m/s^2, rad/s, deg C).
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub struct ScaledSample {
+    pub accel_m_s2: [f32; 3],
+    pub gyro_rad_s: [f32; 3],
+    pub temp_c: f32,
+}
