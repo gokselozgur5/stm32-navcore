@@ -178,3 +178,23 @@ impl UbxNavRelPosNed {
         let acc_n_mm0_1 = u32::from_le_bytes([payload[36], payload[37], payload[38], payload[39]]);
         let acc_e_mm0_1 = u32::from_le_bytes([payload[40], payload[41], payload[42], payload[43]]);
         let acc_d_mm0_1 = u32::from_le_bytes([payload[44], payload[45], payload[46], payload[47]]);
+        let acc_length_mm0_1 =
+            u32::from_le_bytes([payload[48], payload[49], payload[50], payload[51]]);
+        let acc_heading_dege5 =
+            u32::from_le_bytes([payload[52], payload[53], payload[54], payload[55]]);
+        let flags = u32::from_le_bytes([payload[60], payload[61], payload[62], payload[63]]);
+        Ok(Self {
+            version,
+            station_id,
+            i_tow_ms,
+            rel_pos_n_cm,
+            rel_pos_e_cm,
+            rel_pos_d_cm,
+            rel_pos_length_cm,
+            rel_pos_heading_dege5,
+            rel_pos_hp_n_mm0_1,
+            rel_pos_hp_e_mm0_1,
+            rel_pos_hp_d_mm0_1,
+            rel_pos_hp_length_mm0_1,
+            acc_n_mm0_1,
+            acc_e_mm0_1,
