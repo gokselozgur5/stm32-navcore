@@ -78,3 +78,23 @@ impl UbxNavPvt {
         let flags = payload[21];
         let flags2 = payload[22];
         let num_sv = payload[23];
+        let lon_dege7 = i32::from_le_bytes([payload[24], payload[25], payload[26], payload[27]]);
+        let lat_dege7 = i32::from_le_bytes([payload[28], payload[29], payload[30], payload[31]]);
+        let height_mm = i32::from_le_bytes([payload[32], payload[33], payload[34], payload[35]]);
+        let h_msl_mm = i32::from_le_bytes([payload[36], payload[37], payload[38], payload[39]]);
+        let h_acc_mm = u32::from_le_bytes([payload[40], payload[41], payload[42], payload[43]]);
+        let v_acc_mm = u32::from_le_bytes([payload[44], payload[45], payload[46], payload[47]]);
+        let vel_n_mmps = i32::from_le_bytes([payload[48], payload[49], payload[50], payload[51]]);
+        let vel_e_mmps = i32::from_le_bytes([payload[52], payload[53], payload[54], payload[55]]);
+        let vel_d_mmps = i32::from_le_bytes([payload[56], payload[57], payload[58], payload[59]]);
+        let g_speed_mmps = i32::from_le_bytes([payload[60], payload[61], payload[62], payload[63]]);
+        let head_mot_dege5 =
+            i32::from_le_bytes([payload[64], payload[65], payload[66], payload[67]]);
+        let s_acc_mmps = u32::from_le_bytes([payload[68], payload[69], payload[70], payload[71]]);
+        let head_acc_dege5 =
+            u32::from_le_bytes([payload[72], payload[73], payload[74], payload[75]]);
+        let p_dop = u16::from_le_bytes([payload[76], payload[77]]);
+        let flags3 = u16::from_le_bytes([payload[78], payload[79]]);
+        let head_veh_dege5 =
+            i32::from_le_bytes([payload[84], payload[85], payload[86], payload[87]]);
+        Ok(Self {
