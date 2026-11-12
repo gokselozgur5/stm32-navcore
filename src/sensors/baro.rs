@@ -68,3 +68,25 @@ impl BaroFilter {
         }
     }
 }
+
+impl BaroFilter {
+    /// Feeds one altitude sample; returns the filtered value or None if rejected.
+    pub fn update(&mut self, alt_m: f32) -> Option<f32> {
+        if !alt_m.is_finite() {
+            return None;
+        }
+        let Some(prev) = self.state else {
+            self.state = Some(alt_m);
+            return self.state;
+        };
+        let jump = if alt_m > prev { alt_m - prev } else { prev - alt_m };
+        if jump > self.gate_m && self.rejects < self.max_rejects {
+            self.rejects += 1;
+            return None;
+        }
+        self.rejects = 0;
+        let next = prev + self.alpha * (alt_m - prev);
+        self.state = Some(next);
+        self.state
+    }
+}
