@@ -5,6 +5,7 @@
 #![cfg_attr(not(test), no_std)]
 
 pub mod ekf;
+pub use ekf::StationaryDetector;
 pub mod math;
 pub mod protocol;
 
