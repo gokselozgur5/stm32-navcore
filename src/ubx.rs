@@ -198,7 +198,10 @@ impl UbxParser {
         self.len = 0;
     }
 
-    pub fn process_byte(&mut self, b: u8) -> Result<Option<UbxMessage>, crate::protocol::ProtocolError> {
+    pub fn process_byte(
+        &mut self,
+        b: u8,
+    ) -> Result<Option<UbxMessage>, crate::protocol::ProtocolError> {
         if self.len == 0 {
             if b == UBX_SYNC_1 {
                 self.buf[0] = b;
