@@ -204,7 +204,7 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
             }
         }
 
-        let is_gnss_outage = (25.0..30.0).contains(&t);
+        let is_gnss_outage = (20.0..30.0).contains(&t);
 
         if !is_gnss_outage && step % 20 == 0 {
             let gnss_p = [
