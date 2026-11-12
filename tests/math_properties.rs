@@ -44,3 +44,21 @@ fn transpose_identities_hold() {
         assert!(close(&lhs, &rhs, 1e-6));
     }
 }
+
+#[test]
+fn inverse_times_matrix_is_identity() {
+    let mut s = 99;
+    let mut checked = 0;
+    for _ in 0..500 {
+        let a: Mat<3, 3> = rand_mat(&mut s);
+        let b: Mat<2, 2> = rand_mat(&mut s);
+        if let Some(inv) = a.inv_3x3() {
+            assert!(close(&a.matmul(&inv), &Mat::identity(), 1e-2));
+            checked += 1;
+        }
+        if let Some(inv) = b.inv_2x2() {
+            assert!(close(&b.matmul(&inv), &Mat::identity(), 1e-2));
+        }
+    }
+    assert!(checked > 400);
+}
