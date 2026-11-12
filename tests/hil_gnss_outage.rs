@@ -35,3 +35,18 @@ fn outage_error_stays_bounded_and_covariance_grows() {
     assert!(worst < 1.0, "outage drift {worst}");
     assert!(ekf.cov.0[0][0] > before, "covariance must grow in outage");
 }
+
+#[test]
+fn reacquisition_pulls_position_back_and_shrinks_covariance() {
+    let mut ekf = NavEkf::new();
+    ekf.v_ned_mps = [SPEED, 0.0, 0.0];
+    cruise_north(&mut ekf, 0, 1000, true);
+    cruise_north(&mut ekf, 1000, 2000, false);
+    let outage_cov = ekf.cov.0[0][0];
+    ekf.p_ned_m[0] += 3.0;
+    let worst = cruise_north(&mut ekf, 2000, 3000, true);
+    assert!(worst < 3.5, "worst error after reacquisition {worst}");
+    let final_err = (ekf.p_ned_m[0] - SPEED * 30.0).abs();
+    assert!(final_err < 0.2, "final error {final_err}");
+    assert!(ekf.cov.0[0][0] < outage_cov);
+}
