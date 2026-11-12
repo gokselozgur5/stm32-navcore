@@ -150,3 +150,30 @@ impl SphereFit {
         self.count = self.count.saturating_add(1);
     }
 }
+
+/// Gauss-Jordan solve of a 4x4 augmented system; `None` if singular.
+#[allow(clippy::needless_range_loop)]
+fn solve4(mut a: [[f64; 5]; 4]) -> Option<[f64; 4]> {
+    for i in 0..4 {
+        let mut p = i;
+        for r in i + 1..4 {
+            if libm::fabs(a[r][i]) > libm::fabs(a[p][i]) {
+                p = r;
+            }
+        }
+        if libm::fabs(a[p][i]) < 1e-9 {
+            return None;
+        }
+        a.swap(i, p);
+        let pivot = a[i];
+        for (r, row) in a.iter_mut().enumerate() {
+            if r != i {
+                let f = row[i] / pivot[i];
+                for (c, v) in row.iter_mut().enumerate() {
+                    *v -= f * pivot[c];
+                }
+            }
+        }
+    }
+    Some([0, 1, 2, 3].map(|i| a[i][4] / a[i][i]))
+}
