@@ -321,3 +321,26 @@ impl Ist8310Driver {
         if !bx.is_finite() || !by.is_finite() || !bz.is_finite() {
             return Err(SensorError::NonFinite);
         }
+
+        let norm_sq = bx * bx + by * by + bz * bz;
+        if norm_sq < 1e-6 {
+            return Err(SensorError::InvalidMagNorm);
+        }
+
+        Ok([bx, by, bz])
+    }
+
+    /// Computes tilt-compensated heading (yaw in radians [-pi, pi]) from calibrated magnetic vector
+    /// and roll/pitch attitude angles (radians).
+    pub fn tilt_compensated_yaw(
+        &self,
+        raw: [i16; 3],
+        roll: f32,
+        pitch: f32,
+    ) -> Result<f32, SensorError> {
+        let b_scaled = [
+            (raw[0] as f32) * self.scale_ut_per_lsb,
+            (raw[1] as f32) * self.scale_ut_per_lsb,
+            (raw[2] as f32) * self.scale_ut_per_lsb,
+        ];
+        let yaw = tilt_compensated_yaw(b_scaled, self.bias, self.sensitivity_matrix, roll, pitch)?;
