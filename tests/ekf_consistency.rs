@@ -72,3 +72,19 @@ fn nis_exceedance_rate_matches_95_percent_gate() {
     let rate = over as f64 / nis.len() as f64;
     assert!(rate < 0.07, "exceedance rate {rate}");
 }
+
+/// Stationary run; returns (x innovations, summed squared position error).
+fn stationary_run(seed: u64, steps: usize) -> (Vec<f32>, Vec<f32>) {
+    let mut rng = Rng(seed);
+    let mut ekf = NavEkf::new();
+    let (mut innov, mut err_sq) = (Vec::new(), Vec::new());
+    for _ in 0..steps {
+        ekf.predict([0.0, 0.0, -9.80665], [0.0; 3], 0.1).unwrap();
+        let z = [rng.gauss(), rng.gauss(), rng.gauss()];
+        innov.push(z[0] - ekf.p_ned_m[0]);
+        ekf.update_gnss_pos(z, 1.0, 100.0).unwrap();
+        let p = ekf.p_ned_m;
+        err_sq.push(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
+    }
+    (innov, err_sq)
+}
