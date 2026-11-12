@@ -181,3 +181,15 @@ pub fn decode_accel_bytes(raw: &[u8; 6], range: AccelRange) -> AccelReading {
         az_m_s2: range.scale_m_s2(raw_z),
     }
 }
+
+/// Decode 6 raw bytes from BMI088 gyroscope into physical SI units.
+pub fn decode_gyro_bytes(raw: &[u8; 6], range: GyroRange) -> GyroReading {
+    let raw_x = i16::from_le_bytes([raw[0], raw[1]]);
+    let raw_y = i16::from_le_bytes([raw[2], raw[3]]);
+    let raw_z = i16::from_le_bytes([raw[4], raw[5]]);
+    GyroReading {
+        gx_rad_s: range.scale_rad_s(raw_x),
+        gy_rad_s: range.scale_rad_s(raw_y),
+        gz_rad_s: range.scale_rad_s(raw_z),
+    }
+}
