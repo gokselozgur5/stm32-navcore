@@ -22,6 +22,25 @@ pub struct CalibrationBlock {
     pub accel_scale: [f32; 3],
 }
 
+impl CalibrationBlock {
+    pub const MAGIC_VERSION: u16 = 0xCA02;
+    pub const PAYLOAD_SIZE: usize = 74;
+    pub const TOTAL_SIZE: usize = 76;
+
+    pub fn validate_finite(&self) -> Result<(), ProtocolError> {
+        let h = self.mag_hard_iron;
+        let g = self.gyro_bias_rps;
+        let a = self.accel_scale;
+        let base = [h[0], h[1], h[2], g[0], g[1], g[2], a[0], a[1], a[2]];
+        for &v in &base {
+            if !v.is_finite() {
+                return Err(ProtocolError::NonFiniteFloat);
+            }
+        }
+        Ok(())
+    }
+}
+
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
     let mut crc = 0xFFFFu16;
     for &byte in data {
