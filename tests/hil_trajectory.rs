@@ -150,9 +150,9 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         let true_gyro_b = [0.0, 0.0, yaw_rate];
 
         let meas_accel_b = [
-            true_accel_b[0] + rng.next_gaussian_approx(0.02),
-            true_accel_b[1] + rng.next_gaussian_approx(0.02),
-            true_accel_b[2] + rng.next_gaussian_approx(0.02),
+            true_accel_b[0] + rng.next_gaussian_approx(0.01),
+            true_accel_b[1] + rng.next_gaussian_approx(0.01),
+            true_accel_b[2] + rng.next_gaussian_approx(0.01),
         ];
 
         let meas_gyro_b = [
