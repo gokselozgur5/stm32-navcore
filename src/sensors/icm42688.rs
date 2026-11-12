@@ -140,3 +140,16 @@ impl Icm42688 {
         (dps / 32768.0) * (core::f32::consts::PI / 180.0)
     }
 }
+
+impl Icm42688 {
+    /// Accel sensitivity in (m/s^2) per LSB.
+    pub fn accel_sensitivity_m_s2(&self) -> f32 {
+        let g = match self.accel_fsr {
+            AccelFsr::G16 => 16.0,
+            AccelFsr::G8 => 8.0,
+            AccelFsr::G4 => 4.0,
+            AccelFsr::G2 => 2.0,
+        };
+        (g / 32768.0) * 9.80665
+    }
+}
