@@ -798,3 +798,27 @@ impl AccelBiasEstimator {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod accel_bias_tests {
+    use super::*;
+
+    const BIAS: [f32; 3] = [0.12, -0.08, 0.2];
+
+    #[test]
+    #[allow(clippy::needless_range_loop)]
+    fn converges_to_known_bias_under_noise() {
+        let mut est = AccelBiasEstimator::new(1.0, 0.01);
+        let mut seed = 0x2468_ace1u32;
+        for _ in 0..2000 {
+            seed = seed.wrapping_mul(1_664_525).wrapping_add(1_013_904_223);
+            let n = ((seed >> 8) as f32 / 16_777_216.0 - 0.5) * 0.2;
+            let accel = [BIAS[0] + n, BIAS[1] - n, -9.80665 + BIAS[2] + 0.5 * n];
+            est.update(&Quaternion::IDENTITY, accel).unwrap();
+        }
+        for i in 0..3 {
+            assert!((est.bias_mps2[i] - BIAS[i]).abs() < 0.02, "axis {}", i);
+            assert!(est.var_mps2_sq[i] < 1e-4, "axis {}", i);
+        }
+    }
+}
