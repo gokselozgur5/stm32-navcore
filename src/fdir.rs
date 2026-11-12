@@ -38,6 +38,12 @@ impl DualImuManager {
         }
     }
 
+    /// Enables primary recovery after `epochs` consecutive clean epochs (0 disables).
+    pub fn with_recovery(mut self, epochs: u32) -> Self {
+        self.recovery_epochs = epochs;
+        self
+    }
+
     pub fn default_config() -> Self {
         Self::new(12.59, 3)
     }
