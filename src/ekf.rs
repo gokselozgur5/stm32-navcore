@@ -289,6 +289,24 @@ impl NavEkf {
 }
 
 impl NavEkf {
+    /// Scalar Joseph update for vertical velocity (vd = -climb_rate).
+    pub fn update_vertical_velocity(
+        &mut self,
+        v_down_mps: f32,
+        r_v_down: f32,
+        gate: f32,
+    ) -> Result<f32, EkfError> {
+        if !v_down_mps.is_finite() {
+            return Err(EkfError::InvalidInput);
+        }
+        let mut h = [0.0f32; STATE_DIM];
+        h[5] = 1.0;
+        let y = v_down_mps - self.v_ned_mps[2];
+        self.update_joseph_scalar(h, y, r_v_down, gate)
+    }
+}
+
+impl NavEkf {
     pub fn update_mag_yaw(&mut self, yaw_obs: f32, r_yaw: f32, gate: f32) -> Result<f32, EkfError> {
         if !yaw_obs.is_finite() {
             return Err(EkfError::InvalidInput);
