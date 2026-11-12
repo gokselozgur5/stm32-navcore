@@ -72,3 +72,26 @@ impl MagMinMax {
         half.map(|h| if h > 1e-6 { avg / h } else { 1.0 })
     }
 }
+
+/// Hard-iron offset and diagonal soft-iron scale applied to raw samples.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MagCal {
+    pub offset: [f32; 3],
+    pub scale: [f32; 3],
+}
+
+impl MagCal {
+    /// Identity calibration: no offset, unit scale.
+    pub const IDENTITY: Self = Self {
+        offset: [0.0; 3],
+        scale: [1.0; 3],
+    };
+
+    /// Builds a calibration from an accumulator.
+    pub fn from_min_max(mm: &MagMinMax) -> Self {
+        Self {
+            offset: mm.offset(),
+            scale: mm.scale(),
+        }
+    }
+}
