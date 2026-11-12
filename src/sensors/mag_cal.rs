@@ -200,3 +200,28 @@ impl SphereFit {
         Some(([a as f32, b as f32, c as f32], libm::sqrt(r2) as f32))
     }
 }
+
+/// Tracks which of the eight octants around a centre have been visited.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct MagCoverage {
+    mask: u8,
+}
+
+impl MagCoverage {
+    /// Creates an empty tracker.
+    pub const fn new() -> Self {
+        Self { mask: 0 }
+    }
+
+    /// Marks the octant of `s` relative to `centre`.
+    #[allow(clippy::needless_range_loop)]
+    pub fn add(&mut self, s: [f32; 3], centre: [f32; 3]) {
+        let mut bit = 0;
+        for i in 0..3 {
+            if s[i] >= centre[i] {
+                bit |= 1 << i;
+            }
+        }
+        self.mask |= 1 << bit;
+    }
+}
