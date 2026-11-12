@@ -172,3 +172,15 @@ pub struct UbxParser {
     buf: [u8; 128],
     len: usize,
 }
+
+impl UbxParser {
+    pub const fn new() -> Self {
+        Self {
+            buf: [0u8; 128],
+            len: 0,
+        }
+    }
+
+    pub fn reset(&mut self) {
+        self.len = 0;
+    }
