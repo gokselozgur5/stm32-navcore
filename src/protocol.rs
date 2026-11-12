@@ -656,3 +656,6 @@ mod tests {
         );
     }
 }
+
+pub mod rc_esc;
+pub use rc_esc::{CrsfFrame, CrsfParser, DshotFrame, DshotSpeed};
