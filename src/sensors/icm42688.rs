@@ -252,3 +252,11 @@ impl Icm42688 {
         Some(RawSample { accel, gyro, temp })
     }
 }
+
+/// High-resolution 20-bit raw sample decoded from extended FIFO format.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct RawSample20Bit {
+    pub accel_20bit: [i32; 3],
+    pub gyro_20bit: [i32; 3],
+    pub temp: i16,
+}
