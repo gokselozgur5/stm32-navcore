@@ -287,6 +287,32 @@ impl NavEkf {
         h[6] = 1.0;
         self.update_joseph_scalar(h, y, r_yaw, gate)
     }
+
+    pub fn update_dual_antenna_heading(
+        &mut self,
+        yaw_rad: f32,
+        pitch_rad: f32,
+        variance: f32,
+    ) -> Result<f32, EkfError> {
+        if !yaw_rad.is_finite()
+            || !pitch_rad.is_finite()
+            || !variance.is_finite()
+            || variance <= 0.0
+        {
+            return Err(EkfError::InvalidInput);
+        }
+        let (_, _, current_yaw) = self.att.to_euler_zyx();
+        let mut y = yaw_rad - current_yaw;
+        while y > core::f32::consts::PI {
+            y -= 2.0 * core::f32::consts::PI;
+        }
+        while y < -core::f32::consts::PI {
+            y += 2.0 * core::f32::consts::PI;
+        }
+        let mut h = [0.0f32; STATE_DIM];
+        h[6] = 1.0;
+        self.update_joseph_scalar(h, y, variance, 25.0)
+    }
 }
 
 #[cfg(test)]
