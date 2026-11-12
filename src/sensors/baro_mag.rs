@@ -367,3 +367,26 @@ mod tests {
         assert_eq!(sign_extend_24(0x000001), 1);
         assert_eq!(sign_extend_24(0x7FFFFF), 8388607);
         assert_eq!(sign_extend_24(0x800000), -8388608);
+        assert_eq!(sign_extend_24(0xFFFFFF), -1);
+    }
+
+    #[test]
+    fn test_dps310_calib_decoding_and_buffer_bounds() {
+        assert_eq!(
+            Dps310Calib::from_raw_bytes(&[0u8; 17]),
+            Err(SensorError::BufferTooShort)
+        );
+
+        // Dummy known bytes
+        let mut raw = [0u8; 18];
+        raw[0] = 0x12;
+        raw[1] = 0x34;
+        raw[2] = 0x56;
+        let cal = Dps310Calib::from_raw_bytes(&raw).unwrap();
+        assert_eq!(cal.c0, 0x123 as f32);
+        assert_eq!(cal.c1, 0x456 as f32);
+    }
+
+    #[test]
+    fn test_dps310_pressure_temperature_compensation() {
+        // Known calibration parameters
