@@ -90,3 +90,24 @@ impl CrsfChannels {
         Ok(())
     }
 }
+
+impl CrsfChannels {
+    pub fn decode_frame(buf: &[u8]) -> Result<Self, RcEscError> {
+        Self::check_header(buf)?;
+        let expected_crc = buf[25];
+        let calc_crc = crc8_dvb_s2(&buf[2..25]);
+        if expected_crc != calc_crc {
+            return Err(RcEscError::CrcMismatch);
+        }
+        let mut raw_22 = [0u8; 22];
+        raw_22.copy_from_slice(&buf[3..25]);
+        let raw_ch = Self::unpack_channels(&raw_22);
+        let mut channels = [0.0f32; 16];
+        let mut i = 0;
+        while i < 16 {
+            channels[i] = Self::normalize_channel(raw_ch[i]);
+            i += 1;
+        }
+        Ok(Self { channels })
+    }
+}
