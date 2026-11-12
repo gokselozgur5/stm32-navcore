@@ -93,6 +93,15 @@ impl DualImuManager {
         } else if !faulty {
             self.consecutive_faults = 0;
         }
+        if !self.primary_healthy && self.recovery_epochs > 0 {
+            self.clean_epochs = if faulty { 0 } else { self.clean_epochs + 1 };
+            if self.clean_epochs >= self.recovery_epochs {
+                self.primary_healthy = true;
+                self.active_imu = ImuId::Primary;
+                self.consecutive_faults = 0;
+                self.clean_epochs = 0;
+            }
+        }
         match self.active_imu {
             ImuId::Primary => *p,
             ImuId::Secondary => *s,
