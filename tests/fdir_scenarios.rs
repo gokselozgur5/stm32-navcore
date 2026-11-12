@@ -21,3 +21,15 @@ fn spike_shorter_than_limit_is_ignored() {
     assert_eq!(m.active_imu, ImuId::Primary);
     assert_eq!(m.consecutive_faults, 0);
 }
+
+#[test]
+fn intermittent_spikes_reset_the_counter() {
+    let mut m = DualImuManager::default_config();
+    let spike = imu([5.0, 0.0, 0.0]);
+    for _ in 0..10 {
+        m.update_and_select(&spike, &imu([0.0; 3]), VAR);
+        m.update_and_select(&imu([0.0; 3]), &imu([0.0; 3]), VAR);
+    }
+    assert!(m.primary_healthy);
+    assert_eq!(m.active_imu, ImuId::Primary);
+}
