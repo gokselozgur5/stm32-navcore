@@ -338,3 +338,23 @@ mod tests {
         assert_eq!(imu.accel_fsr, AccelFsr::G16);
         assert!((imu.gyro_sensitivity_rad_s() - 0.00106526).abs() < 1e-6);
         assert!((imu.accel_sensitivity_m_s2() - 0.0047884).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_icm42688_register_encoding_and_aaf() {
+        let imu = Icm42688::new();
+        assert_eq!(
+            Icm42688::encode_write_reg(reg::PWR_MGMT0, 0x0F),
+            [0x4E, 0x0F]
+        );
+        assert_eq!(Icm42688::encode_read_reg(reg::WHO_AM_I), [0xF5, 0x00]);
+        assert_eq!(imu.encode_gyro_config0(), 0x06);
+        assert_eq!(imu.encode_accel_config0(), 0x06);
+        let aaf = imu.encode_gyro_aaf_regs().unwrap();
+        assert_eq!(aaf[0], [0x0C, 6]);
+        assert_eq!(aaf[1], [0x0D, 36]);
+    }
+
+    #[test]
+    fn test_icm42688_fifo_packet_decoding() {
+        let mut pkt = [0u8; 20];
