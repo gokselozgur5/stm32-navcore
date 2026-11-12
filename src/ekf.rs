@@ -175,6 +175,31 @@ mod cov_pd_tests {
     }
 }
 
+#[cfg(test)]
+mod cov_pd_long_run {
+    use super::*;
+
+    #[test]
+    fn joseph_covariance_stays_positive_definite_for_20000_epochs() {
+        let mut ekf = NavEkf::new();
+        let dt = 0.01;
+        for step in 0..20_000u32 {
+            let t = step as f32 * dt;
+            let gyro = [0.0, 0.0, 0.02 + 0.01 * libm::sinf(0.3 * t)];
+            ekf.predict([0.1, 0.0, -9.80665], gyro, dt).unwrap();
+            if step % 10 == 0 {
+                let _ = ekf.update_gnss_pos([0.0; 3], 0.5, 1e6);
+                let _ = ekf.update_gnss_vel([0.0; 3], 0.1, 1e6);
+            }
+            if step % 5 == 0 {
+                let _ = ekf.update_baro_altitude(0.0, 0.2, 1e6);
+                let _ = ekf.update_mag_yaw(0.0, 0.01, 1e6);
+            }
+            assert!(ekf.covariance_is_positive_definite(), "epoch {}", step);
+        }
+    }
+}
+
 impl NavEkf {
     pub fn predict(
         &mut self,
