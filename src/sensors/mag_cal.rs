@@ -41,3 +41,18 @@ impl MagMinMax {
         self.count
     }
 }
+
+impl MagMinMax {
+    /// Hard-iron offset: the per-axis midpoint of the observed range.
+    pub fn offset(&self) -> [f32; 3] {
+        let mut o = [0.0; 3];
+        for (i, v) in o.iter_mut().enumerate() {
+            *v = if self.count == 0 {
+                0.0
+            } else {
+                0.5 * (self.min[i] + self.max[i])
+            };
+        }
+        o
+    }
+}
