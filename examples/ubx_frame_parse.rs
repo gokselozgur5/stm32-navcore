@@ -50,3 +50,18 @@ fn build_frame(class: u8, id: u8, payload: &[u8], out: &mut [u8]) -> usize {
     out[7 + len] = ck_b;
     8 + len
 }
+
+/// Feeds a byte stream to the parser and returns the first NAV-PVT found.
+///
+/// Parser errors are fatal here because the input is generated locally.
+fn parse_stream(stream: &[u8]) -> Option<UbxNavPvt> {
+    let mut parser = UbxParser::new();
+    for &byte in stream {
+        match parser.process_byte(byte).expect("frame rejected") {
+            Some(UbxMessage::NavPvt(pvt)) => return Some(pvt),
+            Some(other) => println!("ignoring {other:?}"),
+            None => {}
+        }
+    }
+    None
+}
