@@ -16,3 +16,21 @@ impl Rng {
     }
 }
 
+#[test]
+fn white_noise_matches_theory() {
+    let (tau0, sigma) = (0.01, 0.5);
+    let mut est = AllanEstimator::<129, 7>::new(tau0);
+    let mut rng = Rng(0x9E37_79B9_7F4A_7C15);
+    for _ in 0..200_000 {
+        est.push(sigma * rng.gauss());
+    }
+    for level in 0..7 {
+        let theory = sigma * libm::sqrt(tau0 / est.tau(level));
+        let got = est.adev(level).unwrap();
+        assert!(
+            (got / theory - 1.0).abs() < 0.08,
+            "level {level}: {got} vs {theory}"
+        );
+    }
+}
+
