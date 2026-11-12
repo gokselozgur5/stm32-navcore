@@ -108,3 +108,25 @@ impl DualImuManager {
     pub fn total_failovers(&self) -> u32 {
         self.total_failovers
     }
+
+    fn vector_diff_norm_sq(a: &[f32; 3], b: &[f32; 3]) -> f32 {
+        let dx = a[0] - b[0];
+        let dy = a[1] - b[1];
+        let dz = a[2] - b[2];
+        dx * dx + dy * dy + dz * dz
+    }
+
+    /// Compute normalized chi-square statistic for gyro difference.
+    pub fn compute_gyro_chi_square(&self, s1: &ImuSample, s2: &ImuSample, var: f32) -> f32 {
+        if var <= 1e-9 {
+            return 0.0;
+        }
+        let norm_sq = Self::vector_diff_norm_sq(&s1.gyro_rads, &s2.gyro_rads);
+        norm_sq / var
+    }
+
+    /// Process an epoch with samples from primary and secondary IMUs.
+    pub fn process_epoch(
+        &mut self,
+        primary: &ImuSample,
+        secondary: &ImuSample,
