@@ -28,3 +28,10 @@ fn gyro_bias_is_unobservable_without_heading_aiding() {
         assert!(ekf.gyro_bias_sigma() >= initial, "step {}", step);
     }
 }
+
+#[test]
+fn gyro_bias_becomes_observable_with_heading_aiding() {
+    let initial = NavEkf::new().gyro_bias_sigma();
+    let sigma = run_with_heading_aiding(0.0, 600).gyro_bias_sigma();
+    assert!(sigma < 0.2 * initial, "sigma={}", sigma);
+}
