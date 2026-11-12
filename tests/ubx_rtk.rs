@@ -1,4 +1,4 @@
-use stm32_navcore::ubx::{CarrierSolution, UbxNavPvt, UbxNavRelPosNed};
+use stm32_navcore::ubx::*;
 
 fn pvt_with_flags(flags: u8) -> UbxNavPvt {
     let mut p = [0u8; 92];
@@ -50,4 +50,15 @@ fn relposned_carrier_solution_and_validity() {
     assert!(fixed.rel_pos_valid() && fixed.heading_valid());
     assert!(!rel_with_flags(!((1 << 2) | (1 << 8))).rel_pos_valid());
     assert!(!rel_with_flags(!(1 << 8)).heading_valid());
+}
+
+fn relposned_frame(flags: u32) -> [u8; 72] {
+    let mut frame = [0u8; 72];
+    frame[..4].copy_from_slice(&[UBX_SYNC_1, UBX_SYNC_2, UBX_CLASS_NAV, UBX_ID_NAV_RELPOSNED]);
+    frame[4] = 64;
+    frame[66..70].copy_from_slice(&flags.to_le_bytes());
+    let (ck_a, ck_b) = ubx_checksum(&frame[2..70]);
+    frame[70] = ck_a;
+    frame[71] = ck_b;
+    frame
 }
