@@ -95,3 +95,14 @@ impl MagCal {
         }
     }
 }
+
+impl MagCal {
+    /// Returns `(raw - offset) * scale` per axis.
+    pub fn apply(&self, raw: [f32; 3]) -> [f32; 3] {
+        [
+            (raw[0] - self.offset[0]) * self.scale[0],
+            (raw[1] - self.offset[1]) * self.scale[1],
+            (raw[2] - self.offset[2]) * self.scale[2],
+        ]
+    }
+}
