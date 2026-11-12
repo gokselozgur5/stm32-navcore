@@ -48,3 +48,27 @@ impl<const N: usize, const L: usize> AllanEstimator<N, L> {
         }
     }
 }
+
+impl<const N: usize, const L: usize> AllanEstimator<N, L> {
+    /// Cluster time in seconds for `level`.
+    pub fn tau(&self, level: usize) -> f64 {
+        self.tau0 * (1u64 << level) as f64
+    }
+
+    /// Number of second differences accumulated at `level`.
+    pub fn count(&self, level: usize) -> u64 {
+        self.count[level]
+    }
+
+    /// Overlapping Allan variance at `level`, or `None` without data.
+    pub fn avar(&self, level: usize) -> Option<f64> {
+        let n = self.count[level];
+        let tau = self.tau(level);
+        (n > 0).then(|| self.sum[level] / (2.0 * tau * tau * n as f64))
+    }
+
+    /// Allan deviation at `level`, or `None` without data.
+    pub fn adev(&self, level: usize) -> Option<f64> {
+        self.avar(level).map(libm::sqrt)
+    }
+}
