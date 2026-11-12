@@ -8,7 +8,10 @@ fn frame_limits() {
         Err(ProtocolError::InvalidCanId)
     );
     assert!(CanFrame20B::new(0, 0, [0; 8]).is_ok());
-    assert_eq!(CanFrame20B::new(0, 9, [0; 8]), Err(ProtocolError::InvalidCanDlc));
+    assert_eq!(
+        CanFrame20B::new(0, 9, [0; 8]),
+        Err(ProtocolError::InvalidCanDlc)
+    );
 }
 
 fn sample() -> NavTelemetry {
@@ -29,4 +32,20 @@ fn pack_layout_and_roundtrip() {
         assert_eq!(fr.dlc, if i == 5 { 3 } else { 8 });
     }
     assert_eq!(NavTelemetry::unpack_can(&f).unwrap(), sample());
+}
+
+#[test]
+fn unpack_rejects_wrong_id_and_dlc() {
+    let mut f = sample().pack_can().unwrap();
+    f[2].id += 1;
+    assert_eq!(
+        NavTelemetry::unpack_can(&f),
+        Err(ProtocolError::InvalidCanId)
+    );
+    let mut f = sample().pack_can().unwrap();
+    f[5].dlc = 8;
+    assert_eq!(
+        NavTelemetry::unpack_can(&f),
+        Err(ProtocolError::InvalidCanDlc)
+    );
 }
