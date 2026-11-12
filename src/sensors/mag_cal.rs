@@ -242,3 +242,28 @@ impl MagCoverage {
         self.mask == 0xFF
     }
 }
+
+/// Accumulates deviation of corrected magnitudes from a reference radius.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct MagResidual {
+    sum_sq: f32,
+    count: u32,
+}
+
+impl MagResidual {
+    /// Creates an empty accumulator.
+    pub const fn new() -> Self {
+        Self {
+            sum_sq: 0.0,
+            count: 0,
+        }
+    }
+
+    /// Adds one corrected sample measured against `radius`.
+    pub fn add(&mut self, corrected: [f32; 3], radius: f32) {
+        let m = libm::sqrtf(corrected.iter().map(|v| v * v).sum::<f32>());
+        let d = m - radius;
+        self.sum_sq += d * d;
+        self.count = self.count.saturating_add(1);
+    }
+}
