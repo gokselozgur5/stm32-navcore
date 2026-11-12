@@ -153,3 +153,10 @@ impl Icm42688 {
         (g / 32768.0) * 9.80665
     }
 }
+
+impl Icm42688 {
+    /// Convert raw 16-bit temperature register value to degrees Celsius.
+    pub fn scale_temperature(raw_temp: i16) -> f32 {
+        (raw_temp as f32 / 132.48) + 25.0
+    }
+}
