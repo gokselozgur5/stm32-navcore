@@ -342,3 +342,23 @@ mod tests_parse {
         );
     }
 }
+
+#[cfg(test)]
+mod tests_dshot {
+    use super::*;
+
+    #[test]
+    fn test_dshot_encode_decode_and_timing() {
+        assert_eq!(DshotSpeed::Dshot300.bit_period_ns(), 3333);
+        assert_eq!(DshotSpeed::Dshot600.bit_period_ns(), 1667);
+        let dshot = DshotFrame::new(1046, true);
+        let raw = dshot.encode();
+        let decoded = DshotFrame::decode(raw).unwrap();
+        assert_eq!(decoded.throttle, 1046);
+        assert!(decoded.telemetry);
+        assert_eq!(
+            DshotFrame::decode(raw ^ 0x0001),
+            Err(CrsfError::DshotChecksumError)
+        );
+    }
+}
