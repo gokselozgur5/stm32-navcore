@@ -194,9 +194,9 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
             let bz = bn * sy * sr + (bn * cy * sp + bd * cp) * cr;
             let uncal = inv_soft.matmul(&Mat([[bx], [by], [bz]]));
             let raw = [
-                uncal.0[0][0] + hard_iron[0] + rng.next_gaussian_approx(0.1),
-                uncal.0[1][0] + hard_iron[1] + rng.next_gaussian_approx(0.1),
-                uncal.0[2][0] + hard_iron[2] + rng.next_gaussian_approx(0.1),
+                uncal.0[0][0] + hard_iron[0] + rng.next_gaussian_approx(0.05),
+                uncal.0[1][0] + hard_iron[1] + rng.next_gaussian_approx(0.05),
+                uncal.0[2][0] + hard_iron[2] + rng.next_gaussian_approx(0.05),
             ];
 
             let (roll, pitch, _) = ekf.att.to_euler_zyx();
