@@ -275,3 +275,26 @@ impl Ist8310Driver {
     /// Sets cross-axis sensitivity correction matrix.
     pub fn set_cross_axis_matrix(&mut self, matrix: Mat<3, 3>) {
         self.sensitivity_matrix = matrix;
+    }
+
+    /// Sets hard-iron bias offset vector [Bx, By, Bz] in microteslas (uT).
+    pub fn set_bias(&mut self, bias: [f32; 3]) {
+        self.bias = bias;
+    }
+
+    /// Sets custom scale in uT per LSB.
+    pub fn set_scale_ut_per_lsb(&mut self, scale: f32) {
+        if scale > 0.0 {
+            self.scale_ut_per_lsb = scale;
+        }
+    }
+
+    /// Parses 16-bit little-endian 2's complement raw magnetic vector from 6 register bytes (0x03..=0x08).
+    ///
+    /// Register layout:
+    /// - 0x03: X low byte, 0x04: X high byte
+    /// - 0x05: Y low byte, 0x06: Y high byte
+    /// - 0x07: Z low byte, 0x08: Z high byte
+    pub fn parse_raw_mag(bytes: &[u8]) -> Result<[i16; 3], SensorError> {
+        if bytes.len() < 6 {
+            return Err(SensorError::BufferTooShort);
