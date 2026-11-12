@@ -32,3 +32,12 @@ fn gnss_fix(k: usize) -> [f32; 3] {
     let offset = if k.is_multiple_of(2) { 0.3 } else { -0.3 };
     [offset, -offset, 0.0]
 }
+
+/// Prints the position estimate in NED axes.
+fn print_estimate(time_s: f32, ekf: &NavEkf) {
+    let p = ekf.p_ned_m;
+    println!(
+        "t = {time_s:>4.1} s  p_ned = [{:+.3}, {:+.3}, {:+.3}] m",
+        p[0], p[1], p[2]
+    );
+}
