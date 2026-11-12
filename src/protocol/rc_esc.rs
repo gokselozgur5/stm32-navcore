@@ -15,3 +15,24 @@ pub const CRSF_CHANNEL_MID: u16 = 992;
 
 /// Maximum CRSF channel raw integer value.
 pub const CRSF_CHANNEL_MAX: u16 = 1811;
+
+/// Compute CRC8 DVB-S2 for CRSF frame validation (polynomial 0xD5).
+#[inline]
+pub fn crc8_dvb_s2(data: &[u8]) -> u8 {
+    let mut crc: u8 = 0;
+    let mut i = 0;
+    while i < data.len() {
+        crc ^= data[i];
+        let mut bit = 0;
+        while bit < 8 {
+            if (crc & 0x80) != 0 {
+                crc = (crc << 1) ^ 0xD5;
+            } else {
+                crc <<= 1;
+            }
+            bit += 1;
+        }
+        i += 1;
+    }
+    crc
+}
