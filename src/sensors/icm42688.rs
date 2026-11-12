@@ -78,12 +78,20 @@ pub struct AafConfig {
 impl AafConfig {
     /// Pre-configured 258 Hz cutoff 2nd order AAF (1 kHz ODR).
     pub const fn cutoff_258hz() -> Self {
-        Self { delt: 6, deltsqr: 36, bitshift: 10 }
+        Self {
+            delt: 6,
+            deltsqr: 36,
+            bitshift: 10,
+        }
     }
 
     /// Pre-configured 536 Hz cutoff 2nd order AAF (2 kHz ODR).
     pub const fn cutoff_536hz() -> Self {
-        Self { delt: 13, deltsqr: 169, bitshift: 8 }
+        Self {
+            delt: 13,
+            deltsqr: 169,
+            bitshift: 8,
+        }
     }
 }
 
