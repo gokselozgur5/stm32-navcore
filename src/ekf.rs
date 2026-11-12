@@ -454,3 +454,20 @@ mod zupt_tests {
         assert!(detected);
     }
 }
+
+#[cfg(test)]
+mod zupt_tests_dynamic {
+    use super::*;
+
+    #[test]
+    fn test_stationary_detector_rejects_high_motion() {
+        let mut detector = StationaryDetector::new(5, 0.05, 0.03);
+        let accel = [2.5, 0.0, -9.8];
+        let gyro = [0.2, 0.0, 0.0];
+        let mut detected = false;
+        for _ in 0..5 {
+            detected = detector.update(accel, gyro);
+        }
+        assert!(!detected);
+    }
+}
