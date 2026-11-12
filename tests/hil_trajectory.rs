@@ -233,7 +233,7 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         }
 
         if (t - 29.99).abs() < 0.005 {
-            end_outage_p_var = ekf.cov.0[0][0] + ekf.cov.0[1][1];
+            post_outage_pos_cov = ekf.cov.0[0][0] + ekf.cov.0[1][1];
         }
 
         let (roll, pitch, ekf_yaw) = ekf.att.to_euler_zyx();
