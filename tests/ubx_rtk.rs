@@ -62,3 +62,20 @@ fn relposned_frame(flags: u32) -> [u8; 72] {
     frame[71] = ck_b;
     frame
 }
+
+#[test]
+fn parser_reports_fixed_rtk_heading() {
+    let frame = relposned_frame(0x01 | (1 << 2) | (2 << 3) | (1 << 8));
+    let mut parser = UbxParser::new();
+    let mut last = None;
+    for &b in &frame {
+        last = parser.process_byte(b).expect("valid stream").or(last);
+    }
+    match last {
+        Some(UbxMessage::NavRelPosNed(rel)) => {
+            assert_eq!(rel.carrier_solution(), CarrierSolution::Fixed);
+            assert!(rel.rel_pos_valid() && rel.heading_valid());
+        }
+        other => panic!("expected RELPOSNED, got {other:?}"),
+    }
+}
