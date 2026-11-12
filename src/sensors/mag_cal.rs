@@ -106,3 +106,30 @@ impl MagCal {
         ]
     }
 }
+
+/// Streaming least-squares sphere fit using normal-equation sums.
+///
+/// Model: `x^2 + y^2 + z^2 = 2ax + 2by + 2cz + d`.
+#[derive(Clone, Copy, Debug)]
+pub struct SphereFit {
+    ata: [[f64; 4]; 4],
+    aty: [f64; 4],
+    count: u32,
+}
+
+impl SphereFit {
+    /// Creates an empty fit.
+    pub const fn new() -> Self {
+        Self {
+            ata: [[0.0; 4]; 4],
+            aty: [0.0; 4],
+            count: 0,
+        }
+    }
+}
+
+impl Default for SphereFit {
+    fn default() -> Self {
+        Self::new()
+    }
+}
