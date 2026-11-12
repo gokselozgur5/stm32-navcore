@@ -271,6 +271,24 @@ impl NavEkf {
 }
 
 impl NavEkf {
+    /// Scalar Joseph update for barometric altitude (Down axis: p_ned_m[2] = -alt).
+    pub fn update_baro_altitude(
+        &mut self,
+        alt_m: f32,
+        r_baro: f32,
+        gate: f32,
+    ) -> Result<f32, EkfError> {
+        if !alt_m.is_finite() {
+            return Err(EkfError::InvalidInput);
+        }
+        let mut h = [0.0f32; STATE_DIM];
+        h[2] = 1.0;
+        let y = -alt_m - self.p_ned_m[2];
+        self.update_joseph_scalar(h, y, r_baro, gate)
+    }
+}
+
+impl NavEkf {
     pub fn update_mag_yaw(&mut self, yaw_obs: f32, r_yaw: f32, gate: f32) -> Result<f32, EkfError> {
         if !yaw_obs.is_finite() {
             return Err(EkfError::InvalidInput);
