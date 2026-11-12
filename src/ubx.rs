@@ -460,4 +460,16 @@ mod corruption_tests {
             .filter(|&&b| matches!(parser.process_byte(b), Ok(Some(_))))
             .count()
     }
+
+    #[test]
+    fn every_single_bit_flip_is_rejected() {
+        let (good, n) = frame(UBX_CLASS_NAV, UBX_ID_NAV_PVT, UBX_NAV_PVT_LEN);
+        assert_eq!(count_messages(&mut UbxParser::new(), &good[..n]), 1);
+        for bit in 0..n * 8 {
+            let mut bad = good;
+            bad[bit / 8] ^= 1 << (bit % 8);
+            let mut parser = UbxParser::new();
+            assert_eq!(count_messages(&mut parser, &bad[..n]), 0, "bit {bit}");
+        }
+    }
 }
