@@ -230,3 +230,18 @@ pub fn make_spi_frame(reg: u8, is_read: bool, val: u8) -> [u8; 2] {
     };
     [cmd, val]
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_chip_id_constants() {
+        assert_eq!(BMI088_ACCEL_CHIP_ID, 0x1E);
+        assert_eq!(BMI088_GYRO_CHIP_ID, 0x0F);
+        assert!(verify_accel_chip_id(0x1E).is_ok());
+        assert!(verify_accel_chip_id(0x00).is_err());
+        assert!(verify_gyro_chip_id(0x0F).is_ok());
+        assert!(verify_gyro_chip_id(0xFF).is_err());
+    }
+}
