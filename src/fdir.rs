@@ -49,6 +49,12 @@ impl DualImuManager {
     }
 }
 
+/// Returns true when every gyro and accelerometer component is finite.
+fn reading_is_finite(r: &ImuReading) -> bool {
+    let all = r.gyro_rps.iter().chain(r.accel_mps2.iter());
+    all.into_iter().all(|v| v.is_finite())
+}
+
 impl DualImuManager {
     pub fn compute_chi_square(diff: [f32; 3], var: [f32; 3]) -> f32 {
         let mut sum = 0.0f32;
