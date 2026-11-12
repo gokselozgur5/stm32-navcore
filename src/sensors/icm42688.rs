@@ -258,3 +258,23 @@ impl Icm42688 {
             return None;
         }
         let accel = [
+            i16::from_be_bytes([buf[1], buf[2]]),
+            i16::from_be_bytes([buf[3], buf[4]]),
+            i16::from_be_bytes([buf[5], buf[6]]),
+        ];
+        let gyro = [
+            i16::from_be_bytes([buf[7], buf[8]]),
+            i16::from_be_bytes([buf[9], buf[10]]),
+            i16::from_be_bytes([buf[11], buf[12]]),
+        ];
+        let temp = i16::from_be_bytes([buf[13], buf[14]]);
+        Some(RawSample { accel, gyro, temp })
+    }
+}
+
+/// High-resolution 20-bit raw sample decoded from extended FIFO format.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct RawSample20Bit {
+    pub accel_20bit: [i32; 3],
+    pub gyro_20bit: [i32; 3],
+    pub temp: i16,
