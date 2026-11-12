@@ -100,3 +100,20 @@ impl<const N: usize, const L: usize> AllanEstimator<N, L> {
             .map(|c| libm::exp(c) * libm::sqrt(3.0))
     }
 }
+
+impl<const N: usize, const L: usize> AllanEstimator<N, L> {
+    /// Least-squares log-log slope of adev versus tau over `lo..=hi`.
+    pub fn loglog_slope(&self, lo: usize, hi: usize) -> Option<f64> {
+        if lo >= hi || hi >= L {
+            return None;
+        }
+        let n = (hi - lo + 1) as f64;
+        let (mut sx, mut sy, mut sxy, mut sxx) = (0.0, 0.0, 0.0, 0.0);
+        for level in lo..=hi {
+            let x = libm::log(self.tau(level));
+            let y = libm::log(self.adev(level).filter(|a| *a > 0.0)?);
+            (sx, sy, sxy, sxx) = (sx + x, sy + y, sxy + x * y, sxx + x * x);
+        }
+        Some((n * sxy - sx * sy) / (n * sxx - sx * sx))
+    }
+}
