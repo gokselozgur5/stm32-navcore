@@ -51,6 +51,11 @@ fn wrap_pi(mut a: f32) -> f32 {
     a
 }
 
+fn altitude_to_pressure_hpa(alt_m: f32, p0_hpa: f32) -> f32 {
+    let base = 1.0f32 - (alt_m / 44330.0f32);
+    p0_hpa * libm::powf(base, 5.255f32)
+}
+
 #[test]
 fn test_closed_loop_hil_trajectory_and_gnss_outage() {
     let mut rng = XorShift64::new(42);
