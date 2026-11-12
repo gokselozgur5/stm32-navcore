@@ -34,7 +34,9 @@ fn run_of_255_nonzero_bytes_splits() {
 fn roundtrip_all_lengths() {
     for len in 0..=300usize {
         for fill in [0u8, 1, 0xAA] {
-            let src: Vec<u8> = (0..len).map(|i| if fill == 0xAA && i % 7 == 0 { 0 } else { fill }).collect();
+            let src: Vec<u8> = (0..len)
+                .map(|i| if fill == 0xAA && i % 7 == 0 { 0 } else { fill })
+                .collect();
             let e = enc(&src);
             assert!(!e.contains(&0));
             let mut d = vec![0u8; len + 1];
@@ -42,4 +44,22 @@ fn roundtrip_all_lengths() {
             assert_eq!(&d[..n], &src[..]);
         }
     }
+}
+
+#[test]
+fn rejects_malformed_input() {
+    let mut d = [0u8; 8];
+    let bad = Err(ProtocolError::InvalidCobsEncoding);
+    assert_eq!(cobs_decode(&[], &mut d), bad);
+    assert_eq!(cobs_decode(&[0], &mut d), bad);
+    assert_eq!(cobs_decode(&[3, 1], &mut d), bad);
+    assert_eq!(cobs_decode(&[3, 1, 0], &mut d), bad);
+    assert_eq!(
+        cobs_decode(&[5, 1, 1, 1, 1], &mut [0u8; 2]),
+        Err(ProtocolError::BufferTooSmall)
+    );
+    assert_eq!(
+        cobs_encode(&[1, 2, 3], &mut [0u8; 3]),
+        Err(ProtocolError::BufferTooSmall)
+    );
 }
