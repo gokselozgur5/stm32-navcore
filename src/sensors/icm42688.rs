@@ -253,7 +253,7 @@ impl Icm42688 {
 }
 
 impl Icm42688 {
-    /// Parse 16-bit packet from FIFO (header, accel[3], gyro[3], temp).
+    /// Parse 16-bit packet from FIFO (header, `accel[3]`, `gyro[3]`, temp).
     pub fn parse_fifo_packet_16bit(buf: &[u8]) -> Option<RawSample> {
         if buf.len() < 16 {
             return None;
