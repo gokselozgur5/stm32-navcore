@@ -25,3 +25,17 @@ pub mod aaf_reg {
     pub const ACCEL_CONFIG_STATIC3: u8 = 0x04;
     pub const ACCEL_CONFIG_STATIC4: u8 = 0x05;
 }
+
+/// Gyro full-scale range in degrees per second.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum GyroFsr {
+    Dps2000 = 0x00,
+    Dps1000 = 0x01,
+    Dps500 = 0x02,
+    Dps250 = 0x03,
+    Dps125 = 0x04,
+    Dps62_5 = 0x05,
+    Dps31_25 = 0x06,
+    Dps15_625 = 0x07,
+}
