@@ -19,3 +19,20 @@ The only dependency is `libm`, used for trigonometry and square roots in `src/ma
 | `sensors` | `src/sensors/` | Register codecs and scaling for BMI088, ICM-42688-P, DPS310, IST8310 |
 | `protocol` | `src/protocol.rs`, `src/protocol/rc_esc.rs` | COBS, CRC-16-CCITT, `NavTelemetry` UART and CAN framing, calibration block, CRSF and DShot codecs |
 | `ubx` | `src/ubx.rs` | Streaming UBX parser for NAV-PVT and NAV-RELPOSNED |
+
+## Data flow
+
+```text
+IMU samples (sensors::bmi088, sensors::icm42688)
+    -> fdir::DualImuManager        selects the healthy IMU
+    -> ekf::NavEkf::predict        strapdown propagation and covariance
+    -> ekf::NavEkf::update_*       magnetometer yaw, GNSS position and velocity
+    -> protocol::NavTelemetry      pack_uart / pack_can
+```
+
+The loop in `examples/flight_loop_bench.rs` follows this order.
+It calls `NavEkf::predict` for every IMU sample, calls `tilt_compensated_yaw` followed by `NavEkf::update_mag_yaw` for magnetometer samples, and calls `update_gnss_pos` and `update_gnss_vel` for GNSS epochs.
+It then packs the telemetry with `pack_uart` and `pack_can` and decodes both back.
+
+`DualImuManager` is a standalone component.
+The benchmark does not feed its output into `NavEkf`, so the wiring between FDIR and the filter is left to the integrator.
