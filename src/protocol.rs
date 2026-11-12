@@ -12,6 +12,16 @@ pub enum ProtocolError {
     CorruptedData,
 }
 
+/// Non-volatile calibration block persisted to EEPROM/Flash.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct CalibrationBlock {
+    pub version: u16,
+    pub mag_hard_iron: [f32; 3],
+    pub mag_soft_iron: [[f32; 3]; 3],
+    pub gyro_bias_rps: [f32; 3],
+    pub accel_scale: [f32; 3],
+}
+
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
     let mut crc = 0xFFFFu16;
     for &byte in data {
