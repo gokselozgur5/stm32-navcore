@@ -21,3 +21,20 @@ pub struct DualImuManager {
     pub primary_healthy: bool,
     pub secondary_healthy: bool,
 }
+
+impl DualImuManager {
+    pub fn new(chi_square_threshold: f32, max_consecutive_faults: u32) -> Self {
+        Self {
+            active_imu: ImuId::Primary,
+            chi_square_threshold,
+            consecutive_faults: 0,
+            max_consecutive_faults,
+            primary_healthy: true,
+            secondary_healthy: true,
+        }
+    }
+
+    pub fn default_config() -> Self {
+        Self::new(12.59, 3)
+    }
+}
