@@ -237,6 +237,23 @@ impl UbxNavRelPosNed {
     }
 }
 
+impl UbxNavRelPosNed {
+    /// Carrier solution from `flags` bits 3..4.
+    pub const fn carrier_solution(&self) -> CarrierSolution {
+        CarrierSolution::from_bits((self.flags >> 3) as u8)
+    }
+
+    /// `relPosValid` flag from `flags` bit 2.
+    pub const fn rel_pos_valid(&self) -> bool {
+        self.flags & (1 << 2) != 0
+    }
+
+    /// `relPosHeadingValid` flag from `flags` bit 8.
+    pub const fn heading_valid(&self) -> bool {
+        self.flags & (1 << 8) != 0
+    }
+}
+
 /// Decoded UBX message variant.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum UbxMessage {
