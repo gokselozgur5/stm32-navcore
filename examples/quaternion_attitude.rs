@@ -23,3 +23,24 @@ const TOLERANCE_RAD: f32 = 1e-3;
 fn step(q: Quaternion, gyro_rad_s: [f32; 3], dt_s: f32) -> Quaternion {
     q.integrate_gyro(gyro_rad_s, dt_s).unwrap_or(q)
 }
+
+fn main() {
+    let dt_s = 1.0 / IMU_RATE_HZ;
+    let steps = (DURATION_S * IMU_RATE_HZ) as usize;
+    let gyro = [0.0, 0.0, YAW_RATE_RAD_S];
+
+    // Start from the identity attitude and integrate the constant rate.
+    let mut q = Quaternion::IDENTITY;
+    for _ in 0..steps {
+        q = step(q, gyro, dt_s);
+    }
+
+    let (roll, pitch, yaw) = q.to_euler_zyx();
+    let expected_yaw = YAW_RATE_RAD_S * DURATION_S;
+    println!("norm after {steps} steps: {:.6}", q.norm());
+    println!("roll  = {roll:.6} rad");
+    println!("pitch = {pitch:.6} rad");
+    println!("yaw   = {yaw:.6} rad (expected {expected_yaw:.6})");
+
+    assert!((yaw - expected_yaw).abs() < TOLERANCE_RAD, "yaw drifted");
+}
