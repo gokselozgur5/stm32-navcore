@@ -20,6 +20,8 @@ pub struct DualImuManager {
     pub max_consecutive_faults: u32,
     pub primary_healthy: bool,
     pub secondary_healthy: bool,
+    pub clean_epochs: u32,
+    pub recovery_epochs: u32,
 }
 
 impl DualImuManager {
@@ -31,6 +33,8 @@ impl DualImuManager {
             max_consecutive_faults,
             primary_healthy: true,
             secondary_healthy: true,
+            clean_epochs: 0,
+            recovery_epochs: 0,
         }
     }
 
