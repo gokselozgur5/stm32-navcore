@@ -217,3 +217,16 @@ pub fn verify_gyro_chip_id(id: u8) -> Result<(), Bmi088Error> {
         })
     }
 }
+
+/// BMI088 SPI read command bitmask.
+pub const SPI_READ_BIT: u8 = 0x80;
+
+/// Prepare SPI 16-bit command frame (read or write).
+pub fn make_spi_frame(reg: u8, is_read: bool, val: u8) -> [u8; 2] {
+    let cmd = if is_read {
+        reg | SPI_READ_BIT
+    } else {
+        reg & !SPI_READ_BIT
+    };
+    [cmd, val]
+}
