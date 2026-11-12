@@ -508,4 +508,13 @@ mod corruption_tests {
         let (good, n) = frame(UBX_CLASS_NAV, UBX_ID_NAV_RELPOSNED, UBX_NAV_RELPOSNED_LEN);
         assert_eq!(count_messages(&mut parser, &good[..n]), 1);
     }
+
+    #[test]
+    fn unsupported_message_is_consumed_silently() {
+        let mut parser = UbxParser::new();
+        let (other, m) = frame(0x0A, 0x04, 40);
+        assert_eq!(count_messages(&mut parser, &other[..m]), 0);
+        let (good, n) = frame(UBX_CLASS_NAV, UBX_ID_NAV_PVT, UBX_NAV_PVT_LEN);
+        assert_eq!(count_messages(&mut parser, &good[..n]), 1);
+    }
 }
