@@ -289,6 +289,29 @@ mod gyro_bias_clamp_invalid_tests {
     }
 }
 
+#[cfg(test)]
+mod gyro_bias_clamp_scenario_tests {
+    use super::*;
+
+    fn heading_burst(limit: Option<f32>) -> f32 {
+        let mut ekf = NavEkf::new();
+        for step in 0..300u32 {
+            ekf.predict([0.0, 0.0, -9.80665], [0.0; 3], 0.02).unwrap();
+            let _ = ekf.update_mag_yaw(0.5 * 0.02 * step as f32, 0.001, 1e6);
+            if let Some(max_abs) = limit {
+                ekf.clamp_gyro_bias(max_abs);
+            }
+        }
+        ekf.bg_z
+    }
+
+    #[test]
+    fn clamp_bounds_bias_after_corrupted_heading_burst() {
+        assert!(libm::fabsf(heading_burst(None)) > 0.1);
+        assert!(libm::fabsf(heading_burst(Some(0.05))) <= 0.05);
+    }
+}
+
 impl NavEkf {
     #[allow(clippy::needless_range_loop)]
     fn apply_scalar_joseph_cov(&mut self, k: [f32; STATE_DIM], h: [f32; STATE_DIM], r: f32) {
