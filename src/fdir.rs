@@ -90,6 +90,24 @@ impl DualImuManager {
     }
 }
 
+/// Detects a frozen sensor that repeats the exact same 3-axis sample.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct StuckDetector {
+    pub limit: u32,
+    pub repeats: u32,
+    pub last: Option<[f32; 3]>,
+}
+
+impl StuckDetector {
+    pub fn new(limit: u32) -> Self {
+        Self {
+            limit,
+            repeats: 0,
+            last: None,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
