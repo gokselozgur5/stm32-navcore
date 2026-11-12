@@ -61,8 +61,13 @@ impl DualImuManager {
 }
 
 impl DualImuManager {
+    /// Returns true when either IMU has a non-finite gyro or accelerometer
+    /// component, or when the gyro chi-square disagreement exceeds the threshold.
+    ///
+    /// The magnetometer is not an input: a failed magnetometer is not detected here.
     pub fn evaluate_sensors(&mut self, p: &ImuReading, s: &ImuReading, gyro_var: [f32; 3]) -> bool {
-        let all = p.gyro_rps.iter().chain(s.gyro_rps.iter());
+        let gyro = p.gyro_rps.iter().chain(s.gyro_rps.iter());
+        let all = gyro.chain(p.accel_mps2.iter()).chain(s.accel_mps2.iter());
         if all.into_iter().any(|g| !g.is_finite()) {
             return true;
         }
