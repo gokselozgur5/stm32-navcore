@@ -198,7 +198,6 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
                 uncal.0[1][0] + hard_iron[1] + rng.next_gaussian_approx(0.05),
                 uncal.0[2][0] + hard_iron[2] + rng.next_gaussian_approx(0.05),
             ];
-
             let (roll, pitch, _) = ekf.att.to_euler_zyx();
             if let Ok(heading) = tilt_compensated_yaw(raw, hard_iron, soft_iron, roll, pitch) {
                 let _ = ekf.update_mag_yaw(heading, 0.02, 9.0);
