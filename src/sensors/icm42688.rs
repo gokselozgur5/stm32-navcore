@@ -86,3 +86,11 @@ impl AafConfig {
         Self { delt: 13, deltsqr: 169, bitshift: 8 }
     }
 }
+
+/// Raw unscaled sensor sample.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct RawSample {
+    pub accel: [i16; 3],
+    pub gyro: [i16; 3],
+    pub temp: i16,
+}
