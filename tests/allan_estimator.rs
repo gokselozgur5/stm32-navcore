@@ -34,3 +34,30 @@ fn white_noise_matches_theory() {
     }
 }
 
+#[test]
+fn constant_rate_has_zero_variance() {
+    let mut est = AllanEstimator::<17, 3>::new(0.1);
+    for _ in 0..100 {
+        est.push(2.5);
+    }
+    for level in 0..3 {
+        assert!(est.avar(level).unwrap() < 1e-18);
+    }
+}
+
+#[test]
+fn counts_follow_tau_schedule() {
+    let mut est = AllanEstimator::<17, 3>::new(0.5);
+    assert!(est.adev(0).is_none());
+    for _ in 0..20 {
+        est.push(1.0);
+    }
+    assert_eq!(est.tau(2), 2.0);
+    assert_eq!((est.count(0), est.count(1), est.count(2)), (19, 17, 13));
+}
+
+#[test]
+#[should_panic]
+fn undersized_ring_panics() {
+    let _ = AllanEstimator::<8, 3>::new(1.0);
+}
