@@ -21,3 +21,20 @@ fn normalize_corrects_unnormalized_product_drift() {
     let n = q.normalize().unwrap();
     assert!((n.norm() - 1.0).abs() < 1e-6);
 }
+
+#[test]
+fn invalid_norms_are_rejected() {
+    let zero = Quaternion::new(0.0, 0.0, 0.0, 0.0);
+    assert_eq!(zero.normalize(), Err(MathError::InvalidNorm));
+    let nan = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
+    assert_eq!(nan.normalize(), Err(MathError::InvalidNorm));
+    let q = Quaternion::IDENTITY;
+    assert_eq!(
+        q.integrate_gyro([f32::NAN, 0.0, 0.0], 0.01),
+        Err(MathError::InvalidNorm)
+    );
+    assert_eq!(
+        q.integrate_gyro([0.0; 3], -0.01),
+        Err(MathError::InvalidNorm)
+    );
+}
