@@ -198,3 +198,23 @@ impl Icm42688 {
 
 impl Icm42688 {
     /// Encode SPI write transaction buffer (write flag = 0x00).
+    pub fn encode_write_reg(reg: u8, val: u8) -> [u8; 2] {
+        [reg & 0x7F, val]
+    }
+
+    /// Encode SPI read transaction buffer (read flag = 0x80).
+    pub fn encode_read_reg(reg: u8) -> [u8; 2] {
+        [reg | 0x80, 0x00]
+    }
+}
+
+impl Icm42688 {
+    /// Encode GyroConfig0 register value.
+    pub fn encode_gyro_config0(&self) -> u8 {
+        ((self.gyro_fsr as u8) << 5) | (self.odr as u8)
+    }
+
+    /// Encode AccelConfig0 register value.
+    pub fn encode_accel_config0(&self) -> u8 {
+        ((self.accel_fsr as u8) << 5) | (self.odr as u8)
+    }
