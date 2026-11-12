@@ -42,3 +42,25 @@ pub enum ImuHealth {
 }
 
 /// Configuration thresholds for dual-IMU FDIR.
+#[derive(Debug, Clone, Copy)]
+pub struct DualImuConfig {
+    /// Maximum allowed specific force difference before trip (m/s^2)
+    pub accel_discrepancy_threshold_mps2: f32,
+    /// Maximum allowed angular rate difference before trip (rad/s)
+    pub gyro_discrepancy_threshold_rads: f32,
+    /// Chi-square statistic trip threshold for 3-DoF difference
+    pub chi_square_threshold: f32,
+    /// Number of consecutive faulty epochs required to isolate
+    pub consecutive_fault_limit: u8,
+}
+
+impl Default for DualImuConfig {
+    fn default() -> Self {
+        Self {
+            accel_discrepancy_threshold_mps2: 2.5,
+            gyro_discrepancy_threshold_rads: 0.15,
+            chi_square_threshold: 7.815,
+            consecutive_fault_limit: 3,
+        }
+    }
+}
