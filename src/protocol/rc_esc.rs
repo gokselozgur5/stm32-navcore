@@ -114,3 +114,28 @@ impl CrsfParser {
         self.len = 0;
     }
 }
+
+impl CrsfParser {
+    /// Unpack 16 11-bit channels from 22-byte CRSF payload.
+    pub fn unpack_channels(payload: &[u8; 22]) -> [u16; 16] {
+        let mut ch = [0u16; 16];
+        let mut bit_idx = 0usize;
+        let mut i = 0;
+        while i < 16 {
+            let mut val = 0u16;
+            let mut b = 0;
+            while b < 11 {
+                let byte_pos = bit_idx / 8;
+                let bit_pos = bit_idx % 8;
+                if (payload[byte_pos] & (1 << bit_pos)) != 0 {
+                    val |= 1 << b;
+                }
+                bit_idx += 1;
+                b += 1;
+            }
+            ch[i] = val;
+            i += 1;
+        }
+        ch
+    }
+}
