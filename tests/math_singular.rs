@@ -8,3 +8,13 @@ fn exactly_singular_matrices_are_rejected() {
     assert!(rank2.inv_3x3().is_none());
     assert!(Mat::<3, 3>::zeros().inv_3x3().is_none());
 }
+
+#[test]
+fn non_finite_inputs_are_rejected() {
+    assert!(Mat([[f32::NAN]]).inv_1x1().is_none());
+    assert!(Mat([[f32::INFINITY]]).inv_1x1().is_none());
+    assert!(Mat([[f32::NAN, 0.0], [0.0, 1.0]]).inv_2x2().is_none());
+    let mut m = Mat::<3, 3>::identity();
+    m.0[1][1] = f32::INFINITY;
+    assert!(m.inv_3x3().is_none());
+}
