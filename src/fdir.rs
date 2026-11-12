@@ -88,6 +88,17 @@ impl DualImuManager {
 }
 
 impl DualImuManager {
+    /// Runs one FDIR epoch and returns the reading of the active IMU.
+    ///
+    /// A non-finite secondary sample marks `secondary_healthy` false for that
+    /// epoch and is never counted against the primary.
+    ///
+    /// A finite gyro disagreement cannot be attributed by a two-IMU comparison,
+    /// so it is counted against the primary while the secondary is healthy.
+    ///
+    /// The manager only switches to the secondary while `secondary_healthy` is
+    /// true. When both IMUs are faulty it holds the active IMU, and callers must
+    /// check both health flags before using the returned reading.
     pub fn update_and_select(
         &mut self,
         p: &ImuReading,
