@@ -139,3 +139,17 @@ impl GyroRange {
         dps_val * (core::f32::consts::PI / 180.0)
     }
 }
+
+/// BMI088 Gyroscope Output Data Rate (ODR) and filter bandwidth.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum GyroOdr {
+    Odr2000HzBw532Hz = 0x00,
+    Odr2000HzBw230Hz = 0x01,
+    Odr1000HzBw116Hz = 0x02,
+    Odr400HzBw47Hz = 0x03,
+    Odr200HzBw23Hz = 0x04,
+    Odr100HzBw12Hz = 0x05,
+    Odr200HzBw64Hz = 0x06,
+    Odr100HzBw32Hz = 0x07,
+}
