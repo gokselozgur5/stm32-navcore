@@ -354,3 +354,14 @@ mod tests {
         assert_eq!(ekf, before_vel);
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct StationaryDetector {
+    pub window_size: usize,
+    pub count: usize,
+    pub var_accel_thresh: f32,
+    pub norm_gyro_thresh: f32,
+    sum_accel_mag: f32,
+    sum_accel_mag_sq: f32,
+    max_gyro_norm: f32,
+}
