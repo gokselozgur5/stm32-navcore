@@ -196,3 +196,18 @@ mod tests {
         let _ = fdir.process_epoch(&faulty, &healthy, 0.01, &mut ekf);
         assert_eq!(fdir.active_imu(), ImuId::Primary);
 
+        // Step 2: Consecutive 2
+        let _ = fdir.process_epoch(&faulty, &healthy, 0.01, &mut ekf);
+        assert_eq!(fdir.active_imu(), ImuId::Primary);
+
+        // Step 3: Consecutive 3 -> Tripped! Failover to Secondary
+        let _ = fdir.process_epoch(&faulty, &healthy, 0.01, &mut ekf);
+        assert_eq!(fdir.active_imu(), ImuId::Secondary);
+        assert_eq!(fdir.primary_health(), ImuHealth::Faulted);
+        assert_eq!(fdir.total_failovers(), 1);
+
+        // Filter continues stepping with healthy secondary
+        let out = fdir.process_epoch(&faulty, &healthy, 0.01, &mut ekf).expect("fdir epoch");
+        assert_eq!(out, healthy);
+    }
+}
