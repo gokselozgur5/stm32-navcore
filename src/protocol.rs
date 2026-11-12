@@ -529,6 +529,20 @@ mod tests {
     }
 
     #[test]
+    fn test_calibration_buffer_size_rejection() {
+        let cal = CalibrationBlock::default_calibrated();
+        let mut small = [0u8; 70];
+        assert_eq!(
+            cal.serialize(&mut small),
+            Err(ProtocolError::BufferTooSmall)
+        );
+        assert_eq!(
+            CalibrationBlock::deserialize(&small),
+            Err(ProtocolError::BufferTooSmall)
+        );
+    }
+
+    #[test]
     fn test_calibration_block_roundtrip() {
         let cal = CalibrationBlock {
             version: CalibrationBlock::MAGIC_VERSION,
