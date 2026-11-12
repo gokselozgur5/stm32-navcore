@@ -39,3 +39,13 @@ pub enum GyroFsr {
     Dps31_25 = 0x06,
     Dps15_625 = 0x07,
 }
+
+/// Accel full-scale range in g.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AccelFsr {
+    G16 = 0x00,
+    G8 = 0x01,
+    G4 = 0x02,
+    G2 = 0x03,
+}
