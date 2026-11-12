@@ -111,3 +111,21 @@ impl CrsfChannels {
         Ok(Self { channels })
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct DShotFrame {
+    raw: u16,
+}
+
+impl DShotFrame {
+    pub fn encode(throttle: u16, telemetry: bool) -> Result<Self, RcEscError> {
+        if throttle > 2047 {
+            return Err(RcEscError::InvalidThrottleValue);
+        }
+        let telem_bit = if telemetry { 1u16 } else { 0u16 };
+        let packet = (throttle << 1) | telem_bit;
+        let csum = (packet ^ (packet >> 4) ^ (packet >> 8)) & 0x0F;
+        let raw = (packet << 4) | csum;
+        Ok(Self { raw })
+    }
+}
