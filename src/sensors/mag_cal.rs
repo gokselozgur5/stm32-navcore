@@ -56,3 +56,19 @@ impl MagMinMax {
         o
     }
 }
+
+impl MagMinMax {
+    /// Diagonal soft-iron gains that equalise half-ranges to their mean.
+    ///
+    /// A degenerate axis (no range) gets a gain of 1.0.
+    pub fn scale(&self) -> [f32; 3] {
+        let mut half = [0.0f32; 3];
+        for (i, h) in half.iter_mut().enumerate() {
+            if self.count > 0 {
+                *h = 0.5 * (self.max[i] - self.min[i]);
+            }
+        }
+        let avg = (half[0] + half[1] + half[2]) / 3.0;
+        half.map(|h| if h > 1e-6 { avg / h } else { 1.0 })
+    }
+}
