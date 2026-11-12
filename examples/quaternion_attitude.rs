@@ -15,3 +15,11 @@ const DURATION_S: f32 = 4.0;
 const YAW_RATE_RAD_S: f32 = 0.5;
 /// Acceptance tolerance for the final yaw in rad.
 const TOLERANCE_RAD: f32 = 1e-3;
+
+/// Advances the attitude by one gyro sample.
+///
+/// The integrator rejects non-finite or negative time steps. In that case
+/// the previous attitude is kept, so the state never becomes invalid.
+fn step(q: Quaternion, gyro_rad_s: [f32; 3], dt_s: f32) -> Quaternion {
+    q.integrate_gyro(gyro_rad_s, dt_s).unwrap_or(q)
+}
