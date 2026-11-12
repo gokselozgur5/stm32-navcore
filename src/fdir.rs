@@ -86,3 +86,25 @@ impl DualImuManager {
             secondary_health: ImuHealth::Nominal,
             consecutive_discrepancies: 0,
             total_failovers: 0,
+        }
+    }
+
+    /// Return the currently active IMU.
+    pub fn active_imu(&self) -> ImuId {
+        self.active_imu
+    }
+
+    /// Return the health status of the primary IMU.
+    pub fn primary_health(&self) -> ImuHealth {
+        self.primary_health
+    }
+
+    /// Return the health status of the secondary IMU.
+    pub fn secondary_health(&self) -> ImuHealth {
+        self.secondary_health
+    }
+
+    /// Total failovers executed.
+    pub fn total_failovers(&self) -> u32 {
+        self.total_failovers
+    }
