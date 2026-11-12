@@ -258,3 +258,23 @@ impl UbxParser {
             return Ok(None);
         }
         self.buf[self.len] = b;
+        self.len += 1;
+        if self.len < 6 {
+            return Ok(None);
+        }
+        let payload_len = u16::from_le_bytes([self.buf[4], self.buf[5]]) as usize;
+        let total_expected = 6 + payload_len + 2;
+        if total_expected > self.buf.len() {
+            self.len = 0;
+            return Err(crate::protocol::ProtocolError::BufferTooSmall);
+        }
+        if self.len < total_expected {
+            return Ok(None);
+        }
+        let msg_class = self.buf[2];
+        let msg_id = self.buf[3];
+        let (calc_a, calc_b) = ubx_checksum(&self.buf[2..6 + payload_len]);
+        let (rx_a, rx_b) = (self.buf[6 + payload_len], self.buf[6 + payload_len + 1]);
+        self.len = 0;
+        if calc_a != rx_a || calc_b != rx_b {
+            return Err(crate::protocol::ProtocolError::CrcMismatch);
