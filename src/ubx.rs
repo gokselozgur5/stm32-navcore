@@ -305,6 +305,28 @@ mod tests {
     }
 
     #[test]
+    fn test_ubx_parser_recovers_after_repeated_sync_byte() {
+        let mut frame = [0u8; 6 + 64 + 2];
+        frame[0] = UBX_SYNC_1;
+        frame[1] = UBX_SYNC_2;
+        frame[2] = UBX_CLASS_NAV;
+        frame[3] = UBX_ID_NAV_RELPOSNED;
+        frame[4..6].copy_from_slice(&(64u16).to_le_bytes());
+        let (ck_a, ck_b) = ubx_checksum(&frame[2..6 + 64]);
+        frame[70] = ck_a;
+        frame[71] = ck_b;
+        let mut parser = UbxParser::new();
+        assert_eq!(parser.process_byte(UBX_SYNC_1).unwrap(), None);
+        let mut res = None;
+        for &b in &frame {
+            if let Some(msg) = parser.process_byte(b).unwrap() {
+                res = Some(msg);
+            }
+        }
+        assert!(matches!(res, Some(UbxMessage::NavRelPosNed(_))));
+    }
+
+    #[test]
     fn test_ubx_nav_pvt_decode_and_fields() {
         let mut p = [0u8; 92];
         p[0..4].copy_from_slice(&123456789u32.to_le_bytes());
