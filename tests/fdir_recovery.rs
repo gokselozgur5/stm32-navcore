@@ -40,3 +40,11 @@ fn fault_during_recovery_restarts_the_window() {
     assert_eq!(m.active_imu, ImuId::Secondary);
 }
 
+#[test]
+fn default_config_never_recovers() {
+    let mut m = failed_over(0);
+    for _ in 0..50 {
+        m.update_and_select(&GOOD, &GOOD, [0.01; 3]);
+    }
+    assert_eq!(m.active_imu, ImuId::Secondary);
+}
