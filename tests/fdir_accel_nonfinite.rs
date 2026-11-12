@@ -24,3 +24,18 @@ fn nan_primary_accel_fails_over() {
     assert_eq!(mgr.active_imu, ImuId::Secondary);
     assert!(ekf.predict(GOOD.accel_mps2, GOOD.gyro_rps, 0.01).is_ok());
 }
+
+#[test]
+fn infinite_primary_accel_fails_over() {
+    let (mgr, _) = run_dead_accel(f32::INFINITY);
+    assert_eq!(mgr.active_imu, ImuId::Secondary);
+    assert!(!mgr.primary_healthy);
+}
+
+#[test]
+fn evaluate_sensors_flags_nonfinite_accel() {
+    let mut mgr = DualImuManager::default_config();
+    let mut dead = GOOD;
+    dead.accel_mps2[0] = f32::NEG_INFINITY;
+    assert!(mgr.evaluate_sensors(&dead, &GOOD, [0.01; 3]));
+}
