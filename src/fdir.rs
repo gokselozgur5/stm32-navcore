@@ -38,3 +38,14 @@ impl DualImuManager {
         Self::new(12.59, 3)
     }
 }
+
+impl DualImuManager {
+    pub fn compute_chi_square(diff: [f32; 3], var: [f32; 3]) -> f32 {
+        let mut sum = 0.0f32;
+        for i in 0..3 {
+            let v = if var[i] > 1e-6 { var[i] } else { 1e-6 };
+            sum += (diff[i] * diff[i]) / v;
+        }
+        sum
+    }
+}
