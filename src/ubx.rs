@@ -72,3 +72,13 @@ impl UbxNavPvt {
         let min = payload[9];
         let sec = payload[10];
         let valid_flags = payload[11];
+        let t_acc_ns = u32::from_le_bytes([payload[12], payload[13], payload[14], payload[15]]);
+        let nano_ns = i32::from_le_bytes([payload[16], payload[17], payload[18], payload[19]]);
+        let fix_type = payload[20];
+        let flags = payload[21];
+        let flags2 = payload[22];
+        let num_sv = payload[23];
+        let lon_dege7 = i32::from_le_bytes([payload[24], payload[25], payload[26], payload[27]]);
+        let lat_dege7 = i32::from_le_bytes([payload[28], payload[29], payload[30], payload[31]]);
+        let height_mm = i32::from_le_bytes([payload[32], payload[33], payload[34], payload[35]]);
+        let h_msl_mm = i32::from_le_bytes([payload[36], payload[37], payload[38], payload[39]]);
