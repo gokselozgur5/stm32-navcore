@@ -313,6 +313,21 @@ impl NavEkf {
         h[6] = 1.0;
         self.update_joseph_scalar(h, y, variance, 25.0)
     }
+
+    pub fn fuse_heading_with_declination(
+        &mut self,
+        mag_yaw_rad: f32,
+        mag_variance: f32,
+        declination_rad: f32,
+        dual_ant_yaw_rad: Option<(f32, f32)>,
+    ) -> Result<f32, EkfError> {
+        if let Some((dual_yaw, dual_var)) = dual_ant_yaw_rad {
+            self.update_dual_antenna_heading(dual_yaw, 0.0, dual_var)
+        } else {
+            let true_mag_yaw = mag_yaw_rad + declination_rad;
+            self.update_mag_yaw(true_mag_yaw, mag_variance, 16.0)
+        }
+    }
 }
 
 #[cfg(test)]
