@@ -24,3 +24,14 @@ fn cruise_north(ekf: &mut NavEkf, from: usize, to: usize, gnss: bool) -> f32 {
     }
     worst
 }
+
+#[test]
+fn outage_error_stays_bounded_and_covariance_grows() {
+    let mut ekf = NavEkf::new();
+    ekf.v_ned_mps = [SPEED, 0.0, 0.0];
+    cruise_north(&mut ekf, 0, 1000, true);
+    let before = ekf.cov.0[0][0];
+    let worst = cruise_north(&mut ekf, 1000, 2000, false);
+    assert!(worst < 1.0, "outage drift {worst}");
+    assert!(ekf.cov.0[0][0] > before, "covariance must grow in outage");
+}
