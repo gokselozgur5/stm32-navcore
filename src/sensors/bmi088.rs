@@ -169,3 +169,15 @@ pub struct GyroReading {
     pub gy_rad_s: f32,
     pub gz_rad_s: f32,
 }
+
+/// Decode 6 raw bytes from BMI088 accelerometer into physical SI units.
+pub fn decode_accel_bytes(raw: &[u8; 6], range: AccelRange) -> AccelReading {
+    let raw_x = i16::from_le_bytes([raw[0], raw[1]]);
+    let raw_y = i16::from_le_bytes([raw[2], raw[3]]);
+    let raw_z = i16::from_le_bytes([raw[4], raw[5]]);
+    AccelReading {
+        ax_m_s2: range.scale_m_s2(raw_x),
+        ay_m_s2: range.scale_m_s2(raw_y),
+        az_m_s2: range.scale_m_s2(raw_z),
+    }
+}
