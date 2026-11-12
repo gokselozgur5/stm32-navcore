@@ -33,3 +33,28 @@ fn white_noise_coefficient_recovered() {
     let slope = est.loglog_slope(0, 5).unwrap();
     assert!((slope + 0.5).abs() < 0.05, "slope {slope}");
 }
+
+#[test]
+fn random_walk_coefficient_recovered() {
+    let k = 0.02;
+    let mut est = Est::new(TAU0);
+    let mut rng = Rng(0xDEAD_BEEF_CAFE_F00D);
+    let mut rate = 0.0;
+    for _ in 0..400_000 {
+        rate += k * libm::sqrt(TAU0) * rng.gauss();
+        est.push(rate);
+    }
+    let got = est.random_walk_coeff(2, 6).unwrap();
+    assert!((got / k - 1.0).abs() < 0.1, "{got} vs {k}");
+}
+
+#[test]
+fn invalid_ranges_return_none() {
+    let mut est = Est::new(TAU0);
+    assert!(est.white_noise_coeff(0, 3).is_none());
+    est.push(1.0);
+    est.push(2.0);
+    assert!(est.white_noise_coeff(3, 1).is_none());
+    assert!(est.random_walk_coeff(0, 7).is_none());
+    assert!(est.loglog_slope(2, 2).is_none());
+}
