@@ -34,3 +34,12 @@ fn math_and_ekf_layout_is_packed_f32() {
     assert_eq!(size_of::<NavEkf>(), 300);
     assert_eq!(align_of::<NavEkf>(), 4);
 }
+
+#[test]
+fn calibration_and_telemetry_layout_is_packed_f32() {
+    use stm32_navcore::protocol::NavTelemetry;
+    assert_eq!(size_of::<CalibrationBlock>(), 76);
+    assert_eq!(align_of::<CalibrationBlock>(), 4);
+    assert_eq!(size_of::<NavTelemetry>(), 44);
+    assert_eq!(align_of::<NavTelemetry>(), 4);
+}
