@@ -529,6 +529,23 @@ mod tests {
     }
 
     #[test]
+    fn test_calibration_block_roundtrip() {
+        let cal = CalibrationBlock {
+            version: CalibrationBlock::MAGIC_VERSION,
+            mag_hard_iron: [0.15, -0.25, 0.05],
+            mag_soft_iron: [[1.02, 0.01, -0.02], [0.01, 0.98, 0.0], [-0.02, 0.0, 1.01]],
+            gyro_bias_rps: [0.001, -0.002, 0.0005],
+            accel_scale: [0.998, 1.002, 0.999],
+        };
+        let mut buf = [0u8; CalibrationBlock::TOTAL_SIZE];
+        assert_eq!(
+            cal.serialize(&mut buf).unwrap(),
+            CalibrationBlock::TOTAL_SIZE
+        );
+        assert_eq!(CalibrationBlock::deserialize(&buf).unwrap(), cal);
+    }
+
+    #[test]
     fn test_telemetry_roundtrip_and_corruption() {
         let telem = NavTelemetry {
             timestamp_ms: 12345678,
