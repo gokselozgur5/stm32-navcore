@@ -153,3 +153,19 @@ pub enum GyroOdr {
     Odr200HzBw64Hz = 0x06,
     Odr100HzBw32Hz = 0x07,
 }
+
+/// Decoded physical 3-axis accelerometer measurement in SI units.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct AccelReading {
+    pub ax_m_s2: f32,
+    pub ay_m_s2: f32,
+    pub az_m_s2: f32,
+}
+
+/// Decoded physical 3-axis gyroscope measurement in SI units.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct GyroReading {
+    pub gx_rad_s: f32,
+    pub gy_rad_s: f32,
+    pub gz_rad_s: f32,
+}
