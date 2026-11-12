@@ -225,3 +225,14 @@ impl UbxParser {
             return Err(crate::protocol::ProtocolError::CrcMismatch);
         }
         let payload = &self.buf[6..6 + payload_len];
+        if msg_class == UBX_CLASS_NAV && msg_id == UBX_ID_NAV_PVT {
+            let pvt = UbxNavPvt::decode(payload)?;
+            Ok(Some(UbxMessage::NavPvt(pvt)))
+        } else if msg_class == UBX_CLASS_NAV && msg_id == UBX_ID_NAV_RELPOSNED {
+            let rel = UbxNavRelPosNed::decode(payload)?;
+            Ok(Some(UbxMessage::NavRelPosNed(rel)))
+        } else {
+            Ok(None)
+        }
+    }
+}
