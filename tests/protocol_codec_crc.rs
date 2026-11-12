@@ -32,3 +32,31 @@ fn uart_roundtrip_ends_with_delimiter() {
     assert!(!buf[..n - 1].contains(&0));
     assert_eq!(NavTelemetry::unpack_uart(&buf[..n]).unwrap(), sample());
 }
+
+#[test]
+fn uart_rejects_every_single_bit_flip() {
+    let mut buf = [0u8; NavTelemetry::MAX_UART_FRAME_LEN];
+    let n = sample().pack_uart(&mut buf).unwrap();
+    for i in 0..n - 1 {
+        for bit in 0..8 {
+            let mut f = buf;
+            f[i] ^= 1 << bit;
+            assert!(
+                NavTelemetry::unpack_uart(&f[..n]).is_err(),
+                "byte {i} bit {bit}"
+            );
+        }
+    }
+}
+
+#[test]
+fn uart_rejects_truncated_and_small_buffer() {
+    let mut buf = [0u8; NavTelemetry::MAX_UART_FRAME_LEN];
+    let n = sample().pack_uart(&mut buf).unwrap();
+    assert!(NavTelemetry::unpack_uart(&buf[..n - 3]).is_err());
+    let mut small = [0u8; 10];
+    assert_eq!(
+        sample().pack_uart(&mut small),
+        Err(ProtocolError::BufferTooSmall)
+    );
+}
