@@ -18,3 +18,16 @@ fn non_finite_inputs_are_rejected() {
     m.0[1][1] = f32::INFINITY;
     assert!(m.inv_3x3().is_none());
 }
+
+#[test]
+fn near_singular_above_threshold_inverts_with_small_residual() {
+    let m = Mat([[1.0, 1.0], [1.0, 1.0 + 1e-3]]);
+    let inv = m.inv_2x2().expect("det 1e-3 is invertible");
+    let prod = m.matmul(&inv);
+    for r in 0..2 {
+        for c in 0..2 {
+            let want = if r == c { 1.0 } else { 0.0 };
+            assert!((prod.0[r][c] - want).abs() < 5e-2);
+        }
+    }
+}
