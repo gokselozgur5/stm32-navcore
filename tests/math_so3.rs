@@ -18,3 +18,26 @@ fn rotation_preserves_vector_length() {
         assert!((len(q.rotate_vec(v)) - len(v)).abs() < 1e-5);
     }
 }
+
+#[test]
+fn conjugate_rotation_restores_input() {
+    let v = [0.4, 1.1, -0.9];
+    let q = axis_angle([1.0, 2.0, 3.0], 1.234);
+    let inv = Quaternion::new(q.w, -q.x, -q.y, -q.z);
+    let back = inv.rotate_vec(q.rotate_vec(v));
+    for i in 0..3 {
+        assert!((back[i] - v[i]).abs() < 1e-5);
+    }
+}
+
+#[test]
+fn composition_matches_sequential_rotation() {
+    let v = [1.0, 0.5, -0.25];
+    let a = axis_angle([0.0, 0.0, 1.0], 0.8);
+    let b = axis_angle([1.0, 0.0, 0.0], -0.5);
+    let seq = b.rotate_vec(a.rotate_vec(v));
+    let comp = b.mul(&a).rotate_vec(v);
+    for i in 0..3 {
+        assert!((seq[i] - comp[i]).abs() < 1e-5);
+    }
+}
