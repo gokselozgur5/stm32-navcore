@@ -267,3 +267,22 @@ impl MagResidual {
         self.count = self.count.saturating_add(1);
     }
 }
+
+impl MagResidual {
+    /// Root-mean-square deviation, or 0.0 with no samples.
+    pub fn rms(&self) -> f32 {
+        if self.count == 0 {
+            return 0.0;
+        }
+        libm::sqrtf(self.sum_sq / self.count as f32)
+    }
+
+    /// RMS deviation relative to `radius`, or infinity for a non-positive radius.
+    pub fn relative(&self, radius: f32) -> f32 {
+        if radius > 0.0 {
+            self.rms() / radius
+        } else {
+            f32::INFINITY
+        }
+    }
+}
