@@ -278,3 +278,23 @@ impl UbxParser {
         self.len = 0;
         if calc_a != rx_a || calc_b != rx_b {
             return Err(crate::protocol::ProtocolError::CrcMismatch);
+        }
+        let payload = &self.buf[6..6 + payload_len];
+        if msg_class == UBX_CLASS_NAV && msg_id == UBX_ID_NAV_PVT {
+            let pvt = UbxNavPvt::decode(payload)?;
+            Ok(Some(UbxMessage::NavPvt(pvt)))
+        } else if msg_class == UBX_CLASS_NAV && msg_id == UBX_ID_NAV_RELPOSNED {
+            let rel = UbxNavRelPosNed::decode(payload)?;
+            Ok(Some(UbxMessage::NavRelPosNed(rel)))
+        } else {
+            Ok(None)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ubx_checksum_vector() {
