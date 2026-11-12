@@ -16,3 +16,12 @@ pub mod reg {
     pub const PWR_MGMT0: u8 = 0x4E;
     pub const WHO_AM_I: u8 = 0x75;
 }
+
+pub mod aaf_reg {
+    pub const GYRO_CONFIG_STATIC3: u8 = 0x0C;
+    pub const GYRO_CONFIG_STATIC4: u8 = 0x0D;
+    pub const GYRO_CONFIG_STATIC5: u8 = 0x0E;
+    pub const ACCEL_CONFIG_STATIC2: u8 = 0x03;
+    pub const ACCEL_CONFIG_STATIC3: u8 = 0x04;
+    pub const ACCEL_CONFIG_STATIC4: u8 = 0x05;
+}
