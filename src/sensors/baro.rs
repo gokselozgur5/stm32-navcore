@@ -36,13 +36,21 @@ pub enum BaroError {
 }
 
 /// Altitude in meters with the ISA height scaled by measured over ISA temperature.
+///
+/// The reference is the ISA temperature at the altitude being corrected
+/// (sea-level temperature minus the 6.5 K/km lapse), not sea-level
+/// temperature, so ISA conditions return the ISA altitude unchanged.
 pub fn compensated_altitude_m(p_hpa: f32, p0_hpa: f32, temp_c: f32) -> Result<f32, BaroError> {
     let temp_k = temp_c + 273.15;
     if !temp_k.is_finite() || temp_k <= 0.0 {
         return Err(BaroError::Temperature);
     }
     let isa = pressure_hpa_to_altitude_m(p_hpa, p0_hpa).map_err(BaroError::Pressure)?;
-    Ok(isa * temp_k / ISA_SEA_LEVEL_K)
+    let isa_temp_k = ISA_SEA_LEVEL_K - 0.0065 * isa;
+    if isa_temp_k <= 0.0 {
+        return Err(BaroError::Temperature);
+    }
+    Ok(isa * temp_k / isa_temp_k)
 }
 
 /// First-order low-pass filter with a jump-based outlier gate.
