@@ -413,3 +413,26 @@ mod tests {
         assert!(p_pa > 100000.0 && p_pa < 105000.0);
 
         let alt_m = driver.pressure_altitude_m(p_raw, t_raw, 1013.25).unwrap();
+        assert!(alt_m.is_finite());
+    }
+
+    #[test]
+    fn test_ist8310_raw_parsing_and_bounds() {
+        assert_eq!(
+            Ist8310Driver::parse_raw_mag(&[0u8; 5]),
+            Err(SensorError::BufferTooShort)
+        );
+
+        let bytes = [
+            0xE8, 0x03, // 1000
+            0xD0, 0x07, // 2000
+            0x18, 0xFC, // -1000
+        ];
+        let mag = Ist8310Driver::parse_raw_mag(&bytes).unwrap();
+        assert_eq!(mag, [1000, 2000, -1000]);
+    }
+
+    #[test]
+    fn test_ist8310_cross_axis_compensation_and_tilt_yaw() {
+        let mut driver = Ist8310Driver::new();
+        driver.set_scale_ut_per_lsb(1.0);
