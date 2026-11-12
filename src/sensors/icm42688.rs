@@ -58,3 +58,23 @@ pub enum Odr {
     Odr16kHz = 0x02,
     Odr8kHz = 0x03,
     Odr4kHz = 0x04,
+    Odr2kHz = 0x05,
+    Odr1kHz = 0x06,
+    Odr200Hz = 0x07,
+    Odr100Hz = 0x08,
+    Odr50Hz = 0x09,
+    Odr25Hz = 0x0A,
+    Odr12_5Hz = 0x0B,
+}
+
+/// Anti-Aliasing Filter (AAF) configuration.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct AafConfig {
+    pub delt: u8,
+    pub deltsqr: u16,
+    pub bitshift: u8,
+}
+
+impl AafConfig {
+    /// Pre-configured 258 Hz cutoff 2nd order AAF (1 kHz ODR).
+    pub const fn cutoff_258hz() -> Self {
