@@ -38,3 +38,23 @@ pub enum GyroFsr {
     Dps62_5 = 0x05,
     Dps31_25 = 0x06,
     Dps15_625 = 0x07,
+}
+
+/// Accel full-scale range in g.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AccelFsr {
+    G16 = 0x00,
+    G8 = 0x01,
+    G4 = 0x02,
+    G2 = 0x03,
+}
+
+/// Output Data Rate (ODR) for Gyro and Accel.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Odr {
+    Odr32kHz = 0x01,
+    Odr16kHz = 0x02,
+    Odr8kHz = 0x03,
+    Odr4kHz = 0x04,
