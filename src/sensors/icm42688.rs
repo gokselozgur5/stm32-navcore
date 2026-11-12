@@ -138,3 +138,23 @@ impl Icm42688 {
     }
 }
 
+impl Icm42688 {
+    /// Gyro sensitivity in (rad/s) per LSB.
+    pub fn gyro_sensitivity_rad_s(&self) -> f32 {
+        let dps = match self.gyro_fsr {
+            GyroFsr::Dps2000 => 2000.0,
+            GyroFsr::Dps1000 => 1000.0,
+            GyroFsr::Dps500 => 500.0,
+            GyroFsr::Dps250 => 250.0,
+            GyroFsr::Dps125 => 125.0,
+            GyroFsr::Dps62_5 => 62.5,
+            GyroFsr::Dps31_25 => 31.25,
+            GyroFsr::Dps15_625 => 15.625,
+        };
+        (dps / 32768.0) * (core::f32::consts::PI / 180.0)
+    }
+}
+
+impl Icm42688 {
+    /// Accel sensitivity in (m/s^2) per LSB.
+    pub fn accel_sensitivity_m_s2(&self) -> f32 {
