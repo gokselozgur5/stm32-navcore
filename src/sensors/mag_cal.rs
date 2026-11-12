@@ -133,3 +133,20 @@ impl Default for SphereFit {
         Self::new()
     }
 }
+
+impl SphereFit {
+    /// Adds one raw sample to the normal equations.
+    #[allow(clippy::needless_range_loop)]
+    pub fn add(&mut self, s: [f32; 3]) {
+        let (x, y, z) = (s[0] as f64, s[1] as f64, s[2] as f64);
+        let row = [x, y, z, 1.0];
+        let t = x * x + y * y + z * z;
+        for i in 0..4 {
+            for j in 0..4 {
+                self.ata[i][j] += row[i] * row[j];
+            }
+            self.aty[i] += row[i] * t;
+        }
+        self.count = self.count.saturating_add(1);
+    }
+}
