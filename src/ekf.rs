@@ -749,3 +749,21 @@ mod zupt_tests_drift {
         assert!(ekf.v_ned_mps[2].abs() < 1e-4);
     }
 }
+
+/// Opt-in per-axis scalar Kalman filter for the body-frame accelerometer bias.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct AccelBiasEstimator {
+    pub bias_mps2: [f32; 3],
+    pub var_mps2_sq: [f32; 3],
+    pub r_mps2_sq: f32,
+}
+
+impl AccelBiasEstimator {
+    pub const fn new(prior_var: f32, r_mps2_sq: f32) -> Self {
+        Self {
+            bias_mps2: [0.0; 3],
+            var_mps2_sq: [prior_var; 3],
+            r_mps2_sq,
+        }
+    }
+}
