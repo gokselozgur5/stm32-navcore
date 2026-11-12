@@ -13,3 +13,14 @@ pub struct BaroMeasurement {
     /// Measurement variance in square meters.
     pub variance_m2: f32,
 }
+
+impl BaroMeasurement {
+    /// Builds a measurement from pressure using the ISA model.
+    pub fn from_pressure(p_hpa: f32, p0_hpa: f32, variance_m2: f32) -> Result<Self, MathError> {
+        let altitude_m = pressure_hpa_to_altitude_m(p_hpa, p0_hpa)?;
+        Ok(Self {
+            altitude_m,
+            variance_m2,
+        })
+    }
+}
