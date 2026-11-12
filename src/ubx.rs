@@ -218,3 +218,23 @@ pub struct UbxParser {
     buf: [u8; 128],
     len: usize,
 }
+
+impl Default for UbxParser {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl UbxParser {
+    pub const fn new() -> Self {
+        Self {
+            buf: [0u8; 128],
+            len: 0,
+        }
+    }
+
+    pub fn reset(&mut self) {
+        self.len = 0;
+    }
+
+    pub fn process_byte(
