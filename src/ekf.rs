@@ -487,3 +487,26 @@ mod zupt_tests_clamp {
         assert!(ekf.cov.0[3][3] < 1.0);
     }
 }
+
+#[cfg(test)]
+mod zupt_tests_drift {
+    use super::*;
+
+    #[test]
+    fn test_zero_velocity_drift_5000_epochs() {
+        let mut ekf = NavEkf::new();
+        let mut detector = StationaryDetector::new(10, 0.05, 0.03);
+        let dt = 0.01;
+        let accel = [0.0, 0.0, -9.80665];
+        let gyro = [0.0, 0.0, 0.0];
+        for _ in 0..5000 {
+            ekf.predict(accel, gyro, dt).unwrap();
+            if detector.update(accel, gyro) {
+                ekf.update_zupt(0.0001, 25.0).unwrap();
+            }
+        }
+        assert!(ekf.v_ned_mps[0].abs() < 1e-4);
+        assert!(ekf.v_ned_mps[1].abs() < 1e-4);
+        assert!(ekf.v_ned_mps[2].abs() < 1e-4);
+    }
+}
