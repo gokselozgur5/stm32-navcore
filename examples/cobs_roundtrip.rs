@@ -22,3 +22,19 @@ fn encode_frame(payload: &[u8], out: &mut [u8]) -> Result<usize, ProtocolError> 
     *out.get_mut(n).ok_or(ProtocolError::BufferTooSmall)? = 0x00;
     Ok(n + 1)
 }
+
+/// Decodes a frame body (delimiter already removed) and checks its CRC.
+///
+/// Returns the payload length written to `out` on success.
+fn decode_frame(frame: &[u8], out: &mut [u8]) -> Result<usize, ProtocolError> {
+    let n = cobs_decode(frame, out)?;
+    if n < 2 {
+        return Err(ProtocolError::InvalidCobsEncoding);
+    }
+    let (payload, crc_bytes) = out[..n].split_at(n - 2);
+    let rx_crc = u16::from_be_bytes([crc_bytes[0], crc_bytes[1]]);
+    if crc16_ccitt(payload) != rx_crc {
+        return Err(ProtocolError::CrcMismatch);
+    }
+    Ok(n - 2)
+}
