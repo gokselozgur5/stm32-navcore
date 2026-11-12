@@ -183,3 +183,26 @@ impl Dps310Driver {
     /// Calculates scaled temperature T_raw / kT.
     pub fn scale_temperature(&self, raw_t: i32) -> f32 {
         (raw_t as f32) / self.t_scale
+    }
+
+    /// Calculates scaled pressure P_raw / kP.
+    pub fn scale_pressure(&self, raw_p: i32) -> f32 {
+        (raw_p as f32) / self.p_scale
+    }
+
+    /// Compensates temperature in degrees Celsius (°C).
+    ///
+    /// Formula: T_comp = c0 * 0.5 + c1 * T_raw_sc.
+    pub fn compensate_temperature(&self, raw_t: i32) -> Result<f32, SensorError> {
+        let t_raw_sc = self.scale_temperature(raw_t);
+        let t_comp = self.calib.c0 * 0.5 + self.calib.c1 * t_raw_sc;
+        if !t_comp.is_finite() {
+            return Err(SensorError::NonFinite);
+        }
+        Ok(t_comp)
+    }
+
+    /// Compensates pressure in Pascals (Pa).
+    ///
+    /// Polynomial:
+    /// P_comp = c00 + P_sc * (c10 + P_sc * (c20 + P_sc * c30)) +
