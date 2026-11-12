@@ -33,3 +33,17 @@ fn both_faulty_holds_active_imu() {
     mgr.update_and_select(&NAN_GYRO, &GOOD, [0.01; 3]);
     assert_eq!(mgr.active_imu, ImuId::Secondary);
 }
+
+#[test]
+fn finite_disagreement_is_counted_against_primary() {
+    let mut mgr = DualImuManager::default_config();
+    let offset = ImuReading {
+        gyro_rps: [2.5, -3.0, 1.8],
+        ..GOOD
+    };
+    for _ in 0..3 {
+        mgr.update_and_select(&GOOD, &offset, [0.01; 3]);
+    }
+    assert_eq!(mgr.active_imu, ImuId::Secondary);
+    assert!(!mgr.primary_healthy);
+}
