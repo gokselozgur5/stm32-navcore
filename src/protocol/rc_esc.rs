@@ -255,3 +255,21 @@ impl DshotFrame {
         (payload << 4) | crc
     }
 }
+
+impl DshotFrame {
+    /// Decode and verify a 16-bit raw DShot frame word.
+    pub fn decode(raw: u16) -> Result<Self, CrsfError> {
+        let payload = (raw >> 4) & 0x0FFF;
+        let crc = (raw & 0x000F) as u8;
+        let expected_crc = ((payload ^ (payload >> 4) ^ (payload >> 8)) & 0x0F) as u8;
+        if crc != expected_crc {
+            return Err(CrsfError::DshotChecksumError);
+        }
+        let throttle = payload >> 1;
+        let telemetry = (payload & 1) != 0;
+        Ok(Self {
+            throttle,
+            telemetry,
+        })
+    }
+}
