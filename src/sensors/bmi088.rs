@@ -39,3 +39,25 @@ pub enum AccelRegister {
     AccelPwrCtr = 0x7D,
     Softreset = 0x7E,
 }
+
+/// BMI088 Gyroscope SPI registers.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum GyroRegister {
+    ChipId = 0x00,
+    RateXlsb = 0x02,
+    RateXmsb = 0x03,
+    RateYlsb = 0x04,
+    RateYmsb = 0x05,
+    RateZlsb = 0x06,
+    RateZmsb = 0x07,
+    IntStat1 = 0x0A,
+    Range = 0x0F,
+    Bw = 0x10,
+    Lpm1 = 0x11,
+    Softreset = 0x14,
+    IntCtrl = 0x15,
+    Int34IoConf = 0x16,
+    Int34IoMap = 0x18,
+    SelfTest = 0x3C,
+}
