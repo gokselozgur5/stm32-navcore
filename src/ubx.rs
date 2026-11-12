@@ -236,3 +236,15 @@ impl UbxParser {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ubx_checksum_vector() {
+        let msg = [0x01, 0x07, 0x00, 0x00];
+        let (ck_a, ck_b) = ubx_checksum(&msg);
+        assert_eq!(ck_a, 0x08);
+        assert_eq!(ck_b, 0x19);
+    }
