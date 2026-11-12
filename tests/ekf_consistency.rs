@@ -64,3 +64,11 @@ fn mean_nis_is_chi_square_consistent() {
     let mean = nis.iter().map(|&v| v as f64).sum::<f64>() / nis.len() as f64;
     assert!((0.8..1.2).contains(&mean), "mean NIS {mean}");
 }
+
+#[test]
+fn nis_exceedance_rate_matches_95_percent_gate() {
+    let nis = stationary_nis(1234, 2000, 200);
+    let over = nis.iter().filter(|&&v| v > 3.841).count();
+    let rate = over as f64 / nis.len() as f64;
+    assert!(rate < 0.07, "exceedance rate {rate}");
+}
