@@ -138,3 +138,23 @@ pub struct UbxNavRelPosNed {
     pub version: u8,
     pub station_id: u16,
     pub i_tow_ms: u32,
+    pub rel_pos_n_cm: i32,
+    pub rel_pos_e_cm: i32,
+    pub rel_pos_d_cm: i32,
+    pub rel_pos_length_cm: i32,
+    pub rel_pos_heading_dege5: i32,
+    pub rel_pos_hp_n_mm0_1: i8,
+    pub rel_pos_hp_e_mm0_1: i8,
+    pub rel_pos_hp_d_mm0_1: i8,
+    pub rel_pos_hp_length_mm0_1: i8,
+    pub acc_n_mm0_1: u32,
+    pub acc_e_mm0_1: u32,
+    pub acc_d_mm0_1: u32,
+    pub acc_length_mm0_1: u32,
+    pub acc_heading_dege5: u32,
+    pub flags: u32,
+}
+
+impl UbxNavRelPosNed {
+    /// Decode a 64-byte NAV-RELPOSNED payload buffer without allocation.
+    pub fn decode(payload: &[u8]) -> Result<Self, crate::protocol::ProtocolError> {
