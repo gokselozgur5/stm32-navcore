@@ -297,20 +297,20 @@ impl UbxParser {
         let msg_id = self.buf[3];
         let (calc_a, calc_b) = ubx_checksum(&self.buf[2..6 + payload_len]);
         let (rx_a, rx_b) = (self.buf[6 + payload_len], self.buf[6 + payload_len + 1]);
-        self.len = 0;
         if calc_a != rx_a || calc_b != rx_b {
+            self.discard(1);
             return Err(crate::protocol::ProtocolError::CrcMismatch);
         }
         let payload = &self.buf[6..6 + payload_len];
-        if msg_class == UBX_CLASS_NAV && msg_id == UBX_ID_NAV_PVT {
-            let pvt = UbxNavPvt::decode(payload)?;
-            Ok(Some(UbxMessage::NavPvt(pvt)))
+        let msg = if msg_class == UBX_CLASS_NAV && msg_id == UBX_ID_NAV_PVT {
+            UbxNavPvt::decode(payload).map(|m| Some(UbxMessage::NavPvt(m)))
         } else if msg_class == UBX_CLASS_NAV && msg_id == UBX_ID_NAV_RELPOSNED {
-            let rel = UbxNavRelPosNed::decode(payload)?;
-            Ok(Some(UbxMessage::NavRelPosNed(rel)))
+            UbxNavRelPosNed::decode(payload).map(|m| Some(UbxMessage::NavRelPosNed(m)))
         } else {
             Ok(None)
-        }
+        };
+        self.discard(total_expected);
+        msg
     }
 }
 
