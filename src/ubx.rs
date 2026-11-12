@@ -298,3 +298,23 @@ mod tests {
 
     #[test]
     fn test_ubx_checksum_vector() {
+        let msg = [0x01, 0x07, 0x00, 0x00];
+        let (ck_a, ck_b) = ubx_checksum(&msg);
+        assert_eq!(ck_a, 0x08);
+        assert_eq!(ck_b, 0x19);
+    }
+
+    #[test]
+    fn test_ubx_nav_pvt_decode_and_fields() {
+        let mut p = [0u8; 92];
+        p[0..4].copy_from_slice(&123456789u32.to_le_bytes());
+        p[4..6].copy_from_slice(&2026u16.to_le_bytes());
+        p[6] = 11;
+        p[7] = 12;
+        p[20] = 3; // 3D-Fix
+        p[24..28].copy_from_slice(&(-1224194000i32).to_le_bytes());
+        p[28..32].copy_from_slice(&(377749000i32).to_le_bytes());
+        let pvt = UbxNavPvt::decode(&p).expect("valid PVT");
+        assert_eq!(pvt.i_tow_ms, 123456789);
+        assert_eq!(pvt.year, 2026);
+        assert_eq!(pvt.month, 11);
