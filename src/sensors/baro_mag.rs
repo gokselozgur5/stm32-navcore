@@ -114,3 +114,26 @@ fn sign_extend_20(val: u32) -> i32 {
     }
     v
 }
+
+/// Sign-extends a 24-bit signed integer.
+fn sign_extend_24(val: u32) -> i32 {
+    let mut v = (val & 0x00FF_FFFF) as i32;
+    if (v & 0x0080_0000) != 0 {
+        v -= 0x0100_0000;
+    }
+    v
+}
+
+/// Zero-alloc driver and DSP engine for Infineon DPS310.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Dps310Driver {
+    pub calib: Dps310Calib,
+    pub p_scale: f32,
+    pub t_scale: f32,
+}
+
+impl Default for Dps310Driver {
+    fn default() -> Self {
+        Self::new(Dps310Calib::default())
+    }
+}
