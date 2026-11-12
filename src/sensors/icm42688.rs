@@ -118,3 +118,23 @@ pub struct Icm42688 {
     pub accel_fsr: AccelFsr,
     pub odr: Odr,
     pub aaf: Option<AafConfig>,
+}
+
+impl Default for Icm42688 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Icm42688 {
+    /// Initialize with default 2000 dps, 16 g, 1 kHz ODR, and 258 Hz AAF.
+    pub const fn new() -> Self {
+        Self {
+            gyro_fsr: GyroFsr::Dps2000,
+            accel_fsr: AccelFsr::G16,
+            odr: Odr::Odr1kHz,
+            aaf: Some(AafConfig::cutoff_258hz()),
+        }
+    }
+}
+
