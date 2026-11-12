@@ -57,6 +57,28 @@ impl MagMinMax {
     }
 }
 
+/// Axes with a half-range below this fraction of the largest are under-excited.
+pub const MIN_AXIS_FRACTION: f32 = 0.1;
+
+impl MagMinMax {
+    fn half_ranges(&self) -> [f32; 3] {
+        let mut half = [0.0f32; 3];
+        if self.count > 0 {
+            for (i, h) in half.iter_mut().enumerate() {
+                *h = 0.5 * (self.max[i] - self.min[i]);
+            }
+        }
+        half
+    }
+
+    /// Flags axes whose half-range is below `MIN_AXIS_FRACTION` of the largest.
+    pub fn under_excited(&self) -> [bool; 3] {
+        let half = self.half_ranges();
+        let max = half[0].max(half[1]).max(half[2]);
+        half.map(|h| !(h > 1e-6 && h >= MIN_AXIS_FRACTION * max))
+    }
+}
+
 impl MagMinMax {
     /// Diagonal soft-iron gains that equalise half-ranges to their mean.
     ///
