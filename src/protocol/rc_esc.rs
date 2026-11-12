@@ -161,3 +161,19 @@ impl CrsfParser {
         Ok(len)
     }
 }
+
+impl CrsfParser {
+    /// Parse a complete CRSF frame from a byte slice.
+    pub fn parse_frame(frame: &[u8]) -> Result<CrsfFrame, CrsfError> {
+        let _ = Self::validate_header(frame)?;
+        let expected_crc = frame[25];
+        let calc_crc = crc8_dvb_s2(&frame[2..25]);
+        if expected_crc != calc_crc {
+            return Err(CrsfError::ChecksumMismatch);
+        }
+        let mut payload = [0u8; 22];
+        payload.copy_from_slice(&frame[3..25]);
+        let raw_channels = Self::unpack_channels(&payload);
+        Ok(CrsfFrame { raw_channels })
+    }
+}
