@@ -44,3 +44,27 @@ pub fn compensated_altitude_m(p_hpa: f32, p0_hpa: f32, temp_c: f32) -> Result<f3
     let isa = pressure_hpa_to_altitude_m(p_hpa, p0_hpa).map_err(BaroError::Pressure)?;
     Ok(isa * temp_k / ISA_SEA_LEVEL_K)
 }
+
+/// First-order low-pass filter with a jump-based outlier gate.
+#[derive(Clone, Copy, Debug)]
+pub struct BaroFilter {
+    alpha: f32,
+    gate_m: f32,
+    max_rejects: u8,
+    rejects: u8,
+    state: Option<f32>,
+}
+
+impl BaroFilter {
+    /// `alpha` in (0, 1], `gate_m` is the max accepted jump, `max_rejects`
+    /// consecutive rejections force acceptance of a sustained jump.
+    pub const fn new(alpha: f32, gate_m: f32, max_rejects: u8) -> Self {
+        Self {
+            alpha,
+            gate_m,
+            max_rejects,
+            rejects: 0,
+            state: None,
+        }
+    }
+}
