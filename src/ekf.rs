@@ -471,3 +471,19 @@ mod zupt_tests_dynamic {
         assert!(!detected);
     }
 }
+
+#[cfg(test)]
+mod zupt_tests_clamp {
+    use super::*;
+
+    #[test]
+    fn test_update_zupt_clamps_velocity() {
+        let mut ekf = NavEkf::new();
+        ekf.v_ned_mps = [0.5, -0.4, 0.1];
+        let res = ekf.update_zupt(0.001, 25.0);
+        assert!(res.is_ok());
+        assert!(ekf.v_ned_mps[0].abs() < 0.01);
+        assert!(ekf.v_ned_mps[1].abs() < 0.01);
+        assert!(ekf.cov.0[3][3] < 1.0);
+    }
+}
