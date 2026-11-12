@@ -280,3 +280,17 @@ impl Icm42688 {
         Some(RawSample20Bit { accel_20bit, gyro_20bit, temp })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_icm42688_default_construction_and_sensitivities() {
+        let imu = Icm42688::new();
+        assert_eq!(imu.gyro_fsr, GyroFsr::Dps2000);
+        assert_eq!(imu.accel_fsr, AccelFsr::G16);
+        assert!((imu.gyro_sensitivity_rad_s() - 0.00106526).abs() < 1e-6);
+        assert!((imu.accel_sensitivity_m_s2() - 0.0047884).abs() < 1e-6);
+    }
+}
