@@ -122,6 +122,34 @@ impl CalibrationBlock {
         }
         Self::deserialize_remainder(version, mag_hard_iron, mag_soft_iron, p, idx)
     }
+
+    fn deserialize_remainder(
+        version: u16,
+        mag_hard_iron: [f32; 3],
+        mag_soft_iron: [[f32; 3]; 3],
+        p: &[u8],
+        idx: &mut usize,
+    ) -> Result<Self, ProtocolError> {
+        let mut gyro_bias_rps = [0.0f32; 3];
+        for v in &mut gyro_bias_rps {
+            *v = f32::from_be_bytes([p[*idx], p[*idx + 1], p[*idx + 2], p[*idx + 3]]);
+            *idx += 4;
+        }
+        let mut accel_scale = [0.0f32; 3];
+        for v in &mut accel_scale {
+            *v = f32::from_be_bytes([p[*idx], p[*idx + 1], p[*idx + 2], p[*idx + 3]]);
+            *idx += 4;
+        }
+        let block = Self {
+            version,
+            mag_hard_iron,
+            mag_soft_iron,
+            gyro_bias_rps,
+            accel_scale,
+        };
+        block.validate_finite()?;
+        Ok(block)
+    }
 }
 
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
