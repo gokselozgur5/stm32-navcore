@@ -61,3 +61,27 @@ impl DualImuManager {
         chi2 > self.chi_square_threshold
     }
 }
+
+impl DualImuManager {
+    pub fn update_and_select(
+        &mut self,
+        p: &ImuReading,
+        s: &ImuReading,
+        gyro_var: [f32; 3],
+    ) -> ImuReading {
+        let faulty = self.evaluate_sensors(p, s, gyro_var);
+        if faulty && self.primary_healthy {
+            self.consecutive_faults += 1;
+            if self.consecutive_faults >= self.max_consecutive_faults {
+                self.primary_healthy = false;
+                self.active_imu = ImuId::Secondary;
+            }
+        } else if !faulty {
+            self.consecutive_faults = 0;
+        }
+        match self.active_imu {
+            ImuId::Primary => *p,
+            ImuId::Secondary => *s,
+        }
+    }
+}
