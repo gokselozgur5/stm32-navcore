@@ -103,3 +103,17 @@ fn position_nees_below_chi_square_bound() {
     let nees = mean_err / trace;
     assert!(nees < 3.0, "position NEES per dof {nees}");
 }
+
+#[test]
+fn innovations_are_white() {
+    let (innov, _) = stationary_run(99, 3000);
+    let x = &innov[200..];
+    let mean = x.iter().map(|&v| v as f64).sum::<f64>() / x.len() as f64;
+    let var = x.iter().map(|&v| (v as f64 - mean).powi(2)).sum::<f64>();
+    let lag1 = x
+        .windows(2)
+        .map(|w| (w[0] as f64 - mean) * (w[1] as f64 - mean))
+        .sum::<f64>();
+    let rho = lag1 / var;
+    assert!(rho.abs() < 0.1, "lag-1 autocorrelation {rho}");
+}
