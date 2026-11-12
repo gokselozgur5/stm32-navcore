@@ -460,6 +460,13 @@ impl NavEkf {
     }
 }
 
+impl NavEkf {
+    /// One-sigma gyro z-bias uncertainty in rad/s.
+    pub fn gyro_bias_sigma(&self) -> f32 {
+        libm::sqrtf(self.cov.0[7][7])
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
