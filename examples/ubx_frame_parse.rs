@@ -6,8 +6,8 @@
 //! Run with `cargo run --example ubx_frame_parse`.
 
 use stm32_navcore::ubx::{
-    ubx_checksum, UbxMessage, UbxNavPvt, UbxParser, UBX_CLASS_NAV, UBX_ID_NAV_PVT,
-    UBX_NAV_PVT_LEN, UBX_SYNC_1, UBX_SYNC_2,
+    ubx_checksum, UbxMessage, UbxNavPvt, UbxParser, UBX_CLASS_NAV, UBX_ID_NAV_PVT, UBX_NAV_PVT_LEN,
+    UBX_SYNC_1, UBX_SYNC_2,
 };
 
 /// GPS time of week written into the test frame, in milliseconds.
@@ -64,4 +64,25 @@ fn parse_stream(stream: &[u8]) -> Option<UbxNavPvt> {
         }
     }
     None
+}
+
+fn main() {
+    let mut payload = [0u8; UBX_NAV_PVT_LEN];
+    build_pvt_payload(&mut payload);
+    let mut frame = [0u8; FRAME_LEN];
+    let frame_len = build_frame(UBX_CLASS_NAV, UBX_ID_NAV_PVT, &payload, &mut frame);
+
+    let pvt = parse_stream(&frame[..frame_len]).expect("no NAV-PVT decoded");
+    println!(
+        "i_tow = {} ms, fix_type = {}, sats = {}",
+        pvt.i_tow_ms, pvt.fix_type, pvt.num_sv
+    );
+    println!(
+        "lat = {:.7} deg, lon = {:.7} deg",
+        f64::from(pvt.lat_dege7) * 1e-7,
+        f64::from(pvt.lon_dege7) * 1e-7
+    );
+    assert_eq!(pvt.i_tow_ms, TEST_ITOW_MS);
+    assert_eq!(pvt.lat_dege7, TEST_LAT_DEGE7);
+    assert_eq!(pvt.lon_dege7, TEST_LON_DEGE7);
 }
