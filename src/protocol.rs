@@ -529,6 +529,21 @@ mod tests {
     }
 
     #[test]
+    fn test_calibration_exhaustive_bit_flip_crc_rejection() {
+        let cal = CalibrationBlock::default_calibrated();
+        let mut buf = [0u8; CalibrationBlock::TOTAL_SIZE];
+        cal.serialize(&mut buf).unwrap();
+
+        for byte_idx in 0..CalibrationBlock::TOTAL_SIZE {
+            for bit in 0..8 {
+                let mut corrupted = buf;
+                corrupted[byte_idx] ^= 1 << bit;
+                assert!(CalibrationBlock::deserialize(&corrupted).is_err());
+            }
+        }
+    }
+
+    #[test]
     fn test_calibration_version_mismatch_rejection() {
         let cal = CalibrationBlock::default_calibrated();
         let mut buf = [0u8; CalibrationBlock::TOTAL_SIZE];
