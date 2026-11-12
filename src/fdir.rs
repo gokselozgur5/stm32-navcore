@@ -52,6 +52,10 @@ impl DualImuManager {
 
 impl DualImuManager {
     pub fn evaluate_sensors(&mut self, p: &ImuReading, s: &ImuReading, gyro_var: [f32; 3]) -> bool {
+        let all = p.gyro_rps.iter().chain(s.gyro_rps.iter());
+        if all.into_iter().any(|g| !g.is_finite()) {
+            return true;
+        }
         let d_gyro = [
             p.gyro_rps[0] - s.gyro_rps[0],
             p.gyro_rps[1] - s.gyro_rps[1],
