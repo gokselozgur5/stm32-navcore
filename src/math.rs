@@ -114,10 +114,15 @@ fn row_abs_sum<const N: usize>(row: &[f32; N]) -> f32 {
     row.iter().map(|v| if *v < 0.0 { -*v } else { *v }).sum()
 }
 
-/// Scale-aware singularity test: `det` is compared with `scale * REL_DET_EPS`.
+/// Scale-aware singularity test: `det` must be a normal f32 above `scale * REL_DET_EPS`.
 fn is_singular(det: f32, scale: f32) -> bool {
     let abs_det = if det < 0.0 { -det } else { det };
-    !det.is_finite() || !scale.is_finite() || abs_det <= scale * REL_DET_EPS
+    !det.is_normal() || !scale.is_finite() || abs_det <= scale * REL_DET_EPS
+}
+
+/// Returns `Some(m)` only when every entry of `m` is finite.
+fn finite_or_none<const N: usize>(m: Mat<N, N>) -> Option<Mat<N, N>> {
+    m.0.iter().flatten().all(|v| v.is_finite()).then_some(m)
 }
 
 impl Mat<2, 2> {
@@ -128,7 +133,7 @@ impl Mat<2, 2> {
             return None;
         }
         let inv_det = 1.0 / det;
-        Some(Mat([
+        finite_or_none(Mat([
             [self.0[1][1] * inv_det, -self.0[0][1] * inv_det],
             [-self.0[1][0] * inv_det, self.0[0][0] * inv_det],
         ]))
@@ -153,7 +158,7 @@ impl Mat<3, 3> {
         let c20 = m[0][1] * m[1][2] - m[0][2] * m[1][1];
         let c21 = m[0][2] * m[1][0] - m[0][0] * m[1][2];
         let c22 = m[0][0] * m[1][1] - m[0][1] * m[1][0];
-        Some(Mat([
+        finite_or_none(Mat([
             [c00 * inv_det, c10 * inv_det, c20 * inv_det],
             [c01 * inv_det, c11 * inv_det, c21 * inv_det],
             [c02 * inv_det, c12 * inv_det, c22 * inv_det],
