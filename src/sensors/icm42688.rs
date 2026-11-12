@@ -260,3 +260,9 @@ pub struct RawSample20Bit {
     pub gyro_20bit: [i32; 3],
     pub temp: i16,
 }
+
+impl Icm42688 {
+    fn extract_20bit(msb: i16, lsb_nibble: u8) -> i32 {
+        ((msb as i32) << 4) | (lsb_nibble as i32 & 0x0F)
+    }
+}
