@@ -41,3 +41,9 @@ fn gyro_bias_converges_for_positive_bias() {
     let ekf = run_with_heading_aiding(0.04, 600);
     assert!((ekf.bg_z - 0.04).abs() < 0.01, "bg_z={}", ekf.bg_z);
 }
+
+#[test]
+fn gyro_bias_converges_for_negative_bias() {
+    let ekf = run_with_heading_aiding(-0.035, 600);
+    assert!((ekf.bg_z + 0.035).abs() < 0.01, "bg_z={}", ekf.bg_z);
+}
