@@ -73,3 +73,13 @@ Both framings are exercised by `tests/hil_trajectory.rs`, which round-trips ever
 `ubx::UbxParser` is a byte-at-a-time state machine with a 128-byte buffer.
 `process_byte` returns a complete `UbxMessage` once a frame passes its checksum.
 The decoders `UbxNavPvt::decode` and `UbxNavRelPosNed::decode` expect payloads of 92 and 64 bytes.
+
+## Testing
+
+| Test file | Coverage |
+| --- | --- |
+| `tests/hil_trajectory.rs` | Closed-loop figure-eight with GNSS outage, telemetry round trips |
+| `tests/fault_injection.rs` | Adversarial sensor bursts, 5000-step covariance stress, COBS fuzzing, exhaustive bit-flip rejection for UART and CAN |
+| `tests/determinism_audit.rs` | Determinism checks for the filter and the telemetry codecs |
+| `tests/public_api.rs` | Crate-root re-exports, `size_of` and `align_of` of core types (added by a separate PR) |
+| `examples/flight_loop_bench.rs` | Closed-loop timing and a deterministic checksum |
