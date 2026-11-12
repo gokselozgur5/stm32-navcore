@@ -69,3 +69,20 @@ impl CrsfFrame {
         }
     }
 }
+
+/// CRSF protocol decoding errors.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CrsfError {
+    /// Buffer is smaller than minimum required frame length.
+    BufferTooShort,
+    /// Header sync byte does not match 0xC8.
+    InvalidSyncByte,
+    /// Length field does not match expected payload size.
+    InvalidLength,
+    /// Unknown or unsupported frame type.
+    UnsupportedFrameType,
+    /// CRC8 checksum mismatch.
+    ChecksumMismatch,
+    /// DShot checksum error.
+    DshotChecksumError,
+}
