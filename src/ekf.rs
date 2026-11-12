@@ -378,6 +378,19 @@ mod tests {
     }
 
     #[test]
+    fn test_dual_antenna_heading_convergence() {
+        let mut ekf = NavEkf::new();
+        let target_yaw = core::f32::consts::FRAC_PI_2;
+        for _ in 0..50 {
+            ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], 0.02)
+                .unwrap();
+            let _ = ekf.update_dual_antenna_heading(target_yaw, 0.0, 0.01);
+        }
+        let (_, _, est_yaw) = ekf.att.to_euler_zyx();
+        assert!((est_yaw - target_yaw).abs() < 0.05);
+    }
+
+    #[test]
     fn test_gnss_update_atomicity() {
         let mut ekf = NavEkf::new();
         let before_pos = ekf;
