@@ -206,3 +206,26 @@ impl Dps310Driver {
     ///
     /// Polynomial:
     /// P_comp = c00 + P_sc * (c10 + P_sc * (c20 + P_sc * c30)) +
+    ///          T_sc * c01 + T_sc * P_sc * (c11 + P_sc * c21).
+    pub fn compensate_pressure(&self, raw_p: i32, raw_t: i32) -> Result<f32, SensorError> {
+        let p_sc = self.scale_pressure(raw_p);
+        let t_sc = self.scale_temperature(raw_t);
+
+        let term_p = p_sc * (self.calib.c10 + p_sc * (self.calib.c20 + p_sc * self.calib.c30));
+        let term_t = t_sc * self.calib.c01;
+        let term_tp = t_sc * p_sc * (self.calib.c11 + p_sc * self.calib.c21);
+
+        let p_comp = self.calib.c00 + term_p + term_t + term_tp;
+        if !p_comp.is_finite() || p_comp <= 0.0 {
+            return Err(SensorError::InvalidPressure);
+        }
+        Ok(p_comp)
+    }
+
+    /// Compensates pressure in hectopascals (hPa).
+    pub fn compensate_pressure_hpa(&self, raw_p: i32, raw_t: i32) -> Result<f32, SensorError> {
+        let p_pa = self.compensate_pressure(raw_p, raw_t)?;
+        Ok(p_pa * 0.01)
+    }
+
+    /// Computes pressure altitude in meters relative to standard sea level pressure or given p0_hpa.
