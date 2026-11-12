@@ -1,5 +1,6 @@
 use stm32_navcore::sensors::baro::{compensated_altitude_m, BaroError};
 use stm32_navcore::sensors::baro::{BaroMeasurement, ISA_SEA_LEVEL_HPA};
+use stm32_navcore::sensors::baro::BaroFilter;
 
 #[test]
 fn sea_level_pressure_is_zero_altitude() {
@@ -46,3 +47,22 @@ fn bad_pressure_is_reported() {
         Err(BaroError::Pressure(_))
     ));
 }
+
+#[test]
+fn constant_input_converges() {
+    let mut f = BaroFilter::new(0.2, 50.0, 3);
+    let mut out = 0.0;
+    for _ in 0..100 {
+        out = f.update(10.0).unwrap();
+    }
+    assert!((out - 10.0).abs() < 1e-3);
+}
+
+#[test]
+fn single_spike_is_rejected() {
+    let mut f = BaroFilter::new(0.5, 5.0, 3);
+    f.update(0.0);
+    assert_eq!(f.update(100.0), None);
+    assert!(f.update(0.0).unwrap().abs() < 1e-6);
+}
+
