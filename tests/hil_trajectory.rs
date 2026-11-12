@@ -127,9 +127,18 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         };
 
         let next_t = (step + 1) as f32 * dt;
-        let next_vn = r_traj * omega * libm::cosf(omega * next_t);
-        let next_ve = 2.0 * r_traj * omega * libm::cosf(2.0 * omega * next_t);
-        let next_yaw = libm::atan2f(next_ve, next_vn);
+        let next_yaw = if next_t < 10.0 {
+            0.0
+        } else if next_t < 30.0 {
+            let tau = next_t - 10.0;
+            let omega = 2.0 * PI / 20.0;
+            let r_traj = 20.0f32;
+            let vn = r_traj * omega * libm::cosf(omega * tau);
+            let ve = 2.0 * r_traj * omega * libm::cosf(2.0 * omega * tau);
+            libm::atan2f(ve, vn)
+        } else {
+            0.0
+        };
         let yaw_rate = wrap_pi(next_yaw - yaw) / dt;
 
         let half_yaw = yaw * 0.5;
