@@ -32,3 +32,18 @@ pub const CRSF_FRAME_CHANNELS: u8 = 0x16;
 pub struct CrsfChannels {
     pub channels: [f32; 16],
 }
+
+impl CrsfChannels {
+    fn unpack_single_channel(raw_22: &[u8; 22], bit_pos: usize) -> u16 {
+        let byte_idx = bit_pos / 8;
+        let bit_off = bit_pos % 8;
+        let mut val = (raw_22[byte_idx] as u32) >> bit_off;
+        if bit_off > 5 && byte_idx + 1 < 22 {
+            val |= (raw_22[byte_idx + 1] as u32) << (8 - bit_off);
+        }
+        if bit_off > 13 && byte_idx + 2 < 22 {
+            val |= (raw_22[byte_idx + 2] as u32) << (16 - bit_off);
+        }
+        (val & 0x07FF) as u16
+    }
+}
