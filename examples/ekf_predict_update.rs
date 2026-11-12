@@ -23,3 +23,12 @@ const GNSS_POS_VAR_M2: f32 = 1.0;
 const NIS_GATE: f32 = 16.0;
 /// Acceptance bound for the final position error in metres.
 const MAX_FINAL_ERROR_M: f32 = 0.5;
+
+/// Returns a deterministic GNSS position fix for fix index `k`.
+///
+/// The alternating +/-0.3 m offset stands in for measurement noise, so the
+/// example is reproducible without a random number generator.
+fn gnss_fix(k: usize) -> [f32; 3] {
+    let offset = if k.is_multiple_of(2) { 0.3 } else { -0.3 };
+    [offset, -offset, 0.0]
+}
