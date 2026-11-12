@@ -63,3 +63,15 @@ fn constant_rate_climb_tracks_altitude_within_bound() {
     assert!(worst < 0.5, "worst climb altitude error {worst}");
     assert!((ekf.v_ned_mps[2] + 2.0).abs() < 0.1);
 }
+
+const TURN_SPEED: f32 = 10.0;
+const TURN_RATE: f32 = 0.2;
+
+fn turn_truth(t: f32) -> ([f32; 3], [f32; 3]) {
+    let r = TURN_SPEED / TURN_RATE;
+    let (s, c) = (libm::sinf(TURN_RATE * t), libm::cosf(TURN_RATE * t));
+    (
+        [r * s, r * (1.0 - c), 0.0],
+        [TURN_SPEED * c, TURN_SPEED * s, 0.0],
+    )
+}
