@@ -254,6 +254,25 @@ impl NavEkf {
     }
 }
 
+#[cfg(test)]
+mod gyro_bias_clamp_tests {
+    use super::*;
+
+    #[test]
+    fn clamp_limits_bias_in_both_directions() {
+        let mut ekf = NavEkf::new();
+        ekf.bg_z = 0.01;
+        assert!(!ekf.clamp_gyro_bias(0.05));
+        assert_eq!(ekf.bg_z, 0.01);
+        ekf.bg_z = 0.3;
+        assert!(ekf.clamp_gyro_bias(0.05));
+        assert_eq!(ekf.bg_z, 0.05);
+        ekf.bg_z = -0.3;
+        assert!(ekf.clamp_gyro_bias(0.05));
+        assert_eq!(ekf.bg_z, -0.05);
+    }
+}
+
 impl NavEkf {
     #[allow(clippy::needless_range_loop)]
     fn apply_scalar_joseph_cov(&mut self, k: [f32; STATE_DIM], h: [f32; STATE_DIM], r: f32) {
