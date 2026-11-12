@@ -503,3 +503,17 @@ pub struct StationaryDetector {
     sum_accel_mag_sq: f32,
     max_gyro_norm: f32,
 }
+
+impl StationaryDetector {
+    pub const fn new(window_size: usize, var_accel_thresh: f32, norm_gyro_thresh: f32) -> Self {
+        Self {
+            window_size,
+            count: 0,
+            var_accel_thresh,
+            norm_gyro_thresh,
+            sum_accel_mag: 0.0,
+            sum_accel_mag_sq: 0.0,
+            max_gyro_norm: 0.0,
+        }
+    }
+}
