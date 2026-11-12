@@ -517,3 +517,18 @@ impl StationaryDetector {
         }
     }
 }
+
+impl StationaryDetector {
+    pub fn reset(&mut self) {
+        self.count = 0;
+        self.sum_accel_mag = 0.0;
+        self.sum_accel_mag_sq = 0.0;
+        self.max_gyro_norm = 0.0;
+    }
+}
+
+impl Default for StationaryDetector {
+    fn default() -> Self {
+        Self::new(10, 0.05, 0.03)
+    }
+}
