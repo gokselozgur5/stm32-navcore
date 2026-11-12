@@ -106,6 +106,22 @@ impl CalibrationBlock {
         let mut idx = 2usize;
         Self::deserialize_fields(version, payload, &mut idx)
     }
+
+    fn deserialize_fields(version: u16, p: &[u8], idx: &mut usize) -> Result<Self, ProtocolError> {
+        let mut mag_hard_iron = [0.0f32; 3];
+        for v in &mut mag_hard_iron {
+            *v = f32::from_be_bytes([p[*idx], p[*idx + 1], p[*idx + 2], p[*idx + 3]]);
+            *idx += 4;
+        }
+        let mut mag_soft_iron = [[0.0f32; 3]; 3];
+        for row in &mut mag_soft_iron {
+            for v in row {
+                *v = f32::from_be_bytes([p[*idx], p[*idx + 1], p[*idx + 2], p[*idx + 3]]);
+                *idx += 4;
+            }
+        }
+        Self::deserialize_remainder(version, mag_hard_iron, mag_soft_iron, p, idx)
+    }
 }
 
 pub fn crc16_ccitt(data: &[u8]) -> u16 {
