@@ -158,3 +158,23 @@ pub struct UbxNavRelPosNed {
 impl UbxNavRelPosNed {
     /// Decode a 64-byte NAV-RELPOSNED payload buffer without allocation.
     pub fn decode(payload: &[u8]) -> Result<Self, crate::protocol::ProtocolError> {
+        if payload.len() < UBX_NAV_RELPOSNED_LEN {
+            return Err(crate::protocol::ProtocolError::BufferTooSmall);
+        }
+        let version = payload[0];
+        let station_id = u16::from_le_bytes([payload[2], payload[3]]);
+        let i_tow_ms = u32::from_le_bytes([payload[4], payload[5], payload[6], payload[7]]);
+        let rel_pos_n_cm = i32::from_le_bytes([payload[8], payload[9], payload[10], payload[11]]);
+        let rel_pos_e_cm = i32::from_le_bytes([payload[12], payload[13], payload[14], payload[15]]);
+        let rel_pos_d_cm = i32::from_le_bytes([payload[16], payload[17], payload[18], payload[19]]);
+        let rel_pos_length_cm =
+            i32::from_le_bytes([payload[20], payload[21], payload[22], payload[23]]);
+        let rel_pos_heading_dege5 =
+            i32::from_le_bytes([payload[24], payload[25], payload[26], payload[27]]);
+        let rel_pos_hp_n_mm0_1 = payload[32] as i8;
+        let rel_pos_hp_e_mm0_1 = payload[33] as i8;
+        let rel_pos_hp_d_mm0_1 = payload[34] as i8;
+        let rel_pos_hp_length_mm0_1 = payload[35] as i8;
+        let acc_n_mm0_1 = u32::from_le_bytes([payload[36], payload[37], payload[38], payload[39]]);
+        let acc_e_mm0_1 = u32::from_le_bytes([payload[40], payload[41], payload[42], payload[43]]);
+        let acc_d_mm0_1 = u32::from_le_bytes([payload[44], payload[45], payload[46], payload[47]]);
