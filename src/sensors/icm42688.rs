@@ -102,3 +102,12 @@ pub struct ScaledSample {
     pub gyro_rad_s: [f32; 3],
     pub temp_c: f32,
 }
+
+/// ICM-42688-P driver state and configuration.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Icm42688 {
+    pub gyro_fsr: GyroFsr,
+    pub accel_fsr: AccelFsr,
+    pub odr: Odr,
+    pub aaf: Option<AafConfig>,
+}
