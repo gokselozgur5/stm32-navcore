@@ -22,3 +22,21 @@ pub fn ubx_checksum(bytes: &[u8]) -> (u8, u8) {
     }
     (ck_a, ck_b)
 }
+
+/// Decoded UBX-NAV-PVT payload data representation.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct UbxNavPvt {
+    pub i_tow_ms: u32,
+    pub year: u16,
+    pub month: u8,
+    pub day: u8,
+    pub hour: u8,
+    pub min: u8,
+    pub sec: u8,
+    pub valid_flags: u8,
+    pub t_acc_ns: u32,
+    pub nano_ns: i32,
+    pub fix_type: u8,
+    pub flags: u8,
+    pub flags2: u8,
+    pub num_sv: u8,
