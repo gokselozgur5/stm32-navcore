@@ -272,6 +272,17 @@ pub fn calibrate_magnetometer(
     [cal.0[0][0], cal.0[1][0], cal.0[2][0]]
 }
 
+/// Standard atmosphere barometric formula converting pressure to altitude.
+pub fn pressure_hpa_to_altitude_m(p_hpa: f32, p0_hpa: f32) -> Result<f32, MathError> {
+    if !p_hpa.is_finite() || !p0_hpa.is_finite() || p_hpa <= 0.0 || p0_hpa <= 0.0 {
+        return Err(MathError::InvalidPressure);
+    }
+    let ratio = p_hpa / p0_hpa;
+    let exp = 1.0f32 / 5.255f32;
+    let pow_val = libm::powf(ratio, exp);
+    Ok(44330.0f32 * (1.0f32 - pow_val))
+}
+
 pub fn tilt_compensated_yaw(
     b_raw: [f32; 3],
     hard_iron: [f32; 3],
