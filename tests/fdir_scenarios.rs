@@ -33,3 +33,11 @@ fn intermittent_spikes_reset_the_counter() {
     assert!(m.primary_healthy);
     assert_eq!(m.active_imu, ImuId::Primary);
 }
+
+#[test]
+fn threshold_boundary_is_strictly_greater() {
+    let mut m = DualImuManager::new(4.0, 3);
+    let a = imu([0.0; 3]);
+    assert!(!m.evaluate_sensors(&imu([2.0, 0.0, 0.0]), &a, [1.0; 3]));
+    assert!(m.evaluate_sensors(&imu([2.01, 0.0, 0.0]), &a, [1.0; 3]));
+}
