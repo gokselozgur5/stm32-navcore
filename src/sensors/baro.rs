@@ -34,3 +34,13 @@ pub enum BaroError {
     Pressure(MathError),
     Temperature,
 }
+
+/// Altitude in meters with the ISA height scaled by measured over ISA temperature.
+pub fn compensated_altitude_m(p_hpa: f32, p0_hpa: f32, temp_c: f32) -> Result<f32, BaroError> {
+    let temp_k = temp_c + 273.15;
+    if !temp_k.is_finite() || temp_k <= 0.0 {
+        return Err(BaroError::Temperature);
+    }
+    let isa = pressure_hpa_to_altitude_m(p_hpa, p0_hpa).map_err(BaroError::Pressure)?;
+    Ok(isa * temp_k / ISA_SEA_LEVEL_K)
+}
