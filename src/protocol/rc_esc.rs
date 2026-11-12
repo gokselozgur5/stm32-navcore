@@ -129,3 +129,17 @@ impl DShotFrame {
         Ok(Self { raw })
     }
 }
+
+impl DShotFrame {
+    pub fn raw(&self) -> u16 {
+        self.raw
+    }
+
+    pub fn throttle(&self) -> u16 {
+        self.raw >> 5
+    }
+
+    pub fn telemetry(&self) -> bool {
+        ((self.raw >> 4) & 0x01) == 1
+    }
+}
