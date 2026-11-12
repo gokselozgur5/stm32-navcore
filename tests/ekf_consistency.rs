@@ -117,3 +117,15 @@ fn innovations_are_white() {
     let rho = lag1 / var;
     assert!(rho.abs() < 0.1, "lag-1 autocorrelation {rho}");
 }
+
+/// Converged stationary filter after a noisy warm-up.
+fn converged(seed: u64, steps: usize) -> NavEkf {
+    let mut rng = Rng(seed);
+    let mut ekf = NavEkf::new();
+    for _ in 0..steps {
+        ekf.predict([0.0, 0.0, -9.80665], [0.0; 3], 0.1).unwrap();
+        let z = [rng.gauss(), rng.gauss(), rng.gauss()];
+        ekf.update_gnss_pos(z, 1.0, 100.0).unwrap();
+    }
+    ekf
+}
