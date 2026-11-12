@@ -98,3 +98,23 @@ impl AafConfig {
 /// Raw unscaled sensor sample.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct RawSample {
+    pub accel: [i16; 3],
+    pub gyro: [i16; 3],
+    pub temp: i16,
+}
+
+/// Calibrated physical unit sample (m/s^2, rad/s, deg C).
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub struct ScaledSample {
+    pub accel_m_s2: [f32; 3],
+    pub gyro_rad_s: [f32; 3],
+    pub temp_c: f32,
+}
+
+/// ICM-42688-P driver state and configuration.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Icm42688 {
+    pub gyro_fsr: GyroFsr,
+    pub accel_fsr: AccelFsr,
+    pub odr: Odr,
+    pub aaf: Option<AafConfig>,
