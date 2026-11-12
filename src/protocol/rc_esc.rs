@@ -238,3 +238,20 @@ pub struct DshotFrame {
     /// Telemetry request flag bit.
     pub telemetry: bool,
 }
+
+impl DshotFrame {
+    /// Create new DShot frame with bounded 11-bit throttle.
+    pub const fn new(throttle: u16, telemetry: bool) -> Self {
+        Self {
+            throttle: if throttle > 2047 { 2047 } else { throttle },
+            telemetry,
+        }
+    }
+
+    /// Encode DShot frame into raw 16-bit packet word with inverted XOR CRC.
+    pub fn encode(&self) -> u16 {
+        let payload = ((self.throttle & 0x07FF) << 1) | (if self.telemetry { 1 } else { 0 });
+        let crc = (payload ^ (payload >> 4) ^ (payload >> 8)) & 0x0F;
+        (payload << 4) | crc
+    }
+}
