@@ -1,6 +1,6 @@
+use stm32_navcore::sensors::baro::BaroFilter;
 use stm32_navcore::sensors::baro::{compensated_altitude_m, BaroError};
 use stm32_navcore::sensors::baro::{BaroMeasurement, ISA_SEA_LEVEL_HPA};
-use stm32_navcore::sensors::baro::BaroFilter;
 
 #[test]
 fn sea_level_pressure_is_zero_altitude() {
@@ -66,3 +66,17 @@ fn single_spike_is_rejected() {
     assert!(f.update(0.0).unwrap().abs() < 1e-6);
 }
 
+#[test]
+fn sustained_jump_is_accepted() {
+    let mut f = BaroFilter::new(1.0, 5.0, 2);
+    f.update(0.0);
+    assert_eq!(f.update(100.0), None);
+    assert_eq!(f.update(100.0), None);
+    assert_eq!(f.update(100.0), Some(100.0));
+}
+
+#[test]
+fn non_finite_is_rejected() {
+    let mut f = BaroFilter::new(0.5, 5.0, 3);
+    assert_eq!(f.update(f32::NAN), None);
+}
