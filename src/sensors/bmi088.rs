@@ -253,4 +253,13 @@ mod tests {
         let scaled_24g = AccelRange::Range24g.scale_m_s2(max_raw);
         assert!((scaled_24g - 24.0 * 9.80665).abs() < 0.05);
     }
+
+    #[test]
+    fn test_gyro_range_scaling() {
+        assert_eq!(GyroRange::Range2000Dps.max_dps(), 2000.0);
+        let max_raw = 32767i16;
+        let scaled_2000 = GyroRange::Range2000Dps.scale_rad_s(max_raw);
+        let expected_rad_s = 2000.0f32 * (core::f32::consts::PI / 180.0);
+        assert!((scaled_2000 - expected_rad_s).abs() < 0.01);
+    }
 }
