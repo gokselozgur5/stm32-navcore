@@ -88,12 +88,15 @@ impl UbxNavPvt {
         let vel_e_mmps = i32::from_le_bytes([payload[52], payload[53], payload[54], payload[55]]);
         let vel_d_mmps = i32::from_le_bytes([payload[56], payload[57], payload[58], payload[59]]);
         let g_speed_mmps = i32::from_le_bytes([payload[60], payload[61], payload[62], payload[63]]);
-        let head_mot_dege5 = i32::from_le_bytes([payload[64], payload[65], payload[66], payload[67]]);
+        let head_mot_dege5 =
+            i32::from_le_bytes([payload[64], payload[65], payload[66], payload[67]]);
         let s_acc_mmps = u32::from_le_bytes([payload[68], payload[69], payload[70], payload[71]]);
-        let head_acc_dege5 = u32::from_le_bytes([payload[72], payload[73], payload[74], payload[75]]);
+        let head_acc_dege5 =
+            u32::from_le_bytes([payload[72], payload[73], payload[74], payload[75]]);
         let p_dop = u16::from_le_bytes([payload[76], payload[77]]);
         let flags3 = u16::from_le_bytes([payload[78], payload[79]]);
-        let head_veh_dege5 = i32::from_le_bytes([payload[84], payload[85], payload[86], payload[87]]);
+        let head_veh_dege5 =
+            i32::from_le_bytes([payload[84], payload[85], payload[86], payload[87]]);
         Ok(Self {
             i_tow_ms, year, month, day, hour, min, sec, valid_flags,
             t_acc_ns, nano_ns, fix_type, flags, flags2, num_sv,
@@ -171,6 +174,12 @@ pub enum UbxMessage {
 pub struct UbxParser {
     buf: [u8; 128],
     len: usize,
+}
+
+impl Default for UbxParser {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl UbxParser {
