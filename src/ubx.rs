@@ -90,3 +90,16 @@ impl UbxNavPvt {
         let g_speed_mmps = i32::from_le_bytes([payload[60], payload[61], payload[62], payload[63]]);
         let head_mot_dege5 = i32::from_le_bytes([payload[64], payload[65], payload[66], payload[67]]);
         let s_acc_mmps = u32::from_le_bytes([payload[68], payload[69], payload[70], payload[71]]);
+        let head_acc_dege5 = u32::from_le_bytes([payload[72], payload[73], payload[74], payload[75]]);
+        let p_dop = u16::from_le_bytes([payload[76], payload[77]]);
+        let flags3 = u16::from_le_bytes([payload[78], payload[79]]);
+        let head_veh_dege5 = i32::from_le_bytes([payload[84], payload[85], payload[86], payload[87]]);
+        Ok(Self {
+            i_tow_ms, year, month, day, hour, min, sec, valid_flags,
+            t_acc_ns, nano_ns, fix_type, flags, flags2, num_sv,
+            lon_dege7, lat_dege7, height_mm, h_msl_mm, h_acc_mm, v_acc_mm,
+            vel_n_mmps, vel_e_mmps, vel_d_mmps, g_speed_mmps,
+            head_mot_dege5, s_acc_mmps, head_acc_dege5, p_dop, flags3, head_veh_dege5,
+        })
+    }
+}
