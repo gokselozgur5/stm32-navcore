@@ -1,6 +1,6 @@
 //! Statistical consistency checks for the navigation EKF.
 
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::ekf::{EkfError, NavEkf, STATE_DIM};
 
 /// Deterministic LCG with a Box-Muller Gaussian transform.
 struct Rng(u64);
@@ -128,4 +128,22 @@ fn converged(seed: u64, steps: usize) -> NavEkf {
         ekf.update_gnss_pos(z, 1.0, 100.0).unwrap();
     }
     ekf
+}
+
+#[test]
+fn biased_measurement_is_rejected_without_state_change() {
+    let mut ekf = converged(5, 500);
+    let before = ekf;
+    let r = ekf.update_gnss_pos([30.0, 0.0, 0.0], 1.0, 16.0);
+    assert_eq!(r, Err(EkfError::OutlierRejected));
+    assert_eq!(ekf, before);
+}
+
+#[test]
+fn covariance_stays_positive_and_finite() {
+    let ekf = converged(11, 3000);
+    for i in 0..STATE_DIM {
+        let d = ekf.cov.0[i][i];
+        assert!(d.is_finite() && d > 0.0, "diag {i} = {d}");
+    }
 }
