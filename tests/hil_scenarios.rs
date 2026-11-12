@@ -27,3 +27,20 @@ fn yaw_error(ekf: &NavEkf, truth: f32) -> f32 {
     }
     d.abs()
 }
+
+#[test]
+fn hover_holds_position_and_heading_with_gnss_aiding() {
+    let mut ekf = NavEkf::new();
+    ekf.p_ned_m = [0.0, 0.0, -10.0];
+    for step in 0..2000 {
+        let (a, w) = ideal_imu([0.0; 3], 0.0, 0.0);
+        ekf.predict(a, w, DT).unwrap();
+        if step % 20 == 0 {
+            let _ = ekf.update_gnss_pos([0.0, 0.0, -10.0], 0.02, 16.0);
+            let _ = ekf.update_gnss_vel([0.0; 3], 0.005, 16.0);
+        }
+    }
+    let err = (ekf.p_ned_m[2] + 10.0).abs() + ekf.p_ned_m[0].abs() + ekf.p_ned_m[1].abs();
+    assert!(err < 0.1, "hover position error {err}");
+    assert!(yaw_error(&ekf, 0.0) < 0.02);
+}
