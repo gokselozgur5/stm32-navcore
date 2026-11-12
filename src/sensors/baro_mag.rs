@@ -91,3 +91,26 @@ impl Dps310Calib {
             c01,
             c11,
             c20,
+            c21,
+            c30,
+        })
+    }
+}
+
+/// Sign-extends a 12-bit signed integer.
+fn sign_extend_12(val: u16) -> i32 {
+    let mut v = (val & 0x0FFF) as i32;
+    if (v & 0x0800) != 0 {
+        v -= 0x1000;
+    }
+    v
+}
+
+/// Sign-extends a 20-bit signed integer.
+fn sign_extend_20(val: u32) -> i32 {
+    let mut v = (val & 0x000F_FFFF) as i32;
+    if (v & 0x0008_0000) != 0 {
+        v -= 0x0010_0000;
+    }
+    v
+}
