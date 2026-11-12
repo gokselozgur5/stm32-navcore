@@ -100,3 +100,24 @@ fn coordinated_turn_bounds_position_and_yaw_error() {
     assert!(worst < 1.0, "worst turn position error {worst}");
     assert!(yaw_error(&ekf, TURN_RATE * 30.0) < 0.1);
 }
+
+#[test]
+fn imu_saturation_burst_recovers_after_gnss_reacquires() {
+    let mut ekf = NavEkf::new();
+    for step in 0..2000 {
+        let burst = (500..510).contains(&step);
+        let (mut a, mut w) = ideal_imu([0.0; 3], 0.0, 0.0);
+        if burst {
+            a = [16.0 * G, -16.0 * G, 16.0 * G];
+            w = [34.9, -34.9, 34.9];
+        }
+        ekf.predict(a, w, DT).unwrap();
+        assert!(ekf.p_ned_m.iter().all(|v| v.is_finite()));
+        if step % 20 == 0 && step > 600 {
+            let _ = ekf.update_gnss_pos([0.0; 3], 0.02, 1.0e6);
+            let _ = ekf.update_gnss_vel([0.0; 3], 0.005, 1.0e6);
+        }
+    }
+    let err = libm::sqrtf(ekf.p_ned_m.iter().map(|v| v * v).sum::<f32>());
+    assert!(err < 2.0, "post saturation position error {err}");
+}
