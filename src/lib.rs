@@ -14,6 +14,7 @@ pub mod sensors;
 pub use fdir::{DualImuManager, ImuId, ImuReading};
 
 pub use protocol::CalibrationBlock;
+pub use protocol::rc_esc::{CrsfChannels, DShotFrame, RcEscError};
 
 #[cfg(test)]
 mod footprint {
@@ -25,4 +26,3 @@ mod footprint {
     }
 }
 
-pub use protocol::rc_esc::{CrsfChannels, DShotFrame, RcEscError};
