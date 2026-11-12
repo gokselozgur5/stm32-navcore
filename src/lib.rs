@@ -10,10 +10,12 @@ pub mod fdir;
 pub mod math;
 pub mod protocol;
 pub mod sensors;
+pub mod ubx;
 
 pub use fdir::{DualImuManager, ImuId, ImuReading};
 
 pub use protocol::CalibrationBlock;
+pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 
 #[cfg(test)]
 mod footprint {
