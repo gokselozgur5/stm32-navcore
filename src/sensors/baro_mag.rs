@@ -344,3 +344,26 @@ impl Ist8310Driver {
             (raw[2] as f32) * self.scale_ut_per_lsb,
         ];
         let yaw = tilt_compensated_yaw(b_scaled, self.bias, self.sensitivity_matrix, roll, pitch)?;
+        Ok(yaw)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dps310_sign_extension() {
+        assert_eq!(sign_extend_12(0x0001), 1);
+        assert_eq!(sign_extend_12(0x07FF), 2047);
+        assert_eq!(sign_extend_12(0x0800), -2048);
+        assert_eq!(sign_extend_12(0x0FFF), -1);
+
+        assert_eq!(sign_extend_20(0x00001), 1);
+        assert_eq!(sign_extend_20(0x7FFFF), 524287);
+        assert_eq!(sign_extend_20(0x80000), -524288);
+        assert_eq!(sign_extend_20(0xFFFFF), -1);
+
+        assert_eq!(sign_extend_24(0x000001), 1);
+        assert_eq!(sign_extend_24(0x7FFFFF), 8388607);
+        assert_eq!(sign_extend_24(0x800000), -8388608);
