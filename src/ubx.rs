@@ -98,3 +98,23 @@ impl UbxNavPvt {
         let head_veh_dege5 =
             i32::from_le_bytes([payload[84], payload[85], payload[86], payload[87]]);
         Ok(Self {
+            i_tow_ms,
+            year,
+            month,
+            day,
+            hour,
+            min,
+            sec,
+            valid_flags,
+            t_acc_ns,
+            nano_ns,
+            fix_type,
+            flags,
+            flags2,
+            num_sv,
+            lon_dege7,
+            lat_dege7,
+            height_mm,
+            h_msl_mm,
+            h_acc_mm,
+            v_acc_mm,
