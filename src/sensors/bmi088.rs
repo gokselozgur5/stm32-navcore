@@ -106,3 +106,27 @@ pub enum AccelOdr {
     Odr800Hz = 0x0B,
     Odr1600Hz = 0x0C,
 }
+
+/// BMI088 Gyroscope full-scale measurement range.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum GyroRange {
+    Range2000Dps = 0x00,
+    Range1000Dps = 0x01,
+    Range500Dps = 0x02,
+    Range250Dps = 0x03,
+    Range125Dps = 0x04,
+}
+
+impl GyroRange {
+    /// Return full-scale range in degrees per second (deg/s).
+    pub const fn max_dps(&self) -> f32 {
+        match self {
+            Self::Range2000Dps => 2000.0,
+            Self::Range1000Dps => 1000.0,
+            Self::Range500Dps => 500.0,
+            Self::Range250Dps => 250.0,
+            Self::Range125Dps => 125.0,
+        }
+    }
+}
