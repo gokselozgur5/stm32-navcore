@@ -218,3 +218,23 @@ impl Icm42688 {
     pub fn encode_accel_config0(&self) -> u8 {
         ((self.accel_fsr as u8) << 5) | (self.odr as u8)
     }
+}
+
+impl Icm42688 {
+    /// Encode Gyro Anti-Aliasing Filter (AAF) registers (STATIC3, 4, 5).
+    pub fn encode_gyro_aaf_regs(&self) -> Option<[[u8; 2]; 3]> {
+        self.aaf.map(|aaf| {
+            [
+                [aaf_reg::GYRO_CONFIG_STATIC3, aaf.delt],
+                [aaf_reg::GYRO_CONFIG_STATIC4, (aaf.deltsqr & 0xFF) as u8],
+                [
+                    aaf_reg::GYRO_CONFIG_STATIC5,
+                    (((aaf.deltsqr >> 8) & 0x0F) as u8) | (aaf.bitshift << 4),
+                ],
+            ]
+        })
+    }
+}
+
+impl Icm42688 {
+    /// Encode Accel Anti-Aliasing Filter (AAF) registers (STATIC2, 3, 4).
