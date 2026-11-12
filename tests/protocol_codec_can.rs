@@ -49,3 +49,15 @@ fn unpack_rejects_wrong_id_and_dlc() {
         Err(ProtocolError::InvalidCanDlc)
     );
 }
+
+#[test]
+fn unpack_rejects_flipped_bits() {
+    for (frame, byte) in [(0usize, 0usize), (3, 7), (5, 0), (5, 1), (5, 2)] {
+        let mut f = sample().pack_can().unwrap();
+        f[frame].data[byte] ^= 0x01;
+        assert!(
+            NavTelemetry::unpack_can(&f).is_err(),
+            "frame {frame} byte {byte}"
+        );
+    }
+}
