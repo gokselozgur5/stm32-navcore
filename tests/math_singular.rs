@@ -33,10 +33,18 @@ fn near_singular_above_threshold_inverts_with_small_residual() {
 }
 
 #[test]
-fn determinant_below_threshold_is_rejected() {
-    let tiny = Mat([[1.0, 0.0], [0.0, 1e-13]]);
-    assert!(tiny.inv_2x2().is_none());
-    let tiny3 = Mat([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1e-13]]);
-    assert!(tiny3.inv_3x3().is_none());
+fn tiny_well_conditioned_inverts_and_tiny_singular_is_rejected() {
+    assert!(Mat([[1e-13, 0.0], [0.0, 1e-13]]).inv_2x2().is_some());
+    assert!(Mat([[1e-13, 2e-13], [2e-13, 4e-13]]).inv_2x2().is_none());
+    let tiny3 = Mat([[1e-13, 0.0, 0.0], [0.0, 1e-13, 0.0], [0.0, 0.0, 1e-13]]);
+    assert!(tiny3.inv_3x3().is_some());
+    let rank2 = Mat([
+        [1e-13, 2e-13, 3e-13],
+        [4e-13, 5e-13, 6e-13],
+        [7e-13, 8e-13, 9e-13],
+    ]);
+    assert!(rank2.inv_3x3().is_none());
+    let ill = Mat([[1.0, 1.0], [1.0, 1.0 + 1e-7]]);
+    assert!(ill.inv_2x2().is_none());
     assert!(Mat([[1e-13]]).inv_1x1().is_none());
 }
