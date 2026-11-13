@@ -38,3 +38,8 @@ pub fn attitude_error(from: &Quaternion, to: &Quaternion) -> Result<RelativeAtti
 
     Ok(RelativeAttitude { angle_rad, axis })
 }
+
+/// Compute the scalar attitude error angle in radians between two quaternions.
+pub fn attitude_error_angle(from: &Quaternion, to: &Quaternion) -> Result<f32, MathError> {
+    Ok(attitude_error(from, to)?.angle_rad)
+}
