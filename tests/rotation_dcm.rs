@@ -24,3 +24,22 @@ fn try_new_rejects_scaled_reflected_and_nan() {
     bad.0[1][1] = f32::NAN;
     assert!(Dcm::try_new(bad).is_err());
 }
+
+#[test]
+fn multiply_composes_angles() {
+    let p = rz(0.4).mul(&rz(0.5));
+    let want = rz(0.9);
+    for i in 0..3 {
+        for j in 0..3 {
+            assert!((p.0 .0[i][j] - want.0 .0[i][j]).abs() < 1e-6);
+        }
+    }
+}
+
+#[test]
+fn transpose_is_inverse() {
+    let r = rz(1.1);
+    let p = r.transpose().mul(&r);
+    assert!(p.orthogonality_error() < 1e-6);
+    assert!((p.0 .0[0][0] - 1.0).abs() < 1e-6);
+}
