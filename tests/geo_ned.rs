@@ -1,4 +1,4 @@
-use stm32_navcore::geo::{Lla, LtpFrame, Ned, WGS84_A, WGS84_E2};
+use stm32_navcore::geo::{Ecef, GeoError, Lla, LtpFrame, Ned, WGS84_A, WGS84_E2};
 
 #[test]
 fn test_origin_maps_to_zero_and_roundtrip() {
@@ -37,4 +37,16 @@ fn test_points_1km_north_and_east_map_within_bound() {
     let ned_east = frame.lla_to_ned(&east_pt).expect("valid ned");
     assert!(ned_east.north.abs() < 0.5);
     assert!((ned_east.east - 1000.0).abs() < 0.5);
+}
+
+#[test]
+fn test_non_finite_ned_and_ecef_rejected() {
+    let origin = Lla::from_degrees(0.0, 0.0, 0.0).expect("valid coordinates");
+    let frame = LtpFrame::from_lla(&origin);
+
+    let nan_ecef = Ecef::new(f64::NAN, 0.0, 0.0);
+    assert_eq!(frame.ecef_to_ned(&nan_ecef), Err(GeoError::NonFinite));
+
+    let nan_ned = Ned::new(0.0, f64::INFINITY, 0.0);
+    assert_eq!(frame.ned_to_ecef(&nan_ned), Err(GeoError::NonFinite));
 }
