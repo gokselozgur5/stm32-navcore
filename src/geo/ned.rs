@@ -58,4 +58,19 @@ impl LtpFrame {
 
         Ok(Ned::new(north, east, down))
     }
+
+    pub fn ned_to_ecef(&self, ned: &Ned) -> Result<Ecef, GeoError> {
+        if !ned.north.is_finite() || !ned.east.is_finite() || !ned.down.is_finite() {
+            return Err(GeoError::NonFinite);
+        }
+        let x = self.origin_ecef.x - self.sin_lat * self.cos_lon * ned.north
+            - self.sin_lon * ned.east
+            - self.cos_lat * self.cos_lon * ned.down;
+        let y = self.origin_ecef.y - self.sin_lat * self.sin_lon * ned.north
+            + self.cos_lon * ned.east
+            - self.cos_lat * self.sin_lon * ned.down;
+        let z = self.origin_ecef.z + self.cos_lat * ned.north - self.sin_lat * ned.down;
+
+        Ok(Ecef::new(x, y, z))
+    }
 }
