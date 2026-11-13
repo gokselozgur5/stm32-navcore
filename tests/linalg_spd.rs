@@ -33,3 +33,10 @@ fn solve_matches_closed_form_3x3() {
         assert!((xi - e).abs() < 1e-5);
     }
 }
+
+#[test]
+fn inverse_6x6_times_input_is_identity() {
+    let a = spd::<6>();
+    let prod = a.matmul(&spd_inverse(&a).unwrap());
+    assert!(max_diff(&prod, &Mat::<6, 6>::identity()) < 1e-4);
+}
