@@ -33,3 +33,20 @@ impl NotchFilter {
         })
     }
 }
+
+impl NotchFilter {
+    /// Feeds one sample and returns the filtered output.
+    pub fn update(&mut self, sample: f32) -> f32 {
+        self.biquad.update(sample)
+    }
+
+    /// Resets internal filter states to zero.
+    pub fn reset(&mut self) {
+        self.biquad.reset();
+    }
+
+    /// Returns the underlying biquad filter section.
+    pub const fn biquad(&self) -> &Biquad {
+        &self.biquad
+    }
+}
