@@ -18,3 +18,23 @@ fn lstsq_fits_10x3_line_plus_offset() {
         assert!((x[j] - truth[j]).abs() < 1e-4);
     }
 }
+
+#[test]
+fn lstsq_rejects_rank_deficient_and_non_finite() {
+    use stm32_navcore::linalg::LinalgError;
+    let mut a = Mat::<5, 3>::zeros();
+    for i in 0..5 {
+        let v = (i + 1) as f32;
+        a.0[i][0] = v;
+        a.0[i][1] = v * 2.0;
+        a.0[i][2] = v * 3.0;
+    }
+    let b = [1.0f32; 5];
+    assert_eq!(lstsq(&a, &b), Err(LinalgError::ZeroPivot));
+    let mut bad_b = b;
+    bad_b[2] = f32::NAN;
+    assert_eq!(lstsq(&a, &bad_b), Err(LinalgError::NonFinite));
+    let mut bad_a = a;
+    bad_a.0[0][0] = f32::INFINITY;
+    assert_eq!(lstsq(&bad_a, &b), Err(LinalgError::NonFinite));
+}
