@@ -142,8 +142,8 @@ fn biased_measurement_is_rejected_without_state_change() {
 #[test]
 fn covariance_stays_positive_and_finite() {
     let ekf = converged(11, 3000);
-    for i in 0..STATE_DIM {
-        let d = ekf.cov.0[i][i];
+    for (i, row) in ekf.cov.0.iter().enumerate() {
+        let d = row[i];
         assert!(d.is_finite() && d > 0.0, "diag {i} = {d}");
     }
 }
