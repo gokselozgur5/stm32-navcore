@@ -21,3 +21,15 @@ fn inverse_matches_closed_form_3x3() {
     let closed = a.inv_3x3().unwrap();
     assert!(max_diff(&spd_inverse(&a).unwrap(), &closed) < 1e-5);
 }
+
+#[test]
+fn solve_matches_closed_form_3x3() {
+    let a = spd::<3>();
+    let b = [1.0, -2.0, 3.0];
+    let x = spd_solve(&a, &b).unwrap();
+    let inv = a.inv_3x3().unwrap();
+    for (i, xi) in x.iter().enumerate() {
+        let e: f32 = (0..3).map(|j| inv.0[i][j] * b[j]).sum();
+        assert!((xi - e).abs() < 1e-5);
+    }
+}
