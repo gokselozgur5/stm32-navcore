@@ -20,3 +20,21 @@ impl Dcm {
         Self(Mat::identity())
     }
 }
+
+/// Largest accepted orthogonality or determinant error.
+pub const DCM_TOLERANCE: f32 = 1e-4;
+
+impl Dcm {
+    /// Largest absolute entry of `R * R^T - I`.
+    pub fn orthogonality_error(&self) -> f32 {
+        let p = self.0.matmul(&self.0.transpose());
+        let mut err = 0.0f32;
+        for i in 0..3 {
+            for j in 0..3 {
+                let target = if i == j { 1.0 } else { 0.0 };
+                err = err.max((p.0[i][j] - target).abs());
+            }
+        }
+        err
+    }
+}
