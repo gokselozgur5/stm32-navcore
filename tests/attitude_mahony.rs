@@ -26,12 +26,7 @@ fn test_invalid_dt_and_non_finite_inputs_rejected() {
 #[test]
 fn test_tilted_initial_attitude_converges_below_half_degree() {
     let half_tilt = 30.0f32.to_radians() * 0.5;
-    let q_init = Quaternion::new(
-        libm::cosf(half_tilt),
-        libm::sinf(half_tilt),
-        0.0,
-        0.0,
-    );
+    let q_init = Quaternion::new(libm::cosf(half_tilt), libm::sinf(half_tilt), 0.0, 0.0);
     let mut filter = Mahony::with_attitude(2.0, 0.0, q_init).unwrap();
     let static_accel = [0.0, 0.0, -9.81];
     let zero_gyro = [0.0, 0.0, 0.0];
