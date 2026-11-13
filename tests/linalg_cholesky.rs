@@ -25,3 +25,8 @@ fn residual<const N: usize>() -> f32 {
 fn llt_reproduces_spd_3x3() {
     assert!(residual::<3>() < 1e-5);
 }
+
+#[test]
+fn llt_reproduces_spd_6x6() {
+    assert!(residual::<6>() < 1e-5);
+}
