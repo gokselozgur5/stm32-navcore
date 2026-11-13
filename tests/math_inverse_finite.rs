@@ -16,10 +16,10 @@ fn overflowing_inverse_entry_is_rejected() {
 
 fn assert_identity<const N: usize>(m: &Mat<N, N>, inv: &Mat<N, N>, tol: f32) {
     let prod = m.matmul(inv);
-    for r in 0..N {
-        for c in 0..N {
+    for (r, row) in prod.0.iter().enumerate() {
+        for (c, &val) in row.iter().enumerate() {
             let want = if r == c { 1.0 } else { 0.0 };
-            assert!((prod.0[r][c] - want).abs() < tol, "{:?}", prod);
+            assert!((val - want).abs() < tol, "{:?}", prod);
         }
     }
 }
