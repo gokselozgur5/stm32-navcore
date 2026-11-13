@@ -15,3 +15,32 @@ fn skew_matches_cross_product() {
         assert!((got.0[i][0] - w).abs() < 1e-6);
     }
 }
+
+fn noisy() -> Dcm {
+    let q = Quaternion::new(0.8, 0.3, -0.4, 0.3);
+    let mut d = Dcm::from_quaternion(&q).unwrap();
+    let mut s: u32 = 7;
+    for row in d.0 .0.iter_mut() {
+        for x in row.iter_mut() {
+            s = s.wrapping_mul(1664525).wrapping_add(1013904223);
+            *x += ((s >> 8) as f32 / 8388608.0 - 1.0) * 1e-3;
+        }
+    }
+    d
+}
+
+#[test]
+fn noise_is_removed() {
+    let d = noisy();
+    assert!(d.orthogonality_error() > 1e-4);
+    let fixed = d.orthonormalize().unwrap();
+    assert!(fixed.orthogonality_error() < 1e-6);
+    assert!((fixed.det() - 1.0).abs() < 1e-5);
+}
+
+#[test]
+fn non_finite_input_is_rejected() {
+    let mut d = noisy();
+    d.0 .0[0][0] = f32::NAN;
+    assert!(d.orthonormalize().is_err());
+}
