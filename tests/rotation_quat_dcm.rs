@@ -23,3 +23,15 @@ fn roundtrip(q: Quaternion) -> f32 {
 fn identity_round_trips() {
     assert!(roundtrip(Quaternion::IDENTITY) < 1e-6);
 }
+
+#[test]
+fn half_turns_round_trip() {
+    for q in [
+        (0.0, 1.0, 0.0, 0.0),
+        (0.0, 0.0, 1.0, 0.0),
+        (0.0, 0.0, 0.0, 1.0),
+    ] {
+        assert!(roundtrip(Quaternion::new(q.0, q.1, q.2, q.3)) < 1e-6);
+    }
+    assert!(roundtrip(Quaternion::new(0.0, 1.0, 1.0, 1.0)) < 1e-6);
+}
