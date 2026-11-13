@@ -17,3 +17,22 @@ pub fn nlerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathE
     )
     .normalize()
 }
+
+/// Spherical linear interpolation along the shortest path.
+pub fn slerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathError> {
+    let d = dot(a, b);
+    let s = if d < 0.0 { -1.0 } else { 1.0 };
+    let theta = libm::acosf(d * s);
+    let k = 1.0 / libm::sinf(theta);
+    let (wa, wb) = (
+        libm::sinf((1.0 - t) * theta) * k,
+        s * libm::sinf(t * theta) * k,
+    );
+    Quaternion::new(
+        wa * a.w + wb * b.w,
+        wa * a.x + wb * b.x,
+        wa * a.y + wb * b.y,
+        wa * a.z + wb * b.z,
+    )
+    .normalize()
+}
