@@ -33,3 +33,19 @@ fn test_mid_latitude_reference_points() {
     assert!((ecef_mid.y - 3194919.15).abs() < 0.5);
     assert!((ecef_mid.z - 4488055.52).abs() < 0.5);
 }
+
+#[test]
+fn test_invalid_coordinates_rejected() {
+    assert_eq!(
+        Lla::new(f64::NAN, 0.0, 0.0),
+        Err(stm32_navcore::geo::GeoError::NonFinite)
+    );
+    assert_eq!(
+        Lla::new(2.0, 0.0, 0.0),
+        Err(stm32_navcore::geo::GeoError::InvalidLatitude)
+    );
+    assert_eq!(
+        Lla::new(0.0, 4.0, 0.0),
+        Err(stm32_navcore::geo::GeoError::InvalidLongitude)
+    );
+}
