@@ -122,9 +122,10 @@ impl Mahony {
     ) -> Result<(), AttitudeError> {
         validate_sample(gyro, accel, dt)?;
         let e = self.accel_error(accel);
-        for i in 0..3 {
-            self.gyro_bias[i] -= self.ki * e[i] * dt;
-        }
+        let ki_dt = self.ki * dt;
+        self.gyro_bias[0] -= ki_dt * e[0];
+        self.gyro_bias[1] -= ki_dt * e[1];
+        self.gyro_bias[2] -= ki_dt * e[2];
         let w = [
             gyro[0] - self.gyro_bias[0] + self.kp * e[0],
             gyro[1] - self.gyro_bias[1] + self.kp * e[1],
