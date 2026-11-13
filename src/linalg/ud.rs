@@ -28,3 +28,15 @@ pub fn ud_factor<const N: usize>(p: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]),
     }
     Ok((u, d))
 }
+
+/// Rebuilds `U D U^T` from its factors.
+#[allow(clippy::needless_range_loop)]
+pub fn ud_reconstruct<const N: usize>(u: &Mat<N, N>, d: &[f32; N]) -> Mat<N, N> {
+    let mut ud = *u;
+    for r in 0..N {
+        for c in 0..N {
+            ud.0[r][c] *= d[c];
+        }
+    }
+    ud.matmul(&u.transpose())
+}
