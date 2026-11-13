@@ -64,3 +64,28 @@ impl Mahony {
         self.gyro_bias
     }
 }
+
+impl Mahony {
+    /// Manually set the estimated 3-axis gyroscope bias.
+    pub fn set_gyro_bias(&mut self, bias: [f32; 3]) {
+        self.gyro_bias = bias;
+    }
+
+    /// Reset estimated gyroscope bias to zero.
+    pub fn reset_gyro_bias(&mut self) {
+        self.gyro_bias = [0.0; 3];
+    }
+
+    /// Compute gravity error vector from normalized accelerometer and estimated attitude.
+    fn compute_error(&self, a_unit: [f32; 3]) -> [f32; 3] {
+        let (w, x, y, z) = (self.q.w, self.q.x, self.q.y, self.q.z);
+        let vx = 2.0 * (w * y - x * z);
+        let vy = -2.0 * (w * x + y * z);
+        let vz = 2.0 * (x * x + y * y) - 1.0;
+        [
+            a_unit[1] * vz - a_unit[2] * vy,
+            a_unit[2] * vx - a_unit[0] * vz,
+            a_unit[0] * vy - a_unit[1] * vx,
+        ]
+    }
+}
