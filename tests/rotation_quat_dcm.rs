@@ -18,3 +18,8 @@ fn roundtrip(q: Quaternion) -> f32 {
     assert!(d.orthogonality_error() < 1e-5);
     max_err(&q, &d.to_quaternion())
 }
+
+#[test]
+fn identity_round_trips() {
+    assert!(roundtrip(Quaternion::IDENTITY) < 1e-6);
+}
