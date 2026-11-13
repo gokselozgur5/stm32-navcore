@@ -17,6 +17,7 @@ pub mod ekf;
 /// Zero-velocity detector over a sliding window of accelerometer and gyro samples.
 pub use ekf::StationaryDetector;
 pub mod fdir;
+pub mod filters;
 pub mod math;
 pub mod protocol;
 pub mod sensors;
