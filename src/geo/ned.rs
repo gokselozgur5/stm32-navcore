@@ -53,7 +53,8 @@ impl LtpFrame {
         let north = -self.sin_lat * self.cos_lon * dx - self.sin_lat * self.sin_lon * dy
             + self.cos_lat * dz;
         let east = -self.sin_lon * dx + self.cos_lon * dy;
-        let down = -self.cos_lat * self.cos_lon * dx - self.cos_lat * self.sin_lon * dy
+        let down = -self.cos_lat * self.cos_lon * dx
+            - self.cos_lat * self.sin_lon * dy
             - self.sin_lat * dz;
 
         Ok(Ned::new(north, east, down))
@@ -63,7 +64,8 @@ impl LtpFrame {
         if !ned.north.is_finite() || !ned.east.is_finite() || !ned.down.is_finite() {
             return Err(GeoError::NonFinite);
         }
-        let x = self.origin_ecef.x - self.sin_lat * self.cos_lon * ned.north
+        let x = self.origin_ecef.x
+            - self.sin_lat * self.cos_lon * ned.north
             - self.sin_lon * ned.east
             - self.cos_lat * self.cos_lon * ned.down;
         let y = self.origin_ecef.y - self.sin_lat * self.sin_lon * ned.north
