@@ -22,3 +22,26 @@ fn test_invalid_dt_and_non_finite_inputs_rejected() {
         Err(AttitudeError::NonFinite)
     );
 }
+
+#[test]
+fn test_tilted_initial_attitude_converges_below_half_degree() {
+    let half_tilt = 30.0f32.to_radians() * 0.5;
+    let q_init = Quaternion::new(
+        libm::cosf(half_tilt),
+        libm::sinf(half_tilt),
+        0.0,
+        0.0,
+    );
+    let mut filter = Mahony::with_attitude(2.0, 0.0, q_init).unwrap();
+    let static_accel = [0.0, 0.0, -9.81];
+    let zero_gyro = [0.0, 0.0, 0.0];
+
+    for _ in 0..1000 {
+        filter.update(zero_gyro, static_accel, 0.01).unwrap();
+    }
+
+    let (roll, pitch, _) = filter.euler_angles_zyx();
+    let max_rad = 0.5f32.to_radians();
+    assert!(roll.abs() < max_rad, "roll: {}", roll.to_degrees());
+    assert!(pitch.abs() < max_rad, "pitch: {}", pitch.to_degrees());
+}
