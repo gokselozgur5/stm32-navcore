@@ -8,3 +8,6 @@ libm = { version = "0.2", default-features = false }
 
 [lib]
 crate-type = ["rlib"]
+
+[lints.clippy]
+needless_range_loop = "allow"
