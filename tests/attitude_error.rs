@@ -39,3 +39,27 @@ fn test_attitude_error_sign_invariance() {
     assert!((err_pos.axis[1] - 1.0).abs() < 1e-5);
     assert!((err_neg.axis[1] - 1.0).abs() < 1e-5);
 }
+
+#[test]
+fn test_attitude_error_oblique_axis_and_invalid() {
+    let axis = [1.0 / libm::sqrtf(3.0); 3];
+    let angle = 1.25f32;
+    let half = angle * 0.5;
+    let sin_h = libm::sinf(half);
+    let q = Quaternion::new(
+        libm::cosf(half),
+        axis[0] * sin_h,
+        axis[1] * sin_h,
+        axis[2] * sin_h,
+    );
+
+    let err = attitude_error(&Quaternion::IDENTITY, &q).unwrap();
+    assert!((err.angle_rad - angle).abs() < 1e-5);
+    for i in 0..3 {
+        assert!((err.axis[i] - axis[i]).abs() < 1e-5);
+    }
+
+    let nan_q = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
+    assert!(attitude_error(&nan_q, &q).is_err());
+    assert!(attitude_error(&q, &nan_q).is_err());
+}
