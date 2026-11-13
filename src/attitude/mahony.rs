@@ -112,3 +112,26 @@ impl Mahony {
         self.compute_error([accel[0] * inv, accel[1] * inv, accel[2] * inv])
     }
 }
+
+impl Mahony {
+    /// Update attitude estimate using 3-axis gyro and 3-axis accelerometer.
+    pub fn update(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        dt: f32,
+    ) -> Result<(), AttitudeError> {
+        validate_sample(gyro, accel, dt)?;
+        let e = self.accel_error(accel);
+        for i in 0..3 {
+            self.gyro_bias[i] -= self.ki * e[i] * dt;
+        }
+        let w = [
+            gyro[0] - self.gyro_bias[0] + self.kp * e[0],
+            gyro[1] - self.gyro_bias[1] + self.kp * e[1],
+            gyro[2] - self.gyro_bias[2] + self.kp * e[2],
+        ];
+        self.q = self.q.integrate_gyro(w, dt).map_err(|_| AttitudeError::InvalidInput)?;
+        Ok(())
+    }
+}
