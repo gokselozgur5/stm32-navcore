@@ -16,3 +16,19 @@ fn test_equator_and_pole_roundtrip() {
     assert!((pole_inv.lat_rad - pole.lat_rad).abs() < 1e-9);
     assert!((pole_inv.alt_m - pole.alt_m).abs() < 1e-3);
 }
+
+#[test]
+fn test_roundtrip_heights_and_latitudes() {
+    for lat_deg in [-80.0, -45.0, 0.0, 35.0, 60.0, 85.0] {
+        for lon_deg in [-170.0, -90.0, 0.0, 45.0, 120.0] {
+            for alt_m in [-500.0, 0.0, 500.0, 5000.0, 20000.0] {
+                let lla = Lla::from_degrees(lat_deg, lon_deg, alt_m).expect("valid coordinates");
+                let ecef = lla_to_ecef(&lla);
+                let recovered = ecef_to_lla(&ecef).expect("valid inverse");
+                assert!((recovered.lat_rad - lla.lat_rad).abs() < 1e-6);
+                assert!((recovered.lon_rad - lla.lon_rad).abs() < 1e-6);
+                assert!((recovered.alt_m - lla.alt_m).abs() < 1.0);
+            }
+        }
+    }
+}
