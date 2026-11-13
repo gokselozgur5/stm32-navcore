@@ -21,3 +21,30 @@ impl<const N: usize> MedianFilter<N> {
         self.head = 0;
     }
 }
+
+impl<const N: usize> MedianFilter<N> {
+    /// Pre-fills the filter window with a constant value.
+    pub fn init_with(&mut self, val: f32) {
+        self.buffer = [val; N];
+        self.count = N;
+        self.head = 0;
+    }
+
+    /// Pushes one sample and returns the sliding window median.
+    pub fn update(&mut self, sample: f32) -> f32 {
+        if self.count == 0 { self.init_with(sample); return sample; }
+        self.buffer[self.head] = sample;
+        self.head = (self.head + 1) % N;
+        let mut sorted = self.buffer;
+        for i in 1..N {
+            let key = sorted[i];
+            let mut j = i;
+            while j > 0 && sorted[j - 1] > key {
+                sorted[j] = sorted[j - 1];
+                j -= 1;
+            }
+            sorted[j] = key;
+        }
+        sorted[N / 2]
+    }
+}
