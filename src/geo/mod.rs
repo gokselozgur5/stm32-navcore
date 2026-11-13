@@ -32,3 +32,5 @@ pub const WGS84_OMEGA_EARTH: f64 = 7.292_115e-5;
 
 pub mod ecef;
 pub use ecef::{lla_to_ecef, Ecef, Lla};
+pub mod bowring;
+pub use bowring::ecef_to_lla;
