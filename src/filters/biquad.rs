@@ -34,3 +34,27 @@ impl Biquad {
         (self.b0, self.b1, self.b2, self.a1, self.a2)
     }
 }
+
+use crate::filters::FilterError;
+
+impl Biquad {
+    /// Robert Bristow-Johnson (RBJ) low-pass filter design.
+    pub fn lowpass_rbj(cutoff_hz: f32, dt_s: f32, q: f32) -> Result<Self, FilterError> {
+        if !cutoff_hz.is_finite() || !dt_s.is_finite() || !q.is_finite() {
+            return Err(FilterError::NonFinite);
+        }
+        if cutoff_hz <= 0.0 { return Err(FilterError::InvalidCutoff); }
+        if dt_s <= 0.0 { return Err(FilterError::InvalidDt); }
+        if q <= 0.0 { return Err(FilterError::InvalidParameter); }
+        if cutoff_hz >= 0.5 / dt_s { return Err(FilterError::AboveNyquist); }
+        let w0 = 2.0 * core::f32::consts::PI * cutoff_hz * dt_s;
+        let cos_w0 = libm::cosf(w0);
+        let alpha = libm::sinf(w0) / (2.0 * q);
+        let a0 = 1.0 + alpha;
+        let b0 = ((1.0 - cos_w0) * 0.5) / a0;
+        let b1 = (1.0 - cos_w0) / a0;
+        let a1 = (-2.0 * cos_w0) / a0;
+        let a2 = (1.0 - alpha) / a0;
+        Ok(Self::new(b0, b1, b0, a1, a2))
+    }
+}
