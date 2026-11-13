@@ -1,5 +1,6 @@
 //! Rotation utilities built on the `math` types.
 
+pub mod attitude_error;
 pub mod dcm;
 pub mod orthonormalize;
 pub mod quat_dcm;
