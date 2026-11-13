@@ -1,4 +1,4 @@
-use stm32_navcore::geo::{ecef_to_lla, lla_to_ecef, Lla};
+use stm32_navcore::geo::{ecef_to_lla, lla_to_ecef, Ecef, GeoError, Lla};
 
 #[test]
 fn test_equator_and_pole_roundtrip() {
@@ -31,4 +31,13 @@ fn test_roundtrip_heights_and_latitudes() {
             }
         }
     }
+}
+
+#[test]
+fn test_non_finite_ecef_rejected() {
+    let nan_ecef = Ecef::new(f64::NAN, 0.0, 0.0);
+    assert_eq!(ecef_to_lla(&nan_ecef), Err(GeoError::NonFinite));
+
+    let inf_ecef = Ecef::new(0.0, f64::INFINITY, 0.0);
+    assert_eq!(ecef_to_lla(&inf_ecef), Err(GeoError::NonFinite));
 }
