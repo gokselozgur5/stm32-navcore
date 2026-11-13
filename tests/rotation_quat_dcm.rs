@@ -52,3 +52,15 @@ fn thousand_seeded_rotations_round_trip() {
     }
     assert!(worst < 1e-5, "worst {worst}");
 }
+
+#[test]
+fn matrix_rotates_like_quaternion() {
+    let q = Quaternion::new(0.9, 0.1, -0.3, 0.2).normalize().unwrap();
+    let m = Dcm::from_quaternion(&q).unwrap().0 .0;
+    let v = [0.3, -1.2, 2.0];
+    let want = q.rotate_vec(v);
+    for i in 0..3 {
+        let got = m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2];
+        assert!((got - want[i]).abs() < 1e-5);
+    }
+}
