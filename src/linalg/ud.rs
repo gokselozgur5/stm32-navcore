@@ -6,6 +6,9 @@ use crate::math::Mat;
 /// Returns `(U, D)` with `U D U^T = P`, where `U` has a unit diagonal.
 #[allow(clippy::needless_range_loop)]
 pub fn ud_factor<const N: usize>(p: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]), LinalgError> {
+    if !p.0.iter().flatten().all(|v| v.is_finite()) {
+        return Err(LinalgError::NonFinite);
+    }
     let mut u = Mat::<N, N>::identity();
     let mut d = [0.0f32; N];
     for j in (0..N).rev() {
