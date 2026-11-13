@@ -1,4 +1,4 @@
-use crate::geo::{lla_to_ecef, Ecef, GeoError, Lla};
+use crate::geo::{ecef_to_lla, lla_to_ecef, Ecef, GeoError, Lla};
 
 /// Local Tangent Plane North-East-Down (NED) coordinates in meters.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -72,5 +72,15 @@ impl LtpFrame {
         let z = self.origin_ecef.z + self.cos_lat * ned.north - self.sin_lat * ned.down;
 
         Ok(Ecef::new(x, y, z))
+    }
+
+    pub fn lla_to_ned(&self, point: &Lla) -> Result<Ned, GeoError> {
+        let ecef = lla_to_ecef(point);
+        self.ecef_to_ned(&ecef)
+    }
+
+    pub fn ned_to_lla(&self, ned: &Ned) -> Result<Lla, GeoError> {
+        let ecef = self.ned_to_ecef(ned)?;
+        ecef_to_lla(&ecef)
     }
 }
