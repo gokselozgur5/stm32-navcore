@@ -39,3 +39,13 @@ fn ldlt_reproduces_spd_input() {
     assert!(residual::<3>() < 1e-5);
     assert!(residual::<6>() < 1e-4);
 }
+
+#[test]
+fn non_positive_pivot_is_reported() {
+    use stm32_navcore::linalg::LinalgError;
+    let mut a = spd::<3>();
+    a.0[1][1] = -0.5;
+    assert_eq!(ldl(&a), Err(LinalgError::NotPositiveDefinite));
+    a.0[1][1] = f32::NAN;
+    assert_eq!(ldl(&a), Err(LinalgError::NonFinite));
+}
