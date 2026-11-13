@@ -30,3 +30,16 @@ fn llt_reproduces_spd_3x3() {
 fn llt_reproduces_spd_6x6() {
     assert!(residual::<6>() < 1e-5);
 }
+
+#[test]
+fn rejects_non_pd_and_non_finite() {
+    use stm32_navcore::linalg::LinalgError;
+    let mut a = spd::<3>();
+    a.0[1][1] = -1.0;
+    assert_eq!(cholesky(&a), Err(LinalgError::NotPositiveDefinite));
+    let mut b = spd::<3>();
+    b.0[2][0] = f32::NAN;
+    assert_eq!(cholesky(&b), Err(LinalgError::NonFinite));
+    b.0[2][0] = f32::INFINITY;
+    assert_eq!(cholesky(&b), Err(LinalgError::NonFinite));
+}
