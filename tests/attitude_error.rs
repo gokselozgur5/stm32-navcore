@@ -23,3 +23,19 @@ fn test_attitude_error_single_axis() {
     assert!(err_x.axis[1].abs() < 1e-5);
     assert!(err_x.axis[2].abs() < 1e-5);
 }
+
+#[test]
+fn test_attitude_error_sign_invariance() {
+    let angle = 0.75f32;
+    let half = angle * 0.5;
+    let q = Quaternion::new(libm::cosf(half), 0.0, libm::sinf(half), 0.0);
+    let q_neg = Quaternion::new(-q.w, -q.x, -q.y, -q.z);
+
+    let err_pos = attitude_error(&Quaternion::IDENTITY, &q).unwrap();
+    let err_neg = attitude_error(&Quaternion::IDENTITY, &q_neg).unwrap();
+
+    assert!((err_pos.angle_rad - err_neg.angle_rad).abs() < 1e-6);
+    assert!((err_pos.angle_rad - angle).abs() < 1e-5);
+    assert!((err_pos.axis[1] - 1.0).abs() < 1e-5);
+    assert!((err_neg.axis[1] - 1.0).abs() < 1e-5);
+}
