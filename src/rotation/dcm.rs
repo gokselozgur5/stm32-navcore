@@ -59,3 +59,15 @@ impl Dcm {
         Ok(d)
     }
 }
+
+impl Dcm {
+    /// Composition `self * rhs`.
+    pub fn mul(&self, rhs: &Self) -> Self {
+        Self(self.0.matmul(&rhs.0))
+    }
+
+    /// Inverse rotation.
+    pub fn transpose(&self) -> Self {
+        Self(self.0.transpose())
+    }
+}
