@@ -27,3 +27,6 @@ pub const WGS84_E_PRIME2: f64 = 0.006_739_496_742_276_434;
 
 /// WGS-84 Earth rotation rate in rad/s.
 pub const WGS84_OMEGA_EARTH: f64 = 7.292_115e-5;
+
+pub mod ecef;
+pub use ecef::{lla_to_ecef, Ecef, Lla};
