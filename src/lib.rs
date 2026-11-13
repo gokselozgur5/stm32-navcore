@@ -12,6 +12,7 @@
 //! See `docs/architecture.md` in the repository for the data flow between modules.
 #![cfg_attr(not(test), no_std)]
 
+pub mod attitude;
 pub mod ekf;
 /// Zero-velocity detector over a sliding window of accelerometer and gyro samples.
 pub use ekf::StationaryDetector;
