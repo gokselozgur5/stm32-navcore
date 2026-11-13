@@ -19,3 +19,20 @@ pub fn solve_lower<const N: usize>(l: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; 
     }
     Ok(x)
 }
+
+/// Solves `U x = b` for upper triangular `U`.
+#[allow(clippy::needless_range_loop)]
+pub fn solve_upper<const N: usize>(u: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N], LinalgError> {
+    let mut x = [0.0f32; N];
+    for i in (0..N).rev() {
+        let mut s = b[i];
+        for k in i + 1..N {
+            s -= u.0[i][k] * x[k];
+        }
+        if u.0[i][i] == 0.0 {
+            return Err(LinalgError::ZeroPivot);
+        }
+        x[i] = s / u.0[i][i];
+    }
+    Ok(x)
+}
