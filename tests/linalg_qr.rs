@@ -24,3 +24,24 @@ fn qr_reconstructs_and_orthonormal_6x4() {
         }
     }
 }
+
+#[test]
+fn qr_square_3x3_and_non_finite() {
+    use stm32_navcore::linalg::qr::Givens;
+    use stm32_navcore::linalg::LinalgError;
+    let g = Givens::compute(3.0, 4.0);
+    assert!((g.r - 5.0).abs() < 1e-6);
+    assert!((g.c - 0.6).abs() < 1e-6);
+    assert!((g.s - 0.8).abs() < 1e-6);
+    let a = Mat([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 10.0]]);
+    let (q, r) = qr(&a).unwrap();
+    let diff = q.matmul(&r).sub(&a);
+    for row in diff.0.iter() {
+        for &v in row.iter() {
+            assert!(v.abs() < 1e-5);
+        }
+    }
+    let mut bad = a;
+    bad.0[0][0] = f32::NAN;
+    assert_eq!(qr(&bad), Err(LinalgError::NonFinite));
+}
