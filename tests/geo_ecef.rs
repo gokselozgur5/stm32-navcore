@@ -18,3 +18,18 @@ fn test_north_pole() {
     assert!(ecef.y.abs() < 1e-4);
     assert!((ecef.z - WGS84_B).abs() < 1e-4);
 }
+
+#[test]
+fn test_mid_latitude_reference_points() {
+    let lla_45 = Lla::from_degrees(45.0, 0.0, 0.0).expect("valid coordinates");
+    let ecef_45 = lla_to_ecef(&lla_45);
+    assert!((ecef_45.x - 4517590.88).abs() < 0.5);
+    assert!(ecef_45.y.abs() < 0.5);
+    assert!((ecef_45.z - 4487348.41).abs() < 0.5);
+
+    let lla_mid = Lla::from_degrees(45.0, 45.0, 1000.0).expect("valid coordinates");
+    let ecef_mid = lla_to_ecef(&lla_mid);
+    assert!((ecef_mid.x - 3194919.15).abs() < 0.5);
+    assert!((ecef_mid.y - 3194919.15).abs() < 0.5);
+    assert!((ecef_mid.z - 4488055.52).abs() < 0.5);
+}
