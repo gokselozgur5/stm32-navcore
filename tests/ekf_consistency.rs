@@ -1,6 +1,6 @@
 //! Statistical consistency checks for the navigation EKF.
 
-use stm32_navcore::ekf::{EkfError, NavEkf, STATE_DIM};
+use stm32_navcore::ekf::{EkfError, NavEkf};
 
 /// Deterministic LCG with a Box-Muller Gaussian transform.
 struct Rng(u64);
