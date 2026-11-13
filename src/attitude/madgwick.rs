@@ -104,3 +104,9 @@ impl Madgwick {
         Ok(self.quat)
     }
 }
+
+impl Default for Madgwick {
+    fn default() -> Self {
+        Self::new(Self::DEFAULT_BETA)
+    }
+}
