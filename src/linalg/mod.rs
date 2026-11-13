@@ -6,6 +6,7 @@ pub mod lstsq;
 pub mod qr;
 pub mod spd;
 pub mod triangular;
+pub mod ud;
 
 /// Failure modes shared by the factorizations and solvers.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
