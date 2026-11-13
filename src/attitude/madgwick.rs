@@ -54,3 +54,25 @@ impl Madgwick {
         }
     }
 }
+
+impl Madgwick {
+    fn gyro_rate(q: &Quaternion, w: [f32; 3]) -> [f32; 4] {
+        [
+            0.5 * (-q.x * w[0] - q.y * w[1] - q.z * w[2]),
+            0.5 * (q.w * w[0] + q.y * w[2] - q.z * w[1]),
+            0.5 * (q.w * w[1] - q.x * w[2] + q.z * w[0]),
+            0.5 * (q.w * w[2] + q.x * w[1] - q.y * w[0]),
+        ]
+    }
+
+    fn accel_gradient_step(q: &Quaternion, accel: [f32; 3], beta: f32) -> Option<[f32; 4]> {
+        let a_norm = libm::sqrtf(accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2]);
+        if a_norm <= 1e-6 || !a_norm.is_finite() {
+            return None;
+        }
+        let inv = 1.0 / a_norm;
+        let a_hat = [accel[0] * inv, accel[1] * inv, accel[2] * inv];
+        let g = Self::gradient(q, a_hat)?;
+        Some([beta * g[0], beta * g[1], beta * g[2], beta * g[3]])
+    }
+}
