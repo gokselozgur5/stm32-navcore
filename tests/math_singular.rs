@@ -24,10 +24,10 @@ fn near_singular_above_threshold_inverts_with_small_residual() {
     let m = Mat([[1.0, 1.0], [1.0, 1.0 + 1e-3]]);
     let inv = m.inv_2x2().expect("det 1e-3 is invertible");
     let prod = m.matmul(&inv);
-    for r in 0..2 {
-        for c in 0..2 {
+    for (r, row) in prod.0.iter().enumerate() {
+        for (c, &val) in row.iter().enumerate() {
             let want = if r == c { 1.0 } else { 0.0 };
-            assert!((prod.0[r][c] - want).abs() < 5e-2);
+            assert!((val - want).abs() < 5e-2);
         }
     }
 }
