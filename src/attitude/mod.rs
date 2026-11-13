@@ -1,8 +1,10 @@
 //! Attitude determination algorithms.
 
+pub mod error;
 pub mod madgwick;
 pub mod mahony;
 
+pub use error::RelativeAttitude;
 pub use madgwick::Madgwick;
 pub use mahony::Mahony;
 
