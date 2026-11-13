@@ -47,3 +47,21 @@ impl Dcm {
         Quaternion::new(q[0], q[1], q[2], q[3])
     }
 }
+
+impl Dcm {
+    /// Converts to a unit quaternion with the Shepperd method.
+    pub fn to_quaternion(&self) -> Quaternion {
+        let r = &self.0 .0;
+        let tr = r[0][0] + r[1][1] + r[2][2];
+        if tr > r[0][0].max(r[1][1]).max(r[2][2]) {
+            let s = 2.0 * libm::sqrtf(1.0 + tr);
+            return Quaternion::new(
+                0.25 * s,
+                (r[2][1] - r[1][2]) / s,
+                (r[0][2] - r[2][0]) / s,
+                (r[1][0] - r[0][1]) / s,
+            );
+        }
+        self.quat_from_diagonal()
+    }
+}
