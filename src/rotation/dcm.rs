@@ -38,3 +38,24 @@ impl Dcm {
         err
     }
 }
+
+impl Dcm {
+    /// Determinant of the matrix.
+    pub fn det(&self) -> f32 {
+        let m = &self.0 .0;
+        m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+            - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+            + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
+    }
+
+    /// Validates `m` as a proper rotation within [`DCM_TOLERANCE`].
+    pub fn try_new(m: Mat<3, 3>) -> Result<Self, RotationError> {
+        let d = Self(m);
+        let err = d.orthogonality_error();
+        let det_err = (d.det() - 1.0).abs();
+        if !(err <= DCM_TOLERANCE && det_err <= DCM_TOLERANCE) {
+            return Err(RotationError::NotOrthonormal);
+        }
+        Ok(d)
+    }
+}
