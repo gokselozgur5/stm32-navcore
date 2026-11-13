@@ -17,3 +17,27 @@ impl Mahony {
     /// Default integral gain for gyro bias correction.
     pub const DEFAULT_KI: f32 = 0.05;
 }
+
+impl Mahony {
+    /// Create a Mahony filter with given gains and identity attitude.
+    pub fn new(kp: f32, ki: f32) -> Self {
+        Self {
+            q: Quaternion::IDENTITY,
+            kp,
+            ki,
+            gyro_bias: [0.0; 3],
+        }
+    }
+
+    /// Create a filter initialized with an existing orientation quaternion.
+    pub fn with_attitude(kp: f32, ki: f32, q: Quaternion) -> Result<Self, AttitudeError> {
+        let q_norm = q.normalize().map_err(|_| AttitudeError::InvalidInput)?;
+        Ok(Self {
+            q: q_norm,
+            kp,
+            ki,
+            gyro_bias: [0.0; 3],
+        })
+    }
+}
+
