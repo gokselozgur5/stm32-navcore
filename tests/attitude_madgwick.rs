@@ -53,3 +53,17 @@ fn test_madgwick_static_tilt_convergence() {
     assert!((pitch - target_pitch).abs() < 0.5f32.to_radians());
     assert!(yaw.abs() < 0.5f32.to_radians());
 }
+
+#[test]
+fn test_madgwick_norm_stability_100k_steps() {
+    let mut f = Madgwick::default();
+    let dt = 0.01;
+    let gyro = [0.05, -0.03, 0.02];
+    let accel = [0.2, -0.1, 9.78];
+
+    for _ in 0..100_000 {
+        let q = f.update(gyro, accel, dt).unwrap();
+        let norm_err = (q.norm() - 1.0).abs();
+        assert!(norm_err < 1e-5);
+    }
+}
