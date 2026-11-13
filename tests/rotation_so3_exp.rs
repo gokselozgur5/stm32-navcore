@@ -36,3 +36,11 @@ fn log_inverts_exp_across_angles() {
     }
     assert!(worst_error(core::f32::consts::PI - 1e-3) < 1e-6);
 }
+
+#[test]
+fn exp_gives_unit_quaternion() {
+    for angle in [1e-8f32, 1e-3, 0.5, 3.0] {
+        let q = so3_exp([0.0, angle, 0.0]);
+        assert!((q.norm() - 1.0).abs() < 1e-6);
+    }
+}
