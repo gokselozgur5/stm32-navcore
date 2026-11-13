@@ -19,9 +19,20 @@ pub fn nlerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathE
 }
 
 /// Spherical linear interpolation along the shortest path.
+///
+/// Returns `a` for `t <= 0` and `b` for `t >= 1`.
 pub fn slerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathError> {
+    if t <= 0.0 {
+        return Ok(*a);
+    }
+    if t >= 1.0 {
+        return Ok(*b);
+    }
     let d = dot(a, b);
     let s = if d < 0.0 { -1.0 } else { 1.0 };
+    if d * s > 0.9995 {
+        return nlerp(a, b, t);
+    }
     let theta = libm::acosf(d * s);
     let k = 1.0 / libm::sinf(theta);
     let (wa, wb) = (
