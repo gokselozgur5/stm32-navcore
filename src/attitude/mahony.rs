@@ -41,3 +41,26 @@ impl Mahony {
     }
 }
 
+
+impl Default for Mahony {
+    fn default() -> Self {
+        Self::new(Self::DEFAULT_KP, Self::DEFAULT_KI)
+    }
+}
+
+impl Mahony {
+    /// Current attitude estimate as a unit quaternion.
+    pub fn quaternion(&self) -> Quaternion {
+        self.q
+    }
+
+    /// Current attitude estimate as Tait-Bryan ZYX Euler angles (roll, pitch, yaw).
+    pub fn euler_angles_zyx(&self) -> (f32, f32, f32) {
+        self.q.to_euler_zyx()
+    }
+
+    /// Estimated 3-axis gyroscope bias in rad/s.
+    pub fn gyro_bias(&self) -> [f32; 3] {
+        self.gyro_bias
+    }
+}
