@@ -21,3 +21,20 @@ fn midpoint_is_half_the_angle() {
     let m = slerp(&about_z(0.0), &about_z(1.2), 0.5).unwrap();
     assert!((angle_of(&m) - 0.6).abs() < 1e-5);
 }
+
+#[test]
+fn shortest_path_across_double_cover() {
+    let b = about_z(1.2);
+    let neg = Quaternion::new(-b.w, -b.x, -b.y, -b.z);
+    let m = slerp(&about_z(0.0), &neg, 0.5).unwrap();
+    assert!((angle_of(&m) - 0.6).abs() < 1e-5);
+    assert!(m.w > 0.0);
+}
+
+#[test]
+fn nlerp_takes_shortest_path() {
+    let b = about_z(0.4);
+    let neg = Quaternion::new(-b.w, -b.x, -b.y, -b.z);
+    let m = nlerp(&about_z(0.0), &neg, 0.5).unwrap();
+    assert!((angle_of(&m) - 0.2).abs() < 1e-3);
+}
