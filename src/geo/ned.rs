@@ -1,4 +1,4 @@
-use crate::geo::{Ecef, Lla};
+use crate::geo::{lla_to_ecef, Ecef, Lla};
 
 /// Local Tangent Plane North-East-Down (NED) coordinates in meters.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -19,4 +19,26 @@ impl Ned {
 pub struct LtpFrame {
     pub origin_lla: Lla,
     pub origin_ecef: Ecef,
+    sin_lat: f64,
+    cos_lat: f64,
+    sin_lon: f64,
+    cos_lon: f64,
+}
+
+impl LtpFrame {
+    pub fn from_lla(origin: &Lla) -> Self {
+        let origin_ecef = lla_to_ecef(origin);
+        let sin_lat = libm::sin(origin.lat_rad);
+        let cos_lat = libm::cos(origin.lat_rad);
+        let sin_lon = libm::sin(origin.lon_rad);
+        let cos_lon = libm::cos(origin.lon_rad);
+        Self {
+            origin_lla: *origin,
+            origin_ecef,
+            sin_lat,
+            cos_lat,
+            sin_lon,
+            cos_lon,
+        }
+    }
 }
