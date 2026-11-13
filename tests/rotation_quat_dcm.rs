@@ -35,3 +35,20 @@ fn half_turns_round_trip() {
     }
     assert!(roundtrip(Quaternion::new(0.0, 1.0, 1.0, 1.0)) < 1e-6);
 }
+
+#[test]
+fn thousand_seeded_rotations_round_trip() {
+    let mut s: u32 = 0x1234_5678;
+    let mut next = || {
+        s = s.wrapping_mul(1664525).wrapping_add(1013904223);
+        (s >> 8) as f32 / 8388608.0 - 1.0
+    };
+    let mut worst = 0.0f32;
+    for _ in 0..1000 {
+        let q = Quaternion::new(next(), next(), next(), next());
+        if q.norm() > 0.1 {
+            worst = worst.max(roundtrip(q));
+        }
+    }
+    assert!(worst < 1e-5, "worst {worst}");
+}
