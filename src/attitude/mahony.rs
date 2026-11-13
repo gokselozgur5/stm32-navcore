@@ -41,7 +41,6 @@ impl Mahony {
     }
 }
 
-
 impl Default for Mahony {
     fn default() -> Self {
         Self::new(Self::DEFAULT_KP, Self::DEFAULT_KI)
@@ -131,7 +130,10 @@ impl Mahony {
             gyro[1] - self.gyro_bias[1] + self.kp * e[1],
             gyro[2] - self.gyro_bias[2] + self.kp * e[2],
         ];
-        self.q = self.q.integrate_gyro(w, dt).map_err(|_| AttitudeError::InvalidInput)?;
+        self.q = self
+            .q
+            .integrate_gyro(w, dt)
+            .map_err(|_| AttitudeError::InvalidInput)?;
         Ok(())
     }
 }
