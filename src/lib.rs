@@ -20,6 +20,7 @@ pub mod fdir;
 pub mod linalg;
 pub mod math;
 pub mod protocol;
+pub mod rotation;
 pub mod sensors;
 pub mod ubx;
 
