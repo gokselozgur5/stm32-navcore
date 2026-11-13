@@ -60,3 +60,16 @@ fn test_gyro_bias_converges_to_injected_offset() {
     assert!((est_bias[0] - injected_bias[0]).abs() < 0.003);
     assert!((est_bias[1] - injected_bias[1]).abs() < 0.003);
 }
+
+#[test]
+fn test_accessors_and_bias_reset() {
+    let mut filter = Mahony::default();
+    assert_eq!(filter.quaternion(), Quaternion::IDENTITY);
+    filter.set_gyro_bias([0.01, -0.02, 0.03]);
+    assert_eq!(filter.gyro_bias(), [0.01, -0.02, 0.03]);
+    filter.reset_gyro_bias();
+    assert_eq!(filter.gyro_bias(), [0.0; 3]);
+
+    let (r, p, y) = filter.euler_angles_zyx();
+    assert_eq!((r, p, y), (0.0, 0.0, 0.0));
+}
