@@ -45,3 +45,18 @@ fn test_tilted_initial_attitude_converges_below_half_degree() {
     assert!(roll.abs() < max_rad, "roll: {}", roll.to_degrees());
     assert!(pitch.abs() < max_rad, "pitch: {}", pitch.to_degrees());
 }
+
+#[test]
+fn test_gyro_bias_converges_to_injected_offset() {
+    let mut filter = Mahony::new(2.0, 0.1);
+    let injected_bias = [0.02, -0.015, 0.0];
+    let static_accel = [0.0, 0.0, -9.81];
+
+    for _ in 0..6000 {
+        filter.update(injected_bias, static_accel, 0.01).unwrap();
+    }
+
+    let est_bias = filter.gyro_bias();
+    assert!((est_bias[0] - injected_bias[0]).abs() < 0.003);
+    assert!((est_bias[1] - injected_bias[1]).abs() < 0.003);
+}
