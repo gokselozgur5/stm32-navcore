@@ -6,6 +6,9 @@ use crate::math::Mat;
 /// Returns `(L, D)` with `L D L^T = A`, where `L` has a unit diagonal.
 #[allow(clippy::needless_range_loop)]
 pub fn ldl<const N: usize>(a: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]), LinalgError> {
+    if !a.0.iter().flatten().all(|v| v.is_finite()) {
+        return Err(LinalgError::NonFinite);
+    }
     let mut l = Mat::<N, N>::identity();
     let mut d = [0.0f32; N];
     for j in 0..N {
