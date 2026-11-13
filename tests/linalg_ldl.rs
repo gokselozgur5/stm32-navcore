@@ -23,3 +23,19 @@ fn factor_has_unit_diagonal_and_positive_d() {
         assert!(*di > 0.0);
     }
 }
+
+fn residual<const N: usize>() -> f32 {
+    let a = spd::<N>();
+    let (l, d) = ldl(&a).unwrap();
+    let mut dm = Mat::<N, N>::zeros();
+    for (i, di) in d.iter().enumerate() {
+        dm.0[i][i] = *di;
+    }
+    max_diff(&l.matmul(&dm).matmul(&l.transpose()), &a)
+}
+
+#[test]
+fn ldlt_reproduces_spd_input() {
+    assert!(residual::<3>() < 1e-5);
+    assert!(residual::<6>() < 1e-4);
+}
