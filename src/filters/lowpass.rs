@@ -7,6 +7,8 @@ pub enum FilterError {
     InvalidCutoff,
     /// Sample interval is non-positive or not finite.
     InvalidDt,
+    /// Parameter is non-positive or invalid.
+    InvalidParameter,
     /// Cutoff frequency is at or above the Nyquist frequency.
     AboveNyquist,
     /// Value is NaN or infinite.
