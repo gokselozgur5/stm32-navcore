@@ -16,3 +16,23 @@ fn test_madgwick_initialization() {
     f.reset();
     assert_eq!(f.quaternion(), Quaternion::IDENTITY);
 }
+
+#[test]
+fn test_madgwick_invalid_inputs_and_gyro_only() {
+    let mut f = Madgwick::new(0.1);
+    assert!(f.update([0.0, 0.0, 0.0], [0.0, 0.0, 9.8], 0.0).is_err());
+    assert!(f.update([0.0, 0.0, 0.0], [0.0, 0.0, 9.8], -0.01).is_err());
+    assert!(f
+        .update([f32::NAN, 0.0, 0.0], [0.0, 0.0, 9.8], 0.01)
+        .is_err());
+
+    let dt = 0.01;
+    let rate = 0.1;
+    for _ in 0..100 {
+        f.update([rate, 0.0, 0.0], [0.0, 0.0, 0.0], dt).unwrap();
+    }
+    let (roll, pitch, yaw) = f.quaternion().to_euler_zyx();
+    assert!((roll - 0.1).abs() < 0.02);
+    assert!(pitch.abs() < 1e-3);
+    assert!(yaw.abs() < 1e-3);
+}
