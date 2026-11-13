@@ -12,3 +12,21 @@ fn nav_ekf_covariance_round_trips() {
     let (u, d) = ud_factor(&p).unwrap();
     assert!(max_diff(&ud_reconstruct(&u, &d), &p) < 1e-5);
 }
+
+#[test]
+fn correlated_covariance_round_trips() {
+    let mut p = NavEkf::new().cov;
+    p.0[0][3] = 3.0;
+    p.0[3][0] = 3.0;
+    p.0[1][7] = -0.5;
+    p.0[7][1] = -0.5;
+    let (u, d) = ud_factor(&p).unwrap();
+    assert!(max_diff(&ud_reconstruct(&u, &d), &p) < 1e-4);
+}
+
+#[test]
+fn non_positive_pivot_is_reported() {
+    let mut p = NavEkf::new().cov;
+    p.0[4][4] = -1.0;
+    assert!(ud_factor(&p).is_err());
+}
