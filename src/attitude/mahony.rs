@@ -89,3 +89,15 @@ impl Mahony {
         ]
     }
 }
+
+fn validate_sample(gyro: [f32; 3], accel: [f32; 3], dt: f32) -> Result<(), AttitudeError> {
+    if !dt.is_finite() || dt <= 0.0 {
+        return Err(AttitudeError::InvalidInput);
+    }
+    for &v in gyro.iter().chain(accel.iter()) {
+        if !v.is_finite() {
+            return Err(AttitudeError::NonFinite);
+        }
+    }
+    Ok(())
+}
