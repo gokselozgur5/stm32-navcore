@@ -32,3 +32,14 @@ fn upper_recovers_known_x() {
     let x = solve_upper(&m, &apply(&m)).unwrap();
     assert!(x.iter().zip(X).all(|(a, b)| (a - b).abs() < 1e-5));
 }
+
+#[test]
+fn zero_pivot_is_an_error() {
+    use stm32_navcore::linalg::LinalgError;
+    let mut l = tri(true);
+    l.0[2][2] = 0.0;
+    assert_eq!(solve_lower(&l, &[1.0; 4]), Err(LinalgError::ZeroPivot));
+    let mut u = tri(false);
+    u.0[1][1] = 0.0;
+    assert_eq!(solve_upper(&u, &[1.0; 4]), Err(LinalgError::ZeroPivot));
+}
