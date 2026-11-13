@@ -7,9 +7,9 @@ fn next(s: &mut u32) -> f32 {
 
 fn rand_mat<const R: usize, const C: usize>(s: &mut u32) -> Mat<R, C> {
     let mut m = Mat::<R, C>::zeros();
-    for r in 0..R {
-        for c in 0..C {
-            m.0[r][c] = next(s);
+    for row in &mut m.0 {
+        for cell in row {
+            *cell = next(s);
         }
     }
     m
