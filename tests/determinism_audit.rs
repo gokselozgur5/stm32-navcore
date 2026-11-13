@@ -75,12 +75,9 @@ fn test_bit_exact_ekf_simulation_determinism() {
         assert_eq!(ekf_a.att.z.to_bits(), ekf_b.att.z.to_bits());
         assert_eq!(ekf_a.bg_z.to_bits(), ekf_b.bg_z.to_bits());
 
-        for row in 0..8 {
-            for col in 0..8 {
-                assert_eq!(
-                    ekf_a.cov.0[row][col].to_bits(),
-                    ekf_b.cov.0[row][col].to_bits()
-                );
+        for (r_a, r_b) in ekf_a.cov.0.iter().zip(ekf_b.cov.0.iter()) {
+            for (c_a, c_b) in r_a.iter().zip(r_b.iter()) {
+                assert_eq!(c_a.to_bits(), c_b.to_bits());
             }
         }
     }
@@ -96,9 +93,9 @@ fn test_bit_exact_ekf_simulation_determinism() {
     h = fnv1a_feed(h, &ekf_a.att.y.to_bits().to_le_bytes());
     h = fnv1a_feed(h, &ekf_a.att.z.to_bits().to_le_bytes());
     h = fnv1a_feed(h, &ekf_a.bg_z.to_bits().to_le_bytes());
-    for row in 0..8 {
-        for col in 0..8 {
-            h = fnv1a_feed(h, &ekf_a.cov.0[row][col].to_bits().to_le_bytes());
+    for row in &ekf_a.cov.0 {
+        for val in row {
+            h = fnv1a_feed(h, &val.to_bits().to_le_bytes());
         }
     }
     let (r, p, y) = ekf_a.att.to_euler_zyx();
