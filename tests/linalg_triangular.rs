@@ -25,3 +25,10 @@ fn lower_recovers_known_x() {
     let x = solve_lower(&m, &apply(&m)).unwrap();
     assert!(x.iter().zip(X).all(|(a, b)| (a - b).abs() < 1e-5));
 }
+
+#[test]
+fn upper_recovers_known_x() {
+    let m = tri(false);
+    let x = solve_upper(&m, &apply(&m)).unwrap();
+    assert!(x.iter().zip(X).all(|(a, b)| (a - b).abs() < 1e-5));
+}
