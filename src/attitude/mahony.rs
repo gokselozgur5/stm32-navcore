@@ -101,3 +101,14 @@ fn validate_sample(gyro: [f32; 3], accel: [f32; 3], dt: f32) -> Result<(), Attit
     }
     Ok(())
 }
+
+impl Mahony {
+    fn accel_error(&self, accel: [f32; 3]) -> [f32; 3] {
+        let sq = accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2];
+        if sq <= 1e-12 {
+            return [0.0; 3];
+        }
+        let inv = 1.0 / libm::sqrtf(sq);
+        self.compute_error([accel[0] * inv, accel[1] * inv, accel[2] * inv])
+    }
+}
