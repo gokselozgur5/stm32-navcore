@@ -29,9 +29,9 @@ fn try_new_rejects_scaled_reflected_and_nan() {
 fn multiply_composes_angles() {
     let p = rz(0.4).mul(&rz(0.5));
     let want = rz(0.9);
-    for i in 0..3 {
-        for j in 0..3 {
-            assert!((p.0 .0[i][j] - want.0 .0[i][j]).abs() < 1e-6);
+    for (row_p, row_want) in p.0 .0.iter().zip(want.0 .0.iter()) {
+        for (&val_p, &val_want) in row_p.iter().zip(row_want.iter()) {
+            assert!((val_p - val_want).abs() < 1e-6);
         }
     }
 }
