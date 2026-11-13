@@ -140,6 +140,7 @@ fn biased_measurement_is_rejected_without_state_change() {
 }
 
 #[test]
+#[allow(clippy::needless_range_loop)]
 fn covariance_stays_positive_and_finite() {
     let ekf = converged(11, 3000);
     for i in 0..STATE_DIM {
