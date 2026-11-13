@@ -45,3 +45,23 @@ impl LowPassFilter {
         self.alpha
     }
 }
+
+impl LowPassFilter {
+    /// Feeds one sample and returns the filtered output.
+    pub fn update(&mut self, sample: f32) -> f32 {
+        let prev = self.state.unwrap_or(sample);
+        let next = prev + self.alpha * (sample - prev);
+        self.state = Some(next);
+        next
+    }
+
+    /// Resets the filter state to uninitialized.
+    pub fn reset(&mut self) {
+        self.state = None;
+    }
+
+    /// Current filter state if initialized.
+    pub const fn state(&self) -> Option<f32> {
+        self.state
+    }
+}
