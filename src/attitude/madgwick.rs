@@ -76,3 +76,31 @@ impl Madgwick {
         Some([beta * g[0], beta * g[1], beta * g[2], beta * g[3]])
     }
 }
+
+impl Madgwick {
+    pub fn update(
+        &mut self,
+        gyro_rad_s: [f32; 3],
+        accel: [f32; 3],
+        dt_s: f32,
+    ) -> Result<Quaternion, MathError> {
+        if !dt_s.is_finite() || dt_s <= 0.0 {
+            return Err(MathError::InvalidNorm);
+        }
+        let (wx, wy, wz) = (gyro_rad_s[0], gyro_rad_s[1], gyro_rad_s[2]);
+        if !wx.is_finite() || !wy.is_finite() || !wz.is_finite() {
+            return Err(MathError::InvalidNorm);
+        }
+        let q = self.quat;
+        let q_dot = Self::gyro_rate(&q, gyro_rad_s);
+        let grad = Self::accel_gradient_step(&q, accel, self.beta).unwrap_or([0.0; 4]);
+        let next = Quaternion::new(
+            q.w + (q_dot[0] - grad[0]) * dt_s,
+            q.x + (q_dot[1] - grad[1]) * dt_s,
+            q.y + (q_dot[2] - grad[2]) * dt_s,
+            q.z + (q_dot[3] - grad[3]) * dt_s,
+        );
+        self.quat = next.normalize()?;
+        Ok(self.quat)
+    }
+}
