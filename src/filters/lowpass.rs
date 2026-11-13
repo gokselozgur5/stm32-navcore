@@ -14,7 +14,7 @@ pub enum FilterError {
 }
 
 /// First-order IIR low-pass filter.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LowPassFilter {
     alpha: f32,
     state: Option<f32>,
