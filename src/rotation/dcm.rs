@@ -29,10 +29,10 @@ impl Dcm {
     pub fn orthogonality_error(&self) -> f32 {
         let p = self.0.matmul(&self.0.transpose());
         let mut err = 0.0f32;
-        for i in 0..3 {
-            for j in 0..3 {
+        for (i, row) in p.0.iter().enumerate() {
+            for (j, &val) in row.iter().enumerate() {
                 let target = if i == j { 1.0 } else { 0.0 };
-                err = err.max((p.0[i][j] - target).abs());
+                err = err.max((val - target).abs());
             }
         }
         err
