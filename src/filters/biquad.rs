@@ -58,3 +58,13 @@ impl Biquad {
         Ok(Self::new(b0, b1, b0, a1, a2))
     }
 }
+
+impl Biquad {
+    /// Feeds one sample and returns the filtered output using DF2T.
+    pub fn update(&mut self, x: f32) -> f32 {
+        let y = self.b0 * x + self.s1;
+        self.s1 = self.b1 * x - self.a1 * y + self.s2;
+        self.s2 = self.b2 * x - self.a2 * y;
+        y
+    }
+}
