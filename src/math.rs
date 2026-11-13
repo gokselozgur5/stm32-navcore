@@ -369,10 +369,10 @@ mod tests {
         let m3 = Mat([[3.0, 0.0, 2.0], [2.0, 0.0, -2.0], [0.0, 1.0, 1.0]]);
         let inv3 = m3.inv_3x3().unwrap();
         let prod3 = m3.matmul(&inv3);
-        for i in 0..3 {
-            for j in 0..3 {
+        for (i, row) in prod3.0.iter().enumerate() {
+            for (j, &val) in row.iter().enumerate() {
                 let expected = if i == j { 1.0 } else { 0.0 };
-                assert!((prod3.0[i][j] - expected).abs() < 1e-5);
+                assert!((val - expected).abs() < 1e-5);
             }
         }
         let singular = Mat([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
