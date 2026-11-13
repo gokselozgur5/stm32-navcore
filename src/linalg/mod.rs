@@ -1,6 +1,7 @@
 //! Fixed-size linear algebra on `Mat<R, C>`.
 
 pub mod cholesky;
+pub mod spd;
 pub mod triangular;
 
 /// Failure modes shared by the factorizations and solvers.
