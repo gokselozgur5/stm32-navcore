@@ -34,3 +34,22 @@ pub fn principal_radii_of_curvature(lat_rad: f64) -> Result<(f64, f64), GeoError
     let r_m = WGS84_A * (1.0 - WGS84_E2) / (denom * sqrt_denom);
     Ok((r_m, r_n))
 }
+
+/// Computes transport rate in NED from latitude, height, and velocity.
+pub fn transport_rate(
+    lat_rad: f64,
+    height_m: f64,
+    v_n: f64,
+    v_e: f64,
+) -> Result<Ned, GeoError> {
+    if !height_m.is_finite() || !v_n.is_finite() || !v_e.is_finite() {
+        return Err(GeoError::NonFinite);
+    }
+    let (r_m, r_n) = principal_radii_of_curvature(lat_rad)?;
+    let r_n_h = r_n + height_m;
+    let r_m_h = r_m + height_m;
+    let omega_n = v_e / r_n_h;
+    let omega_e = -v_n / r_m_h;
+    let omega_d = -v_e * libm::tan(lat_rad) / r_n_h;
+    Ok(Ned::new(omega_n, omega_e, omega_d))
+}
