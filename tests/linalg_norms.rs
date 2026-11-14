@@ -1,5 +1,16 @@
-use stm32_navcore::linalg::norms::{all_finite, frobenius_norm, max_abs_norm, trace};
+use stm32_navcore::linalg::norms::{
+    all_finite, frobenius_norm, infinity_norm, max_abs_norm, trace,
+};
 use stm32_navcore::math::Mat;
+
+#[test]
+fn infinity_norm_matches_known_values() {
+    let a = Mat::<2, 3>([[-3.0, 5.0, 1.0], [2.0, -8.0, 1.0]]);
+    assert!((infinity_norm(&a) - 11.0).abs() < 1e-6);
+
+    let b = Mat::<3, 2>([[2.5, -1.0], [-4.0, -3.5], [0.0, 7.0]]);
+    assert!((infinity_norm(&b) - 7.5).abs() < 1e-6);
+}
 
 #[test]
 fn frobenius_norm_matches_known_values() {
