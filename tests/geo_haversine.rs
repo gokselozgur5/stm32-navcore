@@ -47,3 +47,15 @@ fn new_york_to_london_accuracy() {
     let bearing_deg = res.bearing_rad * R2D;
     assert!((bearing_deg - published_bearing_deg).abs() < 0.1);
 }
+
+#[test]
+fn invalid_inputs_are_rejected() {
+    assert_eq!(
+        haversine(f64::NAN, 0.0, 0.0, 0.0),
+        Err(GeoError::NonFinite)
+    );
+    assert_eq!(
+        haversine(2.0, 0.0, 0.0, 0.0),
+        Err(GeoError::InvalidLatitude)
+    );
+}
