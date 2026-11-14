@@ -30,3 +30,13 @@ fn test_attitude_slerp_collinear_fallback() {
     let res = attitude_slerp(&q0, &q1, 0.5);
     assert!(res.is_ok());
 }
+
+#[test]
+fn test_attitude_slerp_invalid_inputs() {
+    let q_valid = Quaternion::new(1.0, 0.0, 0.0, 0.0);
+    let q_bad_norm = Quaternion::new(2.0, 0.0, 0.0, 0.0);
+    assert!(attitude_slerp(&q_valid, &q_bad_norm, 0.5).is_err());
+    assert!(attitude_slerp(&q_valid, &q_valid, -0.1).is_err());
+    assert!(attitude_slerp(&q_valid, &q_valid, 1.1).is_err());
+    assert!(attitude_slerp(&q_valid, &q_valid, f32::NAN).is_err());
+}
