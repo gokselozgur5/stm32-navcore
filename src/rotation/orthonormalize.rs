@@ -28,6 +28,6 @@ impl Dcm {
         if r.0.iter().flatten().any(|x| !x.is_finite()) {
             return Err(RotationError::NotOrthonormal);
         }
-        Ok(Dcm(r))
+        Dcm::try_new(r)
     }
 }
