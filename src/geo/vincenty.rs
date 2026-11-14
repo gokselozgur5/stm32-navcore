@@ -75,6 +75,9 @@ pub fn inverse(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> Option<Inverse> {
         if !next.is_finite() {
             return None;
         }
+        if libm::fabs(next - lam) < 1e-12 {
+            return Some(finish([su1, cu1, su2, cu2], sl, cl, x, &t));
+        }
         lam = next;
     }
     None
