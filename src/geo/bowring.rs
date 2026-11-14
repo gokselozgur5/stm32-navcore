@@ -27,7 +27,11 @@ pub fn ecef_to_lla(ecef: &Ecef) -> Result<Lla, GeoError> {
 
     let num = ecef.z + WGS84_E_PRIME2 * WGS84_B * sin3_th;
     let den = p - WGS84_E2 * WGS84_A * cos3_th;
-    let lat_rad = libm::atan2(num, den);
+    let lat_rad = if num == 0.0 && den <= 0.0 {
+        0.0
+    } else {
+        libm::atan2(num, den)
+    };
     let sin_lat = libm::sin(lat_rad);
     let cos_lat = libm::cos(lat_rad);
     let n = WGS84_A / libm::sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
@@ -36,9 +40,5 @@ pub fn ecef_to_lla(ecef: &Ecef) -> Result<Lla, GeoError> {
     } else {
         ecef.z / sin_lat - n * (1.0 - WGS84_E2)
     };
-    Ok(Lla {
-        lat_rad,
-        lon_rad,
-        alt_m,
-    })
+    Lla::new(lat_rad, lon_rad, alt_m)
 }
