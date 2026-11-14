@@ -22,3 +22,12 @@ pub fn attitude_error_angle(q1: &quaternion::Quaternion<f32>, q2: &quaternion::Q
     let mut axis = quaternion::Vector3<f32>::new(0.0, 0.0, 0.0);
     if dot_product != 1.0 && dot_product != -1.0 {
         let cross_product = q1.cross(q2);
+        let norm_cross_product = cross_product.norm();
+        axis = cross_product / norm_cross_product;
+    }
+
+    // Calculate the attitude error angle
+    let attitude_error_angle = theta * (axis.dot(&q1) / axis.norm());
+
+    attitude_error_angle
+}
