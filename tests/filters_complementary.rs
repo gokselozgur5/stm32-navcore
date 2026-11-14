@@ -17,7 +17,16 @@ fn test_complementary_filter_construction_and_step() {
 
 #[test]
 fn test_complementary_filter_invalid_parameters() {
-    assert_eq!(ComplementaryFilter::new(0.98, 0.0), Err(ComplementaryError::InvalidSampleInterval));
-    assert_eq!(ComplementaryFilter::new(1.0, 0.01), Err(ComplementaryError::InvalidAlpha));
-    assert_eq!(ComplementaryFilter::new(0.0, 0.01), Err(ComplementaryError::InvalidAlpha));
+    assert_eq!(
+        ComplementaryFilter::new(0.98, 0.0),
+        Err(ComplementaryError::InvalidSampleInterval)
+    );
+    assert_eq!(
+        ComplementaryFilter::new(1.0, 0.01),
+        Err(ComplementaryError::InvalidAlpha)
+    );
+    assert_eq!(
+        ComplementaryFilter::new(0.0, 0.01),
+        Err(ComplementaryError::InvalidAlpha)
+    );
 }
