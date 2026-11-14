@@ -26,3 +26,32 @@ impl Givens {
         Self { c, s, r }
     }
 }
+
+impl Givens {
+    /// Applies rotation to rows `j` and `i` of matrix `r`.
+    #[allow(clippy::needless_range_loop)]
+    pub fn apply_rows<const M: usize, const N: usize>(
+        &self,
+        r: &mut Mat<M, N>,
+        j: usize,
+        i: usize,
+    ) {
+        for k in 0..N {
+            let r_j = r.0[j][k];
+            let r_i = r.0[i][k];
+            r.0[j][k] = self.c * r_j + self.s * r_i;
+            r.0[i][k] = -self.s * r_j + self.c * r_i;
+        }
+    }
+
+    /// Applies transpose rotation to columns `j` and `i` of `q`.
+    #[allow(clippy::needless_range_loop)]
+    pub fn apply_cols<const M: usize>(&self, q: &mut Mat<M, M>, j: usize, i: usize) {
+        for k in 0..M {
+            let q_j = q.0[k][j];
+            let q_i = q.0[k][i];
+            q.0[k][j] = self.c * q_j + self.s * q_i;
+            q.0[k][i] = -self.s * q_j + self.c * q_i;
+        }
+    }
+}
