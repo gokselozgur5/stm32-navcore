@@ -2,6 +2,7 @@
 
 pub mod cholesky;
 pub mod ldl;
+pub mod lstsq;
 pub mod spd;
 pub mod triangular;
 
