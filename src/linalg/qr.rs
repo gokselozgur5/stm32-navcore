@@ -86,6 +86,7 @@ pub fn qr<const M: usize, const N: usize>(
                 let g = Givens::compute(r.0[j][j], r.0[i][j]);
                 g.apply_rows(&mut r, j, i);
                 g.apply_cols(&mut q, j, i);
+                r.0[i][j] = 0.0;
             }
         }
     }
