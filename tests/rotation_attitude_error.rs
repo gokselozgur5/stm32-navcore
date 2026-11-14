@@ -21,3 +21,12 @@ fn recovers_applied_rotation() {
     assert!((e.axis[0] - 0.3 / want).abs() < 1e-5);
     assert!((e.axis[2] - 0.5 / want).abs() < 1e-5);
 }
+#[test]
+fn invariant_to_quaternion_sign() {
+    let b = base().mul(&so3_exp([0.3, -0.2, 0.5]));
+    let nb = Quaternion::new(-b.w, -b.x, -b.y, -b.z);
+    let e1 = attitude_error(&base(), &b).unwrap();
+    let e2 = attitude_error(&base(), &nb).unwrap();
+    assert!((e1.angle - e2.angle).abs() < 1e-6);
+    assert!((e1.axis[1] - e2.axis[1]).abs() < 1e-6);
+}
