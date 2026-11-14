@@ -60,3 +60,20 @@ impl ComplementaryFilter {
         self.initialized = false;
     }
 }
+
+impl ComplementaryFilter {
+    /// Update attitude estimate with gyro rate and accel measurement.
+    pub fn update(&mut self, pitch_rate: f32, roll_rate: f32, accel_pitch: f32, accel_roll: f32, dt: f32) -> (f32, f32) {
+        if !self.initialized {
+            self.pitch = accel_pitch;
+            self.roll = accel_roll;
+            self.initialized = true;
+        } else {
+            let gyro_pitch = self.pitch + pitch_rate * dt;
+            let gyro_roll = self.roll + roll_rate * dt;
+            self.pitch = self.alpha * gyro_pitch + (1.0 - self.alpha) * accel_pitch;
+            self.roll = self.alpha * gyro_roll + (1.0 - self.alpha) * accel_roll;
+        }
+        (self.pitch, self.roll)
+    }
+}
