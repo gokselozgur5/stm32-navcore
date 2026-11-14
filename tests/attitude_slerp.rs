@@ -7,3 +7,10 @@ fn test_attitude_slerp_endpoints() {
     let q1 = Quaternion::new(0.0, 1.0, 0.0, 0.0);
     assert_eq!(attitude_slerp(&q0, &q1, 0.0).unwrap(), q0);
 }
+
+#[test]
+fn test_attitude_slerp_endpoints_full() {
+    let q0 = Quaternion::new(1.0, 0.0, 0.0, 0.0);
+    let q1 = Quaternion::new(0.0, 1.0, 0.0, 0.0);
+    assert_eq!(attitude_slerp(&q0, &q1, 1.0).unwrap(), q1);
+}
