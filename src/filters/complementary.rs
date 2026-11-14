@@ -29,7 +29,6 @@ impl ComplementaryFilter {
         }
         Ok(Self { alpha, dt, roll: 0.0, pitch: 0.0 })
     }
-}
 
     /// Returns current roll angle estimate in radians.
     pub fn roll(&self) -> f32 {
