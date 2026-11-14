@@ -39,6 +39,10 @@ pub fn cholesky_det<const N: usize>(l: &Mat<N, N>) -> f32 {
 }
 
 /// Computes log determinant of matrix A from its lower Cholesky factor L.
-pub fn cholesky_log_det<const N: usize>(_l: &Mat<N, N>) -> f32 {
-    0.0
+pub fn cholesky_log_det<const N: usize>(l: &Mat<N, N>) -> f32 {
+    let mut sum = 0.0f32;
+    for i in 0..N {
+        sum += libm::logf(l.0[i][i]);
+    }
+    2.0 * sum
 }
