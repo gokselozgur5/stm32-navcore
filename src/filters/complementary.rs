@@ -17,3 +17,22 @@ pub struct ComplementaryFilter {
     roll: f32,
     initialized: bool,
 }
+
+impl ComplementaryFilter {
+    /// Create a new complementary filter from time constant tau and interval dt.
+    pub fn new(tau_sec: f32, dt: f32) -> Result<Self, ComplementaryError> {
+        if !tau_sec.is_finite() || tau_sec <= 0.0 {
+            return Err(ComplementaryError::InvalidTimeConstant);
+        }
+        if !dt.is_finite() || dt <= 0.0 {
+            return Err(ComplementaryError::InvalidSampleInterval);
+        }
+        let alpha = tau_sec / (tau_sec + dt);
+        Ok(Self {
+            alpha,
+            pitch: 0.0,
+            roll: 0.0,
+            initialized: false,
+        })
+    }
+}
