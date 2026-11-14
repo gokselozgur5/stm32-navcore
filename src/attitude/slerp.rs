@@ -39,3 +39,24 @@ fn slerp_weights(cos_theta: f32, s: f32, t: f32) -> (f32, f32) {
     let inv_sin = 1.0 / libm::sinf(theta);
     (libm::sinf((1.0 - t) * theta) * inv_sin, s * libm::sinf(t * theta) * inv_sin)
 }
+
+/// Spherical linear interpolation between two attitude quaternions along the shortest path.
+pub fn attitude_slerp(q0: &Quaternion, q1: &Quaternion, t: f32) -> Result<Quaternion, AttitudeError> {
+    if !t.is_finite() || !(0.0..=1.0).contains(&t) || !is_valid_unit(q0) || !is_valid_unit(q1) {
+        return Err(AttitudeError::InvalidInput);
+    }
+    if t == 0.0 { return Ok(*q0); }
+    if t == 1.0 { return Ok(*q1); }
+    let d = dot(q0, q1);
+    let s = if d < 0.0 { -1.0 } else { 1.0 };
+    let cos_t = (d * s).clamp(-1.0, 1.0);
+    if cos_t > 0.9995 { return attitude_nlerp(q0, q1, t); }
+    let (w0, w1) = slerp_weights(cos_t, s, t);
+    let q = Quaternion::new(
+        w0 * q0.w + w1 * q1.w,
+        w0 * q0.x + w1 * q1.x,
+        w0 * q0.y + w1 * q1.y,
+        w0 * q0.z + w1 * q1.z,
+    );
+    q.normalize().map_err(|_| AttitudeError::InvalidInput)
+}
