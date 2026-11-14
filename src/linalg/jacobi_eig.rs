@@ -103,6 +103,20 @@ fn validate_finite<const N: usize>(a: &Mat<N, N>) -> Result<(), LinalgError> {
 }
 
 /// Computes eigenvalues and eigenvectors of real symmetric matrix `a`.
-pub fn jacobi_eig<const N: usize>(_a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
-    Err(LinalgError::NonFinite)
+#[allow(clippy::needless_range_loop)]
+pub fn jacobi_eig<const N: usize>(a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
+    validate_finite(a)?;
+    let mut d = *a;
+    let mut v = Mat::<N, N>::identity();
+    for _ in 0..MAX_SWEEPS {
+        if off_diagonal_norm_sq(&d) <= EPS_SQ {
+            break;
+        }
+        cyclic_jacobi_sweep(&mut d, &mut v);
+    }
+    let mut values = [0.0f32; N];
+    for i in 0..N {
+        values[i] = d.0[i][i];
+    }
+    Ok(Eigen { values, vectors: v })
 }
