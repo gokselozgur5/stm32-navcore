@@ -52,3 +52,19 @@ fn initial_bearing(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
         az
     }
 }
+
+/// Computes great-circle distance and initial bearing between two points in radians.
+pub fn haversine(
+    lat1: f64,
+    lon1: f64,
+    lat2: f64,
+    lon2: f64,
+) -> Result<HaversineResult, GeoError> {
+    validate_coords(lat1, lon1, lat2, lon2)?;
+    let distance_m = great_circle_distance(lat1, lon1, lat2, lon2);
+    let bearing_rad = initial_bearing(lat1, lon1, lat2, lon2);
+    Ok(HaversineResult {
+        distance_m,
+        bearing_rad,
+    })
+}
