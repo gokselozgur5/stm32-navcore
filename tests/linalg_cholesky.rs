@@ -75,3 +75,14 @@ fn rejects_zero_matrix() {
     let z = Mat::<3, 3>::zeros();
     assert_eq!(cholesky(&z), Err(LinalgError::NotPositiveDefinite));
 }
+
+#[test]
+fn cholesky_reads_only_lower_triangle() {
+    let mut a = spd::<3>();
+    let l_clean = cholesky(&a).unwrap();
+    a.0[0][1] = 999.0;
+    a.0[0][2] = -42.0;
+    a.0[1][2] = 123.0;
+    let l_perturbed = cholesky(&a).unwrap();
+    assert_eq!(l_clean, l_perturbed);
+}
