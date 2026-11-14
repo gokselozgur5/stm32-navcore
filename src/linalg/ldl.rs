@@ -40,3 +40,12 @@ pub fn ldl_reconstruct<const N: usize>(l: &Mat<N, N>, d: &[f32; N]) -> Mat<N, N>
     }
     ld.matmul(&l.transpose())
 }
+
+/// Computes determinant of matrix A from its LDL^T diagonal factor D.
+pub fn ldl_det<const N: usize>(d: &[f32; N]) -> f32 {
+    let mut prod = 1.0f32;
+    for di in d {
+        prod *= di;
+    }
+    prod
+}
