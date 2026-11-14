@@ -58,3 +58,15 @@ fn solve_and_inverse_reject_non_pd() {
     assert_eq!(spd_solve(&a, &b), Err(LinalgError::NotPositiveDefinite));
     assert_eq!(spd_inverse(&a), Err(LinalgError::NotPositiveDefinite));
 }
+
+#[test]
+fn solve_and_inverse_1x1_and_2x2() {
+    let a1 = Mat::<1, 1>([[4.0]]);
+    assert_eq!(spd_solve(&a1, &[12.0]).unwrap(), [3.0]);
+    assert_eq!(spd_inverse(&a1).unwrap().0[0][0], 0.25);
+
+    let a2 = Mat::<2, 2>([[2.0, -1.0], [-1.0, 2.0]]);
+    let x2 = spd_solve(&a2, &[1.0, 2.0]).unwrap();
+    assert!((x2[0] - 1.3333333).abs() < 1e-5);
+    assert!((x2[1] - 1.6666666).abs() < 1e-5);
+}
