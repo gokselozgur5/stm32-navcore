@@ -23,3 +23,14 @@ fn free_air_correction_decreases_gravity_with_altitude() {
     let delta_g = g_surface - g_1000m;
     assert!((delta_g - 0.00308).abs() < 1e-4);
 }
+
+#[test]
+fn invalid_and_non_finite_inputs_are_rejected() {
+    use stm32_navcore::geo::GeoError;
+
+    assert_eq!(normal_gravity_surface(f64::NAN), Err(GeoError::NonFinite));
+    assert_eq!(normal_gravity_surface(2.0), Err(GeoError::InvalidLatitude));
+    assert_eq!(normal_gravity_surface(-2.0), Err(GeoError::InvalidLatitude));
+
+    assert_eq!(normal_gravity(0.0, f64::NAN), Err(GeoError::NonFinite));
+}
