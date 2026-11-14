@@ -1,6 +1,14 @@
 use stm32_navcore::geo::{ecef_to_lla, lla_to_ecef, Ecef, GeoError, Lla};
 
 #[test]
+fn test_equatorial_evolute_interior_repro() {
+    let pt = Ecef::new(1000.0, 0.0, 0.0);
+    let lla = ecef_to_lla(&pt).expect("valid ecef to lla");
+    assert_eq!(lla.lat_rad, 0.0);
+    assert!((lla.alt_m - (1000.0 - stm32_navcore::geo::WGS84_A)).abs() < 1e-6);
+}
+
+#[test]
 fn test_equator_and_pole_roundtrip() {
     let eq = Lla::new(0.0, 0.0, 0.0).expect("valid coordinates");
     let eq_ecef = lla_to_ecef(&eq);
