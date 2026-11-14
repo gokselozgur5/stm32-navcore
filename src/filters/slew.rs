@@ -65,3 +65,29 @@ impl SlewRateLimiter {
 pub struct SymmetricDeadband {
     threshold: f32,
 }
+
+impl SymmetricDeadband {
+    /// Construct a new symmetric deadband with non-negative threshold.
+    pub fn new(threshold: f32) -> Result<Self, SlewError> {
+        if !threshold.is_finite() || threshold < 0.0 {
+            return Err(SlewError::InvalidParameter);
+        }
+        Ok(Self { threshold })
+    }
+
+    /// Return the deadband threshold.
+    pub const fn threshold(&self) -> f32 {
+        self.threshold
+    }
+
+    /// Apply deadband to sample.
+    pub fn apply(&self, sample: f32) -> f32 {
+        if sample > self.threshold {
+            sample - self.threshold
+        } else if sample < -self.threshold {
+            sample + self.threshold
+        } else {
+            0.0
+        }
+    }
+}
