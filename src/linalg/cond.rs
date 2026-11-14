@@ -25,3 +25,16 @@ fn solve_spd_l<const N: usize>(l: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N], 
     let y = solve_lower(l, b)?;
     solve_upper(&l.transpose(), &y)
 }
+
+fn argmax_abs<const N: usize>(v: &[f32; N]) -> usize {
+    let mut best_i = 0;
+    let mut best_val = 0.0f32;
+    for (i, &val) in v.iter().enumerate() {
+        let a = libm::fabsf(val);
+        if a > best_val {
+            best_val = a;
+            best_i = i;
+        }
+    }
+    best_i
+}
