@@ -38,3 +38,24 @@ fn argmax_abs<const N: usize>(v: &[f32; N]) -> usize {
     }
     best_i
 }
+
+fn step_est<const N: usize>(l: &Mat<N, N>, x: &mut [f32; N]) -> Result<f32, LinalgError> {
+    let y = solve_spd_l(l, x)?;
+    let mut gamma = 0.0f32;
+    let mut xi = [0.0f32; N];
+    for i in 0..N {
+        gamma += libm::fabsf(y[i]);
+        xi[i] = if y[i] >= 0.0 { 1.0 } else { -1.0 };
+    }
+    let z = solve_spd_l(l, &xi)?;
+    let mut dot = 0.0f32;
+    for i in 0..N {
+        dot += z[i] * x[i];
+    }
+    let k = argmax_abs(&z);
+    if libm::fabsf(z[k]) > dot {
+        *x = [0.0f32; N];
+        x[k] = 1.0;
+    }
+    Ok(gamma)
+}
