@@ -63,13 +63,21 @@ pub fn inverse(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> Option<Inverse> {
         let x = cu1 * su2 - su1 * cu2 * cl;
         let sin_s = libm::hypot(cu2 * sl, x);
         if sin_s == 0.0 {
-            return Some(Inverse { distance_m: 0.0, azimuth1: 0.0, azimuth2: 0.0 });
+            return Some(Inverse {
+                distance_m: 0.0,
+                azimuth1: 0.0,
+                azimuth2: 0.0,
+            });
         }
         let cos_s = su1 * su2 + cu1 * cu2 * cl;
         let sigma = libm::atan2(sin_s, cos_s);
         let sin_a = cu1 * cu2 * sl / sin_s;
         let cos2a = 1.0 - sin_a * sin_a;
-        let cos_2sm = if cos2a == 0.0 { 0.0 } else { cos_s - 2.0 * su1 * su2 / cos2a };
+        let cos_2sm = if cos2a == 0.0 {
+            0.0
+        } else {
+            cos_s - 2.0 * su1 * su2 / cos2a
+        };
         let t = [sigma, sin_s, cos_s, sin_a, cos2a, cos_2sm];
         let next = next_lambda(l, &t);
         if !next.is_finite() {
