@@ -33,3 +33,9 @@ pub fn attitude_nlerp(q0: &Quaternion, q1: &Quaternion, t: f32) -> Result<Quater
     );
     q.normalize().map_err(|_| AttitudeError::InvalidInput)
 }
+
+fn slerp_weights(cos_theta: f32, s: f32, t: f32) -> (f32, f32) {
+    let theta = libm::acosf(cos_theta);
+    let inv_sin = 1.0 / libm::sinf(theta);
+    (libm::sinf((1.0 - t) * theta) * inv_sin, s * libm::sinf(t * theta) * inv_sin)
+}
