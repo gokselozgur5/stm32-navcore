@@ -14,3 +14,11 @@ fn test_attitude_slerp_endpoints_full() {
     let q1 = Quaternion::new(0.0, 1.0, 0.0, 0.0);
     assert_eq!(attitude_slerp(&q0, &q1, 1.0).unwrap(), q1);
 }
+
+#[test]
+fn test_attitude_slerp_shortest_path() {
+    let q0 = Quaternion::new(1.0, 0.0, 0.0, 0.0);
+    let q1 = Quaternion::new(-1.0, 0.0, 0.0, 0.0);
+    let interpolated = attitude_slerp(&q0, &q1, 0.5).unwrap();
+    assert!((interpolated.w.abs() - 1.0).abs() < 1e-5);
+}
