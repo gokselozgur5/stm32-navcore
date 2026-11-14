@@ -15,4 +15,3 @@ fn line_fit_overdetermined() {
     let x = lstsq(&a, &[1.0, 3.0, 5.0, 7.0]).unwrap();
     assert!((x[0] - 1.0).abs() < 1e-4 && (x[1] - 2.0).abs() < 1e-4);
 }
-
