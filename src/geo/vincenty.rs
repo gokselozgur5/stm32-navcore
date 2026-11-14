@@ -50,3 +50,32 @@ fn finish(u: [f64; 4], sl: f64, cl: f64, x: f64, t: &[f64; 6]) -> Inverse {
         azimuth2: libm::atan2(cu1 * sl, -su1 * cu2 + cu1 * su2 * cl),
     }
 }
+
+/// Solves the inverse problem; inputs in radians. Returns `None` if the
+/// iteration fails to converge (nearly antipodal points) or inputs are not finite.
+pub fn inverse(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> Option<Inverse> {
+    let l = lon2 - lon1;
+    let (su1, cu1) = libm::sincos(libm::atan((1.0 - F) * libm::tan(lat1)));
+    let (su2, cu2) = libm::sincos(libm::atan((1.0 - F) * libm::tan(lat2)));
+    let mut lam = l;
+    for _ in 0..200 {
+        let (sl, cl) = libm::sincos(lam);
+        let x = cu1 * su2 - su1 * cu2 * cl;
+        let sin_s = libm::hypot(cu2 * sl, x);
+        if sin_s == 0.0 {
+            return Some(Inverse { distance_m: 0.0, azimuth1: 0.0, azimuth2: 0.0 });
+        }
+        let cos_s = su1 * su2 + cu1 * cu2 * cl;
+        let sigma = libm::atan2(sin_s, cos_s);
+        let sin_a = cu1 * cu2 * sl / sin_s;
+        let cos2a = 1.0 - sin_a * sin_a;
+        let cos_2sm = if cos2a == 0.0 { 0.0 } else { cos_s - 2.0 * su1 * su2 / cos2a };
+        let t = [sigma, sin_s, cos_s, sin_a, cos2a, cos_2sm];
+        let next = next_lambda(l, &t);
+        if !next.is_finite() {
+            return None;
+        }
+        lam = next;
+    }
+    None
+}
