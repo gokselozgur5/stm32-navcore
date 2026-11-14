@@ -46,3 +46,16 @@ fn qr_decomposition(matrix: &mut [[f32; 4]; 6]) {
             for j in i..6 {
                 let temp = matrix[j][i];
                 matrix[j][i] = c * temp + s * matrix[j + 1][i];
+                matrix[j + 1][i] = -s * temp + c * matrix[j + 1][i];
+            }
+        } else {
+            let c = x / (x * x + y * y).sqrt();
+            let s = -c * y;
+            for j in i..6 {
+                let temp = matrix[j][i];
+                matrix[j][i] = c * temp + s * matrix[j + 1][i];
+                matrix[j + 1][i] = -s * temp + c * matrix[j + 1][i];
+            }
+        }
+    }
+}
