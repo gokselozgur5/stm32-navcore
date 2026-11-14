@@ -28,3 +28,15 @@ pub fn ldl<const N: usize>(a: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]), Linal
     }
     Ok((l, d))
 }
+
+/// Rebuilds `L D L^T` from its factors.
+#[allow(clippy::needless_range_loop)]
+pub fn ldl_reconstruct<const N: usize>(l: &Mat<N, N>, d: &[f32; N]) -> Mat<N, N> {
+    let mut ld = *l;
+    for r in 0..N {
+        for c in 0..N {
+            ld.0[r][c] *= d[c];
+        }
+    }
+    ld.matmul(&l.transpose())
+}
