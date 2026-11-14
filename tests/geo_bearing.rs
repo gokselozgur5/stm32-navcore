@@ -17,9 +17,24 @@ fn test_cardinal_bearings() {
 
 #[test]
 fn test_bearing_validation_errors() {
-    assert_eq!(initial_bearing_deg(f64::NAN, 0.0, 0.0, 0.0), Err(GeoError::NonFinite));
-    assert_eq!(initial_bearing_deg(95.0, 0.0, 0.0, 0.0), Err(GeoError::InvalidLatitude));
-    assert_eq!(initial_bearing_deg(-95.0, 0.0, 0.0, 0.0), Err(GeoError::InvalidLatitude));
-    assert_eq!(initial_bearing_deg(0.0, 0.0, 95.0, 0.0), Err(GeoError::InvalidLatitude));
-    assert_eq!(initial_bearing_rad(f64::INFINITY, 0.0, 0.0, 0.0), Err(GeoError::NonFinite));
+    assert_eq!(
+        initial_bearing_deg(f64::NAN, 0.0, 0.0, 0.0),
+        Err(GeoError::NonFinite)
+    );
+    assert_eq!(
+        initial_bearing_deg(95.0, 0.0, 0.0, 0.0),
+        Err(GeoError::InvalidLatitude)
+    );
+    assert_eq!(
+        initial_bearing_deg(-95.0, 0.0, 0.0, 0.0),
+        Err(GeoError::InvalidLatitude)
+    );
+    assert_eq!(
+        initial_bearing_deg(0.0, 0.0, 95.0, 0.0),
+        Err(GeoError::InvalidLatitude)
+    );
+    assert_eq!(
+        initial_bearing_rad(f64::INFINITY, 0.0, 0.0, 0.0),
+        Err(GeoError::NonFinite)
+    );
 }
