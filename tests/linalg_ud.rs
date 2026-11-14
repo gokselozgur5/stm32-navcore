@@ -79,3 +79,13 @@ fn ud_reads_only_upper_triangle() {
     let perturbed = ud_factor(&p).unwrap();
     assert_eq!(clean, perturbed);
 }
+
+#[test]
+fn rejects_non_finite_entries() {
+    use stm32_navcore::linalg::LinalgError;
+    let mut p = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
+    p.0[0][1] = f32::NAN;
+    assert_eq!(ud_factor(&p), Err(LinalgError::NonFinite));
+    p.0[0][1] = f32::INFINITY;
+    assert_eq!(ud_factor(&p), Err(LinalgError::NonFinite));
+}
