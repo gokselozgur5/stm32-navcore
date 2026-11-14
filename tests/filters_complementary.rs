@@ -30,3 +30,14 @@ fn test_complementary_filter_initialization() {
     assert!((filter.pitch() - 0.15).abs() < 1e-6);
     assert!((filter.roll() - (-0.25)).abs() < 1e-6);
 }
+
+#[test]
+fn test_complementary_filter_fusion() {
+    let mut filter = ComplementaryFilter::new(0.9, 0.1).unwrap();
+    filter.update(0.0, 0.0, 0.0, 0.0, 0.1);
+    // Gyro suggests 1.0 rad/s pitch, accel measures 0.0
+    // gyro_pitch = 0.0 + 1.0*0.1 = 0.1
+    // pitch = 0.9 * 0.1 + 0.1 * 0.0 = 0.09
+    let (pitch, _) = filter.update(1.0, 0.0, 0.0, 0.0, 0.1);
+    assert!((pitch - 0.09).abs() < 1e-5);
+}
