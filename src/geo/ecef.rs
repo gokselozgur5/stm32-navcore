@@ -46,3 +46,18 @@ impl Lla {
         Self::new(lat_deg.to_radians(), lon_deg.to_radians(), alt_m)
     }
 }
+
+pub fn lla_to_ecef(lla: &Lla) -> Ecef {
+    let sin_lat = libm::sin(lla.lat_rad);
+    let cos_lat = libm::cos(lla.lat_rad);
+    let sin_lon = libm::sin(lla.lon_rad);
+    let cos_lon = libm::cos(lla.lon_rad);
+
+    let n = WGS84_A / libm::sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
+
+    let x = (n + lla.alt_m) * cos_lat * cos_lon;
+    let y = (n + lla.alt_m) * cos_lat * sin_lon;
+    let z = (n * (1.0 - WGS84_E2) + lla.alt_m) * sin_lat;
+
+    Ecef::new(x, y, z)
+}
