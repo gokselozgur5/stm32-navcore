@@ -29,27 +29,6 @@ pub fn reflect_col<const M: usize>(v: &[f32; M], vtv: f32, k: usize, c: &mut [f3
     }
 }
 
-/// Eliminates column `k` of `r` and applies the same reflection to `y`.
-pub fn householder_step<const M: usize, const N: usize>(
-    r: &mut [[f32; N]; M],
-    y: &mut [f32; M],
-    k: usize,
-) -> Result<(), LinalgError> {
-    let (v, vtv) = reflector(r, k)?;
-    for j in k..N {
-        let mut col = [0.0f32; M];
-        for i in 0..M {
-            col[i] = r[i][j];
-        }
-        reflect_col(&v, vtv, k, &mut col);
-        for i in 0..M {
-            r[i][j] = col[i];
-        }
-    }
-    reflect_col(&v, vtv, k, y);
-    Ok(())
-}
-
 /// Solves `R x = y` for the leading `N` rows of an upper triangular `R`.
 pub fn back_substitute<const M: usize, const N: usize>(
     r: &[[f32; N]; M],
