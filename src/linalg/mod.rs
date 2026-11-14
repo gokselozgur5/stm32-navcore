@@ -2,6 +2,7 @@
 
 pub mod cholesky;
 pub mod cond;
+pub mod jacobi_eig;
 pub mod ldl;
 pub mod lstsq;
 pub mod norms;
