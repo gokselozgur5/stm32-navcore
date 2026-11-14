@@ -47,3 +47,23 @@ fn eigenpairs_satisfy_av_lambda_v_8x8() {
     let err = max_eigen_residual(&a);
     assert!(err < 1e-4, "8x8 residual {} >= 1e-4", err);
 }
+
+#[test]
+fn eigenvectors_are_orthonormal() {
+    let a = symmetric_matrix::<4>();
+    let res = jacobi_eig(&a).unwrap();
+    let v_t_v = res.vectors.transpose().matmul(&res.vectors);
+    let id = Mat::<4, 4>::identity();
+    let diff = v_t_v.sub(&id).0.iter().flatten().fold(0.0f32, |m, v| m.max(v.abs()));
+    assert!(diff < 1e-5, "orthonormality error {} >= 1e-5", diff);
+}
+
+#[test]
+fn rejects_non_finite_input() {
+    use stm32_navcore::linalg::LinalgError;
+    let mut a = symmetric_matrix::<3>();
+    a.0[0][1] = f32::NAN;
+    assert_eq!(jacobi_eig(&a), Err(LinalgError::NonFinite));
+    a.0[0][1] = f32::INFINITY;
+    assert_eq!(jacobi_eig(&a), Err(LinalgError::NonFinite));
+}
