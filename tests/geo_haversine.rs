@@ -50,10 +50,7 @@ fn new_york_to_london_accuracy() {
 
 #[test]
 fn invalid_inputs_are_rejected() {
-    assert_eq!(
-        haversine(f64::NAN, 0.0, 0.0, 0.0),
-        Err(GeoError::NonFinite)
-    );
+    assert_eq!(haversine(f64::NAN, 0.0, 0.0, 0.0), Err(GeoError::NonFinite));
     assert_eq!(
         haversine(2.0, 0.0, 0.0, 0.0),
         Err(GeoError::InvalidLatitude)
