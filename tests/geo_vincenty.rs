@@ -16,3 +16,21 @@ fn flinders_peak_to_buninyong() {
     let az = (306.0 + 52.0 / 60.0 + 5.37 / 3600.0) * D2R;
     assert!((r.azimuth1 - (az - 2.0 * core::f64::consts::PI)).abs() < 1e-6);
 }
+
+#[test]
+fn identical_points_give_zero() {
+    let r = inverse(0.5, 1.0, 0.5, 1.0).unwrap();
+    assert_eq!(r.distance_m, 0.0);
+}
+
+#[test]
+fn equator_quarter_arc() {
+    let r = inverse(0.0, 0.0, 0.0, 90.0 * D2R).unwrap();
+    let expected = 6_378_137.0 * core::f64::consts::FRAC_PI_2;
+    assert!((r.distance_m - expected).abs() < 1e-3);
+}
+
+#[test]
+fn antipodal_does_not_panic() {
+    let _ = inverse(0.0, 0.0, 0.0, core::f64::consts::PI);
+}
