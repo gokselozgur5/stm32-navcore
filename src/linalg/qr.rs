@@ -55,3 +55,25 @@ impl Givens {
         }
     }
 }
+
+/// Computes the QR decomposition `A = Q * R` using Givens rotations.
+pub fn qr<const M: usize, const N: usize>(
+    a: &Mat<M, N>,
+) -> Result<(Mat<M, M>, Mat<M, N>), LinalgError> {
+    if !a.0.iter().flatten().all(|v| v.is_finite()) {
+        return Err(LinalgError::NonFinite);
+    }
+    let mut q = Mat::<M, M>::identity();
+    let mut r = *a;
+    let limit = if M < N { M } else { N };
+    for j in 0..limit {
+        for i in (j + 1)..M {
+            if r.0[i][j] != 0.0 {
+                let g = Givens::compute(r.0[j][j], r.0[i][j]);
+                g.apply_rows(&mut r, j, i);
+                g.apply_cols(&mut q, j, i);
+            }
+        }
+    }
+    Ok((q, r))
+}
