@@ -55,6 +55,20 @@ fn apply_jacobi_step<const N: usize>(
     }
 }
 
+/// Computes off-diagonal Frobenius norm squared.
+#[inline]
+fn off_diagonal_norm_sq<const N: usize>(a: &Mat<N, N>) -> f32 {
+    let mut sum = 0.0f32;
+    for i in 0..N {
+        for j in 0..N {
+            if i != j {
+                sum += a.0[i][j] * a.0[i][j];
+            }
+        }
+    }
+    sum
+}
+
 /// Computes eigenvalues and eigenvectors of real symmetric matrix `a`.
 pub fn jacobi_eig<const N: usize>(_a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
     Err(LinalgError::NonFinite)
