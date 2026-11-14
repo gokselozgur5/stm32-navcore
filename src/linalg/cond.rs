@@ -92,3 +92,11 @@ pub fn is_well_conditioned_spd<const N: usize>(a: &Mat<N, N>, max_cond: f32) -> 
         Err(_) => false,
     }
 }
+
+/// Returns true if matrix `a` is SPD and its reciprocal condition estimate >= `tol`.
+pub fn is_invertible_spd<const N: usize>(a: &Mat<N, N>, tol: f32) -> bool {
+    match rcond_est_spd(a) {
+        Ok(rcond) => rcond >= tol && rcond.is_finite(),
+        Err(_) => false,
+    }
+}
