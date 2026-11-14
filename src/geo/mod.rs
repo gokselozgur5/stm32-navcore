@@ -36,3 +36,5 @@ pub mod bowring;
 pub use bowring::ecef_to_lla;
 pub mod ned;
 pub use ned::{LtpFrame, Ned};
+pub mod gravity;
+pub use gravity::{normal_gravity, normal_gravity_surface};
