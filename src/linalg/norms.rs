@@ -43,6 +43,11 @@ pub fn infinity_norm<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
     max_row
 }
 
+/// Returns the infinity norm of matrix `a` (alias for `infinity_norm`).
+pub fn norm_inf<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
+    infinity_norm(a)
+}
+
 /// Returns the trace of square matrix `a`: `sum(a_ii)`.
 pub fn trace<const N: usize>(a: &Mat<N, N>) -> f32 {
     let mut tr = 0.0;
