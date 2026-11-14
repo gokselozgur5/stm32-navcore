@@ -122,3 +122,15 @@ fn ldl_rejects_zero_matrix() {
     let z = Mat::<3, 3>::zeros();
     assert_eq!(ldl(&z), Err(LinalgError::NotPositiveDefinite));
 }
+
+#[test]
+fn ldl_solve_rejects_invalid_inputs() {
+    use stm32_navcore::linalg::LinalgError;
+    let a = spd::<3>();
+    let (l, d) = ldl(&a).unwrap();
+    let b_nan = [f32::NAN, 1.0, 2.0];
+    assert_eq!(ldl_solve(&l, &d, &b_nan), Err(LinalgError::NonFinite));
+    let d_zero = [1.0, 0.0, 1.0];
+    let b = [1.0, 2.0, 3.0];
+    assert_eq!(ldl_solve(&l, &d_zero, &b), Err(LinalgError::ZeroPivot));
+}
