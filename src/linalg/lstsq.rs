@@ -65,3 +65,23 @@ pub fn back_substitute<const M: usize, const N: usize>(
     }
     Ok(x)
 }
+
+/// Minimizes `|A x - b|` for a full column rank `A` with `M >= N`.
+///
+/// Fails with `ZeroPivot` when `M < N` or `A` is rank deficient.
+pub fn lstsq<const M: usize, const N: usize>(
+    a: &Mat<M, N>,
+    b: &[f32; M],
+) -> Result<[f32; N], LinalgError> {
+    if M < N {
+        return Err(LinalgError::ZeroPivot);
+    }
+    if !a.0.iter().flatten().chain(b.iter()).all(|v| v.is_finite()) {
+        return Err(LinalgError::NonFinite);
+    }
+    let (mut r, mut y) = (a.0, *b);
+    for k in 0..N {
+        householder_step(&mut r, &mut y, k)?;
+    }
+    back_substitute(&r, &y)
+}
