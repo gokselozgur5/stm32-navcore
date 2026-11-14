@@ -54,7 +54,12 @@ fn eigenvectors_are_orthonormal() {
     let res = jacobi_eig(&a).unwrap();
     let v_t_v = res.vectors.transpose().matmul(&res.vectors);
     let id = Mat::<4, 4>::identity();
-    let diff = v_t_v.sub(&id).0.iter().flatten().fold(0.0f32, |m, v| m.max(v.abs()));
+    let diff = v_t_v
+        .sub(&id)
+        .0
+        .iter()
+        .flatten()
+        .fold(0.0f32, |m, v| m.max(v.abs()));
     assert!(diff < 1e-5, "orthonormality error {} >= 1e-5", diff);
 }
 

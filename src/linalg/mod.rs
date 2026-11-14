@@ -1,12 +1,12 @@
 //! Fixed-size linear algebra on `Mat<R, C>`.
 
 pub mod cholesky;
+pub mod jacobi_eig;
 pub mod ldl;
 pub mod lstsq;
 pub mod qr;
 pub mod spd;
 pub mod triangular;
-pub mod jacobi_eig;
 pub mod ud;
 
 /// Failure modes shared by the factorizations and solvers.
