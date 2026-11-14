@@ -17,3 +17,16 @@ pub struct ComplementaryFilter {
     roll: f32,
     pitch: f32,
 }
+
+impl ComplementaryFilter {
+    /// Creates a new complementary filter with given alpha and dt.
+    pub fn new(alpha: f32, dt: f32) -> Result<Self, ComplementaryError> {
+        if !dt.is_finite() || dt <= 0.0 {
+            return Err(ComplementaryError::InvalidSampleInterval);
+        }
+        if !alpha.is_finite() || alpha <= 0.0 || alpha >= 1.0 {
+            return Err(ComplementaryError::InvalidAlpha);
+        }
+        Ok(Self { alpha, dt, roll: 0.0, pitch: 0.0 })
+    }
+}
