@@ -45,3 +45,14 @@ fn cond_est_rejects_non_pd_and_non_finite() {
     nan_mat.0[0][0] = f32::NAN;
     assert_eq!(cond_est_spd(&nan_mat), Err(LinalgError::NonFinite));
 }
+
+#[test]
+fn cond_est_1x1_and_2x2_exact() {
+    let m1 = Mat::<1, 1>([[5.0]]);
+    assert!((cond_est_spd(&m1).unwrap() - 1.0).abs() < 1e-4);
+
+    let mut m2 = Mat::<2, 2>::zeros();
+    m2.0[0][0] = 2.0;
+    m2.0[1][1] = 8.0;
+    assert!((cond_est_spd(&m2).unwrap() - 4.0).abs() < 1e-4);
+}
