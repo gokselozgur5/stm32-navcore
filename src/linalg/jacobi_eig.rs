@@ -86,6 +86,22 @@ fn cyclic_jacobi_sweep<const N: usize>(a: &mut Mat<N, N>, v: &mut Mat<N, N>) {
     }
 }
 
+/// Maximum number of cyclic sweeps permitted.
+const MAX_SWEEPS: usize = 50;
+
+/// Tolerance for off-diagonal Frobenius norm squared.
+const EPS_SQ: f32 = 1e-12;
+
+/// Checks that all entries in matrix are finite.
+#[inline]
+fn validate_finite<const N: usize>(a: &Mat<N, N>) -> Result<(), LinalgError> {
+    if a.0.iter().flatten().all(|v| v.is_finite()) {
+        Ok(())
+    } else {
+        Err(LinalgError::NonFinite)
+    }
+}
+
 /// Computes eigenvalues and eigenvectors of real symmetric matrix `a`.
 pub fn jacobi_eig<const N: usize>(_a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
     Err(LinalgError::NonFinite)
