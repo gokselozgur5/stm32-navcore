@@ -21,14 +21,6 @@ pub fn reflector<const M: usize, const N: usize>(
     Ok((v, v.iter().map(|x| x * x).sum()))
 }
 
-/// Applies `I - 2 v v^T / v^T v` to rows `k..M` of one column.
-pub fn reflect_col<const M: usize>(v: &[f32; M], vtv: f32, k: usize, c: &mut [f32; M]) {
-    let f = 2.0 * (k..M).map(|i| v[i] * c[i]).sum::<f32>() / vtv;
-    for i in k..M {
-        c[i] -= f * v[i];
-    }
-}
-
 /// Solves `R x = y` for the leading `N` rows of an upper triangular `R`.
 pub fn back_substitute<const M: usize, const N: usize>(
     r: &[[f32; N]; M],
