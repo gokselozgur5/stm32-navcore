@@ -21,3 +21,27 @@ pub struct AlphaBetaFilter {
     v: f32,
     initialized: bool,
 }
+
+impl AlphaBetaFilter {
+    /// Construct a new tracker with gains and sample interval.
+    pub fn new(alpha: f32, beta: f32, dt: f32) -> Result<Self, AlphaBetaError> {
+        if !dt.is_finite() || dt <= 0.0 {
+            return Err(AlphaBetaError::InvalidSampleInterval);
+        }
+        if !alpha.is_finite() || alpha <= 0.0 || alpha > 1.0 {
+            return Err(AlphaBetaError::InvalidAlpha);
+        }
+        if !beta.is_finite() || beta <= 0.0 || beta > 2.0 * (2.0 - alpha) {
+            return Err(AlphaBetaError::InvalidBeta);
+        }
+        Ok(Self {
+            alpha,
+            beta,
+            dt,
+            x: 0.0,
+            v: 0.0,
+            initialized: false,
+        })
+    }
+}
+
