@@ -24,3 +24,15 @@ fn test_attitude_cov_symmetric_and_pd() {
         assert!(res.0[i][i] > 1.0);
     }
 }
+
+#[test]
+fn test_attitude_cov_monotonic_growth() {
+    let q = Quaternion::IDENTITY;
+    let cov = Mat::<3, 3>::identity();
+    let res1 = propagate_attitude_cov(&cov, &q, 0.01, 0.1).unwrap();
+    let res2 = propagate_attitude_cov(&cov, &q, 0.05, 0.1).unwrap();
+    let res3 = propagate_attitude_cov(&cov, &q, 0.05, 0.5).unwrap();
+
+    assert!(res2.0[0][0] > res1.0[0][0]);
+    assert!(res3.0[0][0] > res2.0[0][0]);
+}
