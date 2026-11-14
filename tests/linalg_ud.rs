@@ -44,3 +44,12 @@ fn ud_reproduces_spd_1x1_and_2x2() {
     assert!((r2.0[0][1] - 1.0).abs() < 1e-5);
     assert!((r2.0[1][1] - 2.0).abs() < 1e-5);
 }
+
+#[test]
+fn ud_det_reproduces_determinant() {
+    use stm32_navcore::linalg::ud::ud_det;
+    let p = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
+    let (_u, d) = ud_factor(&p).unwrap();
+    let det = ud_det(&d);
+    assert!((det - 7.0).abs() < 1e-5);
+}
