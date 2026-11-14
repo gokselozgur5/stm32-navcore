@@ -115,3 +115,10 @@ fn ldl_reproduces_spd_1x1_and_2x2() {
     let (l2, d2) = ldl(&a2).unwrap();
     assert!(max_diff(&ldl_reconstruct(&l2, &d2), &a2) < 1e-5);
 }
+
+#[test]
+fn ldl_rejects_zero_matrix() {
+    use stm32_navcore::linalg::LinalgError;
+    let z = Mat::<3, 3>::zeros();
+    assert_eq!(ldl(&z), Err(LinalgError::NotPositiveDefinite));
+}
