@@ -1,3 +1,10 @@
-//! Geodesy on the WGS84 ellipsoid.
+//! Geodesy module: Earth reference models and coordinate transforms.
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GeoError {
+    NonFinite,
+    InvalidLatitude,
+    InvalidLongitude,
+}
 
 pub mod vincenty;
