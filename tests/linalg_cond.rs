@@ -1,4 +1,6 @@
-use stm32_navcore::linalg::cond::{cond_est_spd, norm_1, rcond_est_spd};
+use stm32_navcore::linalg::cond::{
+    cond_est_spd, is_well_conditioned_spd, norm_1, rcond_est_spd,
+};
 use stm32_navcore::linalg::LinalgError;
 use stm32_navcore::math::Mat;
 
@@ -66,4 +68,15 @@ fn rcond_est_spd_matches_reciprocal() {
     d.0[3][3] = 10.0;
     let r = rcond_est_spd(&d).unwrap();
     assert!((r - 0.1).abs() < 1e-4);
+}
+
+#[test]
+fn is_well_conditioned_spd_checks_threshold() {
+    let eye = Mat::<3, 3>::identity();
+    assert!(is_well_conditioned_spd(&eye, 2.0));
+    assert!(!is_well_conditioned_spd(&eye, 0.5));
+
+    let mut non_pd = Mat::<3, 3>::identity();
+    non_pd.0[0][0] = -1.0;
+    assert!(!is_well_conditioned_spd(&non_pd, 100.0));
 }
