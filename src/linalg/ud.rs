@@ -22,3 +22,27 @@ impl Ud {
                 }
             }
         }
+
+        Ud { u, d }
+    }
+
+    /// Reconstructs a 8x8 covariance matrix from the `Ud`.
+    pub fn reconstruct(&self) -> [[f32; 8]; 8] {
+        let mut cov = [[0.0; 8]; 8];
+
+        for i in 0..8 {
+            for j in (i + 1)..8 {
+                if self.u[i] != 0.0 && self.d[j] != 0.0 {
+                    cov[i][j] = self.u[i] * self.d[j] * self.u[j];
+                }
+            }
+        }
+
+        cov
+    }
+
+    /// Adds a scalar to all elements of the `Ud`.
+    pub fn add_scalar(&mut self, scalar: f32) {
+        for u in &mut self.u {
+            *u += scalar;
+        }
