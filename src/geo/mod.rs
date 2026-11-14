@@ -44,3 +44,6 @@ pub use bearing::{initial_bearing_deg, initial_bearing_rad};
 
 pub mod earth_rate;
 pub use earth_rate::{earth_rotation_rate, transport_rate};
+
+pub mod haversine;
+pub use haversine::{haversine, HaversineResult, EARTH_RADIUS_M};
