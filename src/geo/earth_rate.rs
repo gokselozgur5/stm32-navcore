@@ -36,12 +36,7 @@ pub fn principal_radii_of_curvature(lat_rad: f64) -> Result<(f64, f64), GeoError
 }
 
 /// Computes transport rate in NED from latitude, height, and velocity.
-pub fn transport_rate(
-    lat_rad: f64,
-    height_m: f64,
-    v_n: f64,
-    v_e: f64,
-) -> Result<Ned, GeoError> {
+pub fn transport_rate(lat_rad: f64, height_m: f64, v_n: f64, v_e: f64) -> Result<Ned, GeoError> {
     if !height_m.is_finite() || !v_n.is_finite() || !v_e.is_finite() {
         return Err(GeoError::NonFinite);
     }
