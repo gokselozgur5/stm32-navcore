@@ -68,3 +68,10 @@ fn cholesky_log_det_matches_log_of_det() {
     let expected = libm::logf(cholesky_det(&l));
     assert!((log_det - expected).abs() < 1e-4);
 }
+
+#[test]
+fn rejects_zero_matrix() {
+    use stm32_navcore::linalg::LinalgError;
+    let z = Mat::<3, 3>::zeros();
+    assert_eq!(cholesky(&z), Err(LinalgError::NotPositiveDefinite));
+}
