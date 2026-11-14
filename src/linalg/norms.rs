@@ -36,3 +36,15 @@ pub fn trace<const N: usize>(a: &Mat<N, N>) -> f32 {
     }
     tr
 }
+
+/// Returns true if all entries in matrix `a` are finite.
+pub fn all_finite<const R: usize, const C: usize>(a: &Mat<R, C>) -> bool {
+    for r in 0..R {
+        for c in 0..C {
+            if !a.0[r][c].is_finite() {
+                return false;
+            }
+        }
+    }
+    true
+}
