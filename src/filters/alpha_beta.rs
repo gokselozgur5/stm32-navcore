@@ -43,5 +43,21 @@ impl AlphaBetaFilter {
             initialized: false,
         })
     }
+
+    /// Return estimated position.
+    pub const fn position(&self) -> f32 {
+        self.x
+    }
+
+    /// Return estimated velocity.
+    pub const fn velocity(&self) -> f32 {
+        self.v
+    }
+
+    /// Return whether tracker has received at least one measurement.
+    pub const fn is_initialized(&self) -> bool {
+        self.initialized
+    }
 }
+
 
