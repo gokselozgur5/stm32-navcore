@@ -36,3 +36,6 @@ pub mod bowring;
 pub use bowring::ecef_to_lla;
 pub mod ned;
 pub use ned::{LtpFrame, Ned};
+
+pub mod earth_rate;
+pub use earth_rate::earth_rotation_rate;
