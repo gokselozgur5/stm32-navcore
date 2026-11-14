@@ -24,8 +24,16 @@ impl NotchFilter {
         let b0 = 1.0 / a0;
         let b1 = (-2.0 * cos_w0) / a0;
         let a2 = (1.0 - alpha) / a0;
-        let coeffs = BiquadCoefficients { b0, b1, b2: b0, a1: b1, a2 };
-        Ok(Self { biquad: BiquadFilter::new(coeffs) })
+        let coeffs = BiquadCoefficients {
+            b0,
+            b1,
+            b2: b0,
+            a1: b1,
+            a2,
+        };
+        Ok(Self {
+            biquad: BiquadFilter::new(coeffs),
+        })
     }
 
     /// Feeds one sample and returns the filtered output.
