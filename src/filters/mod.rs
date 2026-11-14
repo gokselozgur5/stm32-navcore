@@ -2,6 +2,7 @@
 
 pub mod alpha_beta;
 pub mod biquad;
+pub mod complementary;
 pub mod lowpass;
 pub mod median;
 pub mod notch;
