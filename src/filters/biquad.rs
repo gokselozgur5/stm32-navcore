@@ -31,3 +31,25 @@ impl BiquadCoefficients {
         Self { b0, b1, b2, a1, a2 }
     }
 }
+
+impl BiquadFilter {
+    pub const fn new(coeffs: BiquadCoefficients) -> Self {
+        Self {
+            coeffs,
+            s1: 0.0,
+            s2: 0.0,
+        }
+    }
+
+    pub fn reset(&mut self) {
+        self.s1 = 0.0;
+        self.s2 = 0.0;
+    }
+
+    pub fn update(&mut self, x: f32) -> f32 {
+        let y = self.coeffs.b0 * x + self.s1;
+        self.s1 = self.coeffs.b1 * x - self.coeffs.a1 * y + self.s2;
+        self.s2 = self.coeffs.b2 * x - self.coeffs.a2 * y;
+        y
+    }
+}
