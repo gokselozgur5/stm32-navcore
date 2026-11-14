@@ -53,3 +53,13 @@ fn lower_rejects_non_finite_inputs() {
     let m = tri(true);
     assert_eq!(solve_lower(&m, &[f32::NAN, 1.0, 1.0, 1.0]), Err(LinalgError::NonFinite));
 }
+
+#[test]
+fn upper_rejects_non_finite_inputs() {
+    use stm32_navcore::linalg::LinalgError;
+    let mut m = tri(false);
+    m.0[0][0] = f32::INFINITY;
+    assert_eq!(solve_upper(&m, &[1.0; 4]), Err(LinalgError::NonFinite));
+    let m = tri(false);
+    assert_eq!(solve_upper(&m, &[1.0, f32::NAN, 1.0, 1.0]), Err(LinalgError::NonFinite));
+}
