@@ -34,3 +34,14 @@ fn cond_est_hilbert_within_factor_of_three() {
     let exact = 28375.0f32;
     assert!(est > exact / 3.0 && est < exact * 3.0);
 }
+
+#[test]
+fn cond_est_rejects_non_pd_and_non_finite() {
+    let mut non_pd = Mat::<3, 3>::identity();
+    non_pd.0[0][0] = -1.0;
+    assert_eq!(cond_est_spd(&non_pd), Err(LinalgError::NotPositiveDefinite));
+
+    let mut nan_mat = Mat::<3, 3>::identity();
+    nan_mat.0[0][0] = f32::NAN;
+    assert_eq!(cond_est_spd(&nan_mat), Err(LinalgError::NonFinite));
+}
