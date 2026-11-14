@@ -27,3 +27,12 @@ pub fn max_abs_norm<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
     }
     max_val
 }
+
+/// Returns the trace of square matrix `a`: `sum(a_ii)`.
+pub fn trace<const N: usize>(a: &Mat<N, N>) -> f32 {
+    let mut tr = 0.0;
+    for i in 0..N {
+        tr += a.0[i][i];
+    }
+    tr
+}
