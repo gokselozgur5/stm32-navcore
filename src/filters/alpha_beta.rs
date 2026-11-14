@@ -58,6 +58,19 @@ impl AlphaBetaFilter {
     pub const fn is_initialized(&self) -> bool {
         self.initialized
     }
+
+    /// Reset tracker state to uninitialized zero.
+    pub fn reset(&mut self) {
+        self.x = 0.0;
+        self.v = 0.0;
+        self.initialized = false;
+    }
+
+    /// Predict next state across elapsed time interval `dt`.
+    pub fn predict(&mut self) {
+        self.x += self.v * self.dt;
+    }
 }
+
 
 
