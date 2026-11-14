@@ -29,6 +29,32 @@ fn jacobi_rotation(app: f32, aqq: f32, apq: f32) -> (f32, f32) {
     (c, s)
 }
 
+/// Applies a similarity transformation for pair `(p, q)` to `a` and updates `v`.
+#[allow(clippy::needless_range_loop)]
+fn apply_jacobi_step<const N: usize>(
+    a: &mut Mat<N, N>,
+    v: &mut Mat<N, N>,
+    p: usize,
+    q: usize,
+    c: f32,
+    s: f32,
+) {
+    for k in 0..N {
+        if k != p && k != q {
+            let a_kp = a.0[k][p];
+            let a_kq = a.0[k][q];
+            a.0[k][p] = c * a_kp - s * a_kq;
+            a.0[p][k] = a.0[k][p];
+            a.0[k][q] = s * a_kp + c * a_kq;
+            a.0[q][k] = a.0[k][q];
+        }
+        let v_kp = v.0[k][p];
+        let v_kq = v.0[k][q];
+        v.0[k][p] = c * v_kp - s * v_kq;
+        v.0[k][q] = s * v_kp + c * v_kq;
+    }
+}
+
 /// Computes eigenvalues and eigenvectors of real symmetric matrix `a`.
 pub fn jacobi_eig<const N: usize>(_a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
     Err(LinalgError::NonFinite)
