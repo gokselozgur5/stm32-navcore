@@ -22,3 +22,4 @@ fn check_qr_decomposition(matrix: &[[f32; 4]; 6]) {
         let x = temp_matrix[i][i];
         let y = temp_matrix[i + 1][i];
 
+        if y.abs() > x.abs
