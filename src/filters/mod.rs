@@ -1,10 +1,12 @@
 //! Discrete filters and signal conditioners.
 
+pub mod alpha_beta;
 pub mod biquad;
 pub mod lowpass;
 pub mod median;
 pub mod notch;
 
+pub use alpha_beta::AlphaBetaError;
 pub use biquad::{BiquadCoefficients, BiquadFilter};
 pub use lowpass::{LowPassError, LowPassFilter};
 pub use median::MedianFilter;
