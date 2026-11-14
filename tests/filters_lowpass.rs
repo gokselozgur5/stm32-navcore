@@ -20,3 +20,12 @@ fn test_filter_step_response_and_convergence() {
     }
     assert!(val < 1.0);
 }
+
+#[test]
+fn test_filter_reset_reinitializes_on_next_sample() {
+    let mut f = LowPassFilter::new(10.0, 0.01).expect("valid parameters");
+    assert_eq!(f.update(50.0), 50.0);
+    f.update(10.0);
+    f.reset();
+    assert_eq!(f.update(25.0), 25.0);
+}
