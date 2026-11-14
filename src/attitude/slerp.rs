@@ -70,3 +70,5 @@ pub fn nlerp(q0: Quaternion, q1: Quaternion, t: f32) -> Result<Quaternion, Attit
             q0.y * (1.0 - t) + q1.y * t,
             q0.z * (1.0 - t) + q1.z * t,
         ))
+    }
+}
