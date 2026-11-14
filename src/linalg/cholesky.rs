@@ -30,6 +30,10 @@ pub fn cholesky<const N: usize>(a: &Mat<N, N>) -> Result<Mat<N, N>, LinalgError>
 }
 
 /// Computes determinant of matrix A from its lower Cholesky factor L.
-pub fn cholesky_det<const N: usize>(_l: &Mat<N, N>) -> f32 {
-    0.0
+pub fn cholesky_det<const N: usize>(l: &Mat<N, N>) -> f32 {
+    let mut prod = 1.0f32;
+    for i in 0..N {
+        prod *= l.0[i][i];
+    }
+    prod * prod
 }
