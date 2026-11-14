@@ -74,3 +74,13 @@ pub fn cond_est_spd<const N: usize>(a: &Mat<N, N>) -> Result<f32, LinalgError> {
     }
     Ok(norm_a * gamma)
 }
+
+/// Estimates reciprocal 1-norm condition number $1 / \kappa_1(A)$ for SPD matrix `a`.
+pub fn rcond_est_spd<const N: usize>(a: &Mat<N, N>) -> Result<f32, LinalgError> {
+    let cond = cond_est_spd(a)?;
+    if cond <= 0.0 || !cond.is_finite() {
+        Ok(0.0)
+    } else {
+        Ok(1.0 / cond)
+    }
+}
