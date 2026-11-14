@@ -86,7 +86,3 @@ impl AlphaBetaFilter {
         (self.x, self.v)
     }
 }
-
-
-
-
