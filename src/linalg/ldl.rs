@@ -58,3 +58,26 @@ pub fn ldl_log_det<const N: usize>(d: &[f32; N]) -> f32 {
     }
     sum
 }
+
+/// Solves `A x = b` for SPD matrix `A` decomposed into `(L, D)` via `ldl`.
+#[allow(clippy::needless_range_loop)]
+pub fn ldl_solve<const N: usize>(
+    l: &Mat<N, N>,
+    d: &[f32; N],
+    b: &[f32; N],
+) -> Result<[f32; N], LinalgError> {
+    for &v in d {
+        if !v.is_finite() {
+            return Err(LinalgError::NonFinite);
+        }
+    }
+    let y = super::triangular::solve_lower(l, b)?;
+    let mut z = [0.0f32; N];
+    for i in 0..N {
+        if d[i] == 0.0 {
+            return Err(LinalgError::ZeroPivot);
+        }
+        z[i] = y[i] / d[i];
+    }
+    super::triangular::solve_upper(&l.transpose(), &z)
+}
