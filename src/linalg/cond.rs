@@ -16,3 +16,12 @@ pub fn norm_1<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
     }
     max_col
 }
+
+use super::cholesky::cholesky;
+use super::triangular::{solve_lower, solve_upper};
+use super::LinalgError;
+
+fn solve_spd_l<const N: usize>(l: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N], LinalgError> {
+    let y = solve_lower(l, b)?;
+    solve_upper(&l.transpose(), &y)
+}
