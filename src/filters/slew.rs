@@ -59,3 +59,9 @@ impl SlewRateLimiter {
         out
     }
 }
+
+/// Symmetric deadband mapping inputs inside [-threshold, threshold] to 0.
+#[derive(Debug, Clone, Copy)]
+pub struct SymmetricDeadband {
+    threshold: f32,
+}
