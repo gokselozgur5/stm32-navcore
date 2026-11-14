@@ -6,6 +6,18 @@ use crate::math::Mat;
 /// Solves `L x = b` for lower triangular `L`.
 #[allow(clippy::needless_range_loop)]
 pub fn solve_lower<const N: usize>(l: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N], LinalgError> {
+    for row in &l.0 {
+        for &v in row {
+            if !v.is_finite() {
+                return Err(LinalgError::NonFinite);
+            }
+        }
+    }
+    for &v in b {
+        if !v.is_finite() {
+            return Err(LinalgError::NonFinite);
+        }
+    }
     let mut x = [0.0f32; N];
     for i in 0..N {
         let mut s = b[i];
