@@ -17,3 +17,18 @@ fn equator_quarter_arc() {
     assert!((res.distance_m - expected).abs() < 1e-6);
     assert!((res.bearing_rad - core::f64::consts::FRAC_PI_2).abs() < 1e-6);
 }
+
+#[test]
+fn london_to_paris_accuracy() {
+    let london_lat = 51.5074 * D2R;
+    let london_lon = -0.1278 * D2R;
+    let paris_lat = 48.8566 * D2R;
+    let paris_lon = 2.3522 * D2R;
+    let res = haversine(london_lat, london_lon, paris_lat, paris_lon).unwrap();
+    let published_dist = 343_923.0;
+    let dist_err_pct = (res.distance_m - published_dist).abs() / published_dist * 100.0;
+    assert!(dist_err_pct < 0.5);
+    let published_bearing_deg = 148.046;
+    let bearing_deg = res.bearing_rad * R2D;
+    assert!((bearing_deg - published_bearing_deg).abs() < 0.1);
+}
