@@ -33,3 +33,17 @@ fn max_eigen_residual<const N: usize>(a: &Mat<N, N>) -> f32 {
     }
     max_err
 }
+
+#[test]
+fn eigenpairs_satisfy_av_lambda_v_4x4() {
+    let a = symmetric_matrix::<4>();
+    let err = max_eigen_residual(&a);
+    assert!(err < 1e-4, "4x4 residual {} >= 1e-4", err);
+}
+
+#[test]
+fn eigenpairs_satisfy_av_lambda_v_8x8() {
+    let a = symmetric_matrix::<8>();
+    let err = max_eigen_residual(&a);
+    assert!(err < 1e-4, "8x8 residual {} >= 1e-4", err);
+}
