@@ -20,3 +20,19 @@ pub fn normal_gravity_surface(lat_rad: f64) -> Result<f64, GeoError> {
     let den = libm::sqrt(1.0 - e2 * s2);
     Ok(gamma_e * (num / den))
 }
+
+/// Somigliana normal gravity with free-air height correction.
+pub fn normal_gravity(lat_rad: f64, height_m: f64) -> Result<f64, GeoError> {
+    if !height_m.is_finite() {
+        return Err(GeoError::NonFinite);
+    }
+    let g0 = normal_gravity_surface(lat_rad)?;
+    let a = crate::geo::WGS84_A;
+    let f = crate::geo::WGS84_F;
+    let m = 0.003_449_786_506_84;
+    let s = libm::sin(lat_rad);
+    let s2 = s * s;
+    let term1 = (2.0 / a) * (1.0 + f + m - 2.0 * f * s2) * height_m;
+    let term2 = (3.0 / (a * a)) * height_m * height_m;
+    Ok(g0 * (1.0 - term1 + term2))
+}
