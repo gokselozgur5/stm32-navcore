@@ -15,6 +15,20 @@ pub struct Givens {
 }
 
 impl Givens {
+    /// Returns the identity Givens rotation.
+    pub fn identity() -> Self {
+        Self {
+            c: 1.0,
+            s: 0.0,
+            r: 0.0,
+        }
+    }
+
+    /// Returns `true` if rotation is effectively an identity.
+    pub fn is_identity(&self) -> bool {
+        (self.c - 1.0).abs() < 1e-6 && self.s.abs() < 1e-6
+    }
+
     /// Computes `(c, s)` such that `[c s; -s c] * [a; b] = [r; 0]`.
     pub fn compute(a: f32, b: f32) -> Self {
         let (c, s, r) = if b == 0.0 {
