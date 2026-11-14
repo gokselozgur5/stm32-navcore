@@ -36,3 +36,15 @@ fn test_attitude_cov_monotonic_growth() {
     assert!(res2.0[0][0] > res1.0[0][0]);
     assert!(res3.0[0][0] > res2.0[0][0]);
 }
+
+#[test]
+fn test_attitude_cov_invalid_inputs() {
+    let q = Quaternion::IDENTITY;
+    let cov = Mat::<3, 3>::identity();
+
+    assert!(propagate_attitude_cov(&cov, &q, -0.1, 0.1).is_err());
+    assert!(propagate_attitude_cov(&cov, &q, 0.1, 0.0).is_err());
+
+    let nan_cov = Mat::<3, 3>([[f32::NAN; 3]; 3]);
+    assert!(propagate_attitude_cov(&nan_cov, &q, 0.1, 0.1).is_err());
+}
