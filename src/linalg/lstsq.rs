@@ -1,23 +1,7 @@
-//! Overdetermined least-squares solve through Householder QR.
+//! Overdetermined least-squares solve via QR decomposition.
 
 use super::LinalgError;
 use crate::math::Mat;
-
-/// Solves `R x = y` for the leading `N` rows of an upper triangular `R`.
-pub fn back_substitute<const M: usize, const N: usize>(
-    r: &[[f32; N]; M],
-    y: &[f32; M],
-) -> Result<[f32; N], LinalgError> {
-    let mut x = [0.0f32; N];
-    for k in (0..N).rev() {
-        if r[k][k] == 0.0 {
-            return Err(LinalgError::ZeroPivot);
-        }
-        let s: f32 = (k + 1..N).map(|j| r[k][j] * x[j]).sum();
-        x[k] = (y[k] - s) / r[k][k];
-    }
-    Ok(x)
-}
 
 #[allow(clippy::needless_range_loop)]
 fn project_qt_b<const M: usize, const N: usize>(q: &Mat<M, M>, b: &[f32; M]) -> [f32; N] {
