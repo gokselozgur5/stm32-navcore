@@ -70,7 +70,23 @@ impl AlphaBetaFilter {
     pub fn predict(&mut self) {
         self.x += self.v * self.dt;
     }
+
+    /// Update tracker with a new position measurement.
+    pub fn update(&mut self, measurement: f32) -> (f32, f32) {
+        if !self.initialized {
+            self.x = measurement;
+            self.v = 0.0;
+            self.initialized = true;
+        } else {
+            self.predict();
+            let residual = measurement - self.x;
+            self.x += self.alpha * residual;
+            self.v += (self.beta / self.dt) * residual;
+        }
+        (self.x, self.v)
+    }
 }
+
 
 
 
