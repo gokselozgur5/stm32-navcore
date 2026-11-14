@@ -20,3 +20,11 @@ pub fn reflector<const M: usize, const N: usize>(
     v[k] -= alpha;
     Ok((v, v.iter().map(|x| x * x).sum()))
 }
+
+/// Applies `I - 2 v v^T / v^T v` to rows `k..M` of one column.
+pub fn reflect_col<const M: usize>(v: &[f32; M], vtv: f32, k: usize, c: &mut [f32; M]) {
+    let f = 2.0 * (k..M).map(|i| v[i] * c[i]).sum::<f32>() / vtv;
+    for i in k..M {
+        c[i] -= f * v[i];
+    }
+}
