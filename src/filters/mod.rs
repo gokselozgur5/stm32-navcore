@@ -6,7 +6,7 @@ pub mod lowpass;
 pub mod median;
 pub mod notch;
 
-pub use alpha_beta::AlphaBetaError;
+pub use alpha_beta::{AlphaBetaError, AlphaBetaFilter};
 pub use biquad::{BiquadCoefficients, BiquadFilter};
 pub use lowpass::{LowPassError, LowPassFilter};
 pub use median::MedianFilter;
