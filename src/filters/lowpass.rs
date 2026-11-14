@@ -39,3 +39,29 @@ impl LowPassFilter {
         })
     }
 }
+
+impl LowPassFilter {
+    /// Return the smoothing factor alpha.
+    pub const fn alpha(&self) -> f32 {
+        self.alpha
+    }
+
+    /// Reset internal state to uninitialized.
+    pub fn reset(&mut self) {
+        self.prev_output = 0.0;
+        self.initialized = false;
+    }
+
+    /// Update filter with a new sample and return filtered output.
+    pub fn update(&mut self, sample: f32) -> f32 {
+        if !self.initialized {
+            self.prev_output = sample;
+            self.initialized = true;
+            sample
+        } else {
+            let out = self.prev_output + self.alpha * (sample - self.prev_output);
+            self.prev_output = out;
+            out
+        }
+    }
+}
