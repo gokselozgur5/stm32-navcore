@@ -22,3 +22,15 @@ impl ECEF {
         let b = 6356752.314245179;
         let e2 = (a.powi(2) - b.powi(2)) / a.powi(2);
 
+        let n = a / (1.0 - e2 * self.z.powi(2));
+
+        let sin_lat = (self.y / n).asin();
+        let cos_lat = sin_lat.cos();
+
+        let tan_lat = sin_lat.tan();
+
+        let sin_lon = (self.x / (n * cos_lat)).atan2(self.z);
+        let cos_lon = sin_lon.cos();
+
+        let lat = sin_lat.to_degrees();
+        let lon = sin_lon.to_degrees() + 180.0;
