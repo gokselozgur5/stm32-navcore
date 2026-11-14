@@ -46,3 +46,27 @@ pub fn slerp(q0: Quaternion, q1: Quaternion, t: f32) -> Result<Quaternion, Attit
 /// let t = 0.5;
 ///
 /// match nlerp(q0, q1, t) {
+///     Ok(quat) => println!("Nlerped quaternion: {:?}", quat),
+///     Err(e) => println!("Error: {:?}", e),
+/// }
+/// ```
+pub fn nlerp(q0: Quaternion, q1: Quaternion, t: f32) -> Result<Quaternion, AttitudeError> {
+    let dot = q0.dot(&q1);
+    if dot < 0.0 {
+        // Shortest path across the quaternion double cover
+        let theta = -f32::acos(dot);
+        let sin_theta = f32::sin(theta);
+        Ok(Quaternion::new(
+            q0.w * f32::cos(theta) + q1.w * f32::sin(theta),
+            q0.x * f32::cos(theta) - q1.x * f32::sin(theta),
+            q0.y * f32::cos(theta) - q1.y * f32::sin(theta),
+            q0.z * f32::cos(theta) + q1.z * f32::sin(theta),
+        ))
+    } else {
+        // Collinear inputs fallback to nlerp
+        Ok(Quaternion::new(
+            q0.w * (1.0 - t) + q1.w * t,
+            q0.x * (1.0 - t) + q1.x * t,
+            q0.y * (1.0 - t) + q1.y * t,
+            q0.z * (1.0 - t) + q1.z * t,
+        ))
