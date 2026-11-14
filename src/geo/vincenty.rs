@@ -31,3 +31,11 @@ fn arc_length(cos2a: f64, sigma: f64, sin_s: f64, cos_s: f64, cos_2sm: f64) -> f
                     - kb / 6.0 * cos_2sm * (-3.0 + 4.0 * sin_s * sin_s) * (-3.0 + 4.0 * c2)));
     B * ka * (sigma - d)
 }
+
+/// One fixed-point update of the longitude difference on the auxiliary sphere.
+fn next_lambda(l: f64, t: &[f64; 6]) -> f64 {
+    let [sigma, sin_s, cos_s, sin_a, cos2a, cos_2sm] = *t;
+    let c = F / 16.0 * cos2a * (4.0 + F * (4.0 - 3.0 * cos2a));
+    let inner = cos_2sm + c * cos_s * (-1.0 + 2.0 * cos_2sm * cos_2sm);
+    l + (1.0 - c) * F * sin_a * (sigma + c * sin_s * inner)
+}
