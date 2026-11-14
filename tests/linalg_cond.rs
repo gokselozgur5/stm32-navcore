@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::cond::{cond_est_spd, norm_1};
+use stm32_navcore::linalg::cond::{cond_est_spd, norm_1, rcond_est_spd};
 use stm32_navcore::linalg::LinalgError;
 use stm32_navcore::math::Mat;
 
@@ -55,4 +55,15 @@ fn cond_est_1x1_and_2x2_exact() {
     m2.0[0][0] = 2.0;
     m2.0[1][1] = 8.0;
     assert!((cond_est_spd(&m2).unwrap() - 4.0).abs() < 1e-4);
+}
+
+#[test]
+fn rcond_est_spd_matches_reciprocal() {
+    let mut d = Mat::<4, 4>::zeros();
+    d.0[0][0] = 1.0;
+    d.0[1][1] = 2.0;
+    d.0[2][2] = 5.0;
+    d.0[3][3] = 10.0;
+    let r = rcond_est_spd(&d).unwrap();
+    assert!((r - 0.1).abs() < 1e-4);
 }
