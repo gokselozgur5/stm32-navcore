@@ -63,3 +63,15 @@ fn upper_rejects_non_finite_inputs() {
     let m = tri(false);
     assert_eq!(solve_upper(&m, &[1.0, f32::NAN, 1.0, 1.0]), Err(LinalgError::NonFinite));
 }
+
+#[test]
+fn triangular_solves_small_dimensions() {
+    let l1 = Mat([[3.0f32]]);
+    assert_eq!(solve_lower(&l1, &[6.0]), Ok([2.0]));
+    let u1 = Mat([[4.0f32]]);
+    assert_eq!(solve_upper(&u1, &[12.0]), Ok([3.0]));
+    let l2 = Mat([[2.0, 0.0], [1.0, 3.0]]);
+    assert_eq!(solve_lower(&l2, &[4.0, 8.0]), Ok([2.0, 2.0]));
+    let u2 = Mat([[2.0, 1.0], [0.0, 3.0]]);
+    assert_eq!(solve_upper(&u2, &[5.0, 6.0]), Ok([1.5, 2.0]));
+}
