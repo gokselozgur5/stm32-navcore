@@ -21,3 +21,16 @@ fn cond_est_diagonal_matches_exact() {
     let exact = 10.0f32;
     assert!((est - exact).abs() < 1e-4);
 }
+
+#[test]
+fn cond_est_hilbert_within_factor_of_three() {
+    let mut h = Mat::<4, 4>::zeros();
+    for i in 0..4 {
+        for j in 0..4 {
+            h.0[i][j] = 1.0 / ((i + j + 1) as f32);
+        }
+    }
+    let est = cond_est_spd(&h).unwrap();
+    let exact = 28375.0f32;
+    assert!(est > exact / 3.0 && est < exact * 3.0);
+}
