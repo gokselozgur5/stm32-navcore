@@ -53,3 +53,13 @@ fn ud_det_reproduces_determinant() {
     let det = ud_det(&d);
     assert!((det - 7.0).abs() < 1e-5);
 }
+
+#[test]
+fn ud_log_det_matches_log_of_det() {
+    use stm32_navcore::linalg::ud::{ud_det, ud_log_det};
+    let p = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
+    let (_u, d) = ud_factor(&p).unwrap();
+    let log_det = ud_log_det(&d);
+    let expected = libm::logf(ud_det(&d));
+    assert!((log_det - expected).abs() < 1e-4);
+}
