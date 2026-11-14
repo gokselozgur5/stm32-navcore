@@ -1,6 +1,7 @@
 //! Fixed-size linear algebra on `Mat<R, C>`.
 
 pub mod cholesky;
+pub mod cond;
 pub mod ldl;
 pub mod lstsq;
 pub mod norms;
