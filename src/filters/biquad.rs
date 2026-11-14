@@ -53,3 +53,13 @@ impl BiquadFilter {
         y
     }
 }
+
+impl BiquadFilter {
+    pub fn coefficients(&self) -> &BiquadCoefficients {
+        &self.coeffs
+    }
+
+    pub fn set_coefficients(&mut self, coeffs: BiquadCoefficients) {
+        self.coeffs = coeffs;
+    }
+}
