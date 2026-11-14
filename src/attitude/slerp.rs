@@ -15,3 +15,21 @@ fn is_valid_unit(q: &Quaternion) -> bool {
 fn dot(a: &Quaternion, b: &Quaternion) -> f32 {
     a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z
 }
+
+/// Normalized linear interpolation between two attitude quaternions along the shortest path.
+pub fn attitude_nlerp(q0: &Quaternion, q1: &Quaternion, t: f32) -> Result<Quaternion, AttitudeError> {
+    if !t.is_finite() || !(0.0..=1.0).contains(&t) {
+        return Err(AttitudeError::InvalidInput);
+    }
+    if !is_valid_unit(q0) || !is_valid_unit(q1) {
+        return Err(AttitudeError::InvalidInput);
+    }
+    let s = if dot(q0, q1) < 0.0 { -1.0 } else { 1.0 };
+    let q = Quaternion::new(
+        q0.w + t * (s * q1.w - q0.w),
+        q0.x + t * (s * q1.x - q0.x),
+        q0.y + t * (s * q1.y - q0.y),
+        q0.z + t * (s * q1.z - q0.z),
+    );
+    q.normalize().map_err(|_| AttitudeError::InvalidInput)
+}
