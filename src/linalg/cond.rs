@@ -59,3 +59,18 @@ fn step_est<const N: usize>(l: &Mat<N, N>, x: &mut [f32; N]) -> Result<f32, Lina
     }
     Ok(gamma)
 }
+
+/// Estimates condition number $\kappa_1(A) = \|A\|_1 \|A^{-1}\|_1$ for SPD matrix `a`.
+pub fn cond_est_spd<const N: usize>(a: &Mat<N, N>) -> Result<f32, LinalgError> {
+    if N == 0 {
+        return Ok(1.0);
+    }
+    let norm_a = norm_1(a);
+    let l = cholesky(a)?;
+    let mut x = [1.0f32 / (N as f32); N];
+    let mut gamma = 0.0f32;
+    for _ in 0..5 {
+        gamma = step_est(&l, &mut x)?;
+    }
+    Ok(norm_a * gamma)
+}
