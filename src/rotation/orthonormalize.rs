@@ -46,3 +46,21 @@ fn dcm(vec: &Vec<f32>) -> Mat3 {
 /// # Arguments
 ///
 /// * `dcm` - A 3x3 DCM matrix.
+///
+/// # Returns
+///
+/// * The restored DCM matrix.
+fn restore_orthonormality(dcm: &Mat3) -> Mat3 {
+    let mut dcm = dcm.clone();
+    for i in 0..3 {
+        for j in 0..3 {
+            if i != j {
+                let cross = skew_matrix(&vec![dcm[i][j], dcm[j][i], 0.0]);
+                let dot = cross.dot(vec![dcm[i][j], dcm[j][i], 0.0]);
+                let scale = (dot + 1e-6).sqrt();
+                dcm[(i, j)] *= scale;
+            }
+        }
+    }
+    dcm
+}
