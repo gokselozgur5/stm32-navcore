@@ -10,3 +10,26 @@ fn symmetric_matrix<const N: usize>() -> Mat<N, N> {
     }
     b.add(&b.transpose())
 }
+
+fn max_eigen_residual<const N: usize>(a: &Mat<N, N>) -> f32 {
+    let res = jacobi_eig(a).expect("jacobi_eig failed");
+    let mut max_err = 0.0f32;
+    for k in 0..N {
+        let v_k = [(); N].map(|_| 0.0f32);
+        let mut v_k = v_k;
+        for r in 0..N {
+            v_k[r] = res.vectors.0[r][k];
+        }
+        for r in 0..N {
+            let mut av_r = 0.0f32;
+            for c in 0..N {
+                av_r += a.0[r][c] * v_k[c];
+            }
+            let diff = (av_r - res.values[k] * v_k[r]).abs();
+            if diff > max_err {
+                max_err = diff;
+            }
+        }
+    }
+    max_err
+}
