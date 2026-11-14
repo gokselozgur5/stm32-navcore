@@ -46,3 +46,24 @@ impl Ud {
         for u in &mut self.u {
             *u += scalar;
         }
+
+        for d in &mut self.d {
+            *d += scalar;
+        }
+    }
+
+    /// Divides all elements of the `Ud` by a scalar.
+    pub fn div_scalar(&mut self, scalar: f32) {
+        if scalar != 0.0 {
+            for u in &mut self.u {
+                *u /= scalar;
+            }
+
+            for d in &mut self.d {
+                *d /= scalar;
+            }
+        } else {
+            panic!("Cannot divide by zero");
+        }
+    }
+}
