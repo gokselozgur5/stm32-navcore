@@ -51,3 +51,9 @@ impl<const N: usize> MedianFilter<N> {
         sorted[len / 2]
     }
 }
+
+impl<const N: usize> Default for MedianFilter<N> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
