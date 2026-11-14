@@ -68,3 +68,8 @@ pub fn all_finite<const R: usize, const C: usize>(a: &Mat<R, C>) -> bool {
     }
     true
 }
+
+/// Returns true if all entries in matrix `a` are finite (alias for `all_finite`).
+pub fn is_finite<const R: usize, const C: usize>(a: &Mat<R, C>) -> bool {
+    all_finite(a)
+}
