@@ -66,6 +66,17 @@ pub fn back_substitute<const M: usize, const N: usize>(
     Ok(x)
 }
 
+#[allow(clippy::needless_range_loop)]
+fn project_qt_b<const M: usize, const N: usize>(q: &Mat<M, M>, b: &[f32; M]) -> [f32; N] {
+    let mut c = [0.0f32; N];
+    for j in 0..N {
+        for i in 0..M {
+            c[j] += q.0[i][j] * b[i];
+        }
+    }
+    c
+}
+
 /// Minimizes `|A x - b|` for a full column rank `A` with `M >= N`.
 ///
 /// Fails with `ZeroPivot` when `M < N` or `A` is rank deficient.
