@@ -27,4 +27,19 @@ impl NotchFilter {
         let coeffs = BiquadCoefficients { b0, b1, b2: b0, a1: b1, a2 };
         Ok(Self { biquad: BiquadFilter::new(coeffs) })
     }
+
+    /// Feeds one sample and returns the filtered output.
+    pub fn update(&mut self, sample: f32) -> f32 {
+        self.biquad.update(sample)
+    }
+
+    /// Resets internal filter states to zero.
+    pub fn reset(&mut self) {
+        self.biquad.reset();
+    }
+
+    /// Returns reference to the underlying biquad filter section.
+    pub const fn biquad(&self) -> &BiquadFilter {
+        &self.biquad
+    }
 }
