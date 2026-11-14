@@ -51,6 +51,10 @@ pub fn ud_det<const N: usize>(d: &[f32; N]) -> f32 {
 }
 
 /// Computes log determinant of covariance matrix from its diagonal factor D.
-pub fn ud_log_det<const N: usize>(_d: &[f32; N]) -> f32 {
-    0.0
+pub fn ud_log_det<const N: usize>(d: &[f32; N]) -> f32 {
+    let mut sum = 0.0f32;
+    for &val in d {
+        sum += libm::logf(val);
+    }
+    sum
 }
