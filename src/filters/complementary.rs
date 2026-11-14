@@ -36,3 +36,27 @@ impl ComplementaryFilter {
         })
     }
 }
+
+impl ComplementaryFilter {
+    /// Return the filter coefficient alpha.
+    pub const fn alpha(&self) -> f32 {
+        self.alpha
+    }
+
+    /// Return current estimated pitch angle in radians.
+    pub const fn pitch(&self) -> f32 {
+        self.pitch
+    }
+
+    /// Return current estimated roll angle in radians.
+    pub const fn roll(&self) -> f32 {
+        self.roll
+    }
+
+    /// Reset internal state to zero.
+    pub fn reset(&mut self) {
+        self.pitch = 0.0;
+        self.roll = 0.0;
+        self.initialized = false;
+    }
+}
