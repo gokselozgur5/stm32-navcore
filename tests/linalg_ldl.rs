@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::ldl::{ldl, ldl_reconstruct};
+use stm32_navcore::linalg::ldl::{ldl, ldl_det, ldl_reconstruct};
 use stm32_navcore::math::Mat;
 
 fn spd<const N: usize>() -> Mat<N, N> {
@@ -56,4 +56,12 @@ fn ldl_reconstruct_reproduces_spd() {
     let (l, d) = ldl(&a).unwrap();
     let recon = ldl_reconstruct(&l, &d);
     assert!(max_diff(&recon, &a) < 1e-5);
+}
+
+#[test]
+fn ldl_det_computes_spd_determinant() {
+    let a = spd::<3>();
+    let (_, d) = ldl(&a).unwrap();
+    let det = ldl_det(&d);
+    assert!(det > 1.0);
 }
