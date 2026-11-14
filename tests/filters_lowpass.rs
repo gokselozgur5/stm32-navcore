@@ -9,3 +9,14 @@ fn test_rejection_of_invalid_cutoff_and_dt() {
     assert!(LowPassFilter::new(10.0, 0.0).is_err());
     assert!(LowPassFilter::new(10.0, -0.01).is_err());
 }
+
+#[test]
+fn test_filter_step_response_and_convergence() {
+    let mut f = LowPassFilter::new(10.0, 0.01).expect("valid parameters");
+    assert_eq!(f.update(100.0), 100.0);
+    let mut val = 100.0;
+    for _ in 0..100 {
+        val = f.update(0.0);
+    }
+    assert!(val < 1.0);
+}
