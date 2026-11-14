@@ -103,3 +103,15 @@ fn ldl_reads_only_lower_triangle() {
     assert_eq!(l_clean, l_pert);
     assert_eq!(d_clean, d_pert);
 }
+
+#[test]
+fn ldl_reproduces_spd_1x1_and_2x2() {
+    let a1 = Mat::<1, 1>([[4.0]]);
+    let (l1, d1) = ldl(&a1).unwrap();
+    assert_eq!(l1.0[0][0], 1.0);
+    assert_eq!(d1[0], 4.0);
+
+    let a2 = Mat::<2, 2>([[4.0, 1.0], [1.0, 3.0]]);
+    let (l2, d2) = ldl(&a2).unwrap();
+    assert!(max_diff(&ldl_reconstruct(&l2, &d2), &a2) < 1e-5);
+}
