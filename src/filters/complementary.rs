@@ -30,3 +30,19 @@ impl ComplementaryFilter {
         Ok(Self { alpha, dt, roll: 0.0, pitch: 0.0 })
     }
 }
+
+    /// Returns current roll angle estimate in radians.
+    pub fn roll(&self) -> f32 {
+        self.roll
+    }
+
+    /// Returns current pitch angle estimate in radians.
+    pub fn pitch(&self) -> f32 {
+        self.pitch
+    }
+
+    /// Resets filter state to zero.
+    pub fn reset(&mut self) {
+        self.roll = 0.0;
+        self.pitch = 0.0;
+    }
