@@ -7,6 +7,9 @@ use crate::math::Mat;
 
 /// Solves `A x = b` for SPD `A` using `A = L L^T`.
 pub fn spd_solve<const N: usize>(a: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N], LinalgError> {
+    if !b.iter().all(|v| v.is_finite()) {
+        return Err(LinalgError::NonFinite);
+    }
     let l = cholesky(a)?;
     let y = solve_lower(&l, b)?;
     solve_upper(&l.transpose(), &y)
