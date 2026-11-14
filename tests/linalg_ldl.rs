@@ -91,3 +91,15 @@ fn ldl_solve_reproduces_solution() {
         assert!((ax[i] - b[i]).abs() < 1e-4);
     }
 }
+
+#[test]
+fn ldl_reads_only_lower_triangle() {
+    let mut a = spd::<3>();
+    let (l_clean, d_clean) = ldl(&a).unwrap();
+    a.0[0][1] = 999.0;
+    a.0[0][2] = -42.0;
+    a.0[1][2] = 123.0;
+    let (l_pert, d_pert) = ldl(&a).unwrap();
+    assert_eq!(l_clean, l_pert);
+    assert_eq!(d_clean, d_pert);
+}
