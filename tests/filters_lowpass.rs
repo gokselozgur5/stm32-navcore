@@ -22,3 +22,8 @@ impl LowPassFilter {
 
     /// Process the input signal.
     pub fn process(&mut self, input: f32) -> f32 {
+        let output = self.a * input + self.b * self.last_output;
+        self.last_output = output;
+        output
+    }
+}
