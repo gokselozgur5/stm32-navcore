@@ -46,3 +46,15 @@ fn underdetermined_is_rejected() {
     let a = Mat::<1, 2>([[1.0, 2.0]]);
     assert_eq!(lstsq(&a, &[1.0]), Err(LinalgError::ZeroPivot));
 }
+
+#[test]
+fn collinear_columns_rejected() {
+    let a = Mat::<4, 3>([
+        [1.1, 2.2, 1.0],
+        [2.3, 4.6, 0.0],
+        [3.7, 7.4, 1.0],
+        [4.9, 9.8, 0.0],
+    ]);
+    let b = [1.0, 2.0, 3.0, 4.0];
+    assert_eq!(lstsq(&a, &b), Err(LinalgError::ZeroPivot));
+}
