@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::ldl::{ldl, ldl_det, ldl_log_det, ldl_reconstruct};
+use stm32_navcore::linalg::ldl::{ldl, ldl_det, ldl_log_det, ldl_reconstruct, ldl_solve};
 use stm32_navcore::math::Mat;
 
 fn spd<const N: usize>() -> Mat<N, N> {
@@ -73,4 +73,21 @@ fn ldl_log_det_matches_log_of_det() {
     let log_det = ldl_log_det(&d);
     let expected = libm::logf(ldl_det(&d));
     assert!((log_det - expected).abs() < 1e-4);
+}
+
+#[test]
+fn ldl_solve_reproduces_solution() {
+    let a = spd::<3>();
+    let (l, d) = ldl(&a).unwrap();
+    let b = [1.0f32, -2.0, 3.0];
+    let x = ldl_solve(&l, &d, &b).unwrap();
+    let mut ax = [0.0f32; 3];
+    for i in 0..3 {
+        for j in 0..3 {
+            ax[i] += a.0[i][j] * x[j];
+        }
+    }
+    for i in 0..3 {
+        assert!((ax[i] - b[i]).abs() < 1e-4);
+    }
 }
