@@ -24,3 +24,19 @@ fn validate_coords(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> Result<(), Geo
     }
     Ok(())
 }
+
+fn great_circle_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
+    let dlat = lat2 - lat1;
+    let dlon = lon2 - lon1;
+    let s_lat = libm::sin(dlat * 0.5);
+    let s_lon = libm::sin(dlon * 0.5);
+    let a = s_lat * s_lat + libm::cos(lat1) * libm::cos(lat2) * s_lon * s_lon;
+    let clamped_a = if a < 0.0 {
+        0.0
+    } else if a > 1.0 {
+        1.0
+    } else {
+        a
+    };
+    2.0 * EARTH_RADIUS_M * libm::atan2(libm::sqrt(clamped_a), libm::sqrt(1.0 - clamped_a))
+}
