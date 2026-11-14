@@ -109,12 +109,9 @@ pub fn lstsq<const M: usize, const N: usize>(
     if M < N {
         return Err(LinalgError::ZeroPivot);
     }
-    if !a.0.iter().flatten().chain(b.iter()).all(|v| v.is_finite()) {
+    if !b.iter().all(|v| v.is_finite()) {
         return Err(LinalgError::NonFinite);
     }
-    let (mut r, mut y) = (a.0, *b);
-    for k in 0..N {
-        householder_step(&mut r, &mut y, k)?;
-    }
-    back_substitute(&r, &y)
+    let (q, r) = super::qr::qr(a)?;
+    solve_lstsq_qr(&q, &r, b)
 }
