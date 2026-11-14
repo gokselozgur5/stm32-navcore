@@ -41,3 +41,13 @@ fn test_complementary_filter_fusion() {
     let (pitch, _) = filter.update(1.0, 0.0, 0.0, 0.0, 0.1);
     assert!((pitch - 0.09).abs() < 1e-5);
 }
+
+#[test]
+fn test_complementary_filter_reset() {
+    let mut filter = ComplementaryFilter::new(0.9, 0.1).unwrap();
+    filter.update(0.0, 0.0, 0.5, 0.5, 0.1);
+    assert!(filter.pitch() > 0.0);
+    filter.reset();
+    assert_eq!(filter.pitch(), 0.0);
+    assert_eq!(filter.roll(), 0.0);
+}
