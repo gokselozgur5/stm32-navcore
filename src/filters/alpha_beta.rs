@@ -10,3 +10,14 @@ pub enum AlphaBetaError {
     /// Beta velocity factor must be non-negative and satisfy stability bounds.
     InvalidBeta,
 }
+
+/// Alpha-beta tracker for scalar position and velocity tracking.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct AlphaBetaFilter {
+    alpha: f32,
+    beta: f32,
+    dt: f32,
+    x: f32,
+    v: f32,
+    initialized: bool,
+}
