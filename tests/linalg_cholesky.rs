@@ -27,6 +27,12 @@ fn llt_reproduces_spd_3x3() {
 }
 
 #[test]
+fn llt_reproduces_spd_1x1_and_2x2() {
+    assert!(residual::<1>() < 1e-5);
+    assert!(residual::<2>() < 1e-5);
+}
+
+#[test]
 fn llt_reproduces_spd_6x6() {
     assert!(residual::<6>() < 1e-5);
 }
