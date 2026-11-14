@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::ldl::ldl;
+use stm32_navcore::linalg::ldl::{ldl, ldl_reconstruct};
 use stm32_navcore::math::Mat;
 
 fn spd<const N: usize>() -> Mat<N, N> {
@@ -48,4 +48,12 @@ fn non_positive_pivot_is_reported() {
     assert_eq!(ldl(&a), Err(LinalgError::NotPositiveDefinite));
     a.0[1][1] = f32::NAN;
     assert_eq!(ldl(&a), Err(LinalgError::NonFinite));
+}
+
+#[test]
+fn ldl_reconstruct_reproduces_spd() {
+    let a = spd::<4>();
+    let (l, d) = ldl(&a).unwrap();
+    let recon = ldl_reconstruct(&l, &d);
+    assert!(max_diff(&recon, &a) < 1e-5);
 }
