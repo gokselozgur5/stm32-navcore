@@ -58,3 +58,13 @@ fn cholesky_det_reproduces_spd_determinant() {
     let det = cholesky_det(&l);
     assert!(det > 1.0);
 }
+
+#[test]
+fn cholesky_log_det_matches_log_of_det() {
+    use stm32_navcore::linalg::cholesky::{cholesky_det, cholesky_log_det};
+    let a = spd::<3>();
+    let l = cholesky(&a).unwrap();
+    let log_det = cholesky_log_det(&l);
+    let expected = libm::logf(cholesky_det(&l));
+    assert!((log_det - expected).abs() < 1e-4);
+}
