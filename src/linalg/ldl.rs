@@ -49,3 +49,12 @@ pub fn ldl_det<const N: usize>(d: &[f32; N]) -> f32 {
     }
     prod
 }
+
+/// Computes log determinant of matrix A from its LDL^T diagonal factor D.
+pub fn ldl_log_det<const N: usize>(d: &[f32; N]) -> f32 {
+    let mut sum = 0.0f32;
+    for di in d {
+        sum += libm::logf(*di);
+    }
+    sum
+}
