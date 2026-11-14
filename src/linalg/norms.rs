@@ -28,6 +28,21 @@ pub fn max_abs_norm<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
     max_val
 }
 
+/// Returns the infinity norm of matrix `a`: `max_i(sum_j(|a_ij|))`.
+pub fn infinity_norm<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
+    let mut max_row = 0.0f32;
+    for r in 0..R {
+        let mut row_sum = 0.0f32;
+        for c in 0..C {
+            row_sum += libm::fabsf(a.0[r][c]);
+        }
+        if row_sum > max_row {
+            max_row = row_sum;
+        }
+    }
+    max_row
+}
+
 /// Returns the trace of square matrix `a`: `sum(a_ii)`.
 pub fn trace<const N: usize>(a: &Mat<N, N>) -> f32 {
     let mut tr = 0.0;
