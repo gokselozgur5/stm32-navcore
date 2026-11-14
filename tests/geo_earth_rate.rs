@@ -23,3 +23,19 @@ fn transport_rate_matches_v_over_r() {
     assert!((rate.east - (-100.0 / r_m)).abs() < 1e-12);
     assert!(rate.down.abs() < 1e-12);
 }
+
+use stm32_navcore::geo::GeoError;
+
+#[test]
+fn earth_rate_and_transport_rate_reject_non_finite_and_oob() {
+    assert_eq!(earth_rotation_rate(f64::NAN), Err(GeoError::NonFinite));
+    assert_eq!(earth_rotation_rate(2.0), Err(GeoError::InvalidLatitude));
+    assert_eq!(
+        transport_rate(0.0, f64::NAN, 0.0, 0.0),
+        Err(GeoError::NonFinite)
+    );
+    assert_eq!(
+        transport_rate(f64::NAN, 0.0, 0.0, 0.0),
+        Err(GeoError::NonFinite)
+    );
+}
