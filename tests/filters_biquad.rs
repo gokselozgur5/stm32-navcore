@@ -35,3 +35,23 @@ fn test_biquad_cutoff_attenuation() {
     let gain_db = 20.0 * libm::log10f(peak);
     assert!((gain_db - (-3.01)).abs() < 0.2);
 }
+
+#[test]
+fn test_biquad_nyquist_attenuation() {
+    let dt = 0.001f32;
+    let fc = 10.0f32;
+    let q = core::f32::consts::FRAC_1_SQRT_2;
+    let coeffs = BiquadCoefficients::lowpass_rbj(fc, dt, q);
+    let mut filter = BiquadFilter::new(coeffs);
+
+    let mut peak = 0.0f32;
+    for i in 0..2000 {
+        let x = if i % 2 == 0 { 1.0f32 } else { -1.0f32 };
+        let y = filter.update(x);
+        if i >= 1000 && y.abs() > peak {
+            peak = y.abs();
+        }
+    }
+    let gain_db = 20.0 * libm::log10f(peak);
+    assert!(gain_db < -40.0);
+}
