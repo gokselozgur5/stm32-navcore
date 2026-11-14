@@ -39,3 +39,14 @@ fn next_lambda(l: f64, t: &[f64; 6]) -> f64 {
     let inner = cos_2sm + c * cos_s * (-1.0 + 2.0 * cos_2sm * cos_2sm);
     l + (1.0 - c) * F * sin_a * (sigma + c * sin_s * inner)
 }
+
+/// Builds the result from the converged auxiliary-sphere terms.
+fn finish(u: [f64; 4], sl: f64, cl: f64, x: f64, t: &[f64; 6]) -> Inverse {
+    let [su1, cu1, su2, cu2] = u;
+    let [sigma, sin_s, cos_s, _, cos2a, cos_2sm] = *t;
+    Inverse {
+        distance_m: arc_length(cos2a, sigma, sin_s, cos_s, cos_2sm),
+        azimuth1: libm::atan2(cu2 * sl, x),
+        azimuth2: libm::atan2(cu1 * sl, -su1 * cu2 + cu1 * su2 * cl),
+    }
+}
