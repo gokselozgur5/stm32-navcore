@@ -30,3 +30,17 @@ fn non_positive_pivot_is_reported() {
     p.0[4][4] = -1.0;
     assert!(ud_factor(&p).is_err());
 }
+
+#[test]
+fn ud_reproduces_spd_1x1_and_2x2() {
+    let p1 = Mat::<1, 1>([[4.0]]);
+    let (u1, d1) = ud_factor(&p1).unwrap();
+    assert!((ud_reconstruct(&u1, &d1).0[0][0] - 4.0).abs() < 1e-6);
+
+    let p2 = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
+    let (u2, d2) = ud_factor(&p2).unwrap();
+    let r2 = ud_reconstruct(&u2, &d2);
+    assert!((r2.0[0][0] - 4.0).abs() < 1e-5);
+    assert!((r2.0[0][1] - 1.0).abs() < 1e-5);
+    assert!((r2.0[1][1] - 2.0).abs() < 1e-5);
+}
