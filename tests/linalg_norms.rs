@@ -1,5 +1,5 @@
 use stm32_navcore::linalg::norms::{
-    all_finite, frobenius_norm, infinity_norm, max_abs_norm, norm_inf, trace,
+    all_finite, frobenius_norm, infinity_norm, is_finite, max_abs_norm, norm_inf, trace,
 };
 use stm32_navcore::math::Mat;
 
@@ -56,4 +56,16 @@ fn all_finite_detects_nan_and_inf() {
 
     m.0[0][1] = f32::NEG_INFINITY;
     assert!(!all_finite(&m));
+}
+
+#[test]
+fn is_finite_detects_nan_and_inf() {
+    let mut m = Mat::<2, 2>([[1.0, 2.0], [3.0, 4.0]]);
+    assert!(is_finite(&m));
+
+    m.0[1][0] = f32::NAN;
+    assert!(!is_finite(&m));
+
+    m.0[1][0] = f32::INFINITY;
+    assert!(!is_finite(&m));
 }
