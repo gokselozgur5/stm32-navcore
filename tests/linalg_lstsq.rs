@@ -28,3 +28,21 @@ fn noisy_fit_satisfies_normal_equations() {
         assert!(g.abs() < 1e-4);
     }
 }
+
+#[test]
+fn rank_deficient_is_rejected() {
+    let a = Mat::<3, 2>([[1.0, 2.0], [2.0, 4.0], [3.0, 6.0]]);
+    assert_eq!(lstsq(&a, &[1.0, 2.0, 3.0]), Err(LinalgError::ZeroPivot));
+}
+
+#[test]
+fn non_finite_is_rejected() {
+    let a = Mat::<2, 1>([[1.0], [f32::NAN]]);
+    assert_eq!(lstsq(&a, &[1.0, 2.0]), Err(LinalgError::NonFinite));
+}
+
+#[test]
+fn underdetermined_is_rejected() {
+    let a = Mat::<1, 2>([[1.0, 2.0]]);
+    assert_eq!(lstsq(&a, &[1.0]), Err(LinalgError::ZeroPivot));
+}
