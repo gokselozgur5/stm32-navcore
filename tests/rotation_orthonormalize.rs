@@ -44,3 +44,18 @@ fn non_finite_input_is_rejected() {
     d.0 .0[0][0] = f32::NAN;
     assert!(d.orthonormalize().is_err());
 }
+
+#[test]
+fn singular_zero_matrix_is_rejected() {
+    let d = Dcm(Mat::<3, 3>::zeros());
+    assert!(d.orthonormalize().is_err());
+}
+
+#[test]
+fn improper_reflection_is_rejected() {
+    let mut neg_i = Mat::<3, 3>::identity();
+    for i in 0..3 {
+        neg_i.0[i][i] = -1.0;
+    }
+    assert!(Dcm(neg_i).orthonormalize().is_err());
+}
