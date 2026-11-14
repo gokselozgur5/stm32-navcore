@@ -16,3 +16,19 @@ pub fn initial_bearing_rad(lat1_rad: f64, lon1_rad: f64, lat2_rad: f64, lon2_rad
     }
     Ok(brng)
 }
+
+/// Computes the initial great-circle bearing from (lat1, lon1) to (lat2, lon2) in degrees [0.0, 360.0).
+pub fn initial_bearing_deg(lat1_deg: f64, lon1_deg: f64, lat2_deg: f64, lon2_deg: f64) -> Result<f64, GeoError> {
+    if !lat1_deg.is_finite() || !lon1_deg.is_finite() || !lat2_deg.is_finite() || !lon2_deg.is_finite() {
+        return Err(GeoError::NonFinite);
+    }
+    if lat1_deg < -90.0 || lat1_deg > 90.0 || lat2_deg < -90.0 || lat2_deg > 90.0 {
+        return Err(GeoError::InvalidLatitude);
+    }
+    let r1 = lat1_deg * (PI / 180.0);
+    let r2 = lon1_deg * (PI / 180.0);
+    let r3 = lat2_deg * (PI / 180.0);
+    let r4 = lon2_deg * (PI / 180.0);
+    let brng_rad = initial_bearing_rad(r1, r2, r3, r4)?;
+    Ok(brng_rad * (180.0 / PI))
+}
