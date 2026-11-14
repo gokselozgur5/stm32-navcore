@@ -4,6 +4,7 @@ pub mod cholesky;
 pub mod ldl;
 pub mod lstsq;
 pub mod spd;
+pub mod qr;
 pub mod triangular;
 
 /// Failure modes shared by the factorizations and solvers.
