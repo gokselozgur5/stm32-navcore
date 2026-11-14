@@ -69,6 +69,23 @@ fn off_diagonal_norm_sq<const N: usize>(a: &Mat<N, N>) -> f32 {
     sum
 }
 
+/// Computes a single cyclic Jacobi sweep over all pairs `(p, q)`.
+#[allow(clippy::needless_range_loop)]
+fn cyclic_jacobi_sweep<const N: usize>(a: &mut Mat<N, N>, v: &mut Mat<N, N>) {
+    for p in 0..N {
+        for q in (p + 1)..N {
+            let (c, s) = jacobi_rotation(a.0[p][p], a.0[q][q], a.0[p][q]);
+            let app = c * c * a.0[p][p] - 2.0 * s * c * a.0[p][q] + s * s * a.0[q][q];
+            let aqq = s * s * a.0[p][p] + 2.0 * s * c * a.0[p][q] + c * c * a.0[q][q];
+            apply_jacobi_step(a, v, p, q, c, s);
+            a.0[p][p] = app;
+            a.0[q][q] = aqq;
+            a.0[p][q] = 0.0;
+            a.0[q][p] = 0.0;
+        }
+    }
+}
+
 /// Computes eigenvalues and eigenvectors of real symmetric matrix `a`.
 pub fn jacobi_eig<const N: usize>(_a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
     Err(LinalgError::NonFinite)
