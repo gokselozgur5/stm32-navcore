@@ -70,3 +70,12 @@ fn rejects_zero_matrix() {
     let z = Mat::<3, 3>::zeros();
     assert_eq!(ud_factor(&z), Err(LinalgError::NotPositiveDefinite));
 }
+
+#[test]
+fn ud_reads_only_upper_triangle() {
+    let mut p = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
+    let clean = ud_factor(&p).unwrap();
+    p.0[1][0] = 999.0;
+    let perturbed = ud_factor(&p).unwrap();
+    assert_eq!(clean, perturbed);
+}
