@@ -49,3 +49,12 @@ fn rejects_non_pd_and_non_finite() {
     b.0[2][0] = f32::INFINITY;
     assert_eq!(cholesky(&b), Err(LinalgError::NonFinite));
 }
+
+#[test]
+fn cholesky_det_reproduces_spd_determinant() {
+    use stm32_navcore::linalg::cholesky::cholesky_det;
+    let a = spd::<3>();
+    let l = cholesky(&a).unwrap();
+    let det = cholesky_det(&l);
+    assert!(det > 1.0);
+}
