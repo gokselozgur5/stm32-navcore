@@ -30,3 +30,32 @@ impl SlewRateLimiter {
         })
     }
 }
+
+impl SlewRateLimiter {
+    /// Reset internal state to uninitialized.
+    pub fn reset(&mut self) {
+        self.prev_output = 0.0;
+        self.initialized = false;
+    }
+
+    /// Update filter with a new sample and bound output step change.
+    pub fn update(&mut self, sample: f32) -> f32 {
+        if !self.initialized {
+            self.prev_output = sample;
+            self.initialized = true;
+            return sample;
+        }
+        let max_delta = self.max_rate * self.dt;
+        let delta = sample - self.prev_output;
+        let clamped_delta = if delta > max_delta {
+            max_delta
+        } else if delta < -max_delta {
+            -max_delta
+        } else {
+            delta
+        };
+        let out = self.prev_output + clamped_delta;
+        self.prev_output = out;
+        out
+    }
+}
