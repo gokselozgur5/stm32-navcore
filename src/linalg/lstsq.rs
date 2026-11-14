@@ -49,3 +49,19 @@ pub fn householder_step<const M: usize, const N: usize>(
     reflect_col(&v, vtv, k, y);
     Ok(())
 }
+
+/// Solves `R x = y` for the leading `N` rows of an upper triangular `R`.
+pub fn back_substitute<const M: usize, const N: usize>(
+    r: &[[f32; N]; M],
+    y: &[f32; M],
+) -> Result<[f32; N], LinalgError> {
+    let mut x = [0.0f32; N];
+    for k in (0..N).rev() {
+        if r[k][k] == 0.0 {
+            return Err(LinalgError::ZeroPivot);
+        }
+        let s: f32 = (k + 1..N).map(|j| r[k][j] * x[j]).sum();
+        x[k] = (y[k] - s) / r[k][k];
+    }
+    Ok(x)
+}
