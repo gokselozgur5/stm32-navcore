@@ -22,3 +22,9 @@ fn test_ud_add_scalar() {
 
     assert_eq!(ud.u[0], 3.0);
     assert_eq!(ud.d[0], 3.0);
+}
+
+#[test]
+fn test_ud_div_scalar() {
+    let mut ud = Ud::new(&[[1.0, 0.5], [0.5, 1.0]]);
+    ud.div_scalar(2
