@@ -84,3 +84,11 @@ pub fn rcond_est_spd<const N: usize>(a: &Mat<N, N>) -> Result<f32, LinalgError> 
         Ok(1.0 / cond)
     }
 }
+
+/// Returns true if matrix `a` is SPD and its condition number estimate <= `max_cond`.
+pub fn is_well_conditioned_spd<const N: usize>(a: &Mat<N, N>, max_cond: f32) -> bool {
+    match cond_est_spd(a) {
+        Ok(cond) => cond <= max_cond && cond.is_finite(),
+        Err(_) => false,
+    }
+}
