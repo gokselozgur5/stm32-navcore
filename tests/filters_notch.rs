@@ -38,3 +38,10 @@ fn octave_tone_passes_within_one_db() {
     let gain_db = 20.0 * libm::log10f(max_amp);
     assert!(gain_db.abs() < 1.0);
 }
+
+#[test]
+fn reject_invalid_sample_interval_before_nyquist() {
+    use stm32_navcore::filters::LowPassError;
+    let err = NotchFilter::new(100.0, -0.001, 2.0).unwrap_err();
+    assert_eq!(err, LowPassError::InvalidSampleInterval);
+}
