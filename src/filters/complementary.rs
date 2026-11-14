@@ -27,7 +27,12 @@ impl ComplementaryFilter {
         if !alpha.is_finite() || alpha <= 0.0 || alpha >= 1.0 {
             return Err(ComplementaryError::InvalidAlpha);
         }
-        Ok(Self { alpha, dt, roll: 0.0, pitch: 0.0 })
+        Ok(Self {
+            alpha,
+            dt,
+            roll: 0.0,
+            pitch: 0.0,
+        })
     }
 
     /// Returns current roll angle estimate in radians.
@@ -47,7 +52,13 @@ impl ComplementaryFilter {
     }
 
     /// Updates orientation using gyro rates (rad/s) and accelerometer angles (rad).
-    pub fn update(&mut self, gyro_roll_rate: f32, gyro_pitch_rate: f32, accel_roll: f32, accel_pitch: f32) {
+    pub fn update(
+        &mut self,
+        gyro_roll_rate: f32,
+        gyro_pitch_rate: f32,
+        accel_roll: f32,
+        accel_pitch: f32,
+    ) {
         let pred_roll = self.roll + gyro_roll_rate * self.dt;
         let pred_pitch = self.pitch + gyro_pitch_rate * self.dt;
         self.roll = self.alpha * pred_roll + (1.0 - self.alpha) * accel_roll;
