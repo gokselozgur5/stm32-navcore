@@ -1,4 +1,5 @@
 use stm32_navcore::linalg::spd::{spd_inverse, spd_solve};
+use stm32_navcore::linalg::LinalgError;
 use stm32_navcore::math::Mat;
 
 fn spd<const N: usize>() -> Mat<N, N> {
@@ -39,4 +40,13 @@ fn inverse_6x6_times_input_is_identity() {
     let a = spd::<6>();
     let prod = a.matmul(&spd_inverse(&a).unwrap());
     assert!(max_diff(&prod, &Mat::<6, 6>::identity()) < 1e-4);
+}
+
+#[test]
+fn solve_rejects_non_finite_vector() {
+    let a = spd::<3>();
+    assert_eq!(
+        spd_solve(&a, &[f32::NAN, 1.0, 1.0]),
+        Err(LinalgError::NonFinite)
+    );
 }
