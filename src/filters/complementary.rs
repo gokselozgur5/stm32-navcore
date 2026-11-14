@@ -8,3 +8,12 @@ pub enum ComplementaryError {
     /// Sample interval dt must be positive and finite.
     InvalidSampleInterval,
 }
+
+/// Two-axis pitch and roll complementary filter.
+#[derive(Debug, Clone, Copy)]
+pub struct ComplementaryFilter {
+    alpha: f32,
+    pitch: f32,
+    roll: f32,
+    initialized: bool,
+}
