@@ -1,5 +1,5 @@
 use stm32_navcore::linalg::cond::{
-    cond_est_spd, is_well_conditioned_spd, norm_1, rcond_est_spd,
+    cond_est_spd, is_invertible_spd, is_well_conditioned_spd, norm_1, rcond_est_spd,
 };
 use stm32_navcore::linalg::LinalgError;
 use stm32_navcore::math::Mat;
@@ -79,4 +79,19 @@ fn is_well_conditioned_spd_checks_threshold() {
     let mut non_pd = Mat::<3, 3>::identity();
     non_pd.0[0][0] = -1.0;
     assert!(!is_well_conditioned_spd(&non_pd, 100.0));
+}
+
+#[test]
+fn is_invertible_spd_checks_tolerance() {
+    let eye = Mat::<3, 3>::identity();
+    assert!(is_invertible_spd(&eye, 1e-4));
+
+    let mut ill = Mat::<4, 4>::zeros();
+    for i in 0..4 {
+        for j in 0..4 {
+            ill.0[i][j] = 1.0 / ((i + j + 1) as f32);
+        }
+    }
+    assert!(!is_invertible_spd(&ill, 1e-3));
+    assert!(is_invertible_spd(&ill, 1e-6));
 }
