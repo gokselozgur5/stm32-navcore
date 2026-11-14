@@ -10,7 +10,7 @@ pub enum ComplementaryError {
 }
 
 /// Two-axis pitch and roll complementary filter.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ComplementaryFilter {
     alpha: f32,
     pitch: f32,
