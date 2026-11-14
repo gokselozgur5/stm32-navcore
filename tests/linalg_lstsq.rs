@@ -16,3 +16,4 @@ fn line_fit_overdetermined() {
     assert!((x[0] - 1.0).abs() < 1e-4 && (x[1] - 2.0).abs() < 1e-4);
 }
 
+
