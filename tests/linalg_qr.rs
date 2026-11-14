@@ -58,3 +58,25 @@ fn givens_identity_and_zero_rotation() {
     assert!((g0.c - 1.0).abs() < 1e-6);
     assert!(g0.s.abs() < 1e-6);
 }
+
+#[test]
+fn qr_fat_matrix_and_zero_subdiagonal() {
+    let mut a = Mat::<3, 5>::zeros();
+    for (i, row) in a.0.iter_mut().enumerate() {
+        for (j, v) in row.iter_mut().enumerate() {
+            *v = (i as f32) * 2.0 + (j as f32) - 3.0;
+        }
+    }
+    let (q, r) = qr(&a).unwrap();
+    let qr_prod = q.matmul(&r);
+    for i in 0..3 {
+        for j in 0..5 {
+            assert!((qr_prod.0[i][j] - a.0[i][j]).abs() < 1e-5);
+        }
+    }
+    for j in 0..5 {
+        for i in (j + 1)..3 {
+            assert_eq!(r.0[i][j], 0.0);
+        }
+    }
+}
