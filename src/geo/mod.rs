@@ -38,3 +38,6 @@ pub mod ned;
 pub use ned::{LtpFrame, Ned};
 pub mod gravity;
 pub use gravity::{normal_gravity, normal_gravity_surface};
+
+pub mod bearing;
+pub use bearing::{initial_bearing_deg, initial_bearing_rad};
