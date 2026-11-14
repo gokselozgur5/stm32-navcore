@@ -9,7 +9,11 @@ pub struct MedianFilter<const N: usize> {
 
 impl<const N: usize> MedianFilter<N> {
     pub const fn new() -> Self {
-        Self { buffer: [0.0; N], count: 0, head: 0 }
+        Self {
+            buffer: [0.0; N],
+            count: 0,
+            head: 0,
+        }
     }
 
     pub fn reset(&mut self) {
@@ -31,7 +35,9 @@ impl<const N: usize> MedianFilter<N> {
     }
 
     pub fn current_median(&self) -> f32 {
-        if self.count == 0 { return 0.0; }
+        if self.count == 0 {
+            return 0.0;
+        }
         let mut sorted = [0.0f32; N];
         let len = self.count;
         sorted[..len].copy_from_slice(&self.buffer[..len]);
