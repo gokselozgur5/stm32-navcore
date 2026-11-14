@@ -50,3 +50,11 @@ fn solve_rejects_non_finite_vector() {
         Err(LinalgError::NonFinite)
     );
 }
+
+#[test]
+fn solve_and_inverse_reject_non_pd() {
+    let a = Mat::<3, 3>::zeros();
+    let b = [1.0, 2.0, 3.0];
+    assert_eq!(spd_solve(&a, &b), Err(LinalgError::NotPositiveDefinite));
+    assert_eq!(spd_inverse(&a), Err(LinalgError::NotPositiveDefinite));
+}
