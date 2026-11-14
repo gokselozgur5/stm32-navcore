@@ -46,3 +46,12 @@ impl ComplementaryFilter {
         self.roll = 0.0;
         self.pitch = 0.0;
     }
+
+    /// Updates orientation using gyro rates (rad/s) and accelerometer angles (rad).
+    pub fn update(&mut self, gyro_roll_rate: f32, gyro_pitch_rate: f32, accel_roll: f32, accel_pitch: f32) {
+        let pred_roll = self.roll + gyro_roll_rate * self.dt;
+        let pred_pitch = self.pitch + gyro_pitch_rate * self.dt;
+        self.roll = self.alpha * pred_roll + (1.0 - self.alpha) * accel_roll;
+        self.pitch = self.alpha * pred_pitch + (1.0 - self.alpha) * accel_pitch;
+    }
+}
