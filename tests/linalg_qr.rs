@@ -45,3 +45,16 @@ fn qr_square_3x3_and_non_finite() {
     bad.0[0][0] = f32::NAN;
     assert_eq!(qr(&bad), Err(LinalgError::NonFinite));
 }
+
+#[test]
+fn givens_identity_and_zero_rotation() {
+    use stm32_navcore::linalg::qr::Givens;
+    let id = Givens::identity();
+    assert_eq!(id.c, 1.0);
+    assert_eq!(id.s, 0.0);
+    assert_eq!(id.r, 0.0);
+    assert!(id.is_identity());
+    let g0 = Givens::compute(5.0, 0.0);
+    assert!((g0.c - 1.0).abs() < 1e-6);
+    assert!(g0.s.abs() < 1e-6);
+}
