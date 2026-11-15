@@ -94,6 +94,16 @@ impl Dcm {
         Self(self.0.matmul(&rhs.0))
     }
 
+    /// Returns a shared reference to the inner matrix.
+    pub fn as_matrix(&self) -> &Mat<3, 3> {
+        &self.0
+    }
+
+    /// Returns a mutable reference to the inner matrix.
+    pub fn as_matrix_mut(&mut self) -> &mut Mat<3, 3> {
+        &mut self.0
+    }
+
     /// Inverse rotation.
     pub fn transpose(&self) -> Self {
         Self(self.0.transpose())
