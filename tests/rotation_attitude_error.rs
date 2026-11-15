@@ -79,3 +79,14 @@ fn rejects_non_finite_and_zero_norm() {
     assert_eq!(attitude_error(&inf_q, &b), Err(MathError::InvalidNorm));
     assert_eq!(attitude_error(&b, &inf_q), Err(MathError::InvalidNorm));
 }
+
+#[test]
+fn unnormalized_inputs_do_not_underflow() {
+    let scale = 2e-5f32;
+    let b = base();
+    let q1 = Quaternion::new(b.w * scale, b.x * scale, b.y * scale, b.z * scale);
+    let q2 = Quaternion::new(b.w * scale, b.x * scale, b.y * scale, b.z * scale);
+    let err = attitude_error(&q1, &q2);
+    assert!(err.is_ok());
+    assert!(err.unwrap().angle < 1e-3);
+}
