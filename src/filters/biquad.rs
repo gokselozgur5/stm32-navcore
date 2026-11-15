@@ -54,6 +54,11 @@ impl BiquadCoefficients {
         let a2 = (1.0 - alpha) / a0;
         Self { b0, b1, b2, a1, a2 }
     }
+
+    /// Checks whether the filter is BIBO stable (|a2| < 1 and |a1| < 1 + a2).
+    pub fn is_stable(&self) -> bool {
+        self.a2.abs() < 1.0 && self.a1.abs() < 1.0 + self.a2
+    }
 }
 
 impl BiquadFilter {
