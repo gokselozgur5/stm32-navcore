@@ -55,3 +55,11 @@ fn attitude_error_vector_matches() {
         assert!((v[i] - expected[i]).abs() < 1e-6);
     }
 }
+
+#[test]
+fn handles_180_degree_rotation() {
+    let q_180 = Quaternion::new(0.0, 0.0, 0.0, 1.0);
+    let e = attitude_error(&Quaternion::IDENTITY, &q_180).unwrap();
+    assert!((e.angle - core::f32::consts::PI).abs() < 1e-5);
+    assert!((e.axis[2].abs() - 1.0).abs() < 1e-5);
+}
