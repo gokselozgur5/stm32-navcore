@@ -35,8 +35,10 @@ impl AttitudeError {
 
 /// Error `conj(a) * b` expressed as an angle and an axis.
 pub fn attitude_error(a: &Quaternion, b: &Quaternion) -> Result<AttitudeError, MathError> {
-    let ca = Quaternion::new(a.w, -a.x, -a.y, -a.z);
-    let mut d = ca.mul(b).normalize()?;
+    let qa = a.normalize()?;
+    let qb = b.normalize()?;
+    let ca = Quaternion::new(qa.w, -qa.x, -qa.y, -qa.z);
+    let mut d = ca.mul(&qb).normalize()?;
     if d.w < 0.0 {
         d = Quaternion::new(-d.w, -d.x, -d.y, -d.z);
     }
