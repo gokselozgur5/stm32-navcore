@@ -1,6 +1,6 @@
 //! Fixed-window median filter for noisy sensor rejection (NC-020).
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct MedianFilter<const N: usize> {
     buffer: [f32; N],
     count: usize,
