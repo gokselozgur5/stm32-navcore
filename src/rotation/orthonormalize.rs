@@ -58,6 +58,9 @@ impl Dcm {
 
     /// Restores orthogonality via Gram-Schmidt projection and cross-product.
     pub fn orthonormalize_gram_schmidt(&self) -> Result<Dcm, RotationError> {
+        if self.det() <= 0.0 {
+            return Err(RotationError::NotOrthonormal);
+        }
         let (r0, r1) = (self.0 .0[0], self.0 .0[1]);
         let nx = vec3_norm(r0);
         if nx < 1e-6 {
