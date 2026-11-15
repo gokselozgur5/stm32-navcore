@@ -91,4 +91,9 @@ impl BiquadFilter {
     pub fn set_coefficients(&mut self, coeffs: BiquadCoefficients) {
         self.coeffs = coeffs;
     }
+
+    /// Returns the internal filter delay states (s1, s2).
+    pub const fn state(&self) -> (f32, f32) {
+        (self.s1, self.s2)
+    }
 }
