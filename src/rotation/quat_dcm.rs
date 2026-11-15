@@ -75,3 +75,20 @@ impl Dcm {
         Ok(self.to_quaternion())
     }
 }
+
+impl Quaternion {
+    /// Converts a unit quaternion to a direction cosine matrix.
+    pub fn to_dcm(&self) -> Result<Dcm, MathError> {
+        Dcm::from_quaternion(self)
+    }
+
+    /// Converts a direction cosine matrix to a unit quaternion.
+    pub fn from_dcm(dcm: &Dcm) -> Self {
+        dcm.to_quaternion()
+    }
+
+    /// Converts a direction cosine matrix to a unit quaternion with validation.
+    pub fn try_from_dcm(dcm: &Dcm) -> Result<Self, RotationError> {
+        dcm.try_to_quaternion()
+    }
+}
