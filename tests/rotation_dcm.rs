@@ -78,3 +78,17 @@ fn elementary_axis_rotations_are_orthonormal() {
     assert!((v_rot[1] - 0.3f32.cos()).abs() < 1e-6);
     assert!((v_rot[2] - 0.3f32.sin()).abs() < 1e-6);
 }
+
+#[test]
+fn from_euler_zyx_composes_intrinsic_rotations() {
+    let dcm = Dcm::from_euler_zyx(0.1, 0.2, 0.3);
+    assert!(dcm.is_orthonormal());
+    let expected = Dcm::from_rot_z(0.3)
+        .mul(&Dcm::from_rot_y(0.2))
+        .mul(&Dcm::from_rot_x(0.1));
+    for (row_a, row_b) in dcm.0 .0.iter().zip(expected.0 .0.iter()) {
+        for (&val_a, &val_b) in row_a.iter().zip(row_b.iter()) {
+            assert!((val_a - val_b).abs() < 1e-6);
+        }
+    }
+}
