@@ -119,3 +119,18 @@ fn small_angle_rotations_round_trip() {
         assert!(roundtrip(q) < 1e-6);
     }
 }
+
+#[test]
+fn non_finite_and_degenerate_inputs_rejected() {
+    use stm32_navcore::math::{Mat, MathError};
+    use stm32_navcore::rotation::RotationError;
+    let nan_q = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
+    assert_eq!(Dcm::from_quaternion(&nan_q), Err(MathError::InvalidNorm));
+    let zero_q = Quaternion::new(0.0, 0.0, 0.0, 0.0);
+    assert_eq!(Dcm::from_quaternion(&zero_q), Err(MathError::InvalidNorm));
+    let nan_dcm = Dcm(Mat([[f32::NAN; 3]; 3]));
+    assert_eq!(
+        nan_dcm.try_to_quaternion(),
+        Err(RotationError::NotOrthonormal)
+    );
+}
