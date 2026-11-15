@@ -45,3 +45,22 @@ fn test_step_response_at_one_time_constant() {
     let expected = 0.632_f32;
     assert!((out - expected).abs() < 0.02);
 }
+
+#[test]
+fn test_filter_state_tracking_and_error_variants() {
+    use stm32_navcore::filters::LowPassError;
+    let mut f = LowPassFilter::new(10.0, 0.01).unwrap();
+    assert_eq!(f.state(), None);
+    assert_eq!(f.update(42.0), 42.0);
+    assert_eq!(f.state(), Some(42.0));
+    f.reset();
+    assert_eq!(f.state(), None);
+    assert_eq!(
+        LowPassFilter::new(f32::NAN, 0.01),
+        Err(LowPassError::InvalidCutoffFrequency)
+    );
+    assert_eq!(
+        LowPassFilter::new(10.0, f32::NAN),
+        Err(LowPassError::InvalidSampleInterval)
+    );
+}
