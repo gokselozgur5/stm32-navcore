@@ -79,3 +79,17 @@ fn notch_preserves_dc_unity_gain() {
     }
     assert!((out - 1.0).abs() < 1e-4);
 }
+
+#[test]
+fn reject_invalid_frequency_in_retune() {
+    use stm32_navcore::filters::LowPassError;
+    let mut notch = NotchFilter::new(100.0, 0.001, 2.0).unwrap();
+    assert_eq!(
+        notch.set_frequency(-10.0, 0.001, 2.0).unwrap_err(),
+        LowPassError::InvalidCutoffFrequency
+    );
+    assert_eq!(
+        notch.set_frequency(600.0, 0.001, 2.0).unwrap_err(),
+        LowPassError::InvalidCutoffFrequency
+    );
+}
