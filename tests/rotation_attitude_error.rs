@@ -1,5 +1,5 @@
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::attitude_error::attitude_error;
+use stm32_navcore::rotation::attitude_error::{attitude_error, attitude_error_vector};
 use stm32_navcore::rotation::so3_exp::so3_exp;
 
 fn base() -> Quaternion {
@@ -42,4 +42,16 @@ fn rotation_vector_and_degree_methods() {
     assert!(rvec[2].abs() < 1e-5);
     let deg = e.angle_deg();
     assert!((deg - 0.1 * (180.0 / core::f32::consts::PI)).abs() < 1e-3);
+}
+
+#[test]
+fn attitude_error_vector_matches() {
+    let delta = so3_exp([0.2, -0.1, 0.4]);
+    let target = base().mul(&delta);
+    let v = attitude_error_vector(&base(), &target).unwrap();
+    let e = attitude_error(&base(), &target).unwrap();
+    let expected = e.rotation_vector();
+    for i in 0..3 {
+        assert!((v[i] - expected[i]).abs() < 1e-6);
+    }
 }
