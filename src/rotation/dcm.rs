@@ -73,4 +73,24 @@ impl Dcm {
     pub fn transpose(&self) -> Self {
         Self(self.0.transpose())
     }
+
+    /// Rotates a 3D vector by this DCM: `v' = R * v`.
+    pub fn rotate_vec(&self, v: [f32; 3]) -> [f32; 3] {
+        let m = &self.0 .0;
+        [
+            m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2],
+            m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
+            m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2],
+        ]
+    }
+
+    /// Rotates a 3D vector by the transpose rotation: `v' = R^T * v`.
+    pub fn rotate_transposed(&self, v: [f32; 3]) -> [f32; 3] {
+        let m = &self.0 .0;
+        [
+            m[0][0] * v[0] + m[1][0] * v[1] + m[2][0] * v[2],
+            m[0][1] * v[0] + m[1][1] * v[1] + m[2][1] * v[2],
+            m[0][2] * v[0] + m[1][2] * v[1] + m[2][2] * v[2],
+        ]
+    }
 }
