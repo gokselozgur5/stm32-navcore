@@ -68,3 +68,16 @@ fn test_biquad_parameter_validation() {
     assert_eq!(BiquadCoefficients::try_lowpass_rbj(10.0, dt, 0.0), Err(BiquadError::InvalidQ));
 }
 
+#[test]
+fn test_biquad_stability_check() {
+    let coeffs = BiquadCoefficients::lowpass_rbj(10.0, 0.001, core::f32::consts::FRAC_1_SQRT_2);
+    assert!(coeffs.is_stable());
+
+    let unstable = BiquadCoefficients {
+        b0: 1.0, b1: 0.0, b2: 0.0,
+        a1: 2.5, a2: 1.2,
+    };
+    assert!(!unstable.is_stable());
+}
+
+
