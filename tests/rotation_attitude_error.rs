@@ -63,3 +63,19 @@ fn handles_180_degree_rotation() {
     assert!((e.angle - core::f32::consts::PI).abs() < 1e-5);
     assert!((e.axis[2].abs() - 1.0).abs() < 1e-5);
 }
+
+#[test]
+fn rejects_non_finite_and_zero_norm() {
+    use stm32_navcore::math::MathError;
+    let zero = Quaternion::new(0.0, 0.0, 0.0, 0.0);
+    let nan_q = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
+    let inf_q = Quaternion::new(f32::INFINITY, 0.0, 0.0, 0.0);
+    let b = base();
+
+    assert_eq!(attitude_error(&zero, &b), Err(MathError::InvalidNorm));
+    assert_eq!(attitude_error(&b, &zero), Err(MathError::InvalidNorm));
+    assert_eq!(attitude_error(&nan_q, &b), Err(MathError::InvalidNorm));
+    assert_eq!(attitude_error(&b, &nan_q), Err(MathError::InvalidNorm));
+    assert_eq!(attitude_error(&inf_q, &b), Err(MathError::InvalidNorm));
+    assert_eq!(attitude_error(&b, &inf_q), Err(MathError::InvalidNorm));
+}
