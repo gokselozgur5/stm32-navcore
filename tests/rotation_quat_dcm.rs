@@ -97,3 +97,16 @@ fn from_quaternion_normalized_matches_standard() {
         }
     }
 }
+
+#[test]
+fn to_quaternion_handles_all_four_shepperd_branches() {
+    let q_w = Quaternion::IDENTITY;
+    let q_x = Quaternion::new(0.0, 1.0, 0.0, 0.0);
+    let q_y = Quaternion::new(0.0, 0.0, 1.0, 0.0);
+    let q_z = Quaternion::new(0.0, 0.0, 0.0, 1.0);
+    for q in [q_w, q_x, q_y, q_z] {
+        let d = Dcm::from_quaternion(&q).unwrap();
+        let back = d.to_quaternion();
+        assert!(max_err(&q, &back) < 1e-6);
+    }
+}
