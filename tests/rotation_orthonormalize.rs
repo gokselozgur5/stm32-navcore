@@ -78,3 +78,12 @@ fn unskew_extracts_skew_symmetric_part() {
     assert!((v[1] - (-2.0)).abs() < 1e-6);
     assert!((v[2] - 1.0).abs() < 1e-6);
 }
+
+#[test]
+fn gram_schmidt_removes_noise() {
+    let d = noisy();
+    assert!(d.orthogonality_error() > 1e-4);
+    let fixed = d.orthonormalize_gram_schmidt().unwrap();
+    assert!(fixed.orthogonality_error() < 1e-6);
+    assert!((fixed.det() - 1.0).abs() < 1e-5);
+}
