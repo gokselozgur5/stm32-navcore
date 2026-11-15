@@ -119,3 +119,19 @@ impl Dcm {
         ]
     }
 }
+
+impl core::ops::Mul for Dcm {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        Self(self.0.matmul(&rhs.0))
+    }
+}
+
+impl core::ops::Mul<[f32; 3]> for Dcm {
+    type Output = [f32; 3];
+
+    fn mul(self, rhs: [f32; 3]) -> [f32; 3] {
+        self.rotate_vec(rhs)
+    }
+}
