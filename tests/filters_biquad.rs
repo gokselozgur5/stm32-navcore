@@ -80,4 +80,15 @@ fn test_biquad_stability_check() {
     assert!(!unstable.is_stable());
 }
 
+#[test]
+fn test_biquad_state_accessors() {
+    let coeffs = BiquadCoefficients::lowpass_rbj(10.0, 0.001, 0.707);
+    let mut filter = BiquadFilter::new(coeffs);
+    assert_eq!(filter.state(), (0.0, 0.0));
+    let _ = filter.update(1.0);
+    let (s1, s2) = filter.state();
+    assert!(s1 != 0.0 || s2 != 0.0);
+}
+
+
 
