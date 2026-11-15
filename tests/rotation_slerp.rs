@@ -38,3 +38,12 @@ fn nlerp_takes_shortest_path() {
     let m = nlerp(&about_z(0.0), &neg, 0.5).unwrap();
     assert!((angle_of(&m) - 0.2).abs() < 1e-3);
 }
+
+#[test]
+fn slerp_and_nlerp_reject_zero_quaternion() {
+    use stm32_navcore::math::MathError;
+    let zero = Quaternion::new(0.0, 0.0, 0.0, 0.0);
+    let b = about_z(1.0);
+    assert_eq!(slerp(&zero, &b, 0.0), Err(MathError::InvalidNorm));
+    assert_eq!(slerp(&b, &zero, 1.0), Err(MathError::InvalidNorm));
+}
