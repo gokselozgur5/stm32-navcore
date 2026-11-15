@@ -8,6 +8,15 @@ pub fn skew(v: [f32; 3]) -> Mat<3, 3> {
     Mat([[0.0, -v[2], v[1]], [v[2], 0.0, -v[0]], [-v[1], v[0], 0.0]])
 }
 
+/// Extracts the 3D vector from a skew-symmetric matrix.
+pub fn unskew(m: &Mat<3, 3>) -> [f32; 3] {
+    [
+        0.5 * (m.0[2][1] - m.0[1][2]),
+        0.5 * (m.0[0][2] - m.0[2][0]),
+        0.5 * (m.0[1][0] - m.0[0][1]),
+    ]
+}
+
 impl Dcm {
     /// Restores orthogonality with the iteration `R <- R (1.5 I - 0.5 R^T R)`.
     ///
