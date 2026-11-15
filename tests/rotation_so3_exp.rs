@@ -1,5 +1,5 @@
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::so3_exp::{so3_exp, so3_log};
+use stm32_navcore::rotation::so3_exp::{so3_exp, so3_exp_dcm, so3_log};
 
 const AXES: [[f32; 3]; 4] = [
     [1.0, 0.0, 0.0],
@@ -43,4 +43,12 @@ fn exp_gives_unit_quaternion() {
         let q = so3_exp([0.0, angle, 0.0]);
         assert!((q.norm() - 1.0).abs() < 1e-6);
     }
+}
+
+#[test]
+fn exp_dcm_matches_known_rotation() {
+    let half_pi = core::f32::consts::FRAC_PI_2;
+    let r = so3_exp_dcm([0.0, 0.0, half_pi]);
+    assert!((r.0 .0[0][1] - (-1.0)).abs() < 1e-6);
+    assert!((r.0 .0[1][0] - 1.0).abs() < 1e-6);
 }
