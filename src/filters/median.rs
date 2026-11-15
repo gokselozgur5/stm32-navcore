@@ -22,6 +22,12 @@ impl<const N: usize> MedianFilter<N> {
         self.head = 0;
     }
 
+    pub fn init_with(&mut self, val: f32) {
+        self.buffer = [val; N];
+        self.count = N;
+        self.head = 0;
+    }
+
     pub fn is_full(&self) -> bool {
         self.count == N
     }
