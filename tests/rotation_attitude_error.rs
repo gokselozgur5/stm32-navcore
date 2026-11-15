@@ -31,3 +31,15 @@ fn identical_attitudes_have_zero_error() {
     let e = attitude_error(&base(), &base()).unwrap();
     assert!(e.angle < 1e-3);
 }
+
+#[test]
+fn rotation_vector_and_degree_methods() {
+    let delta = so3_exp([0.1, 0.0, 0.0]);
+    let e = attitude_error(&base(), &base().mul(&delta)).unwrap();
+    let rvec = e.rotation_vector();
+    assert!((rvec[0] - 0.1).abs() < 1e-4);
+    assert!(rvec[1].abs() < 1e-5);
+    assert!(rvec[2].abs() < 1e-5);
+    let deg = e.angle_deg();
+    assert!((deg - 0.1 * (180.0 / core::f32::consts::PI)).abs() < 1e-3);
+}
