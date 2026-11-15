@@ -1,5 +1,6 @@
-use stm32_navcore::math::Quaternion;
+use stm32_navcore::math::{Mat, Quaternion};
 use stm32_navcore::rotation::so3_exp::{so3_exp, so3_exp_dcm, so3_log, so3_log_dcm};
+use stm32_navcore::rotation::{Dcm, RotationError};
 
 const AXES: [[f32; 3]; 4] = [
     [1.0, 0.0, 0.0],
@@ -83,4 +84,11 @@ fn log_dcm_inverts_exp_dcm_across_angles() {
         assert!(e < 1e-5, "dcm angle {angle} error {e}");
         angle *= 1.5;
     }
+}
+
+#[test]
+fn log_dcm_rejects_non_orthonormal() {
+    let mut bad = Mat::<3, 3>::identity();
+    bad.0[0][0] = 2.0;
+    assert_eq!(so3_log_dcm(&Dcm(bad)), Err(RotationError::NotOrthonormal));
 }
