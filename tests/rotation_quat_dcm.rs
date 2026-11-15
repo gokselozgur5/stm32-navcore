@@ -64,3 +64,14 @@ fn matrix_rotates_like_quaternion() {
         assert!((got - want[i]).abs() < 1e-5);
     }
 }
+
+#[test]
+fn try_to_quaternion_validates_orthonormality() {
+    use stm32_navcore::rotation::RotationError;
+    let q = Quaternion::new(0.9, 0.1, -0.3, 0.2).normalize().unwrap();
+    let d = Dcm::from_quaternion(&q).unwrap();
+    assert!(d.try_to_quaternion().is_ok());
+    let mut bad = d;
+    bad.0 .0[0][0] *= 1.5;
+    assert_eq!(bad.try_to_quaternion(), Err(RotationError::NotOrthonormal));
+}
