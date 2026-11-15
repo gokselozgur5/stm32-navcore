@@ -62,3 +62,11 @@ fn step_edge_is_delayed_by_exactly_half_window_samples() {
     assert_eq!(med7.update(1.0), 0.0);
     assert_eq!(med7.update(1.0), 1.0);
 }
+
+#[test]
+fn test_median_filter_copy_and_equality() {
+    let mut f1 = MedianFilter::<3>::new();
+    f1.init_with(5.0);
+    let f2 = f1;
+    assert_eq!(f1, f2);
+}
