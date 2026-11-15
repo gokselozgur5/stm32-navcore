@@ -104,3 +104,11 @@ fn ops_mul_composes_dcm_and_rotates_vector() {
     assert!((v_rot[0] - 0.5f32.cos()).abs() < 1e-6);
     assert!((v_rot[1] - 0.5f32.sin()).abs() < 1e-6);
 }
+
+#[test]
+fn as_matrix_provides_inner_reference() {
+    let mut dcm = Dcm::identity();
+    assert_eq!(dcm.as_matrix(), &Mat::<3, 3>::identity());
+    dcm.as_matrix_mut().0[0][0] = 2.0;
+    assert_eq!(dcm.as_matrix().0[0][0], 2.0);
+}
