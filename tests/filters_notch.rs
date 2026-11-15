@@ -69,3 +69,13 @@ fn notch_coefficients_accessor_matches_underlying_biquad() {
     let coeffs = notch.coefficients();
     assert_eq!(coeffs, notch.biquad().coefficients());
 }
+
+#[test]
+fn notch_preserves_dc_unity_gain() {
+    let mut notch = NotchFilter::new(150.0, 0.001, 2.0).unwrap();
+    let mut out = 0.0f32;
+    for _ in 0..1000 {
+        out = notch.update(1.0);
+    }
+    assert!((out - 1.0).abs() < 1e-4);
+}
