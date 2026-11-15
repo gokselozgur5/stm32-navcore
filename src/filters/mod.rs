@@ -8,7 +8,7 @@ pub mod median;
 pub mod notch;
 
 pub use alpha_beta::{AlphaBetaError, AlphaBetaFilter};
-pub use biquad::{BiquadCoefficients, BiquadFilter};
+pub use biquad::{BiquadCoefficients, BiquadError, BiquadFilter};
 pub use complementary::{ComplementaryError, ComplementaryFilter};
 pub use lowpass::{LowPassError, LowPassFilter};
 pub use median::MedianFilter;

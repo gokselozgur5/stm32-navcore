@@ -1,5 +1,16 @@
 //! Direct Form II Transposed (DF2T) biquad filter section (NC-018).
 
+/// Error returned when biquad filter parameters are invalid.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BiquadError {
+    /// Cutoff frequency must be positive and below Nyquist.
+    InvalidCutoffFrequency,
+    /// Sample interval must be positive and finite.
+    InvalidSampleInterval,
+    /// Q factor must be positive and finite.
+    InvalidQ,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct BiquadCoefficients {
     pub b0: f32,
