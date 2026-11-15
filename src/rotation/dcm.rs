@@ -19,6 +19,24 @@ impl Dcm {
     pub fn identity() -> Self {
         Self(Mat::identity())
     }
+
+    /// Rotation about the X axis by `angle` radians.
+    pub fn from_rot_x(angle: f32) -> Self {
+        let (s, c) = (libm::sinf(angle), libm::cosf(angle));
+        Self(Mat([[1.0, 0.0, 0.0], [0.0, c, -s], [0.0, s, c]]))
+    }
+
+    /// Rotation about the Y axis by `angle` radians.
+    pub fn from_rot_y(angle: f32) -> Self {
+        let (s, c) = (libm::sinf(angle), libm::cosf(angle));
+        Self(Mat([[c, 0.0, s], [0.0, 1.0, 0.0], [-s, 0.0, c]]))
+    }
+
+    /// Rotation about the Z axis by `angle` radians.
+    pub fn from_rot_z(angle: f32) -> Self {
+        let (s, c) = (libm::sinf(angle), libm::cosf(angle));
+        Self(Mat([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]]))
+    }
 }
 
 /// Largest accepted orthogonality or determinant error.
