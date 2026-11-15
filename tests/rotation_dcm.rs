@@ -92,3 +92,15 @@ fn from_euler_zyx_composes_intrinsic_rotations() {
         }
     }
 }
+
+#[test]
+fn ops_mul_composes_dcm_and_rotates_vector() {
+    let r1 = Dcm::from_rot_z(0.2);
+    let r2 = Dcm::from_rot_z(0.3);
+    let r12 = r1 * r2;
+    assert!((r12.0 .0[0][0] - 0.5f32.cos()).abs() < 1e-6);
+    let v = [1.0, 0.0, 0.0];
+    let v_rot = r12 * v;
+    assert!((v_rot[0] - 0.5f32.cos()).abs() < 1e-6);
+    assert!((v_rot[1] - 0.5f32.sin()).abs() < 1e-6);
+}
