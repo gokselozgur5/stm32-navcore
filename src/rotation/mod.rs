@@ -7,4 +7,5 @@ pub mod quat_dcm;
 pub mod slerp;
 pub mod so3_exp;
 
+pub use attitude_error::{attitude_error, attitude_error_vector, AttitudeError};
 pub use dcm::{Dcm, RotationError};
