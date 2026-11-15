@@ -43,3 +43,12 @@ fn transpose_is_inverse() {
     assert!(p.orthogonality_error() < 1e-6);
     assert!((p.0 .0[0][0] - 1.0).abs() < 1e-6);
 }
+
+#[test]
+fn is_orthonormal_validates_so3() {
+    assert!(Dcm::identity().is_orthonormal());
+    assert!(rz(0.5).is_orthonormal());
+    let mut bad = Mat::<3, 3>::identity();
+    bad.0[0][0] = 1.05;
+    assert!(!Dcm(bad).is_orthonormal());
+}
