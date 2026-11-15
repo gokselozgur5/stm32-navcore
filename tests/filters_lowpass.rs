@@ -29,3 +29,19 @@ fn test_filter_reset_reinitializes_on_next_sample() {
     f.reset();
     assert_eq!(f.update(25.0), 25.0);
 }
+
+#[test]
+fn test_step_response_at_one_time_constant() {
+    let cutoff_hz = 10.0;
+    let dt = 0.001;
+    let mut f = LowPassFilter::from_cutoff(cutoff_hz, dt).unwrap();
+    let tau = 1.0 / (2.0 * core::f32::consts::PI * cutoff_hz);
+    let n_steps = (tau / dt + 0.5) as usize;
+    let _ = f.update(0.0);
+    let mut out = 0.0;
+    for _ in 0..n_steps {
+        out = f.update(1.0);
+    }
+    let expected = 0.632_f32;
+    assert!((out - expected).abs() < 0.02);
+}
