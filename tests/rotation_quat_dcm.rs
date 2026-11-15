@@ -75,3 +75,13 @@ fn try_to_quaternion_validates_orthonormality() {
     bad.0 .0[0][0] *= 1.5;
     assert_eq!(bad.try_to_quaternion(), Err(RotationError::NotOrthonormal));
 }
+
+#[test]
+fn quaternion_dcm_helper_methods() {
+    let q = Quaternion::new(0.9, 0.1, -0.3, 0.2).normalize().unwrap();
+    let d = q.to_dcm().unwrap();
+    let q_back = Quaternion::from_dcm(&d);
+    assert!(max_err(&q, &q_back) < 1e-6);
+    let q_try = Quaternion::try_from_dcm(&d).unwrap();
+    assert!(max_err(&q, &q_try) < 1e-6);
+}
