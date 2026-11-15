@@ -87,3 +87,16 @@ fn gram_schmidt_removes_noise() {
     assert!(fixed.orthogonality_error() < 1e-6);
     assert!((fixed.det() - 1.0).abs() < 1e-5);
 }
+
+#[test]
+fn gram_schmidt_rejects_non_finite() {
+    let mut d = noisy();
+    d.0 .0[0][0] = f32::NAN;
+    assert!(d.orthonormalize_gram_schmidt().is_err());
+}
+
+#[test]
+fn gram_schmidt_rejects_singular() {
+    let d = Dcm(Mat::<3, 3>::zeros());
+    assert!(d.orthonormalize_gram_schmidt().is_err());
+}
