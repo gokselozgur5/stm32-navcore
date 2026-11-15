@@ -64,3 +64,17 @@ fn rotate_vec_and_transpose_rotate_vectors() {
     assert!((v_back[0] - 1.0).abs() < 1e-6);
     assert!(v_back[1].abs() < 1e-6);
 }
+
+#[test]
+fn elementary_axis_rotations_are_orthonormal() {
+    let rx = Dcm::from_rot_x(0.3);
+    let ry = Dcm::from_rot_y(0.4);
+    let rz_rot = Dcm::from_rot_z(0.5);
+    assert!(rx.is_orthonormal());
+    assert!(ry.is_orthonormal());
+    assert!(rz_rot.is_orthonormal());
+    let v = [0.0, 1.0, 0.0];
+    let v_rot = rx.rotate_vec(v);
+    assert!((v_rot[1] - 0.3f32.cos()).abs() < 1e-6);
+    assert!((v_rot[2] - 0.3f32.sin()).abs() < 1e-6);
+}
