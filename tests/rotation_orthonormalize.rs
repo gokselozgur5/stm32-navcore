@@ -69,3 +69,12 @@ fn improper_reflection_is_rejected() {
     }
     assert!(Dcm(neg_i).orthonormalize().is_err());
 }
+
+#[test]
+fn unskew_extracts_skew_symmetric_part() {
+    let m = Mat([[1.0f32, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+    let v = unskew(&m);
+    assert!((v[0] - 1.0).abs() < 1e-6);
+    assert!((v[1] - (-2.0)).abs() < 1e-6);
+    assert!((v[2] - 1.0).abs() < 1e-6);
+}
