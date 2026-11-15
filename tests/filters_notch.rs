@@ -45,3 +45,20 @@ fn reject_invalid_sample_interval_before_nyquist() {
     let err = NotchFilter::new(100.0, -0.001, 2.0).unwrap_err();
     assert_eq!(err, LowPassError::InvalidSampleInterval);
 }
+
+#[test]
+fn dynamic_retune_attenuates_new_frequency() {
+    let mut notch = NotchFilter::new(100.0, 0.001, 2.0).unwrap();
+    notch.set_frequency(250.0, 0.001, 2.0).unwrap();
+    let mut max_amp = 0.0f32;
+    for n in 0..600 {
+        let t = n as f32 * 0.001;
+        let x = libm::sinf(2.0 * core::f32::consts::PI * 250.0 * t);
+        let y = notch.update(x);
+        if n >= 400 && y.abs() > max_amp {
+            max_amp = y.abs();
+        }
+    }
+    let atten_db = -20.0 * libm::log10f(max_amp);
+    assert!(atten_db > 30.0);
+}
