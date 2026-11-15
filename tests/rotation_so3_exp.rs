@@ -20,6 +20,18 @@ fn worst_error(angle: f32) -> f32 {
     worst
 }
 
+fn worst_dcm_error(angle: f32) -> f32 {
+    let mut worst = 0.0f32;
+    for a in AXES {
+        let v = [a[0] * angle, a[1] * angle, a[2] * angle];
+        let back = so3_log_dcm(&so3_exp_dcm(v)).unwrap();
+        for i in 0..3 {
+            worst = worst.max((back[i] - v[i]).abs());
+        }
+    }
+    worst
+}
+
 #[test]
 fn zero_vector_maps_to_identity() {
     assert_eq!(so3_exp([0.0; 3]), Quaternion::IDENTITY);
@@ -61,4 +73,14 @@ fn log_dcm_recovers_known_rotation() {
     assert!((v[0] - 0.0).abs() < 1e-6);
     assert!((v[1] - 0.0).abs() < 1e-6);
     assert!((v[2] - half_pi).abs() < 1e-6);
+}
+
+#[test]
+fn log_dcm_inverts_exp_dcm_across_angles() {
+    let mut angle = 1e-8f32;
+    while angle < core::f32::consts::PI - 1e-3 {
+        let e = worst_dcm_error(angle);
+        assert!(e < 1e-5, "dcm angle {angle} error {e}");
+        angle *= 1.5;
+    }
 }
