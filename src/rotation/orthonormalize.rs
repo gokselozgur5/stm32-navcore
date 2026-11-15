@@ -17,6 +17,16 @@ pub fn unskew(m: &Mat<3, 3>) -> [f32; 3] {
     ]
 }
 
+#[inline]
+fn vec3_norm(v: [f32; 3]) -> f32 {
+    let s = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    if s > 0.0 {
+        libm::sqrtf(s)
+    } else {
+        0.0
+    }
+}
+
 impl Dcm {
     /// Restores orthogonality with the iteration `R <- R (1.5 I - 0.5 R^T R)`.
     ///
