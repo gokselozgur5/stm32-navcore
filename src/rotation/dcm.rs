@@ -37,6 +37,13 @@ impl Dcm {
         let (s, c) = (libm::sinf(angle), libm::cosf(angle));
         Self(Mat([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]]))
     }
+
+    /// Builds a DCM from Tait-Bryan Euler angles in ZYX (yaw, pitch, roll) order.
+    pub fn from_euler_zyx(roll: f32, pitch: f32, yaw: f32) -> Self {
+        Self::from_rot_z(yaw)
+            .mul(&Self::from_rot_y(pitch))
+            .mul(&Self::from_rot_x(roll))
+    }
 }
 
 /// Largest accepted orthogonality or determinant error.
