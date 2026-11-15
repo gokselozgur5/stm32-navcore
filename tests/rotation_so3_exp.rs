@@ -1,5 +1,5 @@
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::so3_exp::{so3_exp, so3_exp_dcm, so3_log};
+use stm32_navcore::rotation::so3_exp::{so3_exp, so3_exp_dcm, so3_log, so3_log_dcm};
 
 const AXES: [[f32; 3]; 4] = [
     [1.0, 0.0, 0.0],
@@ -51,4 +51,14 @@ fn exp_dcm_matches_known_rotation() {
     let r = so3_exp_dcm([0.0, 0.0, half_pi]);
     assert!((r.0 .0[0][1] - (-1.0)).abs() < 1e-6);
     assert!((r.0 .0[1][0] - 1.0).abs() < 1e-6);
+}
+
+#[test]
+fn log_dcm_recovers_known_rotation() {
+    let half_pi = core::f32::consts::FRAC_PI_2;
+    let r = so3_exp_dcm([0.0, 0.0, half_pi]);
+    let v = so3_log_dcm(&r).unwrap();
+    assert!((v[0] - 0.0).abs() < 1e-6);
+    assert!((v[1] - 0.0).abs() < 1e-6);
+    assert!((v[2] - half_pi).abs() < 1e-6);
 }
