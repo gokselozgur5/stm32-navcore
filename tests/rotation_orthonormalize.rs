@@ -100,3 +100,20 @@ fn gram_schmidt_rejects_singular() {
     let d = Dcm(Mat::<3, 3>::zeros());
     assert!(d.orthonormalize_gram_schmidt().is_err());
 }
+
+#[test]
+fn gram_schmidt_rejects_reflection() {
+    let mut neg_i = Mat::<3, 3>::identity();
+    for i in 0..3 {
+        neg_i.0[i][i] = -1.0;
+    }
+    assert!(Dcm(neg_i).orthonormalize_gram_schmidt().is_err());
+}
+
+#[test]
+fn orthonormalize_polar_matches_orthonormalize() {
+    let d = noisy();
+    let p = d.orthonormalize_polar().unwrap();
+    let o = d.orthonormalize().unwrap();
+    assert_eq!(p, o);
+}
