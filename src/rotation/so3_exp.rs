@@ -24,8 +24,24 @@ pub fn so3_exp_dcm(v: [f32; 3]) -> Dcm {
 }
 
 /// Direction cosine matrix to the rotation vector with angle in `[0, pi]`.
-pub fn so3_log_dcm(_d: &Dcm) -> Result<[f32; 3], RotationError> {
-    Ok([0.0; 3])
+pub fn so3_log_dcm(d: &Dcm) -> Result<[f32; 3], RotationError> {
+    Dcm::try_new(d.0)?;
+    let r = &d.0 .0;
+    let tr = r[0][0] + r[1][1] + r[2][2];
+    let cos_t = ((tr - 1.0) * 0.5).clamp(-1.0, 1.0);
+    let theta = libm::acosf(cos_t);
+    let k = if theta < 1e-4 {
+        0.5 + theta * theta / 12.0
+    } else if theta < core::f32::consts::PI - 1e-3 {
+        theta / (2.0 * libm::sinf(theta))
+    } else {
+        return so3_log(&d.to_quaternion()).map_err(|_| RotationError::NotOrthonormal);
+    };
+    Ok([
+        k * (r[2][1] - r[1][2]),
+        k * (r[0][2] - r[2][0]),
+        k * (r[1][0] - r[0][1]),
+    ])
 }
 
 /// Rotation vector (axis times angle, radians) to a unit quaternion.
