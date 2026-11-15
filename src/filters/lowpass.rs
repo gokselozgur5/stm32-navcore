@@ -10,7 +10,7 @@ pub enum LowPassError {
 }
 
 /// First-order single-pole discrete IIR low-pass filter.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LowPassFilter {
     alpha: f32,
     prev_output: f32,
@@ -37,6 +37,20 @@ impl LowPassFilter {
             prev_output: 0.0,
             initialized: false,
         })
+    }
+
+    /// Construct a low-pass filter from cutoff frequency and sample interval.
+    pub fn from_cutoff(cutoff_hz: f32, dt: f32) -> Result<Self, LowPassError> {
+        Self::new(cutoff_hz, dt)
+    }
+
+    /// Return current filter state if initialized.
+    pub const fn state(&self) -> Option<f32> {
+        if self.initialized {
+            Some(self.prev_output)
+        } else {
+            None
+        }
     }
 }
 
