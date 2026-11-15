@@ -49,4 +49,32 @@ impl Dcm {
         }
         Dcm::try_new(r)
     }
+
+    /// Restores orthogonality via Gram-Schmidt projection and cross-product.
+    pub fn orthonormalize_gram_schmidt(&self) -> Result<Dcm, RotationError> {
+        let (r0, r1) = (self.0 .0[0], self.0 .0[1]);
+        let nx = vec3_norm(r0);
+        if nx < 1e-6 {
+            return Err(RotationError::NotOrthonormal);
+        }
+        let x = [r0[0] / nx, r0[1] / nx, r0[2] / nx];
+        let p = r1[0] * x[0] + r1[1] * x[1] + r1[2] * x[2];
+        let y_raw = [r1[0] - p * x[0], r1[1] - p * x[1], r1[2] - p * x[2]];
+        let ny = vec3_norm(y_raw);
+        if ny < 1e-6 {
+            return Err(RotationError::NotOrthonormal);
+        }
+        let y = [y_raw[0] / ny, y_raw[1] / ny, y_raw[2] / ny];
+        let z = [
+            x[1] * y[2] - x[2] * y[1],
+            x[2] * y[0] - x[0] * y[2],
+            x[0] * y[1] - x[1] * y[0],
+        ];
+        let nz = vec3_norm(z);
+        if nz < 1e-6 {
+            return Err(RotationError::NotOrthonormal);
+        }
+        let r = Mat([x, y, [z[0] / nz, z[1] / nz, z[2] / nz]]);
+        Dcm::try_new(r)
+    }
 }
