@@ -60,7 +60,7 @@ impl Dcm {
             }
         }
         let (i, j) = ((k + 1) % 3, (k + 2) % 3);
-        let s = 2.0 * libm::sqrtf(1.0 + r[k][k] - r[i][i] - r[j][j]);
+        let s = 2.0 * libm::sqrtf((1.0 + r[k][k] - r[i][i] - r[j][j]).max(0.0));
         let mut q = [0.0f32; 4];
         q[0] = (r[j][i] - r[i][j]) / s;
         q[k + 1] = 0.25 * s;
@@ -76,7 +76,7 @@ impl Dcm {
         let r = &self.0 .0;
         let tr = r[0][0] + r[1][1] + r[2][2];
         if tr > r[0][0].max(r[1][1]).max(r[2][2]) {
-            let s = 2.0 * libm::sqrtf(1.0 + tr);
+            let s = 2.0 * libm::sqrtf((1.0 + tr).max(0.0));
             return Quaternion::new(
                 0.25 * s,
                 (r[2][1] - r[1][2]) / s,
