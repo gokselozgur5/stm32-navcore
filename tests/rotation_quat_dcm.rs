@@ -85,3 +85,15 @@ fn quaternion_dcm_helper_methods() {
     let q_try = Quaternion::try_from_dcm(&d).unwrap();
     assert!(max_err(&q, &q_try) < 1e-6);
 }
+
+#[test]
+fn from_quaternion_normalized_matches_standard() {
+    let q = Quaternion::new(0.9, 0.1, -0.3, 0.2).normalize().unwrap();
+    let d1 = Dcm::from_quaternion(&q).unwrap();
+    let d2 = Dcm::from_quaternion_normalized(&q);
+    for i in 0..3 {
+        for j in 0..3 {
+            assert!((d1.0 .0[i][j] - d2.0 .0[i][j]).abs() < 1e-6);
+        }
+    }
+}
