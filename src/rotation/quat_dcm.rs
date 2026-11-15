@@ -25,6 +25,28 @@ impl Dcm {
             ],
         ])))
     }
+
+    /// Builds the matrix directly from a pre-normalized unit quaternion.
+    pub fn from_quaternion_normalized(q: &Quaternion) -> Self {
+        let Quaternion { w, x, y, z } = *q;
+        Self(Mat([
+            [
+                1.0 - 2.0 * (y * y + z * z),
+                2.0 * (x * y - w * z),
+                2.0 * (x * z + w * y),
+            ],
+            [
+                2.0 * (x * y + w * z),
+                1.0 - 2.0 * (x * x + z * z),
+                2.0 * (y * z - w * x),
+            ],
+            [
+                2.0 * (x * z - w * y),
+                2.0 * (y * z + w * x),
+                1.0 - 2.0 * (x * x + y * y),
+            ],
+        ]))
+    }
 }
 
 impl Dcm {
