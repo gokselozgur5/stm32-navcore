@@ -1,6 +1,16 @@
 use stm32_navcore::math::{Mat, Quaternion};
-use stm32_navcore::rotation::orthonormalize::skew;
+use stm32_navcore::rotation::orthonormalize::{skew, unskew};
 use stm32_navcore::rotation::Dcm;
+
+#[test]
+fn unskew_recovers_vector() {
+    let v = [1.2f32, -3.4, 0.5];
+    let s = skew(v);
+    let got = unskew(&s);
+    for i in 0..3 {
+        assert!((got[i] - v[i]).abs() < 1e-6);
+    }
+}
 
 #[test]
 fn skew_matches_cross_product() {
