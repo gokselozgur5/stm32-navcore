@@ -51,6 +51,11 @@ impl NotchFilter {
         &self.biquad
     }
 
+    /// Returns reference to the filter biquad coefficients.
+    pub fn coefficients(&self) -> &BiquadCoefficients {
+        self.biquad.coefficients()
+    }
+
     /// Dynamically retunes center frequency and Q factor in-place.
     pub fn set_frequency(&mut self, center_hz: f32, dt_s: f32, q: f32) -> Result<(), LowPassError> {
         let updated = Self::new(center_hz, dt_s, q)?;
