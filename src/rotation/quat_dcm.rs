@@ -1,6 +1,6 @@
 //! Conversion between unit quaternions and direction cosine matrices.
 
-use super::Dcm;
+use super::{Dcm, RotationError};
 use crate::math::{Mat, MathError, Quaternion};
 
 impl Dcm {
@@ -63,5 +63,15 @@ impl Dcm {
             );
         }
         self.quat_from_diagonal()
+    }
+
+    /// Converts to a unit quaternion after validating orthonormality.
+    pub fn try_to_quaternion(&self) -> Result<Quaternion, RotationError> {
+        let err = self.orthogonality_error();
+        let det_err = (self.det() - 1.0).abs();
+        if !(err <= super::dcm::DCM_TOLERANCE && det_err <= super::dcm::DCM_TOLERANCE) {
+            return Err(RotationError::NotOrthonormal);
+        }
+        Ok(self.to_quaternion())
     }
 }
