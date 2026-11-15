@@ -24,3 +24,9 @@ fn test_median_filter_reset() {
     assert!(!f.is_full());
     assert_eq!(f.update(42.0), 42.0);
 }
+
+#[test]
+#[should_panic(expected = "Window size must be odd")]
+fn even_window_size_panics() {
+    let _ = MedianFilter::<4>::new();
+}
