@@ -62,3 +62,10 @@ fn dynamic_retune_attenuates_new_frequency() {
     let atten_db = -20.0 * libm::log10f(max_amp);
     assert!(atten_db > 30.0);
 }
+
+#[test]
+fn notch_coefficients_accessor_matches_underlying_biquad() {
+    let notch = NotchFilter::new(100.0, 0.001, 2.0).unwrap();
+    let coeffs = notch.coefficients();
+    assert_eq!(coeffs, notch.biquad().coefficients());
+}
