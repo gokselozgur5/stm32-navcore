@@ -49,3 +49,8 @@ pub fn attitude_error(a: &Quaternion, b: &Quaternion) -> Result<AttitudeError, M
     };
     Ok(AttitudeError { angle, axis })
 }
+
+/// Relative attitude error expressed directly as a rotation vector `axis * angle`.
+pub fn attitude_error_vector(a: &Quaternion, b: &Quaternion) -> Result<[f32; 3], MathError> {
+    attitude_error(a, b).map(|err| err.rotation_vector())
+}
