@@ -50,6 +50,12 @@ impl Dcm {
         Dcm::try_new(r)
     }
 
+    /// Restores orthogonality via Schulz iterative polar re-orthonormalization.
+    #[inline]
+    pub fn orthonormalize_polar(&self) -> Result<Dcm, RotationError> {
+        self.orthonormalize()
+    }
+
     /// Restores orthogonality via Gram-Schmidt projection and cross-product.
     pub fn orthonormalize_gram_schmidt(&self) -> Result<Dcm, RotationError> {
         let (r0, r1) = (self.0 .0[0], self.0 .0[1]);
