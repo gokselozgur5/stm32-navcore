@@ -8,7 +8,11 @@ pub fn so3_exp_dcm(v: [f32; 3]) -> Dcm {
     let theta_sq = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
     let theta = libm::sqrtf(theta_sq);
     let (a, b, cos_t) = if theta < 1e-4 {
-        (1.0 - theta_sq / 6.0, 0.5 - theta_sq / 24.0, 1.0 - 0.5 * theta_sq)
+        (
+            1.0 - theta_sq / 6.0,
+            0.5 - theta_sq / 24.0,
+            1.0 - 0.5 * theta_sq,
+        )
     } else {
         (
             libm::sinf(theta) / theta,
@@ -17,9 +21,21 @@ pub fn so3_exp_dcm(v: [f32; 3]) -> Dcm {
         )
     };
     Dcm(Mat([
-        [cos_t + b * v[0] * v[0], -a * v[2] + b * v[0] * v[1], a * v[1] + b * v[0] * v[2]],
-        [a * v[2] + b * v[0] * v[1], cos_t + b * v[1] * v[1], -a * v[0] + b * v[1] * v[2]],
-        [-a * v[1] + b * v[0] * v[2], a * v[0] + b * v[1] * v[2], cos_t + b * v[2] * v[2]],
+        [
+            cos_t + b * v[0] * v[0],
+            -a * v[2] + b * v[0] * v[1],
+            a * v[1] + b * v[0] * v[2],
+        ],
+        [
+            a * v[2] + b * v[0] * v[1],
+            cos_t + b * v[1] * v[1],
+            -a * v[0] + b * v[1] * v[2],
+        ],
+        [
+            -a * v[1] + b * v[0] * v[2],
+            a * v[0] + b * v[1] * v[2],
+            cos_t + b * v[2] * v[2],
+        ],
     ]))
 }
 
