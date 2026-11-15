@@ -55,3 +55,16 @@ fn test_biquad_nyquist_attenuation() {
     let gain_db = 20.0 * libm::log10f(peak);
     assert!(gain_db < -40.0);
 }
+
+#[test]
+fn test_biquad_parameter_validation() {
+    use stm32_navcore::filters::BiquadError;
+
+    let dt = 0.001f32;
+    let q = 0.707f32;
+    assert_eq!(BiquadCoefficients::try_lowpass_rbj(0.0, dt, q), Err(BiquadError::InvalidCutoffFrequency));
+    assert_eq!(BiquadCoefficients::try_lowpass_rbj(600.0, dt, q), Err(BiquadError::InvalidCutoffFrequency));
+    assert_eq!(BiquadCoefficients::try_lowpass_rbj(10.0, -0.001, q), Err(BiquadError::InvalidSampleInterval));
+    assert_eq!(BiquadCoefficients::try_lowpass_rbj(10.0, dt, 0.0), Err(BiquadError::InvalidQ));
+}
+
