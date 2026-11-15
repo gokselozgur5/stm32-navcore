@@ -110,3 +110,12 @@ fn to_quaternion_handles_all_four_shepperd_branches() {
         assert!(max_err(&q, &back) < 1e-6);
     }
 }
+
+#[test]
+fn small_angle_rotations_round_trip() {
+    for angle in [1e-6f32, 1e-5, 1e-4, 1e-3, 1e-2] {
+        let half = 0.5 * angle;
+        let q = Quaternion::new(half.cos(), half.sin(), 0.0, 0.0);
+        assert!(roundtrip(q) < 1e-6);
+    }
+}
