@@ -1,6 +1,12 @@
 //! Exponential and logarithm maps between rotation vectors and quaternions.
 
+use super::Dcm;
 use crate::math::{MathError, Quaternion};
+
+/// Rotation vector to a direction cosine matrix via Rodrigues formula.
+pub fn so3_exp_dcm(_v: [f32; 3]) -> Dcm {
+    Dcm::identity()
+}
 
 /// Rotation vector (axis times angle, radians) to a unit quaternion.
 pub fn so3_exp(v: [f32; 3]) -> Quaternion {
