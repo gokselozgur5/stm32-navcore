@@ -11,6 +11,28 @@ pub struct AttitudeError {
     pub axis: [f32; 3],
 }
 
+impl AttitudeError {
+    /// Zero rotation error.
+    pub const IDENTITY: Self = Self {
+        angle: 0.0,
+        axis: [0.0; 3],
+    };
+
+    /// Rotation vector representation `axis * angle`.
+    pub fn rotation_vector(&self) -> [f32; 3] {
+        [
+            self.axis[0] * self.angle,
+            self.axis[1] * self.angle,
+            self.axis[2] * self.angle,
+        ]
+    }
+
+    /// Rotation error angle converted to degrees.
+    pub fn angle_deg(&self) -> f32 {
+        self.angle * (180.0 / core::f32::consts::PI)
+    }
+}
+
 /// Error `conj(a) * b` expressed as an angle and an axis.
 pub fn attitude_error(a: &Quaternion, b: &Quaternion) -> Result<AttitudeError, MathError> {
     let ca = Quaternion::new(a.w, -a.x, -a.y, -a.z);
