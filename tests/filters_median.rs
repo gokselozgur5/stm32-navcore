@@ -32,6 +32,12 @@ fn even_window_size_panics() {
 }
 
 #[test]
+#[should_panic(expected = "Window size must be odd")]
+fn zero_window_size_panics() {
+    let _ = MedianFilter::<0>::new();
+}
+
+#[test]
 fn single_sample_spikes_are_removed() {
     let mut med = MedianFilter::<5>::new();
     med.init_with(10.0);
