@@ -52,3 +52,15 @@ fn is_orthonormal_validates_so3() {
     bad.0[0][0] = 1.05;
     assert!(!Dcm(bad).is_orthonormal());
 }
+
+#[test]
+fn rotate_vec_and_transpose_rotate_vectors() {
+    let r = rz(core::f32::consts::FRAC_PI_2);
+    let v = [1.0, 0.0, 0.0];
+    let v_rot = r.rotate_vec(v);
+    assert!(v_rot[0].abs() < 1e-6);
+    assert!((v_rot[1] - 1.0).abs() < 1e-6);
+    let v_back = r.rotate_transposed(v_rot);
+    assert!((v_back[0] - 1.0).abs() < 1e-6);
+    assert!(v_back[1].abs() < 1e-6);
+}
