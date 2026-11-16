@@ -58,3 +58,5 @@ pub mod nav;
 pub mod baro_alt;
 
 pub mod zupt;
+
+pub mod wmm_declination;
