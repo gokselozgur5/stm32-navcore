@@ -152,3 +152,21 @@ impl BodyRot {
         ])
     }
 }
+
+impl BodyRot {
+    /// Transforms body accelerometer specific force to NED linear acceleration.
+    ///
+    /// Computes `a_ned = C_b_n * f_body + [0, 0, g_z]`.
+    pub fn transform_accel_to_ned(
+        &self,
+        specific_force_body: [f32; 3],
+        gravity_ned_z: f32,
+    ) -> Result<[f32; 3], BodyRotError> {
+        if !gravity_ned_z.is_finite() {
+            return Err(BodyRotError::NonFinite);
+        }
+        let mut a_ned = self.rotate_body_to_ned(specific_force_body)?;
+        a_ned[2] += gravity_ned_z;
+        Ok(a_ned)
+    }
+}
