@@ -69,3 +69,18 @@ impl GeodeticPos {
         self.lon_rad.to_degrees()
     }
 }
+
+/// Earth-Centered, Earth-Fixed Cartesian coordinates in meters.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct EcefPos {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+impl EcefPos {
+    /// Construct a new ECEF coordinate tuple.
+    pub const fn new(x: f64, y: f64, z: f64) -> Self {
+        Self { x, y, z }
+    }
+}
