@@ -54,3 +54,20 @@ pub fn total_energy_altitude(static_alt_m: f32, tas_mps: f32) -> Result<f32, Var
     let kinetic_head = (tas_mps * tas_mps) / (2.0 * G0);
     Ok(static_alt_m + kinetic_head)
 }
+
+/// Audio tone indicator state of the variometer.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum VarioTone {
+    /// In deadband between sink and climb thresholds (silent).
+    Silent,
+    /// Climbing above threshold with tone frequency in Hz.
+    Climb {
+        /// Audio beep frequency in Hz.
+        freq_hz: f32,
+    },
+    /// Sinking below threshold with tone frequency in Hz.
+    Sink {
+        /// Continuous tone frequency in Hz.
+        freq_hz: f32,
+    },
+}
