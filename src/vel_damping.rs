@@ -94,9 +94,7 @@ pub fn calculate_innovation(
         vel_gps[1] - vel_dr[1],
         vel_gps[2] - vel_dr[2],
     ];
-    let norm = libm::sqrtf(
-        innov[0] * innov[0] + innov[1] * innov[1] + innov[2] * innov[2],
-    );
+    let norm = libm::sqrtf(innov[0] * innov[0] + innov[1] * innov[1] + innov[2] * innov[2]);
     Ok((innov, norm))
 }
 
@@ -190,11 +188,7 @@ impl VelDampingFilter {
     }
 
     /// Propagate dead reckoning velocity with acceleration and damping.
-    pub fn predict(
-        &mut self,
-        accel_ned: [f32; 3],
-        dt_s: f32,
-    ) -> Result<[f32; 3], VelDampingError> {
+    pub fn predict(&mut self, accel_ned: [f32; 3], dt_s: f32) -> Result<[f32; 3], VelDampingError> {
         if !dt_s.is_finite() || dt_s <= 0.0 {
             return Err(VelDampingError::InvalidSampleInterval);
         }
@@ -217,10 +211,7 @@ impl VelDampingFilter {
     }
 
     /// Fuse GPS velocity observation if innovation passes gate threshold.
-    pub fn fuse_gps(
-        &mut self,
-        gps_vel_ned: [f32; 3],
-    ) -> Result<[f32; 3], VelDampingError> {
+    pub fn fuse_gps(&mut self, gps_vel_ned: [f32; 3]) -> Result<[f32; 3], VelDampingError> {
         let fused = fuse_velocity_step(
             self.vel_ned,
             gps_vel_ned,
