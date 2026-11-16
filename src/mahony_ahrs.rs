@@ -133,3 +133,20 @@ impl MahonyAhrs {
         [my * w[2] - mz * w[1], mz * w[0] - mx * w[2], mx * w[1] - my * w[0]]
     }
 }
+
+fn validate_6dof(gyro: [f32; 3], accel: [f32; 3], dt: f32) -> Result<(), MahonyAhrsError> {
+    if !dt.is_finite() || dt <= 0.0 {
+        return Err(MahonyAhrsError::InvalidDt);
+    }
+    for &g in &gyro {
+        if !g.is_finite() {
+            return Err(MahonyAhrsError::NonFinite);
+        }
+    }
+    for &a in &accel {
+        if !a.is_finite() {
+            return Err(MahonyAhrsError::NonFinite);
+        }
+    }
+    Ok(())
+}
