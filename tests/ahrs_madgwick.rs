@@ -50,3 +50,20 @@ fn test_ahrs_pure_gyro_integration() {
     assert!(pitch.abs() < 1e-3);
     assert!(yaw.abs() < 1e-3);
 }
+
+#[test]
+fn test_ahrs_gravity_tilt_convergence() {
+    let mut ahrs = MadgwickAhrs::new(0.4);
+    let target_pitch = 20.0f32.to_radians();
+    let ax = -libm::sinf(target_pitch) * 9.80665;
+    let az = libm::cosf(target_pitch) * 9.80665;
+    let dt = 0.01;
+
+    for _ in 0..1000 {
+        ahrs.update([0.0, 0.0, 0.0], [ax, 0.0, az], dt).unwrap();
+    }
+    let (roll, pitch, yaw) = ahrs.euler_zyx();
+    assert!(roll.abs() < 0.5f32.to_radians());
+    assert!((pitch - target_pitch).abs() < 0.5f32.to_radians());
+    assert!(yaw.abs() < 0.5f32.to_radians());
+}
