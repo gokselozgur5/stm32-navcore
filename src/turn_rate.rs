@@ -36,3 +36,22 @@ pub const DEG_TO_RAD: f32 = 0.01745329252;
 
 /// Radians to degrees factor.
 pub const RAD_TO_DEG: f32 = 57.295779513;
+
+fn validate_finite(val: f32) -> Result<(), TurnRateError> {
+    if !val.is_finite() {
+        return Err(TurnRateError::NonFinite);
+    }
+    Ok(())
+}
+
+fn validate_speed_gravity(speed: f32, gravity: f32) -> Result<(), TurnRateError> {
+    validate_finite(speed)?;
+    validate_finite(gravity)?;
+    if speed <= 0.0 {
+        return Err(TurnRateError::InvalidAirspeed);
+    }
+    if gravity <= 0.0 {
+        return Err(TurnRateError::InvalidGravity);
+    }
+    Ok(())
+}
