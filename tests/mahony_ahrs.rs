@@ -43,3 +43,19 @@ fn test_mahony_non_finite_inputs_rejected() {
     let a_inf = [0.0, f32::INFINITY, 9.81];
     assert_eq!(ahrs.update(g_ok, a_inf, 0.01), Err(MahonyAhrsError::NonFinite));
 }
+
+#[test]
+fn test_mahony_pure_gyro_integration() {
+    let mut ahrs = MahonyAhrs::new(0.0, 0.0);
+    let dt = 0.01;
+    let roll_rate = 0.5;
+
+    for _ in 0..100 {
+        ahrs.update([roll_rate, 0.0, 0.0], [0.0, 0.0, 0.0], dt)
+            .unwrap();
+    }
+    let (roll, pitch, yaw) = ahrs.euler_zyx();
+    assert!((roll - 0.5).abs() < 0.02);
+    assert!(pitch.abs() < 1e-3);
+    assert!(yaw.abs() < 1e-3);
+}
