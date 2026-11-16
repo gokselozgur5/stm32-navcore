@@ -24,6 +24,7 @@ pub mod geo;
 pub mod gravity;
 pub mod linalg;
 pub mod math;
+pub mod pitot_tas;
 pub mod protocol;
 pub mod rotation;
 pub mod sensors;
