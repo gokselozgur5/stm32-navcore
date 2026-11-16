@@ -141,3 +141,17 @@ pub fn madgwick_ahrs_6dof_step(
     );
     Ok(next.normalize()?)
 }
+
+impl MadgwickAhrs {
+    /// Update orientation estimate using angular velocity and linear acceleration.
+    pub fn update(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        dt: f32,
+    ) -> Result<Quaternion, AhrsError> {
+        let q_next = madgwick_ahrs_6dof_step(self.quat, gyro, accel, self.beta, dt)?;
+        self.quat = q_next;
+        Ok(self.quat)
+    }
+}
