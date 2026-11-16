@@ -24,3 +24,21 @@ fn test_total_energy_altitude() {
         Err(VariometerError::NonFinite)
     );
 }
+
+#[test]
+fn test_config_validation_and_errors() {
+    let mut cfg = VariometerConfig::default();
+    cfg.time_constant_s = -1.0;
+    assert_eq!(
+        Variometer::new(cfg),
+        Err(VariometerError::InvalidTimeConstant)
+    );
+
+    cfg.time_constant_s = 1.0;
+    cfg.climb_threshold_mps = -2.0;
+    cfg.sink_threshold_mps = 1.0;
+    assert_eq!(
+        Variometer::new(cfg),
+        Err(VariometerError::InvalidThreshold)
+    );
+}
