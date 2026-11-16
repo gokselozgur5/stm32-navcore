@@ -1,6 +1,4 @@
-use stm32_navcore::{
-    ecef_to_geodetic, geodetic_to_ecef, GeodeticPos,
-};
+use stm32_navcore::{ecef_to_geodetic, geodetic_to_ecef, GeodeticPos};
 
 #[test]
 fn test_integration_public_api_types_and_reexports() {
