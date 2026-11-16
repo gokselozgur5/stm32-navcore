@@ -49,3 +49,13 @@ fn test_vertical_displacement_step() {
     let next = dead_reckoning_step(&state, 2.0).unwrap();
     assert_eq!(next.height_m, 120.0);
 }
+
+use stm32_navcore::nav::dead_reckoning::NavError;
+
+#[test]
+fn test_dr_validation_guards() {
+    let state = DeadReckoningState::new(f64::NAN, 0.0, 0.0, 0.0, 0.0, 0.0);
+    assert_eq!(dead_reckoning_step(&state, 1.0), Err(NavError::NonFinite));
+    let valid = DeadReckoningState::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    assert_eq!(dead_reckoning_step(&valid, -1.0), Err(NavError::NonFinite));
+}
