@@ -79,3 +79,13 @@ pub struct ZuptMetrics {
     /// Current detected stance phase.
     pub phase: StancePhase,
 }
+
+#[inline]
+pub(crate) fn vec3_norm(v: [f32; 3]) -> f32 {
+    libm::sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+}
+
+#[inline]
+pub(crate) fn is_finite_vec3(v: [f32; 3]) -> bool {
+    v[0].is_finite() && v[1].is_finite() && v[2].is_finite()
+}
