@@ -24,3 +24,17 @@ pub enum NavError {
     NonFinite,
     Geo(GeoError),
 }
+
+use crate::geo::earth_rate::principal_radii_of_curvature;
+
+/// Propagates geodetic position and height under constant velocity over interval dt.
+pub fn dead_reckoning_step(
+    state: &DeadReckoningState,
+    dt_s: f64,
+) -> Result<DeadReckoningState, NavError> {
+    if !dt_s.is_finite() || dt_s < 0.0 {
+        return Err(NavError::NonFinite);
+    }
+    if !state.lat_rad.is_finite() || !state.lon_rad.is_finite() || !state.height_m.is_finite() {
+        return Err(NavError::NonFinite);
+    }
