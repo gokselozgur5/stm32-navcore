@@ -93,3 +93,25 @@ where
 
     accumulate_rk4(y, &k1, &k2, &k3, &k4, dt)
 }
+
+/// Multi-step RK4 numerical integration for scalar ODE over N steps.
+pub fn rk4_integrate_scalar<F>(
+    mut t: f32,
+    mut y: f32,
+    dt: f32,
+    steps: usize,
+    mut f: F,
+) -> Result<f32, Rk4Error>
+where
+    F: FnMut(f32, f32) -> f32,
+{
+    if steps == 0 {
+        return Err(Rk4Error::ZeroStepCount);
+    }
+    validate_step(t, dt)?;
+    for _ in 0..steps {
+        y = rk4_step_scalar(t, y, dt, &mut f)?;
+        t += dt;
+    }
+    Ok(y)
+}
