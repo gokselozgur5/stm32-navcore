@@ -232,4 +232,18 @@ impl VelDampingFilter {
         self.gps_valid = true;
         Ok(self.vel_ned)
     }
+
+    /// Execute one prediction and optional GPS fusion step.
+    pub fn step(
+        &mut self,
+        accel_ned: [f32; 3],
+        gps_vel: Option<[f32; 3]>,
+        dt_s: f32,
+    ) -> Result<[f32; 3], VelDampingError> {
+        self.predict(accel_ned, dt_s)?;
+        if let Some(gps) = gps_vel {
+            self.fuse_gps(gps)?;
+        }
+        Ok(self.vel_ned)
+    }
 }
