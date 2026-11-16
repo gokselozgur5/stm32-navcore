@@ -34,3 +34,22 @@ fn test_cutoff_and_high_frequency_attenuation() {
     assert!((max_cut - 0.7071).abs() < 0.05);
     assert!(max_high < 0.02);
 }
+
+#[test]
+fn test_parameter_validation_and_errors() {
+    assert_eq!(
+        ButterworthFilter::try_new(0.0, 0.01),
+        Err(ButterworthError::InvalidCutoffFrequency)
+    );
+    assert_eq!(
+        ButterworthFilter::try_new(50.0, 0.01),
+        Err(ButterworthError::InvalidCutoffFrequency)
+    );
+    assert_eq!(
+        ButterworthFilter::try_new(10.0, 0.0),
+        Err(ButterworthError::InvalidSampleInterval)
+    );
+    let mut f = ButterworthFilter::try_new(5.0, 0.01).expect("valid");
+    assert_eq!(f.try_update(f32::NAN), Err(ButterworthError::NonFinite));
+    assert_eq!(f.try_update(f32::INFINITY), Err(ButterworthError::NonFinite));
+}
