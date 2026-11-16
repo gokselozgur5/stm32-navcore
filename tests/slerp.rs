@@ -50,3 +50,15 @@ fn test_slerp_rejections_and_invalid_inputs() {
     assert!(stm32_navcore::slerp::quat_slerp(&q_valid, &q_valid, f32::NAN).is_err());
     assert!(stm32_navcore::slerp::quat_nlerp(&q_zero, &q_valid, 0.5).is_err());
 }
+
+#[test]
+fn test_slerp_near_collinear_fallback() {
+    let q0 = Quaternion::IDENTITY;
+    let angle = 0.0001_f32;
+    let half_a = angle * 0.5;
+    let q1 = Quaternion::new(libm::cosf(half_a), libm::sinf(half_a), 0.0, 0.0);
+    let interpolated = stm32_navcore::slerp::quat_slerp(&q0, &q1, 0.5).unwrap();
+    let norm = (interpolated.w * interpolated.w + interpolated.x * interpolated.x).sqrt();
+    assert!((norm - 1.0).abs() < 1e-6);
+    assert!((interpolated.x - half_a * 0.5).abs() < 1e-6);
+}
