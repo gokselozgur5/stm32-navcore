@@ -53,3 +53,13 @@ impl ButterworthCoefficients {
         Ok(Self { b0, b1, b2, a1, a2 })
     }
 }
+
+impl ButterworthCoefficients {
+    /// Verifies Bounded-Input Bounded-Output (BIBO) stability.
+    ///
+    /// Requires poles to lie strictly inside the unit circle:
+    /// |a2| < 1.0 and |a1| < 1.0 + a2.
+    pub fn is_stable(&self) -> bool {
+        self.a2.abs() < 1.0 && self.a1.abs() < (1.0 + self.a2)
+    }
+}
