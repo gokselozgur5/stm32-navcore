@@ -128,3 +128,22 @@ pub struct AirspeedReading {
     /// Dynamic (pitot differential) pressure in Pa.
     pub dynamic_pressure_pa: f32,
 }
+
+/// Pitot-static true airspeed estimator maintaining calibration parameters.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PitotTasEstimator {
+    /// Pitot tube installation calibration factor (default 1.0).
+    pub pitot_factor: f32,
+}
+
+impl PitotTasEstimator {
+    /// Create new estimator with nominal unity pitot factor.
+    pub const fn new() -> Self {
+        Self { pitot_factor: 1.0 }
+    }
+
+    /// Create new estimator with custom calibration factor.
+    pub const fn with_factor(pitot_factor: f32) -> Self {
+        Self { pitot_factor }
+    }
+}
