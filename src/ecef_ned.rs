@@ -114,3 +114,19 @@ pub const WGS84_B: f64 = 6_356_752.314_245_179;
 
 /// WGS-84 first eccentricity squared: e^2 = 2f - f^2.
 pub const WGS84_E2: f64 = 0.006_694_379_990_141_316_5;
+
+/// Transform geodetic coordinates to ECEF Cartesian coordinates.
+pub fn geodetic_to_ecef(geo: &GeodeticPos) -> EcefPos {
+    let sin_lat = libm::sin(geo.lat_rad);
+    let cos_lat = libm::cos(geo.lat_rad);
+    let sin_lon = libm::sin(geo.lon_rad);
+    let cos_lon = libm::cos(geo.lon_rad);
+
+    let n = WGS84_A / libm::sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
+
+    let x = (n + geo.alt_m) * cos_lat * cos_lon;
+    let y = (n + geo.alt_m) * cos_lat * sin_lon;
+    let z = (n * (1.0 - WGS84_E2) + geo.alt_m) * sin_lat;
+
+    EcefPos::new(x, y, z)
+}
