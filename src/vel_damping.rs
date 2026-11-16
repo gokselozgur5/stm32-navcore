@@ -157,4 +157,24 @@ impl VelDampingFilter {
             gps_valid: false,
         })
     }
+
+    /// Return current NED velocity estimate.
+    pub fn velocity(&self) -> [f32; 3] {
+        self.vel_ned
+    }
+
+    /// Return active configuration parameters.
+    pub fn config(&self) -> VelDampingConfig {
+        self.config
+    }
+
+    /// Return whether GPS velocity aiding is currently valid.
+    pub fn is_gps_valid(&self) -> bool {
+        self.gps_valid
+    }
+
+    /// Return elapsed time in seconds since last accepted GPS update.
+    pub fn time_since_gps(&self) -> f32 {
+        self.time_since_gps_s
+    }
 }
