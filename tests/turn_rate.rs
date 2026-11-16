@@ -55,3 +55,15 @@ fn test_turn_radius_and_centripetal_accel() {
     let a_c = centripetal_accel_mps2(tas, r).unwrap();
     assert!((a_c - (g * libm::tanf(bank_rad))).abs() < 1e-3);
 }
+
+#[test]
+fn test_load_factor_and_stall_speed() {
+    let bank_60 = 60.0 * DEG_TO_RAD;
+    let n = load_factor(bank_60).unwrap();
+    assert!((n - 2.0).abs() < 1e-3);
+
+    let v_s0 = 30.0;
+    let v_s = accelerated_stall_speed(v_s0, bank_60).unwrap();
+    let expected_vs = v_s0 * libm::sqrtf(2.0);
+    assert!((v_s - expected_vs).abs() < 1e-3);
+}
