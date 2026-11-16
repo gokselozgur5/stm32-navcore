@@ -277,4 +277,25 @@ mod tests {
         est.calibrate_at_known_altitude(STANDARD_SEA_LEVEL_PRESSURE_PA, 100.0).unwrap();
         assert!(est.ref_pressure_pa > STANDARD_SEA_LEVEL_PRESSURE_PA);
     }
+
+    #[test]
+    fn test_hypsometric_isothermal() {
+        let alt = hypsometric_altitude(
+            STANDARD_SEA_LEVEL_PRESSURE_PA * 0.5,
+            STANDARD_SEA_LEVEL_PRESSURE_PA,
+            STANDARD_SEA_LEVEL_TEMP_K,
+            0.0,
+        )
+        .unwrap();
+        assert!(alt > 5000.0 && alt < 6000.0);
+    }
+
+    #[test]
+    fn test_relative_altitude() {
+        let est = BaroAltEstimator::standard();
+        let p0 = STANDARD_SEA_LEVEL_PRESSURE_PA;
+        let p1 = pressure_at_altitude_isa(250.0).unwrap();
+        let diff = est.relative_altitude(p1, p0).unwrap();
+        assert!((diff - 250.0).abs() < 1e-1);
+    }
 }
