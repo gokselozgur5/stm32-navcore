@@ -148,3 +148,28 @@ impl Variometer {
         &self.config
     }
 }
+
+impl Variometer {
+    /// Updates estimator with measured altitude in meters and timestep in seconds.
+    pub fn update_altitude(&mut self, altitude_m: f32, dt_s: f32) -> Result<f32, VariometerError> {
+        if !altitude_m.is_finite() {
+            return Err(VariometerError::NonFinite);
+        }
+        if !dt_s.is_finite() || dt_s <= 0.0 {
+            return Err(VariometerError::InvalidSampleInterval);
+        }
+        if !self.initialized {
+            self.raw_altitude_m = altitude_m;
+            self.filtered_altitude_m = altitude_m;
+            self.vertical_speed_mps = 0.0;
+            self.initialized = true;
+        } else {
+            let raw_vs = (altitude_m - self.raw_altitude_m) / dt_s;
+            self.raw_altitude_m = altitude_m;
+            let alpha = dt_s / (self.config.time_constant_s + dt_s);
+            self.vertical_speed_mps += alpha * (raw_vs - self.vertical_speed_mps);
+            self.filtered_altitude_m += self.vertical_speed_mps * dt_s + alpha * (altitude_m - self.filtered_altitude_m);
+        }
+        Ok(self.vertical_speed_mps)
+    }
+}
