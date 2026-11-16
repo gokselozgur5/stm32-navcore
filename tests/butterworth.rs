@@ -53,3 +53,22 @@ fn test_parameter_validation_and_errors() {
     assert_eq!(f.try_update(f32::NAN), Err(ButterworthError::NonFinite));
     assert_eq!(f.try_update(f32::INFINITY), Err(ButterworthError::NonFinite));
 }
+
+#[test]
+fn test_state_reset_and_retune() {
+    let mut f = ButterworthFilter::try_new(5.0, 0.01).expect("valid");
+    for _ in 0..10 {
+        f.update(1.0);
+    }
+    let (s1, s2) = f.state();
+    assert!(s1 != 0.0 || s2 != 0.0);
+
+    f.reset();
+    assert_eq!(f.state(), (0.0, 0.0));
+
+    f.set_state(0.5, -0.5);
+    assert_eq!(f.state(), (0.5, -0.5));
+
+    f.retune(15.0, 0.01).expect("retune success");
+    assert!(f.coefficients().is_stable());
+}
