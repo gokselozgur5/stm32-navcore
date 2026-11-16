@@ -147,3 +147,24 @@ impl PitotTasEstimator {
         Self { pitot_factor }
     }
 }
+
+impl PitotTasEstimator {
+    /// Update airspeed estimation from pitot differential pressure, static pressure, and temperature.
+    pub fn update(
+        &self,
+        diff_pressure_pa: f32,
+        static_pressure_pa: f32,
+        temp_k: f32,
+    ) -> Result<AirspeedReading, PitotError> {
+        let cal_diff = diff_pressure_pa * self.pitot_factor;
+        let ias = diff_pressure_to_ias(cal_diff)?;
+        let rho = air_density(static_pressure_pa, temp_k)?;
+        let tas = ias_to_tas_with_density(ias, rho)?;
+        Ok(AirspeedReading {
+            ias_mps: ias,
+            tas_mps: tas,
+            density_kg_m3: rho,
+            dynamic_pressure_pa: cal_diff,
+        })
+    }
+}
