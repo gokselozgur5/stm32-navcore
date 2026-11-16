@@ -53,3 +53,19 @@ impl GeodeticPos {
         }
         Ok(Self { lat_rad, lon_rad, alt_m })
     }
+
+    /// Construct a validated geodetic position from degrees and meters.
+    pub fn from_degrees(lat_deg: f64, lon_deg: f64, alt_m: f64) -> Result<Self, EcefNedError> {
+        Self::new(lat_deg.to_radians(), lon_deg.to_radians(), alt_m)
+    }
+
+    /// Return geodetic latitude converted to degrees.
+    pub fn lat_deg(&self) -> f64 {
+        self.lat_rad.to_degrees()
+    }
+
+    /// Return geodetic longitude converted to degrees.
+    pub fn lon_deg(&self) -> f64 {
+        self.lon_rad.to_degrees()
+    }
+}
