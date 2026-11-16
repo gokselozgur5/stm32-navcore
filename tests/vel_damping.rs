@@ -1,6 +1,4 @@
-use stm32_navcore::vel_damping::{
-    VelDampingConfig, VelDampingError,
-};
+use stm32_navcore::vel_damping::{VelDampingConfig, VelDampingError};
 
 #[test]
 fn test_config_validation_and_errors() {
