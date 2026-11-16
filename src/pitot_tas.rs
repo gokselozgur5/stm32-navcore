@@ -168,3 +168,21 @@ impl PitotTasEstimator {
         })
     }
 }
+
+impl Default for PitotTasEstimator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Convert temperature from Celsius to Kelvin.
+pub fn celsius_to_kelvin(temp_c: f32) -> Result<f32, PitotError> {
+    if !temp_c.is_finite() {
+        return Err(PitotError::NonFinite);
+    }
+    let k = temp_c + 273.15;
+    if k <= 0.0 {
+        return Err(PitotError::InvalidTemperature);
+    }
+    Ok(k)
+}
