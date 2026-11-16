@@ -137,3 +137,18 @@ impl BodyRot {
         ])
     }
 }
+
+impl BodyRot {
+    /// Rotates vector from Body frame to NED frame: v_n = C_b_n * v_b.
+    pub fn rotate_body_to_ned(&self, v: [f32; 3]) -> Result<[f32; 3], BodyRotError> {
+        if !v[0].is_finite() || !v[1].is_finite() || !v[2].is_finite() {
+            return Err(BodyRotError::NonFinite);
+        }
+        let m = &self.dcm_nb.0;
+        Ok([
+            m[0][0] * v[0] + m[1][0] * v[1] + m[2][0] * v[2],
+            m[0][1] * v[0] + m[1][1] * v[1] + m[2][1] * v[2],
+            m[0][2] * v[0] + m[1][2] * v[1] + m[2][2] * v[2],
+        ])
+    }
+}
