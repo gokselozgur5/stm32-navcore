@@ -21,3 +21,13 @@ fn test_stationary_dr_invariance() {
     assert_eq!(next.lon_rad, state.lon_rad);
     assert_eq!(next.height_m, state.height_m);
 }
+
+
+#[test]
+fn test_eastward_displacement_step() {
+    let state = DeadReckoningState::new(0.0, 0.0, 0.0, 0.0, 100.0, 0.0);
+    let next = dead_reckoning_step(&state, 1.0).unwrap();
+    assert_eq!(next.lat_rad, 0.0);
+    assert!(next.lon_rad > 0.0);
+    assert_eq!(next.height_m, 0.0);
+}
