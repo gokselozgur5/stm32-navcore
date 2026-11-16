@@ -302,4 +302,21 @@ mod tests {
         assert!((recovered.lon_deg() - original.lon_deg()).abs() < 1e-7);
         assert!((recovered.alt_m - original.alt_m).abs() < 1e-3);
     }
+
+    #[test]
+    fn test_ned_local_tangent_plane_roundtrip() {
+        let origin = GeodeticPos::from_degrees(41.0, 29.0, 100.0).unwrap();
+        let frame = NedFrame::from_geodetic(&origin);
+        let origin_ned = frame.geodetic_to_ned(&origin).unwrap();
+        assert!(origin_ned.north.abs() < 1e-4);
+        assert!(origin_ned.east.abs() < 1e-4);
+        assert!(origin_ned.down.abs() < 1e-4);
+
+        let target_ned = NedPos::new(1000.0, -500.0, -50.0);
+        let ecef_pt = frame.ned_to_ecef(&target_ned).unwrap();
+        let recovered_ned = frame.ecef_to_ned(&ecef_pt).unwrap();
+        assert!((recovered_ned.north - target_ned.north).abs() < 1e-4);
+        assert!((recovered_ned.east - target_ned.east).abs() < 1e-4);
+        assert!((recovered_ned.down - target_ned.down).abs() < 1e-4);
+    }
 }
