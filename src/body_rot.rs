@@ -41,3 +41,27 @@ impl BodyRot {
         self.dcm_nb.transpose()
     }
 }
+
+impl BodyRot {
+    /// Computes determinant of the 3x3 rotation matrix.
+    pub fn det(&self) -> f32 {
+        let m = &self.dcm_nb.0;
+        m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+            - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+            + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
+    }
+
+    /// Checks if inner DCM satisfies orthonormality.
+    pub fn is_orthonormal(&self) -> bool {
+        let p = self.dcm_nb.matmul(&self.dcm_nb.transpose());
+        for i in 0..3 {
+            for j in 0..3 {
+                let target = if i == j { 1.0 } else { 0.0 };
+                if (p.0[i][j] - target).abs() > BODY_ROT_TOLERANCE {
+                    return false;
+                }
+            }
+        }
+        (self.det() - 1.0).abs() <= BODY_ROT_TOLERANCE
+    }
+}
