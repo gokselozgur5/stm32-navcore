@@ -51,3 +51,13 @@ pub fn air_density(static_pressure_pa: f32, temp_k: f32) -> Result<f32, PitotErr
     }
     Ok(rho)
 }
+
+/// Compute atmospheric density ratio sigma = rho / rho0.
+pub fn density_ratio(static_pressure_pa: f32, temp_k: f32) -> Result<f32, PitotError> {
+    let rho = air_density(static_pressure_pa, temp_k)?;
+    let sigma = rho / STANDARD_SEA_LEVEL_DENSITY_KG_M3;
+    if !sigma.is_finite() || sigma <= 0.0 {
+        return Err(PitotError::InvalidDensity);
+    }
+    Ok(sigma)
+}
