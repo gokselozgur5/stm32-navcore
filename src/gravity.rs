@@ -21,3 +21,19 @@ pub const WGS84_E2: f32 = 0.006_694_38;
 
 /// WGS-84 semi-major axis in meters.
 pub const WGS84_A: f32 = 6_378_137.0;
+
+/// Somigliana normal gravity at the surface of the WGS-84 ellipsoid.
+pub fn somigliana_surface(lat_rad: f32) -> Result<f32, GravityError> {
+    if !lat_rad.is_finite() {
+        return Err(GravityError::NonFinite);
+    }
+    let half_pi = core::f32::consts::FRAC_PI_2;
+    if lat_rad < -half_pi || lat_rad > half_pi {
+        return Err(GravityError::InvalidLatitude);
+    }
+    let s = libm::sinf(lat_rad);
+    let s2 = s * s;
+    let num = 1.0 + SOMIGLIANA_K * s2;
+    let den = libm::sqrtf(1.0 - WGS84_E2 * s2);
+    Ok(GAMMA_E * (num / den))
+}
