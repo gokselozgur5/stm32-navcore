@@ -131,3 +131,17 @@ fn test_mahony_step_equivalence_and_norm_stability() {
         assert!((q_up.norm() - 1.0).abs() < 1e-5);
     }
 }
+
+#[test]
+fn test_mahony_9dof_step_equivalence() {
+    let mut ahrs = MahonyAhrs::default();
+    let g = [0.01, 0.02, 0.03];
+    let a = [0.0, 0.0, 9.81];
+    let m = [1.0, 0.0, 0.0];
+    let (q, b) =
+        mahony_ahrs_9dof_step(ahrs.quaternion(), g, a, m, ahrs.gyro_bias(), ahrs.kp, ahrs.ki, 0.01)
+            .unwrap();
+    let q_up = ahrs.update_9dof(g, a, m, 0.01).unwrap();
+    assert_eq!(q, q_up);
+    assert_eq!(b, ahrs.gyro_bias());
+}
