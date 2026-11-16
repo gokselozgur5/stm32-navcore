@@ -224,3 +224,15 @@ impl NedFrame {
         Ok(EcefPos::new(x, y, z))
     }
 }
+
+/// Transform ECEF coordinates to NED coordinates relative to a geodetic reference point.
+pub fn ecef_to_ned(point: &EcefPos, ref_geo: &GeodeticPos) -> Result<NedPos, EcefNedError> {
+    let frame = NedFrame::from_geodetic(ref_geo);
+    frame.ecef_to_ned(point)
+}
+
+/// Transform NED coordinates to ECEF coordinates relative to a geodetic reference point.
+pub fn ned_to_ecef(ned: &NedPos, ref_geo: &GeodeticPos) -> Result<EcefPos, EcefNedError> {
+    let frame = NedFrame::from_geodetic(ref_geo);
+    frame.ned_to_ecef(ned)
+}
