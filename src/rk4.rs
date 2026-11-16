@@ -187,8 +187,13 @@ where
     if dt <= 0.0 {
         return Err(Rk4Error::InvalidTimeStep);
     }
-    let (mut k1, mut k2, mut k3, mut k4, mut tmp) =
-        ([0.0f64; N], [0.0f64; N], [0.0f64; N], [0.0f64; N], [0.0f64; N]);
+    let (mut k1, mut k2, mut k3, mut k4, mut tmp) = (
+        [0.0f64; N],
+        [0.0f64; N],
+        [0.0f64; N],
+        [0.0f64; N],
+        [0.0f64; N],
+    );
     let hdt = 0.5 * dt;
     f(t, y, &mut k1);
     for i in 0..N {
