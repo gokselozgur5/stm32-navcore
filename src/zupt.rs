@@ -89,3 +89,15 @@ pub(crate) fn vec3_norm(v: [f32; 3]) -> f32 {
 pub(crate) fn is_finite_vec3(v: [f32; 3]) -> bool {
     v[0].is_finite() && v[1].is_finite() && v[2].is_finite()
 }
+
+/// Fixed-window zero-velocity update detector for embedded Cortex-M platforms.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ZuptDetector<const WINDOW: usize> {
+    config: ZuptConfig,
+    count: usize,
+    head: usize,
+    stance_streak: usize,
+    accel_buf: [[f32; 3]; WINDOW],
+    gyro_buf: [[f32; 3]; WINDOW],
+    current_metrics: ZuptMetrics,
+}
