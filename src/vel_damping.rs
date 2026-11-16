@@ -99,3 +99,27 @@ pub fn calculate_innovation(
     );
     Ok((innov, norm))
 }
+
+/// Fuse dead reckoning velocity with GPS velocity using proportional gain.
+pub fn fuse_velocity_step(
+    vel_dr: [f32; 3],
+    vel_gps: [f32; 3],
+    gain: f32,
+    max_gate: f32,
+) -> Result<[f32; 3], VelDampingError> {
+    if !gain.is_finite() || gain < 0.0 || gain > 1.0 {
+        return Err(VelDampingError::InvalidGain);
+    }
+    if !max_gate.is_finite() || max_gate <= 0.0 {
+        return Err(VelDampingError::InvalidGateThreshold);
+    }
+    let (innov, norm) = calculate_innovation(vel_dr, vel_gps)?;
+    if norm > max_gate {
+        return Err(VelDampingError::InnovationGateExceeded);
+    }
+    Ok([
+        vel_dr[0] + gain * innov[0],
+        vel_dr[1] + gain * innov[1],
+        vel_dr[2] + gain * innov[2],
+    ])
+}
