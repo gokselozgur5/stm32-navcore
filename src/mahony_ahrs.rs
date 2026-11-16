@@ -66,3 +66,20 @@ impl MahonyAhrs {
         self.quat
     }
 }
+
+impl MahonyAhrs {
+    /// Current Euler angles (roll, pitch, yaw) in radians.
+    pub fn euler_zyx(&self) -> (f32, f32, f32) {
+        self.quat.to_euler_zyx()
+    }
+
+    /// Current estimated 3-axis gyroscope bias in rad/s.
+    pub const fn gyro_bias(&self) -> [f32; 3] {
+        self.gyro_bias
+    }
+
+    /// Manually set the estimated 3-axis gyroscope bias.
+    pub fn set_gyro_bias(&mut self, bias: [f32; 3]) {
+        self.gyro_bias = bias;
+    }
+}
