@@ -142,3 +142,19 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
             phase: StancePhase::Moving,
         };
     }
+
+    fn compute_accel_stats(&self, valid_len: usize) -> (f32, f32) {
+        let mut sum_mag = 0.0f32;
+        let mut sum_mag_sq = 0.0f32;
+        for i in 0..valid_len {
+            let mag = vec3_norm(self.accel_buf[i]);
+            sum_mag += mag;
+            sum_mag_sq += mag * mag;
+        }
+        let inv_n = 1.0 / (valid_len as f32);
+        let mean = sum_mag * inv_n;
+        let variance = (sum_mag_sq * inv_n) - (mean * mean);
+        let non_neg_variance = if variance < 0.0 { 0.0 } else { variance };
+        let mag_diff = (mean - self.config.gravity_magnitude).abs();
+        (non_neg_variance, mag_diff)
+    }
