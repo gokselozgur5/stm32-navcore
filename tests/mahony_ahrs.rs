@@ -76,3 +76,17 @@ fn test_mahony_gravity_tilt_convergence() {
     assert!((pitch - target_pitch).abs() < 0.5f32.to_radians());
     assert!(yaw.abs() < 0.5f32.to_radians());
 }
+
+#[test]
+fn test_mahony_gyro_bias_tracking() {
+    let mut ahrs = MahonyAhrs::new(2.0, 0.1);
+    let injected_bias = [0.02, -0.015, 0.0];
+    let static_accel = [0.0, 0.0, 9.81];
+
+    for _ in 0..6000 {
+        ahrs.update(injected_bias, static_accel, 0.01).unwrap();
+    }
+    let est_bias = ahrs.gyro_bias();
+    assert!((est_bias[0] - injected_bias[0]).abs() < 0.003);
+    assert!((est_bias[1] - injected_bias[1]).abs() < 0.003);
+}
