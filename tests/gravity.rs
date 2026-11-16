@@ -30,3 +30,17 @@ fn elevation_correction_decreases_gravity() {
     let corr = elevation_correction(lat_45, 1000.0).expect("correction");
     assert!((corr - (-0.00308)).abs() < 1e-4);
 }
+
+use stm32_navcore::gravity::{gravity_vector_ned, GravityError};
+
+#[test]
+fn ned_vector_and_input_validation() {
+    let vec = gravity_vector_ned(0.0, 0.0).expect("ned vector");
+    assert_eq!(vec[0], 0.0);
+    assert_eq!(vec[1], 0.0);
+    assert!((vec[2] - 9.780_325).abs() < 1e-4);
+
+    assert_eq!(somigliana_surface(f32::NAN), Err(GravityError::NonFinite));
+    assert_eq!(somigliana_surface(2.0), Err(GravityError::InvalidLatitude));
+    assert_eq!(normal_gravity(0.0, 200_000.0), Err(GravityError::InvalidAltitude));
+}
