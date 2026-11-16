@@ -180,3 +180,27 @@ impl BaroAltEstimator {
             lapse_rate_k_per_m: STANDARD_LAPSE_RATE_K_PER_M,
         })
     }
+
+    /// Creates estimator with custom reference conditions.
+    pub fn with_custom_reference(
+        p_ref_pa: f32,
+        t_ref_k: f32,
+        lapse_rate: f32,
+    ) -> Result<Self, BaroAltError> {
+        validate_baro_inputs(p_ref_pa, p_ref_pa, t_ref_k, lapse_rate)?;
+        Ok(Self {
+            ref_pressure_pa: p_ref_pa,
+            ref_temp_k: t_ref_k,
+            lapse_rate_k_per_m: lapse_rate,
+        })
+    }
+
+    /// Estimates altitude from measured pressure using configured parameters.
+    pub fn estimate_altitude(&self, pressure_pa: f32) -> Result<f32, BaroAltError> {
+        hypsometric_altitude(
+            pressure_pa,
+            self.ref_pressure_pa,
+            self.ref_temp_k,
+            self.lapse_rate_k_per_m,
+        )
+    }
