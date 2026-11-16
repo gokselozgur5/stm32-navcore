@@ -76,3 +76,13 @@ pub fn ias_to_tas_with_density(ias_mps: f32, density_kg_m3: f32) -> Result<f32, 
     let ratio = STANDARD_SEA_LEVEL_DENSITY_KG_M3 / density_kg_m3;
     Ok(ias_mps * libm::sqrtf(ratio))
 }
+
+/// Convert indicated airspeed (IAS) to true airspeed (TAS) given static pressure and temperature.
+pub fn ias_to_tas(
+    ias_mps: f32,
+    static_pressure_pa: f32,
+    temp_k: f32,
+) -> Result<f32, PitotError> {
+    let rho = air_density(static_pressure_pa, temp_k)?;
+    ias_to_tas_with_density(ias_mps, rho)
+}
