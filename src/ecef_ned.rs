@@ -84,3 +84,18 @@ impl EcefPos {
         Self { x, y, z }
     }
 }
+
+/// Local Tangent Plane North-East-Down (NED) coordinates in meters.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct NedPos {
+    pub north: f64,
+    pub east: f64,
+    pub down: f64,
+}
+
+impl NedPos {
+    /// Construct a new NED coordinate tuple.
+    pub const fn new(north: f64, east: f64, down: f64) -> Self {
+        Self { north, east, down }
+    }
+}
