@@ -25,3 +25,14 @@ impl core::fmt::Display for EcefNedError {
         }
     }
 }
+
+/// Geodetic coordinates represented by latitude, longitude, and height.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct GeodeticPos {
+    /// Geodetic latitude in radians [-pi/2, pi/2].
+    pub lat_rad: f64,
+    /// Geodetic longitude in radians [-pi, pi].
+    pub lon_rad: f64,
+    /// Height above reference ellipsoid in meters.
+    pub alt_m: f64,
+}
