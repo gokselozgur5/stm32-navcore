@@ -29,3 +29,22 @@ pub struct VelDampingConfig {
     /// Duration in seconds without GPS before marking fix invalid.
     pub gps_timeout_s: f32,
 }
+
+impl VelDampingConfig {
+    /// Validate configuration invariants.
+    pub fn validate(&self) -> Result<(), VelDampingError> {
+        if !self.tau_s.is_finite() || self.tau_s <= 0.0 {
+            return Err(VelDampingError::InvalidTimeConstant);
+        }
+        if !self.gps_gain.is_finite() || self.gps_gain < 0.0 || self.gps_gain > 1.0 {
+            return Err(VelDampingError::InvalidGain);
+        }
+        if !self.max_innovation_mps.is_finite() || self.max_innovation_mps <= 0.0 {
+            return Err(VelDampingError::InvalidGateThreshold);
+        }
+        if !self.gps_timeout_s.is_finite() || self.gps_timeout_s <= 0.0 {
+            return Err(VelDampingError::InvalidSampleInterval);
+        }
+        Ok(())
+    }
+}
