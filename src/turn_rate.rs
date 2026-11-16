@@ -187,3 +187,16 @@ pub fn load_factor(bank_angle_rad: f32) -> Result<f32, TurnRateError> {
     }
     Ok(1.0 / cos_phi)
 }
+
+/// Compute accelerated stall speed: V_s = V_s0 * sqrt(n).
+pub fn accelerated_stall_speed(
+    v_stall_level_mps: f32,
+    bank_angle_rad: f32,
+) -> Result<f32, TurnRateError> {
+    validate_finite(v_stall_level_mps)?;
+    if v_stall_level_mps <= 0.0 {
+        return Err(TurnRateError::InvalidStallSpeed);
+    }
+    let n = load_factor(bank_angle_rad)?;
+    Ok(v_stall_level_mps * libm::sqrtf(n))
+}
