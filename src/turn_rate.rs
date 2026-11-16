@@ -87,3 +87,16 @@ pub fn turn_rate_deg_s(
     let rate_rad = turn_rate_rad_s(true_airspeed_mps, bank_rad, gravity_mps2)?;
     Ok(rate_rad * RAD_TO_DEG)
 }
+
+/// Compute bank angle in radians for a given turn rate: phi = atan2(v * omega, g).
+pub fn bank_angle_rad(
+    true_airspeed_mps: f32,
+    turn_rate_rad_s: f32,
+    gravity_mps2: f32,
+) -> Result<f32, TurnRateError> {
+    validate_speed_gravity(true_airspeed_mps, gravity_mps2)?;
+    validate_finite(turn_rate_rad_s)?;
+    let phi = libm::atan2f(true_airspeed_mps * turn_rate_rad_s, gravity_mps2);
+    validate_bank_angle(phi)?;
+    Ok(phi)
+}
