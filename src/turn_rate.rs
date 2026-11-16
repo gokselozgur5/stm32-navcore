@@ -75,3 +75,15 @@ pub fn turn_rate_rad_s(
     let tan_phi = libm::tanf(bank_angle_rad);
     Ok((gravity_mps2 * tan_phi) / true_airspeed_mps)
 }
+
+/// Compute coordinated turn rate in deg/s from bank angle in degrees.
+pub fn turn_rate_deg_s(
+    true_airspeed_mps: f32,
+    bank_angle_deg: f32,
+    gravity_mps2: f32,
+) -> Result<f32, TurnRateError> {
+    validate_finite(bank_angle_deg)?;
+    let bank_rad = bank_angle_deg * DEG_TO_RAD;
+    let rate_rad = turn_rate_rad_s(true_airspeed_mps, bank_rad, gravity_mps2)?;
+    Ok(rate_rad * RAD_TO_DEG)
+}
