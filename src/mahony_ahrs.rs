@@ -114,3 +114,22 @@ impl MahonyAhrs {
         [ay * vz - az * vy, az * vx - ax * vz, ax * vy - ay * vx]
     }
 }
+
+impl MahonyAhrs {
+    fn compute_mag_error(q: &Quaternion, mag: [f32; 3]) -> [f32; 3] {
+        let m_sq = mag[0] * mag[0] + mag[1] * mag[1] + mag[2] * mag[2];
+        if m_sq < 1e-12 || !m_sq.is_finite() {
+            return [0.0; 3];
+        }
+        let inv_m = 1.0 / libm::sqrtf(m_sq);
+        let (mx, my, mz) = (mag[0] * inv_m, mag[1] * inv_m, mag[2] * inv_m);
+
+        let h = q.rotate_vec([mx, my, mz]);
+        let bx = libm::sqrtf(h[0] * h[0] + h[1] * h[1]);
+        let bz = h[2];
+        let q_conj = Quaternion::new(q.w, -q.x, -q.y, -q.z);
+        let w = q_conj.rotate_vec([bx, 0.0, bz]);
+
+        [my * w[2] - mz * w[1], mz * w[0] - mx * w[2], mx * w[1] - my * w[0]]
+    }
+}
