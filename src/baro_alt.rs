@@ -64,3 +64,27 @@ pub fn altitude_from_pressure_qnh(
     let factor = 1.0 - libm::powf(ratio, HYPSOMETRIC_EXPONENT);
     Ok(TROPOSPHERE_TEMP_SCALE * factor)
 }
+
+fn validate_baro_inputs(
+    p: f32,
+    p_ref: f32,
+    t_ref: f32,
+    lapse: f32,
+) -> Result<(), BaroAltError> {
+    if !p.is_finite() || !p_ref.is_finite() || !t_ref.is_finite() || !lapse.is_finite() {
+        return Err(BaroAltError::NonFinite);
+    }
+    if p <= 0.0 {
+        return Err(BaroAltError::InvalidPressure);
+    }
+    if p_ref <= 0.0 {
+        return Err(BaroAltError::InvalidReferencePressure);
+    }
+    if t_ref <= 0.0 {
+        return Err(BaroAltError::InvalidTemperature);
+    }
+    if lapse < 0.0 {
+        return Err(BaroAltError::InvalidLapseRate);
+    }
+    Ok(())
+}
