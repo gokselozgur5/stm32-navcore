@@ -20,7 +20,7 @@ pub const BODY_ROT_TOLERANCE: f32 = 1e-4;
 /// Rotation representation between NED and Body coordinate frames.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BodyRot {
-    pub(crate) dcm_nb: Mat<3, 3>,
+    pub dcm_nb: Mat<3, 3>,
 }
 
 impl BodyRot {
