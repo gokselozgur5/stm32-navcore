@@ -28,3 +28,16 @@ pub const GAS_CONSTANT_DRY_AIR: f32 = 287.05287;
 
 /// Standard atmospheric air density at sea level in kg/m^3.
 pub const STANDARD_SEA_LEVEL_DENSITY_KG_M3: f32 = 1.2250;
+
+fn validate_air_state(static_pressure_pa: f32, temp_k: f32) -> Result<(), PitotError> {
+    if !static_pressure_pa.is_finite() || !temp_k.is_finite() {
+        return Err(PitotError::NonFinite);
+    }
+    if static_pressure_pa <= 0.0 {
+        return Err(PitotError::InvalidPressure);
+    }
+    if temp_k <= 0.0 {
+        return Err(PitotError::InvalidTemperature);
+    }
+    Ok(())
+}
