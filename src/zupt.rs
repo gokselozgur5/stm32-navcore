@@ -101,3 +101,28 @@ pub struct ZuptDetector<const WINDOW: usize> {
     gyro_buf: [[f32; 3]; WINDOW],
     current_metrics: ZuptMetrics,
 }
+
+impl<const WINDOW: usize> ZuptDetector<WINDOW> {
+    /// Constructs a new detector with given configuration.
+    pub fn new(config: ZuptConfig) -> Result<Self, ZuptError> {
+        if WINDOW < 2 {
+            return Err(ZuptError::InvalidWindowSize);
+        }
+        config.validate()?;
+        let initial_metrics = ZuptMetrics {
+            accel_variance: 0.0,
+            max_gyro_norm: 0.0,
+            accel_mag_diff: 0.0,
+            test_statistic: 0.0,
+            phase: StancePhase::Moving,
+        };
+        Ok(Self {
+            config,
+            count: 0,
+            head: 0,
+            stance_streak: 0,
+            accel_buf: [[0.0; 3]; WINDOW],
+            gyro_buf: [[0.0; 3]; WINDOW],
+            current_metrics: initial_metrics,
+        })
+    }
