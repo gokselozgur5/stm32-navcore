@@ -44,3 +44,19 @@ fn ned_vector_and_input_validation() {
     assert_eq!(somigliana_surface(2.0), Err(GravityError::InvalidLatitude));
     assert_eq!(normal_gravity(0.0, 200_000.0), Err(GravityError::InvalidAltitude));
 }
+
+use stm32_navcore::gravity::{normal_gravity_f64, somigliana_surface_f64};
+
+#[test]
+fn high_precision_f64_surface_and_elevation() {
+    let half_pi = core::f64::consts::FRAC_PI_2;
+    let g_eq = somigliana_surface_f64(0.0).expect("f64 equator");
+    assert!((g_eq - 9.780_325_335_9).abs() < 1e-6);
+
+    let g_pole = somigliana_surface_f64(half_pi).expect("f64 pole");
+    assert!((g_pole - 9.832_184_937_8).abs() < 1e-4);
+
+    let g_1000m = normal_gravity_f64(0.0, 1000.0).expect("f64 1000m");
+    assert!(g_1000m < g_eq);
+    assert!((g_eq - g_1000m - 0.00308).abs() < 1e-4);
+}
