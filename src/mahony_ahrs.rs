@@ -275,3 +275,9 @@ impl MahonyAhrs {
         Ok(self.quat)
     }
 }
+
+impl Default for MahonyAhrs {
+    fn default() -> Self {
+        Self::new(Self::DEFAULT_KP, Self::DEFAULT_KI)
+    }
+}
