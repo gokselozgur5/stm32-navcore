@@ -65,7 +65,7 @@ impl ButterworthCoefficients {
 }
 
 /// Second-order low-pass Butterworth IIR filter (DF2T).
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ButterworthFilter {
     coeffs: ButterworthCoefficients,
     s1: f32,
