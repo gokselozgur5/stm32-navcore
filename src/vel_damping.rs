@@ -123,3 +123,12 @@ pub fn fuse_velocity_step(
         vel_dr[2] + gain * innov[2],
     ])
 }
+
+/// Dead reckoning velocity filter with damping and GPS velocity fusion.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct VelDampingFilter {
+    config: VelDampingConfig,
+    vel_ned: [f32; 3],
+    time_since_gps_s: f32,
+    gps_valid: bool,
+}
