@@ -189,3 +189,17 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
             && diff_a <= self.config.accel_mag_thresh;
         (meets, stat)
     }
+
+    fn update_stance_streak(&mut self, criteria_met: bool) -> StancePhase {
+        if criteria_met {
+            self.stance_streak += 1;
+            if self.stance_streak >= self.config.min_stance_samples {
+                StancePhase::StanceConfirmed
+            } else {
+                StancePhase::StanceCandidate
+            }
+        } else {
+            self.stance_streak = 0;
+            StancePhase::Moving
+        }
+    }
