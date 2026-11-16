@@ -63,3 +63,15 @@ fn validate_bank_angle(bank_rad: f32) -> Result<(), TurnRateError> {
     }
     Ok(())
 }
+
+/// Compute coordinated turn rate in rad/s: omega = (g * tan(phi)) / v.
+pub fn turn_rate_rad_s(
+    true_airspeed_mps: f32,
+    bank_angle_rad: f32,
+    gravity_mps2: f32,
+) -> Result<f32, TurnRateError> {
+    validate_speed_gravity(true_airspeed_mps, gravity_mps2)?;
+    validate_bank_angle(bank_angle_rad)?;
+    let tan_phi = libm::tanf(bank_angle_rad);
+    Ok((gravity_mps2 * tan_phi) / true_airspeed_mps)
+}
