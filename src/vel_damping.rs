@@ -188,4 +188,31 @@ impl VelDampingFilter {
         self.vel_ned = vel;
         Ok(())
     }
+
+    /// Propagate dead reckoning velocity with acceleration and damping.
+    pub fn predict(
+        &mut self,
+        accel_ned: [f32; 3],
+        dt_s: f32,
+    ) -> Result<[f32; 3], VelDampingError> {
+        if !dt_s.is_finite() || dt_s <= 0.0 {
+            return Err(VelDampingError::InvalidSampleInterval);
+        }
+        for &a in &accel_ned {
+            if !a.is_finite() {
+                return Err(VelDampingError::NonFinite);
+            }
+        }
+        let damped = damp_velocity_step(self.vel_ned, self.config.tau_s, dt_s)?;
+        self.vel_ned = [
+            damped[0] + accel_ned[0] * dt_s,
+            damped[1] + accel_ned[1] * dt_s,
+            damped[2] + accel_ned[2] * dt_s,
+        ];
+        self.time_since_gps_s += dt_s;
+        if self.time_since_gps_s > self.config.gps_timeout_s {
+            self.gps_valid = false;
+        }
+        Ok(self.vel_ned)
+    }
 }
