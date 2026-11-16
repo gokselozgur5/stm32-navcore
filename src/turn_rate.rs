@@ -200,3 +200,22 @@ pub fn accelerated_stall_speed(
     let n = load_factor(bank_angle_rad)?;
     Ok(v_stall_level_mps * libm::sqrtf(n))
 }
+
+/// Compute bank angle in radians for a standard rate turn (3 deg/s).
+pub fn standard_rate_bank_angle_rad(
+    true_airspeed_mps: f32,
+    gravity_mps2: f32,
+) -> Result<f32, TurnRateError> {
+    bank_angle_rad(true_airspeed_mps, STANDARD_RATE_TURN_RAD_S, gravity_mps2)
+}
+
+/// Compute time in seconds to turn through a heading change in radians.
+pub fn time_to_turn_s(turn_angle_rad: f32, turn_rate_rad_s: f32) -> Result<f32, TurnRateError> {
+    validate_finite(turn_angle_rad)?;
+    validate_finite(turn_rate_rad_s)?;
+    let abs_rate = libm::fabsf(turn_rate_rad_s);
+    if abs_rate < 1e-6 {
+        return Err(TurnRateError::ZeroTurnRate);
+    }
+    Ok(libm::fabsf(turn_angle_rad) / abs_rate)
+}
