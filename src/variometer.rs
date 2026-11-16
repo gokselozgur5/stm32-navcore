@@ -95,3 +95,13 @@ impl Default for VariometerConfig {
         }
     }
 }
+
+/// Real-time barometric vertical speed indicator (VSI) and variometer.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Variometer {
+    config: VariometerConfig,
+    raw_altitude_m: f32,
+    filtered_altitude_m: f32,
+    vertical_speed_mps: f32,
+    initialized: bool,
+}
