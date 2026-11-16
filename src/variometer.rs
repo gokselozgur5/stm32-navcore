@@ -208,3 +208,20 @@ impl Variometer {
         self.update_altitude(alt_m, dt_s)
     }
 }
+
+impl Variometer {
+    /// Returns filtered altitude in meters.
+    pub const fn altitude(&self) -> f32 {
+        self.filtered_altitude_m
+    }
+
+    /// Returns most recent raw altitude in meters.
+    pub const fn raw_altitude(&self) -> f32 {
+        self.raw_altitude_m
+    }
+
+    /// Returns estimated vertical speed in meters per second.
+    pub const fn vertical_speed(&self) -> f32 {
+        self.vertical_speed_mps
+    }
+}
