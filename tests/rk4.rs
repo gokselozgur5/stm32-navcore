@@ -44,3 +44,21 @@ fn multi_step_scalar_integration() {
     let exact = core::f32::consts::E;
     assert!((y - exact).abs() < 1e-4);
 }
+
+use stm32_navcore::rk4::Rk4Error;
+
+#[test]
+fn input_validation_and_errors() {
+    assert_eq!(
+        rk4_step_scalar(f32::NAN, 1.0, 0.1, |_t, y| y),
+        Err(Rk4Error::NonFinite)
+    );
+    assert_eq!(
+        rk4_step_scalar(0.0, 1.0, -0.1, |_t, y| y),
+        Err(Rk4Error::InvalidTimeStep)
+    );
+    assert_eq!(
+        rk4_integrate_scalar(0.0, 1.0, 0.1, 0, |_t, y| y),
+        Err(Rk4Error::ZeroStepCount)
+    );
+}
