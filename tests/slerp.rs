@@ -38,3 +38,15 @@ fn test_slerp_shortest_path_antipodal() {
     assert!(mid.y.abs() < 1e-5);
     assert!(mid.z.abs() < 1e-5);
 }
+
+#[test]
+fn test_slerp_rejections_and_invalid_inputs() {
+    let q_valid = Quaternion::IDENTITY;
+    let q_zero = Quaternion::new(0.0, 0.0, 0.0, 0.0);
+    let q_nan = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
+
+    assert!(stm32_navcore::slerp::quat_slerp(&q_zero, &q_valid, 0.5).is_err());
+    assert!(stm32_navcore::slerp::quat_slerp(&q_valid, &q_nan, 0.5).is_err());
+    assert!(stm32_navcore::slerp::quat_slerp(&q_valid, &q_valid, f32::NAN).is_err());
+    assert!(stm32_navcore::slerp::quat_nlerp(&q_zero, &q_valid, 0.5).is_err());
+}
