@@ -23,6 +23,7 @@ pub mod math;
 pub mod protocol;
 pub mod rotation;
 pub mod sensors;
+pub mod slerp;
 pub mod ubx;
 
 /// Dual-IMU fault detection types: IMU identity, a sample, and the switchover manager.
