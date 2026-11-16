@@ -78,3 +78,24 @@ pub fn damp_velocity_step(
     let decay = libm::expf(-dt_s / tau_s);
     Ok([vel[0] * decay, vel[1] * decay, vel[2] * decay])
 }
+
+/// Compute innovation vector (GPS - DR) and Euclidean magnitude.
+pub fn calculate_innovation(
+    vel_dr: [f32; 3],
+    vel_gps: [f32; 3],
+) -> Result<([f32; 3], f32), VelDampingError> {
+    for i in 0..3 {
+        if !vel_dr[i].is_finite() || !vel_gps[i].is_finite() {
+            return Err(VelDampingError::NonFinite);
+        }
+    }
+    let innov = [
+        vel_gps[0] - vel_dr[0],
+        vel_gps[1] - vel_dr[1],
+        vel_gps[2] - vel_dr[2],
+    ];
+    let norm = libm::sqrtf(
+        innov[0] * innov[0] + innov[1] * innov[1] + innov[2] * innov[2],
+    );
+    Ok((innov, norm))
+}
