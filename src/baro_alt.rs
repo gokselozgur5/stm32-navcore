@@ -45,3 +45,22 @@ pub fn altitude_from_pressure_isa(pressure_pa: f32) -> Result<f32, BaroAltError>
     let factor = 1.0 - libm::powf(ratio, HYPSOMETRIC_EXPONENT);
     Ok(TROPOSPHERE_TEMP_SCALE * factor)
 }
+
+/// Computes altitude in meters above sea level given measured pressure and local QNH.
+pub fn altitude_from_pressure_qnh(
+    pressure_pa: f32,
+    qnh_pa: f32,
+) -> Result<f32, BaroAltError> {
+    if !pressure_pa.is_finite() || !qnh_pa.is_finite() {
+        return Err(BaroAltError::NonFinite);
+    }
+    if pressure_pa <= 0.0 {
+        return Err(BaroAltError::InvalidPressure);
+    }
+    if qnh_pa <= 0.0 {
+        return Err(BaroAltError::InvalidReferencePressure);
+    }
+    let ratio = pressure_pa / qnh_pa;
+    let factor = 1.0 - libm::powf(ratio, HYPSOMETRIC_EXPONENT);
+    Ok(TROPOSPHERE_TEMP_SCALE * factor)
+}
