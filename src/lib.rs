@@ -63,7 +63,6 @@ pub use vel_damping::{
     calculate_innovation, damp_velocity_step, fuse_velocity_step, VelDampingConfig,
     VelDampingError, VelDampingFilter,
 };
-};
 /// Decoded u-blox UBX messages and the streaming parser that produces them.
 pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 /// Barometric vertical speed indicator and variometer estimator.
