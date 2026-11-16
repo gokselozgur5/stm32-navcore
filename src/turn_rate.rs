@@ -127,3 +127,20 @@ pub fn turn_radius_m(
     }
     Ok((true_airspeed_mps * true_airspeed_mps) / (gravity_mps2 * abs_tan))
 }
+
+/// Compute turn radius in meters from turn rate: R = v / |omega|.
+pub fn turn_radius_from_rate(
+    true_airspeed_mps: f32,
+    turn_rate_rad_s: f32,
+) -> Result<f32, TurnRateError> {
+    validate_finite(true_airspeed_mps)?;
+    validate_finite(turn_rate_rad_s)?;
+    if true_airspeed_mps <= 0.0 {
+        return Err(TurnRateError::InvalidAirspeed);
+    }
+    let abs_omega = libm::fabsf(turn_rate_rad_s);
+    if abs_omega < 1e-6 {
+        return Err(TurnRateError::ZeroTurnRate);
+    }
+    Ok(true_airspeed_mps / abs_omega)
+}
