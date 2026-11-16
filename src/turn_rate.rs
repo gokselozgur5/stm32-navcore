@@ -161,3 +161,19 @@ pub fn bank_angle_from_radius(
     validate_bank_angle(phi)?;
     Ok(phi)
 }
+
+/// Compute centripetal acceleration in m/s^2: a_c = v^2 / R.
+pub fn centripetal_accel_mps2(
+    true_airspeed_mps: f32,
+    radius_m: f32,
+) -> Result<f32, TurnRateError> {
+    validate_finite(true_airspeed_mps)?;
+    validate_finite(radius_m)?;
+    if true_airspeed_mps < 0.0 {
+        return Err(TurnRateError::InvalidAirspeed);
+    }
+    if radius_m <= 0.0 {
+        return Err(TurnRateError::InvalidRadius);
+    }
+    Ok((true_airspeed_mps * true_airspeed_mps) / radius_m)
+}
