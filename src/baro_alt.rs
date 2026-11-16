@@ -138,3 +138,20 @@ pub fn calibrate_qnh(
     let inv_exp = STANDARD_GRAVITY_M_S2 / (GAS_CONSTANT_DRY_AIR * STANDARD_LAPSE_RATE_K_PER_M);
     Ok(measured_pressure_pa / libm::powf(temp_ratio, inv_exp))
 }
+
+/// Configurable hypsometric barometric altitude estimator.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct BaroAltEstimator {
+    /// Reference sea-level pressure in Pascals.
+    pub ref_pressure_pa: f32,
+    /// Reference sea-level temperature in Kelvin.
+    pub ref_temp_k: f32,
+    /// Troposphere lapse rate in K/m.
+    pub lapse_rate_k_per_m: f32,
+}
+
+impl Default for BaroAltEstimator {
+    fn default() -> Self {
+        Self::standard()
+    }
+}
