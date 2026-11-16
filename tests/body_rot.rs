@@ -17,3 +17,18 @@ fn test_identity_rotation_preserves_vectors() {
     assert!((v_roundtrip[1] - v_ned[1]).abs() < 1e-6);
     assert!((v_roundtrip[2] - v_ned[2]).abs() < 1e-6);
 }
+
+#[test]
+fn test_euler_roundtrip_recovery() {
+    let roll = 0.25f32;
+    let pitch = -0.15f32;
+    let yaw = 1.10f32;
+
+    let rot = BodyRot::from_euler(roll, pitch, yaw).expect("valid euler");
+    assert!(rot.is_orthonormal());
+
+    let (r_rec, p_rec, y_rec) = rot.to_euler().expect("valid euler recovery");
+    assert!((r_rec - roll).abs() < 1e-4);
+    assert!((p_rec - pitch).abs() < 1e-4);
+    assert!((y_rec - yaw).abs() < 1e-4);
+}
