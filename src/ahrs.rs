@@ -97,3 +97,20 @@ impl MadgwickAhrs {
         ]
     }
 }
+
+fn validate_inputs(gyro: [f32; 3], accel: [f32; 3], dt: f32) -> Result<(), AhrsError> {
+    if !dt.is_finite() || dt <= 0.0 {
+        return Err(AhrsError::InvalidDt);
+    }
+    for &g in &gyro {
+        if !g.is_finite() {
+            return Err(AhrsError::NonFinite);
+        }
+    }
+    for &a in &accel {
+        if !a.is_finite() {
+            return Err(AhrsError::NonFinite);
+        }
+    }
+    Ok(())
+}
