@@ -32,6 +32,8 @@ pub use fdir::{DualImuManager, ImuId, ImuReading};
 
 /// Versioned, checksummed magnetometer and gyro calibration record.
 pub use protocol::CalibrationBlock;
+/// Quaternion spherical linear and normalized linear interpolation.
+pub use slerp::{quat_nlerp, quat_slerp};
 /// Decoded u-blox UBX messages and the streaming parser that produces them.
 pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 
