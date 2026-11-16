@@ -130,3 +130,29 @@ pub fn geodetic_to_ecef(geo: &GeodeticPos) -> EcefPos {
 
     EcefPos::new(x, y, z)
 }
+
+/// Transform ECEF Cartesian coordinates to geodetic coordinates via Bowring's method.
+pub fn ecef_to_geodetic(ecef: &EcefPos) -> Result<GeodeticPos, EcefNedError> {
+    if !ecef.x.is_finite() || !ecef.y.is_finite() || !ecef.z.is_finite() {
+        return Err(EcefNedError::NonFinite);
+    }
+    let p = libm::hypot(ecef.x, ecef.y);
+    if p < 1e-6 && libm::fabs(ecef.z) < 1e-6 {
+        return Err(EcefNedError::SingularPoint);
+    }
+    let theta = libm::atan2(ecef.z * WGS84_A, p * WGS84_B);
+    let (s_th, c_th) = (libm::sin(theta), libm::cos(theta));
+    let ep2 = (WGS84_A * WGS84_A - WGS84_B * WGS84_B) / (WGS84_B * WGS84_B);
+    let lat_num = ecef.z + ep2 * WGS84_B * s_th * s_th * s_th;
+    let lat_den = p - WGS84_E2 * WGS84_A * c_th * c_th * c_th;
+    let lat = libm::atan2(lat_num, lat_den);
+    let lon = libm::atan2(ecef.y, ecef.x);
+    let (s_lat, c_lat) = (libm::sin(lat), libm::cos(lat));
+    let n = WGS84_A / libm::sqrt(1.0 - WGS84_E2 * s_lat * s_lat);
+    let alt = if libm::fabs(c_lat) > 1e-4 {
+        p / c_lat - n
+    } else {
+        ecef.z / s_lat - n * (1.0 - WGS84_E2)
+    };
+    GeodeticPos::new(lat, lon, alt)
+}
