@@ -68,3 +68,19 @@ pub fn gravity_vector_ned(lat_rad: f32, alt_m: f32) -> Result<[f32; 3], GravityE
     let g = normal_gravity(lat_rad, alt_m)?;
     Ok([0.0, 0.0, g])
 }
+
+/// Somigliana normal gravity at surface in f64.
+pub fn somigliana_surface_f64(lat_rad: f64) -> Result<f64, GravityError> {
+    if !lat_rad.is_finite() {
+        return Err(GravityError::NonFinite);
+    }
+    let half_pi = core::f64::consts::FRAC_PI_2;
+    if lat_rad < -half_pi || lat_rad > half_pi {
+        return Err(GravityError::InvalidLatitude);
+    }
+    let s = libm::sin(lat_rad);
+    let s2 = s * s;
+    let num = 1.0 + 0.001_931_852_652_41 * s2;
+    let den = libm::sqrt(1.0 - 0.006_694_379_990_14 * s2);
+    Ok(9.780_325_335_9 * (num / den))
+}
