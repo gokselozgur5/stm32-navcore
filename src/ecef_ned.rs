@@ -250,3 +250,15 @@ impl NedFrame {
         ecef_to_geodetic(&ecef)
     }
 }
+
+/// Direct transform from geodetic point to NED given a geodetic reference point.
+pub fn geodetic_to_ned(point: &GeodeticPos, ref_geo: &GeodeticPos) -> Result<NedPos, EcefNedError> {
+    let frame = NedFrame::from_geodetic(ref_geo);
+    frame.geodetic_to_ned(point)
+}
+
+/// Direct transform from NED to geodetic given a geodetic reference point.
+pub fn ned_to_geodetic(ned: &NedPos, ref_geo: &GeodeticPos) -> Result<GeodeticPos, EcefNedError> {
+    let frame = NedFrame::from_geodetic(ref_geo);
+    frame.ned_to_geodetic(ned)
+}
