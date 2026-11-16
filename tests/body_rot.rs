@@ -80,3 +80,11 @@ fn test_reorthonormalize_recovers_orthogonality() {
     assert!(cleaned.is_orthonormal());
     assert!((cleaned.det() - 1.0).abs() < 1e-4);
 }
+
+#[test]
+fn test_dcm_constructors_with_mat_identity() {
+    let rot = BodyRot::from_dcm_ned_to_body(Mat::identity()).expect("identity dcm");
+    assert!(rot.is_orthonormal());
+    let rot_bn = BodyRot::from_dcm_body_to_ned(Mat::identity()).expect("identity dcm");
+    assert!(rot_bn.is_orthonormal());
+}
