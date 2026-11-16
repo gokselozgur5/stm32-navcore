@@ -32,3 +32,17 @@ fn test_pitot_invalid_inputs_rejected() {
     assert_eq!(ias_to_tas(-1.0, 101325.0, 288.15), Err(PitotError::NegativeAirspeed));
     assert_eq!(ias_to_tas_with_density(10.0, -1.0), Err(PitotError::InvalidDensity));
 }
+
+#[test]
+fn test_ias_to_tas_altitude_scaling() {
+    let p_sea = 101325.0;
+    let t_sea = 288.15;
+    let tas_sea = ias_to_tas(50.0, p_sea, t_sea).unwrap();
+    assert!((tas_sea - 50.0).abs() < 0.05);
+
+    let p_5000m = 54020.0;
+    let t_5000m = 255.65;
+    let tas_5000m = ias_to_tas(50.0, p_5000m, t_5000m).unwrap();
+    assert!(tas_5000m > 50.0);
+    assert!((tas_5000m - 64.6).abs() < 1.0);
+}
