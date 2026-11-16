@@ -48,3 +48,14 @@ impl VelDampingConfig {
         Ok(())
     }
 }
+
+impl Default for VelDampingConfig {
+    fn default() -> Self {
+        Self {
+            tau_s: 60.0,
+            gps_gain: 0.1,
+            max_innovation_mps: 5.0,
+            gps_timeout_s: 2.0,
+        }
+    }
+}
