@@ -242,3 +242,20 @@ impl Variometer {
         self.initialized
     }
 }
+
+impl Variometer {
+    /// Determines current audio variometer tone state and frequency.
+    pub fn tone(&self) -> VarioTone {
+        if self.vertical_speed_mps >= self.config.climb_threshold_mps {
+            let excess = self.vertical_speed_mps - self.config.climb_threshold_mps;
+            let freq_hz = self.config.base_freq_hz + excess * 150.0;
+            VarioTone::Climb { freq_hz }
+        } else if self.vertical_speed_mps <= self.config.sink_threshold_mps {
+            let excess = self.config.sink_threshold_mps - self.vertical_speed_mps;
+            let freq_hz = (self.config.base_freq_hz * 0.75 - excess * 50.0).max(100.0);
+            VarioTone::Sink { freq_hz }
+        } else {
+            VarioTone::Silent
+        }
+    }
+}
