@@ -114,3 +114,30 @@ fn validate_inputs(gyro: [f32; 3], accel: [f32; 3], dt: f32) -> Result<(), AhrsE
     }
     Ok(())
 }
+
+/// Perform one 6-DOF Madgwick AHRS sensor fusion integration step.
+pub fn madgwick_ahrs_6dof_step(
+    q: Quaternion,
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    beta: f32,
+    dt: f32,
+) -> Result<Quaternion, AhrsError> {
+    validate_inputs(gyro, accel, dt)?;
+    let qw = MadgwickAhrs::gyro_rate(&q, gyro);
+    let a_sq = accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2];
+    let g = if a_sq > 1e-12 {
+        let inv = 1.0 / libm::sqrtf(a_sq);
+        let ah = [accel[0] * inv, accel[1] * inv, accel[2] * inv];
+        MadgwickAhrs::accel_gradient(&q, ah).unwrap_or([0.0; 4])
+    } else {
+        [0.0; 4]
+    };
+    let next = Quaternion::new(
+        q.w + (qw[0] - beta * g[0]) * dt,
+        q.x + (qw[1] - beta * g[1]) * dt,
+        q.y + (qw[2] - beta * g[2]) * dt,
+        q.z + (qw[3] - beta * g[3]) * dt,
+    );
+    Ok(next.normalize()?)
+}
