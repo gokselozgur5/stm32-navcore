@@ -234,3 +234,22 @@ pub struct TurnAerodynamics {
     /// Centripetal acceleration in m/s^2.
     pub centripetal_accel_mps2: f32,
 }
+
+/// Compute complete aerodynamic state for a coordinated circular turn.
+pub fn compute_coordinated_turn(
+    true_airspeed_mps: f32,
+    bank_angle_rad: f32,
+    gravity_mps2: f32,
+) -> Result<TurnAerodynamics, TurnRateError> {
+    let rate = turn_rate_rad_s(true_airspeed_mps, bank_angle_rad, gravity_mps2)?;
+    let radius = turn_radius_m(true_airspeed_mps, bank_angle_rad, gravity_mps2)?;
+    let n = load_factor(bank_angle_rad)?;
+    let a_c = centripetal_accel_mps2(true_airspeed_mps, radius)?;
+    Ok(TurnAerodynamics {
+        turn_rate_rad_s: rate,
+        bank_angle_rad,
+        radius_m: radius,
+        load_factor: n,
+        centripetal_accel_mps2: a_c,
+    })
+}
