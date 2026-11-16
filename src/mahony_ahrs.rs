@@ -48,3 +48,21 @@ impl MahonyAhrs {
         }
     }
 }
+
+impl MahonyAhrs {
+    /// Create filter with given gains and initial orientation quaternion.
+    pub fn with_attitude(kp: f32, ki: f32, quat: Quaternion) -> Result<Self, MahonyAhrsError> {
+        let q = quat.normalize()?;
+        Ok(Self {
+            quat: q,
+            kp,
+            ki,
+            gyro_bias: [0.0; 3],
+        })
+    }
+
+    /// Current estimated orientation quaternion.
+    pub const fn quaternion(&self) -> Quaternion {
+        self.quat
+    }
+}
