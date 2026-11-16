@@ -64,3 +64,32 @@ pub(crate) fn accumulate_rk4<const N: usize>(
     }
     Ok(out)
 }
+
+/// Single RK4 step for N-dimensional state vector: dy/dt = f(t, y).
+pub fn rk4_step<const N: usize, F>(
+    t: f32,
+    y: &[f32; N],
+    dt: f32,
+    mut f: F,
+) -> Result<[f32; N], Rk4Error>
+where
+    F: FnMut(f32, &[f32; N], &mut [f32; N]),
+{
+    validate_step(t, dt)?;
+    let mut k1 = [0.0f32; N];
+    let mut k2 = [0.0f32; N];
+    let mut k3 = [0.0f32; N];
+    let mut k4 = [0.0f32; N];
+    let mut tmp = [0.0f32; N];
+    let hdt = 0.5 * dt;
+
+    f(t, y, &mut k1);
+    for i in 0..N { tmp[i] = y[i] + hdt * k1[i]; }
+    f(t + hdt, &tmp, &mut k2);
+    for i in 0..N { tmp[i] = y[i] + hdt * k2[i]; }
+    f(t + hdt, &tmp, &mut k3);
+    for i in 0..N { tmp[i] = y[i] + dt * k3[i]; }
+    f(t + dt, &tmp, &mut k4);
+
+    accumulate_rk4(y, &k1, &k2, &k3, &k4, dt)
+}
