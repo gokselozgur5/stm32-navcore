@@ -126,3 +126,19 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
             current_metrics: initial_metrics,
         })
     }
+
+    /// Resets internal buffer and detector state.
+    pub fn reset(&mut self) {
+        self.count = 0;
+        self.head = 0;
+        self.stance_streak = 0;
+        self.accel_buf = [[0.0; 3]; WINDOW];
+        self.gyro_buf = [[0.0; 3]; WINDOW];
+        self.current_metrics = ZuptMetrics {
+            accel_variance: 0.0,
+            max_gyro_norm: 0.0,
+            accel_mag_diff: 0.0,
+            test_statistic: 0.0,
+            phase: StancePhase::Moving,
+        };
+    }
