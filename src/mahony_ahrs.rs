@@ -96,3 +96,21 @@ impl MahonyAhrs {
         self.gyro_bias = [0.0; 3];
     }
 }
+
+impl MahonyAhrs {
+    fn compute_gravity_error(q: &Quaternion, accel: [f32; 3]) -> [f32; 3] {
+        let a_sq = accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2];
+        if a_sq < 1e-12 || !a_sq.is_finite() {
+            return [0.0; 3];
+        }
+        let inv_a = 1.0 / libm::sqrtf(a_sq);
+        let (ax, ay, az) = (accel[0] * inv_a, accel[1] * inv_a, accel[2] * inv_a);
+
+        let (w, x, y, z) = (q.w, q.x, q.y, q.z);
+        let vx = 2.0 * (x * z - w * y);
+        let vy = 2.0 * (w * x + y * z);
+        let vz = 1.0 - 2.0 * (x * x + y * y);
+
+        [ay * vz - az * vy, az * vx - ax * vz, ax * vy - ay * vx]
+    }
+}
