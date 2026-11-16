@@ -227,3 +227,24 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
         };
         Ok(phase == StancePhase::StanceConfirmed)
     }
+
+    /// Returns reference to most recent metrics.
+    pub fn metrics(&self) -> &ZuptMetrics {
+        &self.current_metrics
+    }
+
+    /// Returns current detected stance phase.
+    pub fn phase(&self) -> StancePhase {
+        self.current_metrics.phase
+    }
+
+    /// Returns true if stance is confirmed.
+    pub fn is_stance(&self) -> bool {
+        self.current_metrics.phase == StancePhase::StanceConfirmed
+    }
+
+    /// Returns reference to active detector configuration.
+    pub fn config(&self) -> &ZuptConfig {
+        &self.config
+    }
+}
