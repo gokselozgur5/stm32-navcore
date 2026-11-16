@@ -261,4 +261,20 @@ mod tests {
         let alt = altitude_from_pressure_qnh(102000.0, qnh).unwrap();
         assert!(alt.abs() < 1e-3);
     }
+
+    #[test]
+    fn test_calibrate_qnh() {
+        let p_at_500m = pressure_at_altitude_isa(500.0).unwrap();
+        let cal_qnh = calibrate_qnh(p_at_500m, 500.0).unwrap();
+        assert!((cal_qnh - STANDARD_SEA_LEVEL_PRESSURE_PA).abs() < 1e-1);
+    }
+
+    #[test]
+    fn test_estimator_struct_methods() {
+        let mut est = BaroAltEstimator::standard();
+        let alt = est.estimate_altitude(STANDARD_SEA_LEVEL_PRESSURE_PA).unwrap();
+        assert!(alt.abs() < 1e-3);
+        est.calibrate_at_known_altitude(STANDARD_SEA_LEVEL_PRESSURE_PA, 100.0).unwrap();
+        assert!(est.ref_pressure_pa > STANDARD_SEA_LEVEL_PRESSURE_PA);
+    }
 }
