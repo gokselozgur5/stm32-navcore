@@ -155,3 +155,28 @@ impl Default for BaroAltEstimator {
         Self::standard()
     }
 }
+
+impl BaroAltEstimator {
+    /// Creates estimator under standard ISA sea-level conditions.
+    pub const fn standard() -> Self {
+        Self {
+            ref_pressure_pa: STANDARD_SEA_LEVEL_PRESSURE_PA,
+            ref_temp_k: STANDARD_SEA_LEVEL_TEMP_K,
+            lapse_rate_k_per_m: STANDARD_LAPSE_RATE_K_PER_M,
+        }
+    }
+
+    /// Creates estimator with specified QNH pressure under ISA lapse rate.
+    pub fn with_qnh(qnh_pa: f32) -> Result<Self, BaroAltError> {
+        if !qnh_pa.is_finite() {
+            return Err(BaroAltError::NonFinite);
+        }
+        if qnh_pa <= 0.0 {
+            return Err(BaroAltError::InvalidReferencePressure);
+        }
+        Ok(Self {
+            ref_pressure_pa: qnh_pa,
+            ref_temp_k: STANDARD_SEA_LEVEL_TEMP_K,
+            lapse_rate_k_per_m: STANDARD_LAPSE_RATE_K_PER_M,
+        })
+    }
