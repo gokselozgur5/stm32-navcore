@@ -1,8 +1,9 @@
 //! Compile-time checks that the crate-root re-exports stay importable.
 
 use stm32_navcore::{
-    quat_nlerp, quat_slerp, CalibrationBlock, DualImuManager, ImuId, ImuReading,
-    StationaryDetector, UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser,
+    quat_nlerp, quat_slerp, wmm_declination_deg, wmm_declination_rad, CalibrationBlock,
+    DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
+    UbxNavRelPosNed, UbxParser,
 };
 
 #[test]
@@ -22,6 +23,8 @@ fn crate_root_reexports_are_usable() {
     let q = stm32_navcore::math::Quaternion::IDENTITY;
     let _ = quat_slerp(&q, &q, 0.5);
     let _ = quat_nlerp(&q, &q, 0.5);
+    let _ = wmm_declination_deg(0.0, 0.0);
+    let _ = wmm_declination_rad(0.0, 0.0);
 }
 
 use core::mem::{align_of, size_of};
