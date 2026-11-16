@@ -1,8 +1,8 @@
 //! Compile-time checks that the crate-root re-exports stay importable.
 
 use stm32_navcore::{
-    CalibrationBlock, DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
-    UbxNavRelPosNed, UbxParser,
+    quat_nlerp, quat_slerp, CalibrationBlock, DualImuManager, ImuId, ImuReading,
+    StationaryDetector, UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser,
 };
 
 #[test]
@@ -19,6 +19,9 @@ fn crate_root_reexports_are_usable() {
     let _ = core::mem::size_of::<UbxMessage>();
     let _ = core::mem::size_of::<UbxNavPvt>();
     let _ = core::mem::size_of::<UbxNavRelPosNed>();
+    let q = stm32_navcore::math::Quaternion::IDENTITY;
+    let _ = quat_slerp(&q, &q, 0.5);
+    let _ = quat_nlerp(&q, &q, 0.5);
 }
 
 use core::mem::{align_of, size_of};
