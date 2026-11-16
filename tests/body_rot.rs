@@ -65,3 +65,18 @@ fn test_rejection_of_non_finite_inputs() {
         Err(BodyRotError::NonFinite)
     );
 }
+
+#[test]
+fn test_reorthonormalize_recovers_orthogonality() {
+    let base = BodyRot::from_euler(0.1, -0.2, 0.3).expect("valid euler");
+    let mut drifted = *base.dcm_ned_to_body();
+    drifted.0[0][1] += 0.005;
+    drifted.0[1][0] += 0.005;
+
+    let unortho = BodyRot { dcm_nb: drifted };
+    assert!(!unortho.is_orthonormal());
+
+    let cleaned = unortho.reorthonormalize().expect("reorthonormalize success");
+    assert!(cleaned.is_orthonormal());
+    assert!((cleaned.det() - 1.0).abs() < 1e-4);
+}
