@@ -42,3 +42,20 @@ fn test_damp_velocity_step_decay() {
     let err_tau = damp_velocity_step(v0, 0.0, dt);
     assert_eq!(err_tau, Err(VelDampingError::InvalidTimeConstant));
 }
+
+#[test]
+fn test_innovation_and_gate_outlier_rejection() {
+    use stm32_navcore::vel_damping::{calculate_innovation, fuse_velocity_step};
+
+    let v_dr = [10.0, 0.0, 0.0];
+    let v_gps = [13.0, 4.0, 0.0];
+    let (innov, norm) = calculate_innovation(v_dr, v_gps).unwrap();
+    assert_eq!(innov, [3.0, 4.0, 0.0]);
+    assert!((norm - 5.0).abs() < 1e-6);
+
+    let res_ok = fuse_velocity_step(v_dr, v_gps, 0.5, 6.0);
+    assert_eq!(res_ok, Ok([11.5, 2.0, 0.0]));
+
+    let res_exceeded = fuse_velocity_step(v_dr, v_gps, 0.5, 4.0);
+    assert_eq!(res_exceeded, Err(VelDampingError::InnovationGateExceeded));
+}
