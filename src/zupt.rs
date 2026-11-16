@@ -158,3 +158,14 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
         let mag_diff = (mean - self.config.gravity_magnitude).abs();
         (non_neg_variance, mag_diff)
     }
+
+    fn compute_gyro_stats(&self, valid_len: usize) -> f32 {
+        let mut max_norm = 0.0f32;
+        for i in 0..valid_len {
+            let norm = vec3_norm(self.gyro_buf[i]);
+            if norm > max_norm {
+                max_norm = norm;
+            }
+        }
+        max_norm
+    }
