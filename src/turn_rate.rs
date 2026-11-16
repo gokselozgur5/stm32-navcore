@@ -100,3 +100,15 @@ pub fn bank_angle_rad(
     validate_bank_angle(phi)?;
     Ok(phi)
 }
+
+/// Compute bank angle in degrees from turn rate in degrees per second.
+pub fn bank_angle_deg(
+    true_airspeed_mps: f32,
+    turn_rate_deg_s: f32,
+    gravity_mps2: f32,
+) -> Result<f32, TurnRateError> {
+    validate_finite(turn_rate_deg_s)?;
+    let rate_rad = turn_rate_deg_s * DEG_TO_RAD;
+    let phi_rad = bank_angle_rad(true_airspeed_mps, rate_rad, gravity_mps2)?;
+    Ok(phi_rad * RAD_TO_DEG)
+}
