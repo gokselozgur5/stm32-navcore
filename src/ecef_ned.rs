@@ -14,3 +14,14 @@ pub enum EcefNedError {
     /// Position is too close to the Earth's center for inverse projection.
     SingularPoint,
 }
+
+impl core::fmt::Display for EcefNedError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::NonFinite => write!(f, "coordinate values must be finite"),
+            Self::InvalidLatitude => write!(f, "latitude must be within [-pi/2, pi/2]"),
+            Self::InvalidLongitude => write!(f, "longitude must be within [-pi, pi]"),
+            Self::SingularPoint => write!(f, "position is singular or inside inner core"),
+        }
+    }
+}
