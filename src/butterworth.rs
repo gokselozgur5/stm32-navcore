@@ -133,7 +133,11 @@ impl ButterworthFilter {
 
 impl ButterworthFilter {
     /// Dynamically retunes filter coefficients without resetting states.
-    pub fn retune(&mut self, cutoff_hz: f32, sample_interval_s: f32) -> Result<(), ButterworthError> {
+    pub fn retune(
+        &mut self,
+        cutoff_hz: f32,
+        sample_interval_s: f32,
+    ) -> Result<(), ButterworthError> {
         let coeffs = ButterworthCoefficients::try_new(cutoff_hz, sample_interval_s)?;
         self.coeffs = coeffs;
         Ok(())
@@ -147,7 +151,11 @@ impl ButterworthFilter {
 
 impl ButterworthFilter {
     /// Filters an array of input samples into an equal-sized output slice.
-    pub fn batch_filter(&mut self, input: &[f32], output: &mut [f32]) -> Result<(), ButterworthError> {
+    pub fn batch_filter(
+        &mut self,
+        input: &[f32],
+        output: &mut [f32],
+    ) -> Result<(), ButterworthError> {
         if input.len() != output.len() {
             return Err(ButterworthError::BufferLengthMismatch);
         }
