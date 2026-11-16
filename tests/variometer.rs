@@ -37,10 +37,7 @@ fn test_config_validation_and_errors() {
     cfg.time_constant_s = 1.0;
     cfg.climb_threshold_mps = -2.0;
     cfg.sink_threshold_mps = 1.0;
-    assert_eq!(
-        Variometer::new(cfg),
-        Err(VariometerError::InvalidThreshold)
-    );
+    assert_eq!(Variometer::new(cfg), Err(VariometerError::InvalidThreshold));
 }
 
 #[test]
