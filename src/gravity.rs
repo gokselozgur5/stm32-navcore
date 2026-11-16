@@ -55,3 +55,16 @@ pub fn elevation_correction(lat_rad: f32, alt_m: f32) -> Result<f32, GravityErro
     let term2 = (3.0 / (WGS84_A * WGS84_A)) * alt_m * alt_m;
     Ok(-g0 * (term1 - term2))
 }
+
+/// Somigliana normal gravity with elevation correction.
+pub fn normal_gravity(lat_rad: f32, alt_m: f32) -> Result<f32, GravityError> {
+    let g0 = somigliana_surface(lat_rad)?;
+    let dg = elevation_correction(lat_rad, alt_m)?;
+    Ok(g0 + dg)
+}
+
+/// Normal gravity vector in NED frame [0, 0, g_down] in m/s^2.
+pub fn gravity_vector_ned(lat_rad: f32, alt_m: f32) -> Result<[f32; 3], GravityError> {
+    let g = normal_gravity(lat_rad, alt_m)?;
+    Ok([0.0, 0.0, g])
+}
