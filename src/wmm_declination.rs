@@ -65,7 +65,13 @@ impl DeclinationPolynomial {
         scale_lon: f32,
         coeffs: [f32; 6],
     ) -> Self {
-        Self { origin_lat, origin_lon, scale_lat, scale_lon, coeffs }
+        Self {
+            origin_lat,
+            origin_lon,
+            scale_lat,
+            scale_lon,
+            coeffs,
+        }
     }
 
     pub fn eval(&self, lat_deg: f32, lon_deg: f32) -> Result<f32, DeclinationError> {
@@ -78,7 +84,11 @@ impl DeclinationPolynomial {
         if !(-180.0..=180.0).contains(&lon_deg) {
             return Err(DeclinationError::InvalidLongitude);
         }
-        if self.scale_lat == 0.0 || self.scale_lon == 0.0 || !self.scale_lat.is_finite() || !self.scale_lon.is_finite() {
+        if self.scale_lat == 0.0
+            || self.scale_lon == 0.0
+            || !self.scale_lat.is_finite()
+            || !self.scale_lon.is_finite()
+        {
             return Err(DeclinationError::InvalidScale);
         }
         let u = (lat_deg - self.origin_lat) / self.scale_lat;
@@ -89,10 +99,8 @@ impl DeclinationPolynomial {
 }
 
 /// Default global reference polynomial for approximate magnetic declination.
-pub const WMM_GLOBAL_REF: DeclinationPolynomial = DeclinationPolynomial::new(
-    0.0, 0.0, 90.0, 180.0,
-    [-3.5, 4.2, -8.1, -1.8, 6.4, 2.5],
-);
+pub const WMM_GLOBAL_REF: DeclinationPolynomial =
+    DeclinationPolynomial::new(0.0, 0.0, 90.0, 180.0, [-3.5, 4.2, -8.1, -1.8, 6.4, 2.5]);
 
 /// Compute approximate magnetic declination in degrees at (lat_deg, lon_deg).
 #[inline]
