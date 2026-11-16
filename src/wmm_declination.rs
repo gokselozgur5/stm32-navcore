@@ -87,3 +87,23 @@ impl DeclinationPolynomial {
         Ok(c0 + c1 * u + c2 * v + c3 * u * u + c4 * u * v + c5 * v * v)
     }
 }
+
+/// Default global reference polynomial for approximate magnetic declination.
+pub const WMM_GLOBAL_REF: DeclinationPolynomial = DeclinationPolynomial::new(
+    0.0, 0.0, 90.0, 180.0,
+    [-3.5, 4.2, -8.1, -1.8, 6.4, 2.5],
+);
+
+/// Compute approximate magnetic declination in degrees at (lat_deg, lon_deg).
+#[inline]
+pub fn wmm_declination_deg(lat_deg: f32, lon_deg: f32) -> Result<f32, DeclinationError> {
+    WMM_GLOBAL_REF.eval(lat_deg, lon_deg)
+}
+
+/// Compute approximate magnetic declination in radians at (lat_rad, lon_rad).
+pub fn wmm_declination_rad(lat_rad: f32, lon_rad: f32) -> Result<f32, DeclinationError> {
+    let rad_to_deg = 180.0 / core::f32::consts::PI;
+    let deg_to_rad = core::f32::consts::PI / 180.0;
+    let dec_deg = wmm_declination_deg(lat_rad * rad_to_deg, lon_rad * rad_to_deg)?;
+    Ok(dec_deg * deg_to_rad)
+}
