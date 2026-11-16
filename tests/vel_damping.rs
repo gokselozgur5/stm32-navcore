@@ -83,3 +83,25 @@ fn test_gps_fusion_convergence() {
     assert!(filter.is_gps_valid());
     assert_eq!(filter.time_since_gps(), 0.0);
 }
+
+#[test]
+fn test_dead_reckoning_outage_propagation() {
+    use stm32_navcore::vel_damping::VelDampingFilter;
+
+    let cfg = VelDampingConfig {
+        tau_s: 100.0,
+        gps_gain: 0.5,
+        max_innovation_mps: 10.0,
+        gps_timeout_s: 1.0,
+    };
+    let mut filter = VelDampingFilter::new(cfg).unwrap();
+    let _ = filter.fuse_gps([10.0, 0.0, 0.0]).unwrap();
+    assert!(filter.is_gps_valid());
+
+    let _ = filter.predict([1.0, 0.0, 0.0], 0.5).unwrap();
+    assert!(filter.is_gps_valid());
+
+    let _ = filter.predict([1.0, 0.0, 0.0], 0.6).unwrap();
+    assert!(!filter.is_gps_valid());
+    assert!((filter.time_since_gps() - 1.1).abs() < 1e-6);
+}
