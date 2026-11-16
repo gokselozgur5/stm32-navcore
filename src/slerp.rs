@@ -33,3 +33,32 @@ fn slerp_weights(cos_theta: f32, sign: f32, t: f32) -> (f32, f32) {
         sign * libm::sinf(t * theta) * inv_sin,
     )
 }
+
+/// Spherical linear interpolation between two quaternions along the shortest path.
+pub fn quat_slerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathError> {
+    if !t.is_finite() {
+        return Err(MathError::InvalidNorm);
+    }
+    let na = a.normalize()?;
+    let nb = b.normalize()?;
+    if t <= 0.0 {
+        return Ok(na);
+    }
+    if t >= 1.0 {
+        return Ok(nb);
+    }
+    let d = quat_dot(&na, &nb);
+    let sign = if d < 0.0 { -1.0 } else { 1.0 };
+    let cos_t = (d * sign).clamp(-1.0, 1.0);
+    if cos_t > 0.9995 {
+        return quat_nlerp(&na, &nb, t);
+    }
+    let (wa, wb) = slerp_weights(cos_t, sign, t);
+    Quaternion::new(
+        wa * na.w + wb * nb.w,
+        wa * na.x + wb * nb.x,
+        wa * na.y + wb * nb.y,
+        wa * na.z + wb * nb.z,
+    )
+    .normalize()
+}
