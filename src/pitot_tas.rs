@@ -115,3 +115,16 @@ pub fn diff_pressure_to_tas(
     let v_sq = (2.0 * diff_pressure_pa) / rho;
     Ok(libm::sqrtf(v_sq))
 }
+
+/// Complete airspeed telemetry reading including IAS, TAS, air density, and dynamic pressure.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct AirspeedReading {
+    /// Indicated airspeed in m/s.
+    pub ias_mps: f32,
+    /// True airspeed in m/s.
+    pub tas_mps: f32,
+    /// Calculated ambient air density in kg/m^3.
+    pub density_kg_m3: f32,
+    /// Dynamic (pitot differential) pressure in Pa.
+    pub dynamic_pressure_pa: f32,
+}
