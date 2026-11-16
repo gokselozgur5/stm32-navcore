@@ -32,3 +32,15 @@ fn test_euler_roundtrip_recovery() {
     assert!((p_rec - pitch).abs() < 1e-4);
     assert!((y_rec - yaw).abs() < 1e-4);
 }
+
+#[test]
+fn test_transform_accel_level_and_gravity() {
+    let rot = BodyRot::identity();
+    let g = 9.80665f32;
+    let f_body = [0.0, 0.0, -g];
+    let a_ned = rot.transform_accel_to_ned(f_body, g).expect("valid accel");
+
+    assert!(a_ned[0].abs() < 1e-5);
+    assert!(a_ned[1].abs() < 1e-5);
+    assert!(a_ned[2].abs() < 1e-5);
+}
