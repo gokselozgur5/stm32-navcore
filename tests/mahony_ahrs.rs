@@ -90,3 +90,19 @@ fn test_mahony_gyro_bias_tracking() {
     assert!((est_bias[0] - injected_bias[0]).abs() < 0.003);
     assert!((est_bias[1] - injected_bias[1]).abs() < 0.003);
 }
+
+#[test]
+fn test_mahony_9dof_heading_fusion() {
+    let mut ahrs = MahonyAhrs::new(1.0, 0.0);
+    let dt = 0.01;
+    let heading = 45.0f32.to_radians();
+    let mx = libm::cosf(heading);
+    let my = -libm::sinf(heading);
+
+    for _ in 0..500 {
+        ahrs.update_9dof([0.0; 3], [0.0, 0.0, 9.81], [mx, my, 0.0], dt)
+            .unwrap();
+    }
+    let (_, _, yaw) = ahrs.euler_zyx();
+    assert!((yaw - heading).abs() < 1.0f32.to_radians());
+}
