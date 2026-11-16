@@ -44,3 +44,9 @@ pub fn dead_reckoning_step(
     }
     let (r_m, r_n) = principal_radii_of_curvature(state.lat_rad)
         .map_err(NavError::Geo)?;
+
+    let cos_lat = libm::cos(state.lat_rad);
+    if cos_lat.abs() < 1e-12 {
+        return Err(NavError::InvalidState);
+    }
+    let dlon = (state.v_e * dt_s) / ((r_n + state.height_m) * cos_lat);
