@@ -144,3 +144,20 @@ pub fn turn_radius_from_rate(
     }
     Ok(true_airspeed_mps / abs_omega)
 }
+
+/// Compute required bank angle in radians for a given radius: phi = atan2(v^2, g * R).
+pub fn bank_angle_from_radius(
+    true_airspeed_mps: f32,
+    radius_m: f32,
+    gravity_mps2: f32,
+) -> Result<f32, TurnRateError> {
+    validate_speed_gravity(true_airspeed_mps, gravity_mps2)?;
+    validate_finite(radius_m)?;
+    if radius_m <= 0.0 {
+        return Err(TurnRateError::InvalidRadius);
+    }
+    let v2 = true_airspeed_mps * true_airspeed_mps;
+    let phi = libm::atan2f(v2, gravity_mps2 * radius_m);
+    validate_bank_angle(phi)?;
+    Ok(phi)
+}
