@@ -42,3 +42,16 @@ fn test_bank_angle_inversion() {
     let recovered_rate = turn_rate_deg_s(tas, phi_deg, g).unwrap();
     assert!((recovered_rate - target_rate_deg).abs() < 1e-4);
 }
+
+#[test]
+fn test_turn_radius_and_centripetal_accel() {
+    let tas = 50.0;
+    let g = STANDARD_GRAVITY_MPS2;
+    let bank_rad = 30.0 * DEG_TO_RAD;
+    let r = turn_radius_m(tas, bank_rad, g).unwrap();
+    let expected_r = (tas * tas) / (g * libm::tanf(bank_rad));
+    assert!((r - expected_r).abs() < 1e-3);
+
+    let a_c = centripetal_accel_mps2(tas, r).unwrap();
+    assert!((a_c - (g * libm::tanf(bank_rad))).abs() < 1e-3);
+}
