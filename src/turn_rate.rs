@@ -219,3 +219,18 @@ pub fn time_to_turn_s(turn_angle_rad: f32, turn_rate_rad_s: f32) -> Result<f32, 
     }
     Ok(libm::fabsf(turn_angle_rad) / abs_rate)
 }
+
+/// Aerodynamic state of an aircraft in a coordinated circular turn.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct TurnAerodynamics {
+    /// Turn rate in radians per second.
+    pub turn_rate_rad_s: f32,
+    /// Bank angle in radians.
+    pub bank_angle_rad: f32,
+    /// Turn radius in meters.
+    pub radius_m: f32,
+    /// Load factor (n).
+    pub load_factor: f32,
+    /// Centripetal acceleration in m/s^2.
+    pub centripetal_accel_mps2: f32,
+}
