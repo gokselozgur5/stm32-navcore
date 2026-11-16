@@ -80,3 +80,15 @@ fn test_standard_rate_and_time_to_turn() {
     let t = time_to_turn_s(turn_360, rate).unwrap();
     assert!((t - 120.0).abs() < 0.2);
 }
+
+#[test]
+fn test_compute_coordinated_turn_consistency() {
+    let tas = 60.0;
+    let bank = 25.0 * DEG_TO_RAD;
+    let g = STANDARD_GRAVITY_MPS2;
+    let state = compute_coordinated_turn(tas, bank, g).unwrap();
+    assert_eq!(state.bank_angle_rad, bank);
+    assert!(state.turn_rate_rad_s > 0.0);
+    assert!(state.radius_m > 0.0);
+    assert!(state.load_factor > 1.0);
+}
