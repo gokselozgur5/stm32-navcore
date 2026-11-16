@@ -257,3 +257,22 @@ impl<const WINDOW: usize> Default for ZuptDetector<WINDOW> {
         Self::new(ZuptConfig::default()).expect("default ZuptConfig must be valid")
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_static_detector_detects_stance() {
+        let mut detector = ZuptDetector::<8>::default();
+        let accel = [0.0, 0.0, -9.80665];
+        let gyro = [0.001, -0.001, 0.0005];
+        let mut confirmed = false;
+        for _ in 0..15 {
+            confirmed = detector.update(accel, gyro).unwrap();
+        }
+        assert!(confirmed);
+        assert_eq!(detector.phase(), StancePhase::StanceConfirmed);
+        assert!(detector.metrics().accel_variance < 1e-4);
+    }
+}
