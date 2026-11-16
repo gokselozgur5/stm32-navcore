@@ -130,3 +130,17 @@ impl ButterworthFilter {
         &self.coeffs
     }
 }
+
+impl ButterworthFilter {
+    /// Dynamically retunes filter coefficients without resetting states.
+    pub fn retune(&mut self, cutoff_hz: f32, sample_interval_s: f32) -> Result<(), ButterworthError> {
+        let coeffs = ButterworthCoefficients::try_new(cutoff_hz, sample_interval_s)?;
+        self.coeffs = coeffs;
+        Ok(())
+    }
+
+    /// Replaces coefficients explicitly.
+    pub fn set_coefficients(&mut self, coeffs: ButterworthCoefficients) {
+        self.coeffs = coeffs;
+    }
+}
