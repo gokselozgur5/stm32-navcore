@@ -170,3 +170,14 @@ impl BodyRot {
         Ok(a_ned)
     }
 }
+
+impl BodyRot {
+    fn normalize_vec(v: [f32; 3]) -> Result<[f32; 3], BodyRotError> {
+        let mag_sq = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+        if mag_sq <= 1e-12 || !mag_sq.is_finite() {
+            return Err(BodyRotError::NotOrthonormal);
+        }
+        let inv_mag = 1.0 / sqrtf(mag_sq);
+        Ok([v[0] * inv_mag, v[1] * inv_mag, v[2] * inv_mag])
+    }
+}
