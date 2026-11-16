@@ -227,3 +227,21 @@ impl BaroAltEstimator {
         Ok(alt1 - alt0)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_isa_sea_level_altitude() {
+        let alt = altitude_from_pressure_isa(STANDARD_SEA_LEVEL_PRESSURE_PA).unwrap();
+        assert!(alt.abs() < 1e-3);
+    }
+
+    #[test]
+    fn test_isa_known_altitude_1000m() {
+        let p_1000m = 89874.6;
+        let alt = altitude_from_pressure_isa(p_1000m).unwrap();
+        assert!((alt - 1000.0).abs() < 1.0);
+    }
+}
