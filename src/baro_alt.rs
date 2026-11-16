@@ -65,12 +65,7 @@ pub fn altitude_from_pressure_qnh(
     Ok(TROPOSPHERE_TEMP_SCALE * factor)
 }
 
-fn validate_baro_inputs(
-    p: f32,
-    p_ref: f32,
-    t_ref: f32,
-    lapse: f32,
-) -> Result<(), BaroAltError> {
+fn validate_baro_inputs(p: f32, p_ref: f32, t_ref: f32, lapse: f32) -> Result<(), BaroAltError> {
     if !p.is_finite() || !p_ref.is_finite() || !t_ref.is_finite() || !lapse.is_finite() {
         return Err(BaroAltError::NonFinite);
     }
@@ -272,9 +267,12 @@ mod tests {
     #[test]
     fn test_estimator_struct_methods() {
         let mut est = BaroAltEstimator::standard();
-        let alt = est.estimate_altitude(STANDARD_SEA_LEVEL_PRESSURE_PA).unwrap();
+        let alt = est
+            .estimate_altitude(STANDARD_SEA_LEVEL_PRESSURE_PA)
+            .unwrap();
         assert!(alt.abs() < 1e-3);
-        est.calibrate_at_known_altitude(STANDARD_SEA_LEVEL_PRESSURE_PA, 100.0).unwrap();
+        est.calibrate_at_known_altitude(STANDARD_SEA_LEVEL_PRESSURE_PA, 100.0)
+            .unwrap();
         assert!(est.ref_pressure_pa > STANDARD_SEA_LEVEL_PRESSURE_PA);
     }
 
