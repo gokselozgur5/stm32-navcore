@@ -28,3 +28,20 @@ pub const GAS_CONSTANT_DRY_AIR: f32 = 287.05287;
 /// Hypsometric exponent for standard atmosphere: (R * L) / g0.
 pub const HYPSOMETRIC_EXPONENT: f32 =
     (GAS_CONSTANT_DRY_AIR * STANDARD_LAPSE_RATE_K_PER_M) / STANDARD_GRAVITY_M_S2;
+
+/// Standard troposphere temperature scale height factor: T0 / L.
+pub const TROPOSPHERE_TEMP_SCALE: f32 =
+    STANDARD_SEA_LEVEL_TEMP_K / STANDARD_LAPSE_RATE_K_PER_M;
+
+/// Computes altitude in meters above sea level from pressure under standard ISA conditions.
+pub fn altitude_from_pressure_isa(pressure_pa: f32) -> Result<f32, BaroAltError> {
+    if !pressure_pa.is_finite() {
+        return Err(BaroAltError::NonFinite);
+    }
+    if pressure_pa <= 0.0 {
+        return Err(BaroAltError::InvalidPressure);
+    }
+    let ratio = pressure_pa / STANDARD_SEA_LEVEL_PRESSURE_PA;
+    let factor = 1.0 - libm::powf(ratio, HYPSOMETRIC_EXPONENT);
+    Ok(TROPOSPHERE_TEMP_SCALE * factor)
+}
