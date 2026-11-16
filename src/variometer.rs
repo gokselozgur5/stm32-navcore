@@ -188,3 +188,23 @@ impl Variometer {
         self.update_altitude(alt_m, dt_s)
     }
 }
+
+impl Variometer {
+    /// Updates estimator with measured pressure and local QNH in Pascals.
+    pub fn update_pressure_qnh(
+        &mut self,
+        pressure_pa: f32,
+        qnh_pa: f32,
+        dt_s: f32,
+    ) -> Result<f32, VariometerError> {
+        if !pressure_pa.is_finite() || !qnh_pa.is_finite() {
+            return Err(VariometerError::NonFinite);
+        }
+        if pressure_pa <= 0.0 || qnh_pa <= 0.0 {
+            return Err(VariometerError::InvalidPressure);
+        }
+        let alt_m = crate::baro_alt::altitude_from_pressure_qnh(pressure_pa, qnh_pa)
+            .map_err(|_| VariometerError::InvalidPressure)?;
+        self.update_altitude(alt_m, dt_s)
+    }
+}
