@@ -236,3 +236,17 @@ pub fn ned_to_ecef(ned: &NedPos, ref_geo: &GeodeticPos) -> Result<EcefPos, EcefN
     let frame = NedFrame::from_geodetic(ref_geo);
     frame.ned_to_ecef(ned)
 }
+
+impl NedFrame {
+    /// Convert a geodetic point directly into NED coordinates.
+    pub fn geodetic_to_ned(&self, point: &GeodeticPos) -> Result<NedPos, EcefNedError> {
+        let ecef = geodetic_to_ecef(point);
+        self.ecef_to_ned(&ecef)
+    }
+
+    /// Convert NED coordinates directly into geodetic coordinates.
+    pub fn ned_to_geodetic(&self, ned: &NedPos) -> Result<GeodeticPos, EcefNedError> {
+        let ecef = self.ned_to_ecef(ned)?;
+        ecef_to_geodetic(&ecef)
+    }
+}
