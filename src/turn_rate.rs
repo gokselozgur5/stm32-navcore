@@ -112,3 +112,18 @@ pub fn bank_angle_deg(
     let phi_rad = bank_angle_rad(true_airspeed_mps, rate_rad, gravity_mps2)?;
     Ok(phi_rad * RAD_TO_DEG)
 }
+
+/// Compute turn radius in meters: R = v^2 / (g * tan(|phi|)).
+pub fn turn_radius_m(
+    true_airspeed_mps: f32,
+    bank_angle_rad: f32,
+    gravity_mps2: f32,
+) -> Result<f32, TurnRateError> {
+    validate_speed_gravity(true_airspeed_mps, gravity_mps2)?;
+    validate_bank_angle(bank_angle_rad)?;
+    let abs_tan = libm::fabsf(libm::tanf(bank_angle_rad));
+    if abs_tan < 1e-6 {
+        return Err(TurnRateError::ZeroTurnRate);
+    }
+    Ok((true_airspeed_mps * true_airspeed_mps) / (gravity_mps2 * abs_tan))
+}
