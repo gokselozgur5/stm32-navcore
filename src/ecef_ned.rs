@@ -277,4 +277,19 @@ mod tests {
         let center = EcefPos::new(0.0, 0.0, 0.0);
         assert_eq!(ecef_to_geodetic(&center), Err(EcefNedError::SingularPoint));
     }
+
+    #[test]
+    fn test_known_points_geodetic_to_ecef() {
+        let equator = GeodeticPos::from_degrees(0.0, 0.0, 0.0).unwrap();
+        let ecef_eq = geodetic_to_ecef(&equator);
+        assert!((ecef_eq.x - WGS84_A).abs() < 1e-3);
+        assert!(ecef_eq.y.abs() < 1e-3);
+        assert!(ecef_eq.z.abs() < 1e-3);
+
+        let pole = GeodeticPos::from_degrees(90.0, 0.0, 0.0).unwrap();
+        let ecef_pole = geodetic_to_ecef(&pole);
+        assert!(ecef_pole.x.abs() < 1e-3);
+        assert!(ecef_pole.y.abs() < 1e-3);
+        assert!((ecef_pole.z - WGS84_B).abs() < 1e-3);
+    }
 }
