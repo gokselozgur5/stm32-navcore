@@ -244,4 +244,21 @@ mod tests {
         let alt = altitude_from_pressure_isa(p_1000m).unwrap();
         assert!((alt - 1000.0).abs() < 1.0);
     }
+
+    #[test]
+    fn test_pressure_reversibility() {
+        let test_altitudes = [0.0, 500.0, 1500.0, 3000.0];
+        for &alt in &test_altitudes {
+            let p = pressure_at_altitude_isa(alt).unwrap();
+            let recovered_alt = altitude_from_pressure_isa(p).unwrap();
+            assert!((recovered_alt - alt).abs() < 1e-2);
+        }
+    }
+
+    #[test]
+    fn test_qnh_altitude_offset() {
+        let qnh = 102000.0;
+        let alt = altitude_from_pressure_qnh(102000.0, qnh).unwrap();
+        assert!(alt.abs() < 1e-3);
+    }
 }
