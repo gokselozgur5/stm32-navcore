@@ -98,3 +98,10 @@ fn test_batch_filter_matches_sequential() {
         Err(ButterworthError::BufferLengthMismatch)
     );
 }
+
+#[test]
+fn test_coefficients_construction_and_from_coeffs() {
+    let coeffs = ButterworthCoefficients::try_new(5.0, 0.01).expect("valid coeffs");
+    let filter = ButterworthFilter::from_coeffs(coeffs);
+    assert_eq!(filter.coefficients(), &coeffs);
+}
