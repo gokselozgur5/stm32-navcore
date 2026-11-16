@@ -58,6 +58,12 @@ pub use ecef_ned::{
     ecef_to_geodetic, ecef_to_ned, geodetic_to_ecef, geodetic_to_ned, ned_to_ecef,
     ned_to_geodetic, EcefNedError, EcefPos, GeodeticPos, NedFrame, NedPos,
 };
+/// Dead reckoning velocity damping and GPS velocity fusion.
+pub use vel_damping::{
+    calculate_innovation, damp_velocity_step, fuse_velocity_step, VelDampingConfig,
+    VelDampingError, VelDampingFilter,
+};
+};
 /// Decoded u-blox UBX messages and the streaming parser that produces them.
 pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 /// Barometric vertical speed indicator and variometer estimator.
