@@ -30,3 +30,15 @@ pub struct ZuptConfig {
     /// Nominal gravity acceleration magnitude in m/s^2.
     pub gravity_magnitude: f32,
 }
+
+impl Default for ZuptConfig {
+    fn default() -> Self {
+        Self {
+            accel_var_thresh: 0.05,
+            gyro_norm_thresh: 0.05,
+            accel_mag_thresh: 0.35,
+            min_stance_samples: 5,
+            gravity_magnitude: 9.80665,
+        }
+    }
+}
