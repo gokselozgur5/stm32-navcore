@@ -262,3 +262,19 @@ pub fn ned_to_geodetic(ned: &NedPos, ref_geo: &GeodeticPos) -> Result<GeodeticPo
     let frame = NedFrame::from_geodetic(ref_geo);
     frame.ned_to_geodetic(ned)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_input_validation_and_errors() {
+        assert_eq!(GeodeticPos::new(f64::NAN, 0.0, 0.0), Err(EcefNedError::NonFinite));
+        assert_eq!(GeodeticPos::new(2.0, 0.0, 0.0), Err(EcefNedError::InvalidLatitude));
+        assert_eq!(GeodeticPos::new(0.0, 4.0, 0.0), Err(EcefNedError::InvalidLongitude));
+        let bad_ecef = EcefPos::new(f64::NAN, 0.0, 0.0);
+        assert_eq!(ecef_to_geodetic(&bad_ecef), Err(EcefNedError::NonFinite));
+        let center = EcefPos::new(0.0, 0.0, 0.0);
+        assert_eq!(ecef_to_geodetic(&center), Err(EcefNedError::SingularPoint));
+    }
+}
