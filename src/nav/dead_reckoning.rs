@@ -50,3 +50,5 @@ pub fn dead_reckoning_step(
         return Err(NavError::InvalidState);
     }
     let dlon = (state.v_e * dt_s) / ((r_n + state.height_m) * cos_lat);
+
+    let dlat = (state.v_n * dt_s) / (r_m + state.height_m);
