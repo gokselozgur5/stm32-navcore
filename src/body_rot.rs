@@ -65,3 +65,26 @@ impl BodyRot {
         (self.det() - 1.0).abs() <= BODY_ROT_TOLERANCE
     }
 }
+
+impl BodyRot {
+    /// Builds a rotation from an existing NED-to-Body DCM.
+    pub fn from_dcm_ned_to_body(m: Mat<3, 3>) -> Result<Self, BodyRotError> {
+        for row in &m.0 {
+            for &val in row {
+                if !val.is_finite() {
+                    return Err(BodyRotError::NonFinite);
+                }
+            }
+        }
+        let rot = Self { dcm_nb: m };
+        if !rot.is_orthonormal() {
+            return Err(BodyRotError::NotOrthonormal);
+        }
+        Ok(rot)
+    }
+
+    /// Builds a rotation from an existing Body-to-NED DCM.
+    pub fn from_dcm_body_to_ned(m: Mat<3, 3>) -> Result<Self, BodyRotError> {
+        Self::from_dcm_ned_to_body(m.transpose())
+    }
+}
