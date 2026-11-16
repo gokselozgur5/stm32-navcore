@@ -107,3 +107,18 @@ impl BodyRot {
         Ok(Self { dcm_nb: m })
     }
 }
+
+impl BodyRot {
+    /// Extracts Euler angles (roll, pitch, yaw) in radians.
+    pub fn to_euler(&self) -> Result<(f32, f32, f32), BodyRotError> {
+        let m = &self.dcm_nb.0;
+        let sin_pitch = -m[0][2];
+        if sin_pitch.abs() > 0.9999 {
+            return Err(BodyRotError::GimbalLock);
+        }
+        let pitch = asinf(sin_pitch);
+        let roll = atan2f(m[1][2], m[2][2]);
+        let yaw = atan2f(m[0][1], m[0][0]);
+        Ok((roll, pitch, yaw))
+    }
+}
