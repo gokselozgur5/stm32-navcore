@@ -132,3 +132,29 @@ pub struct VelDampingFilter {
     time_since_gps_s: f32,
     gps_valid: bool,
 }
+
+impl VelDampingFilter {
+    /// Construct a new filter with zero initial velocity.
+    pub fn new(config: VelDampingConfig) -> Result<Self, VelDampingError> {
+        Self::with_initial_velocity(config, [0.0, 0.0, 0.0])
+    }
+
+    /// Construct a new filter with specified initial velocity.
+    pub fn with_initial_velocity(
+        config: VelDampingConfig,
+        initial_vel: [f32; 3],
+    ) -> Result<Self, VelDampingError> {
+        config.validate()?;
+        for &v in &initial_vel {
+            if !v.is_finite() {
+                return Err(VelDampingError::NonFinite);
+            }
+        }
+        Ok(Self {
+            config,
+            vel_ned: initial_vel,
+            time_since_gps_s: 0.0,
+            gps_valid: false,
+        })
+    }
+}
