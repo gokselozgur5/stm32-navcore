@@ -224,3 +224,29 @@ pub fn mahony_ahrs_9dof_step(
     let next_q = q.integrate_gyro(w, dt)?;
     Ok((next_q, next_bias))
 }
+
+impl MahonyAhrs {
+    /// Update orientation estimate using 6-DOF gyro and accelerometer.
+    pub fn update(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        dt: f32,
+    ) -> Result<Quaternion, MahonyAhrsError> {
+        self.update_6dof(gyro, accel, dt)
+    }
+
+    /// Update orientation estimate using 6-DOF gyro and accelerometer.
+    pub fn update_6dof(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        dt: f32,
+    ) -> Result<Quaternion, MahonyAhrsError> {
+        let (nq, nb) =
+            mahony_ahrs_6dof_step(self.quat, gyro, accel, self.gyro_bias, self.kp, self.ki, dt)?;
+        self.quat = nq;
+        self.gyro_bias = nb;
+        Ok(self.quat)
+    }
+}
