@@ -37,3 +37,21 @@ pub fn somigliana_surface(lat_rad: f32) -> Result<f32, GravityError> {
     let den = libm::sqrtf(1.0 - WGS84_E2 * s2);
     Ok(GAMMA_E * (num / den))
 }
+
+/// Free-air elevation gravity correction in m/s^2.
+pub fn elevation_correction(lat_rad: f32, alt_m: f32) -> Result<f32, GravityError> {
+    if !alt_m.is_finite() {
+        return Err(GravityError::NonFinite);
+    }
+    if alt_m < -10_000.0 || alt_m > 100_000.0 {
+        return Err(GravityError::InvalidAltitude);
+    }
+    let g0 = somigliana_surface(lat_rad)?;
+    let f = 0.003_352_810_7;
+    let m = 0.003_449_786_5;
+    let s = libm::sinf(lat_rad);
+    let s2 = s * s;
+    let term1 = (2.0 / WGS84_A) * (1.0 + f + m - 2.0 * f * s2) * alt_m;
+    let term2 = (3.0 / (WGS84_A * WGS84_A)) * alt_m * alt_m;
+    Ok(-g0 * (term1 - term2))
+}
