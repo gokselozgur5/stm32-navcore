@@ -15,3 +15,15 @@ pub enum ButterworthError {
     /// Buffer length mismatch in batch processing.
     BufferLengthMismatch,
 }
+
+/// Biquad filter transfer function coefficients for 2nd-order Butterworth.
+///
+/// H(z) = (b0 + b1 * z^-1 + b2 * z^-2) / (1 + a1 * z^-1 + a2 * z^-2)
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ButterworthCoefficients {
+    pub b0: f32,
+    pub b1: f32,
+    pub b2: f32,
+    pub a1: f32,
+    pub a2: f32,
+}
