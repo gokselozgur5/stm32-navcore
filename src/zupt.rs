@@ -203,3 +203,27 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
             StancePhase::Moving
         }
     }
+
+    /// Ingests IMU sample and returns whether stance is currently confirmed.
+    pub fn update(&mut self, accel: [f32; 3], gyro: [f32; 3]) -> Result<bool, ZuptError> {
+        if !is_finite_vec3(accel) || !is_finite_vec3(gyro) {
+            return Err(ZuptError::NonFinite);
+        }
+        self.push_sample(accel, gyro);
+        if self.count < WINDOW {
+            self.current_metrics.phase = StancePhase::Moving;
+            return Ok(false);
+        }
+        let (var_a, diff_a) = self.compute_accel_stats(WINDOW);
+        let max_w = self.compute_gyro_stats(WINDOW);
+        let (meets, stat) = self.evaluate_stance_criteria(var_a, max_w, diff_a);
+        let phase = self.update_stance_streak(meets);
+        self.current_metrics = ZuptMetrics {
+            accel_variance: var_a,
+            max_gyro_norm: max_w,
+            accel_mag_diff: diff_a,
+            test_statistic: stat,
+            phase,
+        };
+        Ok(phase == StancePhase::StanceConfirmed)
+    }
