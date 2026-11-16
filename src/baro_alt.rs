@@ -204,3 +204,26 @@ impl BaroAltEstimator {
             self.lapse_rate_k_per_m,
         )
     }
+
+    /// Calibrates reference pressure using pressure measured at known altitude.
+    pub fn calibrate_at_known_altitude(
+        &mut self,
+        measured_pressure_pa: f32,
+        known_altitude_m: f32,
+    ) -> Result<(), BaroAltError> {
+        let qnh = calibrate_qnh(measured_pressure_pa, known_altitude_m)?;
+        self.ref_pressure_pa = qnh;
+        Ok(())
+    }
+
+    /// Computes relative altitude difference between two pressure levels.
+    pub fn relative_altitude(
+        &self,
+        pressure_pa: f32,
+        baseline_pressure_pa: f32,
+    ) -> Result<f32, BaroAltError> {
+        let alt1 = self.estimate_altitude(pressure_pa)?;
+        let alt0 = self.estimate_altitude(baseline_pressure_pa)?;
+        Ok(alt1 - alt0)
+    }
+}
