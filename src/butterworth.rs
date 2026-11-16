@@ -144,3 +144,19 @@ impl ButterworthFilter {
         self.coeffs = coeffs;
     }
 }
+
+impl ButterworthFilter {
+    /// Filters an array of input samples into an equal-sized output slice.
+    pub fn batch_filter(&mut self, input: &[f32], output: &mut [f32]) -> Result<(), ButterworthError> {
+        if input.len() != output.len() {
+            return Err(ButterworthError::BufferLengthMismatch);
+        }
+        for (idx, &x) in input.iter().enumerate() {
+            if !x.is_finite() {
+                return Err(ButterworthError::NonFinite);
+            }
+            output[idx] = self.update(x);
+        }
+        Ok(())
+    }
+}
