@@ -177,4 +177,15 @@ impl VelDampingFilter {
     pub fn time_since_gps(&self) -> f32 {
         self.time_since_gps_s
     }
+
+    /// Reset filter velocity vector to specified values.
+    pub fn reset_velocity(&mut self, vel: [f32; 3]) -> Result<(), VelDampingError> {
+        for &v in &vel {
+            if !v.is_finite() {
+                return Err(VelDampingError::NonFinite);
+            }
+        }
+        self.vel_ned = vel;
+        Ok(())
+    }
 }
