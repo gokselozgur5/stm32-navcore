@@ -105,3 +105,23 @@ fn test_dead_reckoning_outage_propagation() {
     assert!(!filter.is_gps_valid());
     assert!((filter.time_since_gps() - 1.1).abs() < 1e-6);
 }
+
+#[test]
+fn test_step_and_non_finite_rejection() {
+    use stm32_navcore::vel_damping::VelDampingFilter;
+
+    let cfg = VelDampingConfig::default();
+    let mut filter = VelDampingFilter::new(cfg).unwrap();
+
+    let err_accel = filter.predict([f32::NAN, 0.0, 0.0], 0.1);
+    assert_eq!(err_accel, Err(VelDampingError::NonFinite));
+
+    let err_fuse = filter.fuse_gps([0.0, f32::INFINITY, 0.0]);
+    assert_eq!(err_fuse, Err(VelDampingError::NonFinite));
+
+    let res = filter.step([1.0, 0.0, 0.0], Some([0.1, 0.0, 0.0]), 0.1);
+    assert!(res.is_ok());
+
+    assert!(filter.reset_velocity([5.0, -5.0, 1.0]).is_ok());
+    assert_eq!(filter.velocity(), [5.0, -5.0, 1.0]);
+}
