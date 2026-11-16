@@ -20,3 +20,27 @@ pub const MPS_TO_FPM: f32 = 196.85039;
 
 /// Factor to convert meters per second to knots (1 / 0.514444).
 pub const MPS_TO_KNOTS: f32 = 1.9438445;
+
+/// Converts vertical speed from meters per second to feet per minute.
+#[inline]
+pub fn mps_to_fpm(mps: f32) -> f32 {
+    mps * MPS_TO_FPM
+}
+
+/// Converts vertical speed from feet per minute to meters per second.
+#[inline]
+pub fn fpm_to_mps(fpm: f32) -> f32 {
+    fpm / MPS_TO_FPM
+}
+
+/// Converts vertical speed from meters per second to knots.
+#[inline]
+pub fn mps_to_knots(mps: f32) -> f32 {
+    mps * MPS_TO_KNOTS
+}
+
+/// Converts vertical speed from knots to meters per second.
+#[inline]
+pub fn knots_to_mps(knots: f32) -> f32 {
+    knots / MPS_TO_KNOTS
+}
