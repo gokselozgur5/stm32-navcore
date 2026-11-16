@@ -64,3 +64,18 @@ impl ZuptConfig {
         Ok(())
     }
 }
+
+/// Detailed metrics computed for each zero-velocity detection step.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ZuptMetrics {
+    /// Sample variance of accelerometer norm within window.
+    pub accel_variance: f32,
+    /// Maximum gyroscope norm within window.
+    pub max_gyro_norm: f32,
+    /// Absolute deviation of mean acceleration from nominal gravity.
+    pub accel_mag_diff: f32,
+    /// Combined test statistic ratio relative to thresholds.
+    pub test_statistic: f32,
+    /// Current detected stance phase.
+    pub phase: StancePhase,
+}
