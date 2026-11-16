@@ -54,3 +54,20 @@ fn test_declination_polynomial_eval() {
     let zero_scale = DeclinationPolynomial::new(0.0, 0.0, 0.0, 180.0, [0.0; 6]);
     assert_eq!(zero_scale.eval(0.0, 0.0), Err(DeclinationError::InvalidScale));
 }
+
+#[test]
+fn test_wmm_global_declination_and_bounds() {
+    use stm32_navcore::wmm_declination::{
+        wmm_declination_deg, wmm_declination_rad, DeclinationError,
+    };
+    let eq = wmm_declination_deg(0.0, 0.0).unwrap();
+    assert_eq!(eq, -3.5);
+
+    let rad = wmm_declination_rad(0.0, 0.0).unwrap();
+    let expected_rad = -3.5 * core::f32::consts::PI / 180.0;
+    assert!((rad - expected_rad).abs() < 1e-6);
+
+    assert_eq!(wmm_declination_deg(95.0, 0.0), Err(DeclinationError::InvalidLatitude));
+    assert_eq!(wmm_declination_deg(0.0, 200.0), Err(DeclinationError::InvalidLongitude));
+    assert_eq!(wmm_declination_deg(f32::NAN, 0.0), Err(DeclinationError::NonFinite));
+}
