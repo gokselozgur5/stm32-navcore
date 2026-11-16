@@ -59,3 +59,22 @@ impl Default for VelDampingConfig {
         }
     }
 }
+
+/// Apply first-order exponential velocity damping step.
+pub fn damp_velocity_step(
+    vel: [f32; 3],
+    tau_s: f32,
+    dt_s: f32,
+) -> Result<[f32; 3], VelDampingError> {
+    if !dt_s.is_finite() || dt_s <= 0.0 {
+        return Err(VelDampingError::InvalidSampleInterval);
+    }
+    if !tau_s.is_finite() || tau_s <= 0.0 {
+        return Err(VelDampingError::InvalidTimeConstant);
+    }
+    if !vel[0].is_finite() || !vel[1].is_finite() || !vel[2].is_finite() {
+        return Err(VelDampingError::NonFinite);
+    }
+    let decay = libm::expf(-dt_s / tau_s);
+    Ok([vel[0] * decay, vel[1] * decay, vel[2] * decay])
+}
