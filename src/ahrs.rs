@@ -48,3 +48,20 @@ impl MadgwickAhrs {
         Ok(Self { quat: q, beta })
     }
 }
+
+impl MadgwickAhrs {
+    /// Current estimated orientation quaternion.
+    pub const fn quaternion(&self) -> Quaternion {
+        self.quat
+    }
+
+    /// Current Euler angles (roll, pitch, yaw) in radians.
+    pub fn euler_zyx(&self) -> (f32, f32, f32) {
+        self.quat.to_euler_zyx()
+    }
+
+    /// Reset filter state to identity quaternion.
+    pub fn reset(&mut self) {
+        self.quat = Quaternion::IDENTITY;
+    }
+}
