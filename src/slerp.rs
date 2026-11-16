@@ -62,3 +62,6 @@ pub fn quat_slerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, 
     )
     .normalize()
 }
+
+pub use quat_nlerp as nlerp;
+pub use quat_slerp as slerp;
