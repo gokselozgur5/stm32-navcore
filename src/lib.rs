@@ -51,3 +51,5 @@ mod footprint {
 pub mod filters;
 
 pub mod nav;
+
+pub mod baro_alt;
