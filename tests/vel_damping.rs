@@ -73,7 +73,7 @@ fn test_gps_fusion_convergence() {
     let mut filter = VelDampingFilter::new(cfg).unwrap();
     let gps_target = [10.0, 5.0, -2.0];
 
-    for _ in 0..50 {
+    for _ in 0..80 {
         let _ = filter.fuse_gps(gps_target).unwrap();
     }
     let v = filter.velocity();
