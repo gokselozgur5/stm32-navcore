@@ -36,3 +36,20 @@ pub struct GeodeticPos {
     /// Height above reference ellipsoid in meters.
     pub alt_m: f64,
 }
+
+impl GeodeticPos {
+    /// Construct a validated geodetic position in radians and meters.
+    pub fn new(lat_rad: f64, lon_rad: f64, alt_m: f64) -> Result<Self, EcefNedError> {
+        if !lat_rad.is_finite() || !lon_rad.is_finite() || !alt_m.is_finite() {
+            return Err(EcefNedError::NonFinite);
+        }
+        let half_pi = core::f64::consts::FRAC_PI_2;
+        if lat_rad < -half_pi || lat_rad > half_pi {
+            return Err(EcefNedError::InvalidLatitude);
+        }
+        let pi = core::f64::consts::PI;
+        if lon_rad < -pi || lon_rad > pi {
+            return Err(EcefNedError::InvalidLongitude);
+        }
+        Ok(Self { lat_rad, lon_rad, alt_m })
+    }
