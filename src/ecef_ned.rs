@@ -156,3 +156,29 @@ pub fn ecef_to_geodetic(ecef: &EcefPos) -> Result<GeodeticPos, EcefNedError> {
     };
     GeodeticPos::new(lat, lon, alt)
 }
+
+/// Local tangent plane reference frame caching trigonometric components.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct NedFrame {
+    pub origin_geo: GeodeticPos,
+    pub origin_ecef: EcefPos,
+    sin_lat: f64,
+    cos_lat: f64,
+    sin_lon: f64,
+    cos_lon: f64,
+}
+
+impl NedFrame {
+    /// Initialize local tangent plane frame at a given geodetic origin.
+    pub fn from_geodetic(origin: &GeodeticPos) -> Self {
+        let origin_ecef = geodetic_to_ecef(origin);
+        Self {
+            origin_geo: *origin,
+            origin_ecef,
+            sin_lat: libm::sin(origin.lat_rad),
+            cos_lat: libm::cos(origin.lat_rad),
+            sin_lon: libm::sin(origin.lon_rad),
+            cos_lon: libm::cos(origin.lon_rad),
+        }
+    }
+}
