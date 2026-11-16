@@ -41,3 +41,13 @@ fn validate_air_state(static_pressure_pa: f32, temp_k: f32) -> Result<(), PitotE
     }
     Ok(())
 }
+
+/// Compute local air density in kg/m^3 using ideal gas equation: rho = P / (R * T).
+pub fn air_density(static_pressure_pa: f32, temp_k: f32) -> Result<f32, PitotError> {
+    validate_air_state(static_pressure_pa, temp_k)?;
+    let rho = static_pressure_pa / (GAS_CONSTANT_DRY_AIR * temp_k);
+    if !rho.is_finite() || rho <= 0.0 {
+        return Err(PitotError::InvalidDensity);
+    }
+    Ok(rho)
+}
