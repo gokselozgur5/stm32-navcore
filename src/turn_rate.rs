@@ -55,3 +55,11 @@ fn validate_speed_gravity(speed: f32, gravity: f32) -> Result<(), TurnRateError>
     }
     Ok(())
 }
+
+fn validate_bank_angle(bank_rad: f32) -> Result<(), TurnRateError> {
+    validate_finite(bank_rad)?;
+    if libm::fabsf(bank_rad) > MAX_BANK_ANGLE_RAD {
+        return Err(TurnRateError::BankAngleOutOfRange);
+    }
+    Ok(())
+}
