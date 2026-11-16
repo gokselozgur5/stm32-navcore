@@ -18,3 +18,21 @@ pub enum TurnRateError {
     /// Stall speed is non-positive.
     InvalidStallSpeed,
 }
+
+/// Standard sea-level gravity acceleration in m/s^2.
+pub const STANDARD_GRAVITY_MPS2: f32 = 9.80665;
+
+/// Standard rate turn for civil aviation in rad/s (3 deg/s).
+pub const STANDARD_RATE_TURN_RAD_S: f32 = 0.05235987756;
+
+/// Standard rate turn in degrees per second (3 deg/s).
+pub const STANDARD_RATE_TURN_DEG_S: f32 = 3.0;
+
+/// Maximum allowable bank angle in radians (85 degrees).
+pub const MAX_BANK_ANGLE_RAD: f32 = 1.4835298642;
+
+/// Degrees to radians factor.
+pub const DEG_TO_RAD: f32 = 0.01745329252;
+
+/// Radians to degrees factor.
+pub const RAD_TO_DEG: f32 = 57.295779513;
