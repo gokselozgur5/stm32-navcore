@@ -51,7 +51,10 @@ fn test_parameter_validation_and_errors() {
     );
     let mut f = ButterworthFilter::try_new(5.0, 0.01).expect("valid");
     assert_eq!(f.try_update(f32::NAN), Err(ButterworthError::NonFinite));
-    assert_eq!(f.try_update(f32::INFINITY), Err(ButterworthError::NonFinite));
+    assert_eq!(
+        f.try_update(f32::INFINITY),
+        Err(ButterworthError::NonFinite)
+    );
 }
 
 #[test]
@@ -80,7 +83,9 @@ fn test_batch_filter_matches_sequential() {
 
     let input = [1.0, 2.0, 1.5, -0.5, 0.0, 3.0, 2.5, 1.0];
     let mut out_batch = [0.0f32; 8];
-    f_batch.batch_filter(&input, &mut out_batch).expect("batch ok");
+    f_batch
+        .batch_filter(&input, &mut out_batch)
+        .expect("batch ok");
 
     for (idx, &x) in input.iter().enumerate() {
         let expected = f_seq.update(x);
