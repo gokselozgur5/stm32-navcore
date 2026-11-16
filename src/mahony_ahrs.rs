@@ -165,3 +165,25 @@ fn validate_9dof(
     }
     Ok(())
 }
+
+fn step_correction(
+    gyro: [f32; 3],
+    gyro_bias: [f32; 3],
+    e: [f32; 3],
+    kp: f32,
+    ki: f32,
+    dt: f32,
+) -> ([f32; 3], [f32; 3]) {
+    let ki_dt = ki * dt;
+    let nb = [
+        gyro_bias[0] - ki_dt * e[0],
+        gyro_bias[1] - ki_dt * e[1],
+        gyro_bias[2] - ki_dt * e[2],
+    ];
+    let w = [
+        gyro[0] - nb[0] + kp * e[0],
+        gyro[1] - nb[1] + kp * e[1],
+        gyro[2] - nb[2] + kp * e[2],
+    ];
+    (nb, w)
+}
