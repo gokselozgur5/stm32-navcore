@@ -46,3 +46,16 @@ fn test_ias_to_tas_altitude_scaling() {
     assert!(tas_5000m > 50.0);
     assert!((tas_5000m - 64.6).abs() < 1.0);
 }
+
+#[test]
+fn test_diff_pressure_conversions_and_estimator() {
+    let dp = 122.5;
+    let ias = diff_pressure_to_ias(dp).unwrap();
+    assert!((ias - 14.142).abs() < 0.05);
+
+    let est = PitotTasEstimator::default();
+    let r = est.update(dp, STANDARD_SEA_LEVEL_PRESSURE_PA, STANDARD_SEA_LEVEL_TEMP_K).unwrap();
+    assert!((r.ias_mps - 14.142).abs() < 0.05);
+    assert!((r.tas_mps - 14.142).abs() < 0.05);
+    assert!((r.dynamic_pressure_pa - dp).abs() < 1e-4);
+}
