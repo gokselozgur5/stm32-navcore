@@ -44,3 +44,13 @@ pub fn mps_to_knots(mps: f32) -> f32 {
 pub fn knots_to_mps(knots: f32) -> f32 {
     knots / MPS_TO_KNOTS
 }
+
+/// Computes total energy compensated altitude: H_te = H_static + (V^2 / (2 * g0)).
+pub fn total_energy_altitude(static_alt_m: f32, tas_mps: f32) -> Result<f32, VariometerError> {
+    if !static_alt_m.is_finite() || !tas_mps.is_finite() {
+        return Err(VariometerError::NonFinite);
+    }
+    const G0: f32 = 9.80665;
+    let kinetic_head = (tas_mps * tas_mps) / (2.0 * G0);
+    Ok(static_alt_m + kinetic_head)
+}
