@@ -98,3 +98,20 @@ pub fn diff_pressure_to_ias(diff_pressure_pa: f32) -> Result<f32, PitotError> {
     let v_sq = (2.0 * diff_pressure_pa) / STANDARD_SEA_LEVEL_DENSITY_KG_M3;
     Ok(libm::sqrtf(v_sq))
 }
+
+/// Convert pitot differential pressure in Pa directly to true airspeed (TAS) in m/s.
+pub fn diff_pressure_to_tas(
+    diff_pressure_pa: f32,
+    static_pressure_pa: f32,
+    temp_k: f32,
+) -> Result<f32, PitotError> {
+    if !diff_pressure_pa.is_finite() {
+        return Err(PitotError::NonFinite);
+    }
+    if diff_pressure_pa < 0.0 {
+        return Err(PitotError::NegativeDifferentialPressure);
+    }
+    let rho = air_density(static_pressure_pa, temp_k)?;
+    let v_sq = (2.0 * diff_pressure_pa) / rho;
+    Ok(libm::sqrtf(v_sq))
+}
