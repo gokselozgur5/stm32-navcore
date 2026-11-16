@@ -49,10 +49,7 @@ fn test_magnetic_true_heading_roundtrip() {
 #[test]
 fn test_declination_polynomial_eval() {
     use stm32_navcore::wmm_declination::{DeclinationError, DeclinationPolynomial};
-    let poly = DeclinationPolynomial::new(
-        0.0, 0.0, 90.0, 180.0,
-        [5.0, 2.0, -1.0, 0.5, 0.0, -0.2],
-    );
+    let poly = DeclinationPolynomial::new(0.0, 0.0, 90.0, 180.0, [5.0, 2.0, -1.0, 0.5, 0.0, -0.2]);
     let val = poly.eval(0.0, 0.0).unwrap();
     assert_eq!(val, 5.0);
 
@@ -61,7 +58,10 @@ fn test_declination_polynomial_eval() {
     assert!((val_pt - expected).abs() < 1e-6);
 
     let zero_scale = DeclinationPolynomial::new(0.0, 0.0, 0.0, 180.0, [0.0; 6]);
-    assert_eq!(zero_scale.eval(0.0, 0.0), Err(DeclinationError::InvalidScale));
+    assert_eq!(
+        zero_scale.eval(0.0, 0.0),
+        Err(DeclinationError::InvalidScale)
+    );
 }
 
 #[test]
@@ -76,7 +76,16 @@ fn test_wmm_global_declination_and_bounds() {
     let expected_rad = -3.5 * core::f32::consts::PI / 180.0;
     assert!((rad - expected_rad).abs() < 1e-6);
 
-    assert_eq!(wmm_declination_deg(95.0, 0.0), Err(DeclinationError::InvalidLatitude));
-    assert_eq!(wmm_declination_deg(0.0, 200.0), Err(DeclinationError::InvalidLongitude));
-    assert_eq!(wmm_declination_deg(f32::NAN, 0.0), Err(DeclinationError::NonFinite));
+    assert_eq!(
+        wmm_declination_deg(95.0, 0.0),
+        Err(DeclinationError::InvalidLatitude)
+    );
+    assert_eq!(
+        wmm_declination_deg(0.0, 200.0),
+        Err(DeclinationError::InvalidLongitude)
+    );
+    assert_eq!(
+        wmm_declination_deg(f32::NAN, 0.0),
+        Err(DeclinationError::NonFinite)
+    );
 }
