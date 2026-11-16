@@ -7,3 +7,26 @@ pub enum ZuptError {
     InvalidWindowSize,
     InvalidThreshold,
 }
+
+/// Stance phase state in zero-velocity detection.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum StancePhase {
+    Moving,
+    StanceCandidate,
+    StanceConfirmed,
+}
+
+/// Configuration parameters for ZUPT stance detection.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ZuptConfig {
+    /// Accelerometer variance threshold in (m/s^2)^2.
+    pub accel_var_thresh: f32,
+    /// Gyroscope angular rate norm threshold in rad/s.
+    pub gyro_norm_thresh: f32,
+    /// Accelerometer magnitude deviation threshold from gravity in m/s^2.
+    pub accel_mag_thresh: f32,
+    /// Minimum consecutive samples required to confirm stance.
+    pub min_stance_samples: usize,
+    /// Nominal gravity acceleration magnitude in m/s^2.
+    pub gravity_magnitude: f32,
+}
