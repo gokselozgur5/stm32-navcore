@@ -76,7 +76,9 @@ fn test_reorthonormalize_recovers_orthogonality() {
     let unortho = BodyRot { dcm_nb: drifted };
     assert!(!unortho.is_orthonormal());
 
-    let cleaned = unortho.reorthonormalize().expect("reorthonormalize success");
+    let cleaned = unortho
+        .reorthonormalize()
+        .expect("reorthonormalize success");
     assert!(cleaned.is_orthonormal());
     assert!((cleaned.det() - 1.0).abs() < 1e-4);
 }
