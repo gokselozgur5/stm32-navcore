@@ -51,7 +51,11 @@ impl GeodeticPos {
         if lon_rad < -pi || lon_rad > pi {
             return Err(EcefNedError::InvalidLongitude);
         }
-        Ok(Self { lat_rad, lon_rad, alt_m })
+        Ok(Self {
+            lat_rad,
+            lon_rad,
+            alt_m,
+        })
     }
 
     /// Construct a validated geodetic position from degrees and meters.
@@ -193,8 +197,7 @@ impl NedFrame {
         let dy = point.y - self.origin_ecef.y;
         let dz = point.z - self.origin_ecef.z;
 
-        let north = -self.sin_lat * self.cos_lon * dx
-            - self.sin_lat * self.sin_lon * dy
+        let north = -self.sin_lat * self.cos_lon * dx - self.sin_lat * self.sin_lon * dy
             + self.cos_lat * dz;
         let east = -self.sin_lon * dx + self.cos_lon * dy;
         let down = -self.cos_lat * self.cos_lon * dx
@@ -215,8 +218,7 @@ impl NedFrame {
             - self.sin_lat * self.cos_lon * ned.north
             - self.sin_lon * ned.east
             - self.cos_lat * self.cos_lon * ned.down;
-        let y = self.origin_ecef.y
-            - self.sin_lat * self.sin_lon * ned.north
+        let y = self.origin_ecef.y - self.sin_lat * self.sin_lon * ned.north
             + self.cos_lon * ned.east
             - self.cos_lat * self.sin_lon * ned.down;
         let z = self.origin_ecef.z + self.cos_lat * ned.north - self.sin_lat * ned.down;
@@ -269,9 +271,18 @@ mod tests {
 
     #[test]
     fn test_input_validation_and_errors() {
-        assert_eq!(GeodeticPos::new(f64::NAN, 0.0, 0.0), Err(EcefNedError::NonFinite));
-        assert_eq!(GeodeticPos::new(2.0, 0.0, 0.0), Err(EcefNedError::InvalidLatitude));
-        assert_eq!(GeodeticPos::new(0.0, 4.0, 0.0), Err(EcefNedError::InvalidLongitude));
+        assert_eq!(
+            GeodeticPos::new(f64::NAN, 0.0, 0.0),
+            Err(EcefNedError::NonFinite)
+        );
+        assert_eq!(
+            GeodeticPos::new(2.0, 0.0, 0.0),
+            Err(EcefNedError::InvalidLatitude)
+        );
+        assert_eq!(
+            GeodeticPos::new(0.0, 4.0, 0.0),
+            Err(EcefNedError::InvalidLongitude)
+        );
         let bad_ecef = EcefPos::new(f64::NAN, 0.0, 0.0);
         assert_eq!(ecef_to_geodetic(&bad_ecef), Err(EcefNedError::NonFinite));
         let center = EcefPos::new(0.0, 0.0, 0.0);
