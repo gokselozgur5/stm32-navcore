@@ -36,6 +36,10 @@ pub mod ubx;
 pub use fdir::{DualImuManager, ImuId, ImuReading};
 
 /// Versioned, checksummed magnetometer and gyro calibration record.
+/// Mahony AHRS filter and step functions for 6-DOF and 9-DOF sensor fusion.
+pub use mahony_ahrs::{
+    mahony_ahrs_6dof_step, mahony_ahrs_9dof_step, MahonyAhrs, MahonyAhrsError,
+};
 pub use protocol::CalibrationBlock;
 /// Quaternion spherical linear and normalized linear interpolation.
 pub use slerp::{quat_nlerp, quat_slerp};
