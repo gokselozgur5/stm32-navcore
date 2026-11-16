@@ -32,3 +32,19 @@ impl MadgwickAhrs {
     /// Default filter gain for IMU 6-DOF fusion.
     pub const DEFAULT_BETA: f32 = 0.033;
 }
+
+impl MadgwickAhrs {
+    /// Create filter with given beta gain and identity orientation.
+    pub const fn new(beta: f32) -> Self {
+        Self {
+            quat: Quaternion::IDENTITY,
+            beta,
+        }
+    }
+
+    /// Create filter with given beta gain and initial orientation quaternion.
+    pub fn with_attitude(beta: f32, quat: Quaternion) -> Result<Self, AhrsError> {
+        let q = quat.normalize()?;
+        Ok(Self { quat: q, beta })
+    }
+}
