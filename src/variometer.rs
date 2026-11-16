@@ -105,3 +105,25 @@ pub struct Variometer {
     vertical_speed_mps: f32,
     initialized: bool,
 }
+
+impl Variometer {
+    /// Creates a new variometer estimator with given configuration.
+    pub fn new(config: VariometerConfig) -> Result<Self, VariometerError> {
+        if !config.time_constant_s.is_finite() || config.time_constant_s <= 0.0 {
+            return Err(VariometerError::InvalidTimeConstant);
+        }
+        if !config.climb_threshold_mps.is_finite()
+            || !config.sink_threshold_mps.is_finite()
+            || config.climb_threshold_mps < config.sink_threshold_mps
+        {
+            return Err(VariometerError::InvalidThreshold);
+        }
+        Ok(Self {
+            config,
+            raw_altitude_m: 0.0,
+            filtered_altitude_m: 0.0,
+            vertical_speed_mps: 0.0,
+            initialized: false,
+        })
+    }
+}
