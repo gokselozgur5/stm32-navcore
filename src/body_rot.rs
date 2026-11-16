@@ -88,3 +88,22 @@ impl BodyRot {
         Self::from_dcm_ned_to_body(m.transpose())
     }
 }
+
+impl BodyRot {
+    /// Builds NED-to-Body rotation from Euler angles (roll, pitch, yaw).
+    pub fn from_euler(roll: f32, pitch: f32, yaw: f32) -> Result<Self, BodyRotError> {
+        if !roll.is_finite() || !pitch.is_finite() || !yaw.is_finite() {
+            return Err(BodyRotError::NonFinite);
+        }
+        let (sr, cr) = (sinf(roll), cosf(roll));
+        let (sp, cp) = (sinf(pitch), cosf(pitch));
+        let (sy, cy) = (sinf(yaw), cosf(yaw));
+
+        let m = Mat([
+            [cp * cy, cp * sy, -sp],
+            [sr * sp * cy - cr * sy, sr * sp * sy + cr * cy, sr * cp],
+            [cr * sp * cy + sr * sy, cr * sp * sy - sr * cy, cr * cp],
+        ]);
+        Ok(Self { dcm_nb: m })
+    }
+}
