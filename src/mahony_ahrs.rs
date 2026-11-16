@@ -31,3 +31,20 @@ pub struct MahonyAhrs {
     /// Estimated gyroscope bias in rad/s.
     pub gyro_bias: [f32; 3],
 }
+
+impl MahonyAhrs {
+    /// Default proportional feedback gain.
+    pub const DEFAULT_KP: f32 = 1.0;
+    /// Default integral feedback gain for gyro bias estimation.
+    pub const DEFAULT_KI: f32 = 0.05;
+
+    /// Create filter with given gains and identity attitude.
+    pub const fn new(kp: f32, ki: f32) -> Self {
+        Self {
+            quat: Quaternion::IDENTITY,
+            kp,
+            ki,
+            gyro_bias: [0.0; 3],
+        }
+    }
+}
