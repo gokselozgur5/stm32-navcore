@@ -225,3 +225,20 @@ impl Variometer {
         self.vertical_speed_mps
     }
 }
+
+impl Variometer {
+    /// Returns estimated vertical speed in feet per minute.
+    pub fn vertical_speed_fpm(&self) -> f32 {
+        mps_to_fpm(self.vertical_speed_mps)
+    }
+
+    /// Returns estimated vertical speed in knots.
+    pub fn vertical_speed_knots(&self) -> f32 {
+        mps_to_knots(self.vertical_speed_mps)
+    }
+
+    /// Returns true if the estimator has received at least one sample.
+    pub const fn is_initialized(&self) -> bool {
+        self.initialized
+    }
+}
