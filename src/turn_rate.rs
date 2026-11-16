@@ -23,19 +23,19 @@ pub enum TurnRateError {
 pub const STANDARD_GRAVITY_MPS2: f32 = 9.80665;
 
 /// Standard rate turn for civil aviation in rad/s (3 deg/s).
-pub const STANDARD_RATE_TURN_RAD_S: f32 = 0.05235987756;
+pub const STANDARD_RATE_TURN_RAD_S: f32 = 0.052_359_88;
 
 /// Standard rate turn in degrees per second (3 deg/s).
 pub const STANDARD_RATE_TURN_DEG_S: f32 = 3.0;
 
 /// Maximum allowable bank angle in radians (85 degrees).
-pub const MAX_BANK_ANGLE_RAD: f32 = 1.4835298642;
+pub const MAX_BANK_ANGLE_RAD: f32 = 1.483_529_8;
 
 /// Degrees to radians factor.
-pub const DEG_TO_RAD: f32 = 0.01745329252;
+pub const DEG_TO_RAD: f32 = 0.017_453_292;
 
 /// Radians to degrees factor.
-pub const RAD_TO_DEG: f32 = 57.295779513;
+pub const RAD_TO_DEG: f32 = 57.295_78;
 
 fn validate_finite(val: f32) -> Result<(), TurnRateError> {
     if !val.is_finite() {
