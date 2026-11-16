@@ -28,6 +28,7 @@ fn crate_root_reexports_are_usable() {
     let _ = stm32_navcore::STANDARD_GRAVITY_MPS2;
     let _ = stm32_navcore::turn_rate_deg_s(50.0, 15.0, 9.80665);
     let _ = stm32_navcore::bank_angle_deg(50.0, 3.0, 9.80665);
+    let _ = stm32_navcore::MahonyAhrs::default();
 }
 
 use core::mem::{align_of, size_of};
