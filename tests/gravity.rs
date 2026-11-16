@@ -1,6 +1,4 @@
-use stm32_navcore::gravity::{
-    somigliana_surface, GAMMA_E, GAMMA_P,
-};
+use stm32_navcore::gravity::{somigliana_surface, GAMMA_E, GAMMA_P};
 
 #[test]
 fn equator_and_pole_surface_gravity() {
@@ -42,7 +40,10 @@ fn ned_vector_and_input_validation() {
 
     assert_eq!(somigliana_surface(f32::NAN), Err(GravityError::NonFinite));
     assert_eq!(somigliana_surface(2.0), Err(GravityError::InvalidLatitude));
-    assert_eq!(normal_gravity(0.0, 200_000.0), Err(GravityError::InvalidAltitude));
+    assert_eq!(
+        normal_gravity(0.0, 200_000.0),
+        Err(GravityError::InvalidAltitude)
+    );
 }
 
 use stm32_navcore::gravity::{normal_gravity_f64, somigliana_surface_f64};
