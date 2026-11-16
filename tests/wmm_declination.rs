@@ -36,3 +36,21 @@ fn test_magnetic_true_heading_roundtrip() {
     let true_hdg_w = magnetic_to_true_heading_deg(5.0, dec_west).unwrap();
     assert_eq!(true_hdg_w, 355.0);
 }
+
+#[test]
+fn test_declination_polynomial_eval() {
+    use stm32_navcore::wmm_declination::{DeclinationError, DeclinationPolynomial};
+    let poly = DeclinationPolynomial::new(
+        0.0, 0.0, 90.0, 180.0,
+        [5.0, 2.0, -1.0, 0.5, 0.0, -0.2],
+    );
+    let val = poly.eval(0.0, 0.0).unwrap();
+    assert_eq!(val, 5.0);
+
+    let val_pt = poly.eval(45.0, 90.0).unwrap();
+    let expected = 5.0 + 2.0 * 0.5 - 1.0 * 0.5 + 0.5 * 0.25 - 0.2 * 0.25;
+    assert!((val_pt - expected).abs() < 1e-6);
+
+    let zero_scale = DeclinationPolynomial::new(0.0, 0.0, 0.0, 180.0, [0.0; 6]);
+    assert_eq!(zero_scale.eval(0.0, 0.0), Err(DeclinationError::InvalidScale));
+}
