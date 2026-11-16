@@ -289,4 +289,19 @@ mod tests {
         assert_eq!(detector.phase(), StancePhase::Moving);
         assert!(!detector.is_stance());
     }
+
+    #[test]
+    fn test_stance_hysteresis_and_candidate() {
+        let mut detector = ZuptDetector::<4>::default();
+        let accel = [0.0, 0.0, -9.80665];
+        let gyro = [0.0, 0.0, 0.0];
+        for _ in 0..4 {
+            assert!(!detector.update(accel, gyro).unwrap());
+        }
+        assert_eq!(detector.phase(), StancePhase::StanceCandidate);
+        for _ in 0..4 {
+            detector.update(accel, gyro).unwrap();
+        }
+        assert_eq!(detector.phase(), StancePhase::StanceConfirmed);
+    }
 }
