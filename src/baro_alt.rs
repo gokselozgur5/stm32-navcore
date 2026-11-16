@@ -118,3 +118,23 @@ pub fn pressure_at_altitude_isa(altitude_m: f32) -> Result<f32, BaroAltError> {
     let inv_exp = STANDARD_GRAVITY_M_S2 / (GAS_CONSTANT_DRY_AIR * STANDARD_LAPSE_RATE_K_PER_M);
     Ok(STANDARD_SEA_LEVEL_PRESSURE_PA * libm::powf(temp_ratio, inv_exp))
 }
+
+/// Calibrates QNH sea-level pressure in Pascals from pressure at a known altitude.
+pub fn calibrate_qnh(
+    measured_pressure_pa: f32,
+    known_altitude_m: f32,
+) -> Result<f32, BaroAltError> {
+    if !measured_pressure_pa.is_finite() || !known_altitude_m.is_finite() {
+        return Err(BaroAltError::NonFinite);
+    }
+    if measured_pressure_pa <= 0.0 {
+        return Err(BaroAltError::InvalidPressure);
+    }
+    let temp_ratio =
+        1.0 - (STANDARD_LAPSE_RATE_K_PER_M * known_altitude_m) / STANDARD_SEA_LEVEL_TEMP_K;
+    if temp_ratio <= 0.0 {
+        return Err(BaroAltError::InvalidTemperature);
+    }
+    let inv_exp = STANDARD_GRAVITY_M_S2 / (GAS_CONSTANT_DRY_AIR * STANDARD_LAPSE_RATE_K_PER_M);
+    Ok(measured_pressure_pa / libm::powf(temp_ratio, inv_exp))
+}
