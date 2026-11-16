@@ -248,3 +248,12 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
         &self.config
     }
 }
+
+/// Default ZUPT detector with standard 16-sample sliding window.
+pub type DefaultZuptDetector = ZuptDetector<16>;
+
+impl<const WINDOW: usize> Default for ZuptDetector<WINDOW> {
+    fn default() -> Self {
+        Self::new(ZuptConfig::default()).expect("default ZuptConfig must be valid")
+    }
+}
