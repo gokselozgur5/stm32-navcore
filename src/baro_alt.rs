@@ -298,4 +298,32 @@ mod tests {
         let diff = est.relative_altitude(p1, p0).unwrap();
         assert!((diff - 250.0).abs() < 1e-1);
     }
+
+    #[test]
+    fn test_invalid_and_non_finite_inputs() {
+        assert_eq!(
+            altitude_from_pressure_isa(0.0),
+            Err(BaroAltError::InvalidPressure)
+        );
+        assert_eq!(
+            altitude_from_pressure_isa(-100.0),
+            Err(BaroAltError::InvalidPressure)
+        );
+        assert_eq!(
+            altitude_from_pressure_isa(f32::NAN),
+            Err(BaroAltError::NonFinite)
+        );
+        assert_eq!(
+            altitude_from_pressure_qnh(101325.0, 0.0),
+            Err(BaroAltError::InvalidReferencePressure)
+        );
+        assert_eq!(
+            hypsometric_altitude(100000.0, 101325.0, 0.0, 0.0065),
+            Err(BaroAltError::InvalidTemperature)
+        );
+        assert_eq!(
+            hypsometric_altitude(100000.0, 101325.0, 288.15, -0.001),
+            Err(BaroAltError::InvalidLapseRate)
+        );
+    }
 }
