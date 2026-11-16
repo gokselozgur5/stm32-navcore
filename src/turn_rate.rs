@@ -177,3 +177,13 @@ pub fn centripetal_accel_mps2(
     }
     Ok((true_airspeed_mps * true_airspeed_mps) / radius_m)
 }
+
+/// Compute load factor (g-load) in a coordinated turn: n = 1 / cos(phi).
+pub fn load_factor(bank_angle_rad: f32) -> Result<f32, TurnRateError> {
+    validate_bank_angle(bank_angle_rad)?;
+    let cos_phi = libm::cosf(bank_angle_rad);
+    if cos_phi <= 0.0 {
+        return Err(TurnRateError::BankAngleOutOfRange);
+    }
+    Ok(1.0 / cos_phi)
+}
