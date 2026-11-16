@@ -52,3 +52,14 @@ pub fn dead_reckoning_step(
     let dlon = (state.v_e * dt_s) / ((r_n + state.height_m) * cos_lat);
 
     let dlat = (state.v_n * dt_s) / (r_m + state.height_m);
+
+    let dh = -state.v_d * dt_s;
+    Ok(DeadReckoningState {
+        lat_rad: state.lat_rad + dlat,
+        lon_rad: state.lon_rad + dlon,
+        height_m: state.height_m + dh,
+        v_n: state.v_n,
+        v_e: state.v_e,
+        v_d: state.v_d,
+    })
+}
