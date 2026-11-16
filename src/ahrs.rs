@@ -155,3 +155,9 @@ impl MadgwickAhrs {
         Ok(self.quat)
     }
 }
+
+impl Default for MadgwickAhrs {
+    fn default() -> Self {
+        Self::new(Self::DEFAULT_BETA)
+    }
+}
