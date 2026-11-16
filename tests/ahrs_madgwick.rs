@@ -17,3 +17,20 @@ fn test_ahrs_initialization_and_reset() {
     ahrs.reset();
     assert_eq!(ahrs.quaternion(), Quaternion::IDENTITY);
 }
+
+#[test]
+fn test_ahrs_invalid_inputs_rejected() {
+    let mut ahrs = MadgwickAhrs::default();
+    let g_ok = [0.0, 0.0, 0.0];
+    let a_ok = [0.0, 0.0, 9.81];
+
+    assert_eq!(ahrs.update(g_ok, a_ok, 0.0), Err(AhrsError::InvalidDt));
+    assert_eq!(ahrs.update(g_ok, a_ok, -0.01), Err(AhrsError::InvalidDt));
+    assert_eq!(ahrs.update(g_ok, a_ok, f32::NAN), Err(AhrsError::InvalidDt));
+
+    let g_nan = [f32::NAN, 0.0, 0.0];
+    assert_eq!(ahrs.update(g_nan, a_ok, 0.01), Err(AhrsError::NonFinite));
+
+    let a_inf = [0.0, f32::INFINITY, 9.81];
+    assert_eq!(ahrs.update(g_ok, a_inf, 0.01), Err(AhrsError::NonFinite));
+}
