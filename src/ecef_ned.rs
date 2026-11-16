@@ -204,3 +204,23 @@ impl NedFrame {
         Ok(NedPos::new(north, east, down))
     }
 }
+
+impl NedFrame {
+    /// Convert NED coordinates back into ECEF coordinates.
+    pub fn ned_to_ecef(&self, ned: &NedPos) -> Result<EcefPos, EcefNedError> {
+        if !ned.north.is_finite() || !ned.east.is_finite() || !ned.down.is_finite() {
+            return Err(EcefNedError::NonFinite);
+        }
+        let x = self.origin_ecef.x
+            - self.sin_lat * self.cos_lon * ned.north
+            - self.sin_lon * ned.east
+            - self.cos_lat * self.cos_lon * ned.down;
+        let y = self.origin_ecef.y
+            - self.sin_lat * self.sin_lon * ned.north
+            + self.cos_lon * ned.east
+            - self.cos_lat * self.sin_lon * ned.down;
+        let z = self.origin_ecef.z + self.cos_lat * ned.north - self.sin_lat * ned.down;
+
+        Ok(EcefPos::new(x, y, z))
+    }
+}
