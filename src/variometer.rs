@@ -71,3 +71,27 @@ pub enum VarioTone {
         freq_hz: f32,
     },
 }
+
+/// Configuration parameters for the variometer estimator.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct VariometerConfig {
+    /// Low-pass filter time constant for vertical speed in seconds.
+    pub time_constant_s: f32,
+    /// Minimum climb rate in m/s to trigger climb indication.
+    pub climb_threshold_mps: f32,
+    /// Maximum sink rate in m/s (negative) to trigger sink indication.
+    pub sink_threshold_mps: f32,
+    /// Base audio frequency in Hz for climb tones.
+    pub base_freq_hz: f32,
+}
+
+impl Default for VariometerConfig {
+    fn default() -> Self {
+        Self {
+            time_constant_s: 1.5,
+            climb_threshold_mps: 0.15,
+            sink_threshold_mps: -0.5,
+            base_freq_hz: 440.0,
+        }
+    }
+}
