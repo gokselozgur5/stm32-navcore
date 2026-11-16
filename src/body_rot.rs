@@ -181,3 +181,25 @@ impl BodyRot {
         Ok([v[0] * inv_mag, v[1] * inv_mag, v[2] * inv_mag])
     }
 }
+
+impl BodyRot {
+    /// Reorthonormalizes DCM via symmetric error correction and cross product.
+    pub fn reorthonormalize(&self) -> Result<Self, BodyRotError> {
+        let (mut x, mut y) = (self.dcm_nb.0[0], self.dcm_nb.0[1]);
+        let half_err = 0.5 * (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]);
+        for i in 0..3 {
+            let (xi, yi) = (x[i] - half_err * y[i], y[i] - half_err * x[i]);
+            x[i] = xi;
+            y[i] = yi;
+        }
+        let z = [
+            x[1] * y[2] - x[2] * y[1],
+            x[2] * y[0] - x[0] * y[2],
+            x[0] * y[1] - x[1] * y[0],
+        ];
+        let r0 = Self::normalize_vec(x)?;
+        let r1 = Self::normalize_vec(y)?;
+        let r2 = Self::normalize_vec(z)?;
+        Self::from_dcm_ned_to_body(Mat([r0, r1, r2]))
+    }
+}
