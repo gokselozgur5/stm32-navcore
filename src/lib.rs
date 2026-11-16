@@ -39,6 +39,10 @@ pub use fdir::{DualImuManager, ImuId, ImuReading};
 pub use protocol::CalibrationBlock;
 /// Quaternion spherical linear and normalized linear interpolation.
 pub use slerp::{quat_nlerp, quat_slerp};
+/// Magnetic declination polynomial approximation and heading compensation.
+pub use wmm_declination::{
+    wmm_declination_deg, wmm_declination_rad, DeclinationError, DeclinationPolynomial,
+};
 /// Decoded u-blox UBX messages and the streaming parser that produces them.
 pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 
