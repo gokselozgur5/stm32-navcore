@@ -204,3 +204,23 @@ pub fn mahony_ahrs_6dof_step(
     let next_q = q.integrate_gyro(w, dt)?;
     Ok((next_q, next_bias))
 }
+
+/// Perform one 9-DOF Mahony AHRS filter step with magnetometer correction.
+pub fn mahony_ahrs_9dof_step(
+    q: Quaternion,
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    mag: [f32; 3],
+    gyro_bias: [f32; 3],
+    kp: f32,
+    ki: f32,
+    dt: f32,
+) -> Result<(Quaternion, [f32; 3]), MahonyAhrsError> {
+    validate_9dof(gyro, accel, mag, dt)?;
+    let ea = MahonyAhrs::compute_gravity_error(&q, accel);
+    let em = MahonyAhrs::compute_mag_error(&q, mag);
+    let e = [ea[0] + em[0], ea[1] + em[1], ea[2] + em[2]];
+    let (next_bias, w) = step_correction(gyro, gyro_bias, e, kp, ki, dt);
+    let next_q = q.integrate_gyro(w, dt)?;
+    Ok((next_q, next_bias))
+}
