@@ -169,3 +169,12 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
         }
         max_norm
     }
+
+    fn push_sample(&mut self, accel: [f32; 3], gyro: [f32; 3]) {
+        self.accel_buf[self.head] = accel;
+        self.gyro_buf[self.head] = gyro;
+        self.head = (self.head + 1) % WINDOW;
+        if self.count < WINDOW {
+            self.count += 1;
+        }
+    }
