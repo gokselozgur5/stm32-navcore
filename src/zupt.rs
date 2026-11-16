@@ -275,4 +275,18 @@ mod tests {
         assert_eq!(detector.phase(), StancePhase::StanceConfirmed);
         assert!(detector.metrics().accel_variance < 1e-4);
     }
+
+    #[test]
+    fn test_dynamic_motion_rejects_stance() {
+        let mut detector = ZuptDetector::<8>::default();
+        let accel = [1.5, 0.0, -9.8];
+        let gyro = [0.2, -0.15, 0.1];
+        let mut confirmed = false;
+        for _ in 0..15 {
+            confirmed = detector.update(accel, gyro).unwrap();
+        }
+        assert!(!confirmed);
+        assert_eq!(detector.phase(), StancePhase::Moving);
+        assert!(!detector.is_stance());
+    }
 }
