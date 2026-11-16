@@ -304,4 +304,25 @@ mod tests {
         }
         assert_eq!(detector.phase(), StancePhase::StanceConfirmed);
     }
+
+    #[test]
+    fn test_reset_and_input_validation() {
+        let mut detector = ZuptDetector::<4>::default();
+        let accel = [0.0, 0.0, -9.80665];
+        let gyro = [0.0, 0.0, 0.0];
+        for _ in 0..10 {
+            detector.update(accel, gyro).unwrap();
+        }
+        assert!(detector.is_stance());
+        detector.reset();
+        assert_eq!(detector.phase(), StancePhase::Moving);
+        assert_eq!(
+            detector.update([f32::NAN, 0.0, 0.0], gyro),
+            Err(ZuptError::NonFinite)
+        );
+        assert_eq!(
+            ZuptDetector::<1>::new(ZuptConfig::default()),
+            Err(ZuptError::InvalidWindowSize)
+        );
+    }
 }
