@@ -72,3 +72,24 @@ fn test_state_reset_and_retune() {
     f.retune(15.0, 0.01).expect("retune success");
     assert!(f.coefficients().is_stable());
 }
+
+#[test]
+fn test_batch_filter_matches_sequential() {
+    let mut f_seq = ButterworthFilter::try_new(8.0, 0.005).expect("valid");
+    let mut f_batch = ButterworthFilter::try_new(8.0, 0.005).expect("valid");
+
+    let input = [1.0, 2.0, 1.5, -0.5, 0.0, 3.0, 2.5, 1.0];
+    let mut out_batch = [0.0f32; 8];
+    f_batch.batch_filter(&input, &mut out_batch).expect("batch ok");
+
+    for (idx, &x) in input.iter().enumerate() {
+        let expected = f_seq.update(x);
+        assert!((out_batch[idx] - expected).abs() < 1e-6);
+    }
+
+    let mut mismatched = [0.0f32; 5];
+    assert_eq!(
+        f_batch.batch_filter(&input, &mut mismatched),
+        Err(ButterworthError::BufferLengthMismatch)
+    );
+}
