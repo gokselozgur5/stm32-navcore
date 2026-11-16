@@ -4,7 +4,7 @@ use stm32_navcore::{
     quat_nlerp, quat_slerp, wmm_declination_deg, wmm_declination_rad, CalibrationBlock,
     DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
     UbxNavRelPosNed, UbxParser, Variometer, VariometerConfig, VariometerError,
-    VarioTone,
+    VarioTone, VelDampingConfig, VelDampingFilter,
 };
 
 #[test]
@@ -34,6 +34,8 @@ fn crate_root_reexports_are_usable() {
     let _ = core::mem::size_of::<VariometerConfig>();
     let _ = core::mem::size_of::<VariometerError>();
     let _ = core::mem::size_of::<VarioTone>();
+    let _ = core::mem::size_of::<VelDampingConfig>();
+    let _ = core::mem::size_of::<VelDampingFilter>();
 }
 
 use core::mem::{align_of, size_of};
