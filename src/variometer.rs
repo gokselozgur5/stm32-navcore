@@ -173,3 +173,18 @@ impl Variometer {
         Ok(self.vertical_speed_mps)
     }
 }
+
+impl Variometer {
+    /// Updates estimator with measured pressure in Pascals using standard ISA atmosphere.
+    pub fn update_pressure(&mut self, pressure_pa: f32, dt_s: f32) -> Result<f32, VariometerError> {
+        if !pressure_pa.is_finite() {
+            return Err(VariometerError::NonFinite);
+        }
+        if pressure_pa <= 0.0 {
+            return Err(VariometerError::InvalidPressure);
+        }
+        let alt_m = crate::baro_alt::altitude_from_pressure_isa(pressure_pa)
+            .map_err(|_| VariometerError::InvalidPressure)?;
+        self.update_altitude(alt_m, dt_s)
+    }
+}
