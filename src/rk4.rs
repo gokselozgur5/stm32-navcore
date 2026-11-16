@@ -41,3 +41,26 @@ where
     }
     Ok(next)
 }
+
+#[inline]
+pub(crate) fn accumulate_rk4<const N: usize>(
+    y: &[f32; N],
+    k1: &[f32; N],
+    k2: &[f32; N],
+    k3: &[f32; N],
+    k4: &[f32; N],
+    dt: f32,
+) -> Result<[f32; N], Rk4Error> {
+    let mut out = [0.0f32; N];
+    for i in 0..N {
+        let sum = k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i];
+        if !sum.is_finite() {
+            return Err(Rk4Error::NonFinite);
+        }
+        out[i] = y[i] + (dt / 6.0) * sum;
+        if !out[i].is_finite() {
+            return Err(Rk4Error::NonFinite);
+        }
+    }
+    Ok(out)
+}
