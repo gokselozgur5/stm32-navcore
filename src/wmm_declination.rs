@@ -46,3 +46,25 @@ pub fn true_to_magnetic_heading_deg(true_deg: f32, dec_deg: f32) -> Result<f32, 
     }
     Ok(normalize_heading_deg(true_deg - dec_deg))
 }
+
+/// Bivariate polynomial model for regional or global declination approximation.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct DeclinationPolynomial {
+    pub origin_lat: f32,
+    pub origin_lon: f32,
+    pub scale_lat: f32,
+    pub scale_lon: f32,
+    pub coeffs: [f32; 6],
+}
+
+impl DeclinationPolynomial {
+    pub const fn new(
+        origin_lat: f32,
+        origin_lon: f32,
+        scale_lat: f32,
+        scale_lon: f32,
+        coeffs: [f32; 6],
+    ) -> Self {
+        Self { origin_lat, origin_lon, scale_lat, scale_lon, coeffs }
+    }
+}
