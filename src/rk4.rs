@@ -164,3 +164,32 @@ pub(crate) fn accumulate_rk4_f64<const N: usize>(
     }
     Ok(out)
 }
+
+/// Single RK4 step for high-precision N-dimensional state vector in f64.
+pub fn rk4_step_f64<const N: usize, F>(
+    t: f64,
+    y: &[f64; N],
+    dt: f64,
+    mut f: F,
+) -> Result<[f64; N], Rk4Error>
+where
+    F: FnMut(f64, &[f64; N], &mut [f64; N]),
+{
+    if !t.is_finite() || !dt.is_finite() {
+        return Err(Rk4Error::NonFinite);
+    }
+    if dt <= 0.0 {
+        return Err(Rk4Error::InvalidTimeStep);
+    }
+    let (mut k1, mut k2, mut k3, mut k4, mut tmp) =
+        ([0.0f64; N], [0.0f64; N], [0.0f64; N], [0.0f64; N], [0.0f64; N]);
+    let hdt = 0.5 * dt;
+    f(t, y, &mut k1);
+    for i in 0..N { tmp[i] = y[i] + hdt * k1[i]; }
+    f(t + hdt, &tmp, &mut k2);
+    for i in 0..N { tmp[i] = y[i] + hdt * k2[i]; }
+    f(t + hdt, &tmp, &mut k3);
+    for i in 0..N { tmp[i] = y[i] + dt * k3[i]; }
+    f(t + dt, &tmp, &mut k4);
+    accumulate_rk4_f64(y, &k1, &k2, &k3, &k4, dt)
+}
