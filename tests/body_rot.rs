@@ -44,3 +44,24 @@ fn test_transform_accel_level_and_gravity() {
     assert!(a_ned[1].abs() < 1e-5);
     assert!(a_ned[2].abs() < 1e-5);
 }
+
+#[test]
+fn test_rejection_of_non_finite_inputs() {
+    assert_eq!(
+        BodyRot::from_euler(f32::NAN, 0.0, 0.0),
+        Err(BodyRotError::NonFinite)
+    );
+    let rot = BodyRot::identity();
+    assert_eq!(
+        rot.rotate_ned_to_body([f32::INFINITY, 0.0, 0.0]),
+        Err(BodyRotError::NonFinite)
+    );
+    assert_eq!(
+        rot.rotate_body_to_ned([0.0, f32::NAN, 0.0]),
+        Err(BodyRotError::NonFinite)
+    );
+    assert_eq!(
+        rot.transform_accel_to_ned([0.0, 0.0, 0.0], f32::NAN),
+        Err(BodyRotError::NonFinite)
+    );
+}
