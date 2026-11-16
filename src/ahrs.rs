@@ -12,3 +12,9 @@ pub enum AhrsError {
     /// Quaternion normalization failed.
     NormalizationFailed,
 }
+
+impl From<MathError> for AhrsError {
+    fn from(_: MathError) -> Self {
+        AhrsError::NormalizationFailed
+    }
+}
