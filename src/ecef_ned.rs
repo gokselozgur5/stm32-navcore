@@ -182,3 +182,25 @@ impl NedFrame {
         }
     }
 }
+
+impl NedFrame {
+    /// Convert an ECEF point into NED coordinates relative to this frame.
+    pub fn ecef_to_ned(&self, point: &EcefPos) -> Result<NedPos, EcefNedError> {
+        if !point.x.is_finite() || !point.y.is_finite() || !point.z.is_finite() {
+            return Err(EcefNedError::NonFinite);
+        }
+        let dx = point.x - self.origin_ecef.x;
+        let dy = point.y - self.origin_ecef.y;
+        let dz = point.z - self.origin_ecef.z;
+
+        let north = -self.sin_lat * self.cos_lon * dx
+            - self.sin_lat * self.sin_lon * dy
+            + self.cos_lat * dz;
+        let east = -self.sin_lon * dx + self.cos_lon * dy;
+        let down = -self.cos_lat * self.cos_lon * dx
+            - self.cos_lat * self.sin_lon * dy
+            - self.sin_lat * dz;
+
+        Ok(NedPos::new(north, east, down))
+    }
+}
