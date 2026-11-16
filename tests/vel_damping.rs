@@ -59,3 +59,27 @@ fn test_innovation_and_gate_outlier_rejection() {
     let res_exceeded = fuse_velocity_step(v_dr, v_gps, 0.5, 4.0);
     assert_eq!(res_exceeded, Err(VelDampingError::InnovationGateExceeded));
 }
+
+#[test]
+fn test_gps_fusion_convergence() {
+    use stm32_navcore::vel_damping::VelDampingFilter;
+
+    let cfg = VelDampingConfig {
+        tau_s: 1000.0,
+        gps_gain: 0.2,
+        max_innovation_mps: 20.0,
+        gps_timeout_s: 2.0,
+    };
+    let mut filter = VelDampingFilter::new(cfg).unwrap();
+    let gps_target = [10.0, 5.0, -2.0];
+
+    for _ in 0..50 {
+        let _ = filter.fuse_gps(gps_target).unwrap();
+    }
+    let v = filter.velocity();
+    assert!((v[0] - gps_target[0]).abs() < 1e-4);
+    assert!((v[1] - gps_target[1]).abs() < 1e-4);
+    assert!((v[2] - gps_target[2]).abs() < 1e-4);
+    assert!(filter.is_gps_valid());
+    assert_eq!(filter.time_since_gps(), 0.0);
+}
