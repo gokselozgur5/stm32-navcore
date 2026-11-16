@@ -18,6 +18,7 @@ pub mod ekf;
 pub use ekf::StationaryDetector;
 pub mod fdir;
 pub mod geo;
+pub mod gravity;
 pub mod linalg;
 pub mod math;
 pub mod protocol;
