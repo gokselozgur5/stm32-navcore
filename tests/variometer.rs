@@ -42,3 +42,21 @@ fn test_config_validation_and_errors() {
         Err(VariometerError::InvalidThreshold)
     );
 }
+
+#[test]
+fn test_altitude_update_and_climb_rate() {
+    let mut vario = Variometer::default();
+    assert!(!vario.is_initialized());
+
+    let vs = vario.update_altitude(100.0, 0.1).unwrap();
+    assert_eq!(vs, 0.0);
+    assert!(vario.is_initialized());
+
+    let mut alt = 100.0;
+    for _ in 0..100 {
+        alt += 2.0 * 0.1;
+        vario.update_altitude(alt, 0.1).unwrap();
+    }
+    assert!((vario.vertical_speed() - 2.0).abs() < 0.05);
+    assert!((vario.altitude() - alt).abs() < 0.3);
+}
