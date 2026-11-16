@@ -27,3 +27,14 @@ fn test_slerp_endpoints_and_midpoint() {
     assert!((mid.w - expected).abs() < 1e-5);
     assert!((mid.x - expected).abs() < 1e-5);
 }
+
+#[test]
+fn test_slerp_shortest_path_antipodal() {
+    let q0 = Quaternion::IDENTITY;
+    let q1 = Quaternion::new(-1.0, 0.0, 0.0, 0.0);
+    let mid = stm32_navcore::slerp::quat_slerp(&q0, &q1, 0.5).unwrap();
+    assert!((mid.w.abs() - 1.0).abs() < 1e-5);
+    assert!(mid.x.abs() < 1e-5);
+    assert!(mid.y.abs() < 1e-5);
+    assert!(mid.z.abs() < 1e-5);
+}
