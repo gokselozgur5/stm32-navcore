@@ -292,4 +292,14 @@ mod tests {
         assert!(ecef_pole.y.abs() < 1e-3);
         assert!((ecef_pole.z - WGS84_B).abs() < 1e-3);
     }
+
+    #[test]
+    fn test_geodetic_ecef_roundtrip() {
+        let original = GeodeticPos::from_degrees(41.0082, 28.9784, 150.0).unwrap();
+        let ecef = geodetic_to_ecef(&original);
+        let recovered = ecef_to_geodetic(&ecef).unwrap();
+        assert!((recovered.lat_deg() - original.lat_deg()).abs() < 1e-7);
+        assert!((recovered.lon_deg() - original.lon_deg()).abs() < 1e-7);
+        assert!((recovered.alt_m - original.alt_m).abs() < 1e-3);
+    }
 }
