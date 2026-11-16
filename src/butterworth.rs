@@ -115,3 +115,18 @@ impl ButterworthFilter {
         self.s2 = s2;
     }
 }
+
+impl ButterworthFilter {
+    /// Validates sample is finite before executing filter step.
+    pub fn try_update(&mut self, x: f32) -> Result<f32, ButterworthError> {
+        if !x.is_finite() {
+            return Err(ButterworthError::NonFinite);
+        }
+        Ok(self.update(x))
+    }
+
+    /// Returns a reference to the active coefficients.
+    pub fn coefficients(&self) -> &ButterworthCoefficients {
+        &self.coeffs
+    }
+}
