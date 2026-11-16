@@ -250,3 +250,28 @@ impl MahonyAhrs {
         Ok(self.quat)
     }
 }
+
+impl MahonyAhrs {
+    /// Update orientation estimate using 9-DOF gyro, accelerometer, and magnetometer.
+    pub fn update_9dof(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        mag: [f32; 3],
+        dt: f32,
+    ) -> Result<Quaternion, MahonyAhrsError> {
+        let (nq, nb) = mahony_ahrs_9dof_step(
+            self.quat,
+            gyro,
+            accel,
+            mag,
+            self.gyro_bias,
+            self.kp,
+            self.ki,
+            dt,
+        )?;
+        self.quat = nq;
+        self.gyro_bias = nb;
+        Ok(self.quat)
+    }
+}
