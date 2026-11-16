@@ -25,6 +25,9 @@ fn crate_root_reexports_are_usable() {
     let _ = quat_nlerp(&q, &q, 0.5);
     let _ = wmm_declination_deg(0.0, 0.0);
     let _ = wmm_declination_rad(0.0, 0.0);
+    let _ = stm32_navcore::STANDARD_GRAVITY_MPS2;
+    let _ = stm32_navcore::turn_rate_deg_s(50.0, 15.0, 9.80665);
+    let _ = stm32_navcore::bank_angle_deg(50.0, 3.0, 9.80665);
 }
 
 use core::mem::{align_of, size_of};
