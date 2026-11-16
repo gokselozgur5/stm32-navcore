@@ -115,3 +115,29 @@ where
     }
     Ok(y)
 }
+
+/// Single RK4 step for high-precision scalar ODE in f64.
+pub fn rk4_step_scalar_f64<F>(t: f64, y: f64, dt: f64, mut f: F) -> Result<f64, Rk4Error>
+where
+    F: FnMut(f64, f64) -> f64,
+{
+    if !t.is_finite() || !dt.is_finite() || !y.is_finite() {
+        return Err(Rk4Error::NonFinite);
+    }
+    if dt <= 0.0 {
+        return Err(Rk4Error::InvalidTimeStep);
+    }
+    let hdt = 0.5 * dt;
+    let k1 = f(t, y);
+    let k2 = f(t + hdt, y + hdt * k1);
+    let k3 = f(t + hdt, y + hdt * k2);
+    let k4 = f(t + dt, y + dt * k3);
+    if !k1.is_finite() || !k2.is_finite() || !k3.is_finite() || !k4.is_finite() {
+        return Err(Rk4Error::NonFinite);
+    }
+    let next = y + (dt / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4);
+    if !next.is_finite() {
+        return Err(Rk4Error::NonFinite);
+    }
+    Ok(next)
+}
