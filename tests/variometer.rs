@@ -60,3 +60,22 @@ fn test_altitude_update_and_climb_rate() {
     assert!((vario.vertical_speed() - 2.0).abs() < 0.05);
     assert!((vario.altitude() - alt).abs() < 0.3);
 }
+
+#[test]
+fn test_tone_generation_and_pressure_updates() {
+    let mut vario = Variometer::default();
+
+    vario.update_pressure(101325.0, 0.1).unwrap();
+    assert_eq!(vario.tone(), VarioTone::Silent);
+
+    for _ in 0..50 {
+        vario.update_pressure(102000.0, 0.1).unwrap();
+    }
+    match vario.tone() {
+        VarioTone::Sink { freq_hz } => assert!(freq_hz >= 100.0),
+        other => panic!("expected Sink tone, got {:?}", other),
+    }
+
+    vario.reset();
+    assert!(!vario.is_initialized());
+}
