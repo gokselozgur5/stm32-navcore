@@ -319,4 +319,15 @@ mod tests {
         assert!((recovered_ned.east - target_ned.east).abs() < 1e-4);
         assert!((recovered_ned.down - target_ned.down).abs() < 1e-4);
     }
+
+    #[test]
+    fn test_free_functions_ned_conversions() {
+        let origin = GeodeticPos::from_degrees(37.7749, -122.4194, 10.0).unwrap();
+        let target = GeodeticPos::from_degrees(37.7750, -122.4190, 15.0).unwrap();
+        let ned = geodetic_to_ned(&target, &origin).unwrap();
+        let recovered = ned_to_geodetic(&ned, &origin).unwrap();
+        assert!((recovered.lat_deg() - target.lat_deg()).abs() < 1e-7);
+        assert!((recovered.lon_deg() - target.lon_deg()).abs() < 1e-7);
+        assert!((recovered.alt_m - target.alt_m).abs() < 1e-3);
+    }
 }
