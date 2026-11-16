@@ -67,4 +67,23 @@ impl DeclinationPolynomial {
     ) -> Self {
         Self { origin_lat, origin_lon, scale_lat, scale_lon, coeffs }
     }
+
+    pub fn eval(&self, lat_deg: f32, lon_deg: f32) -> Result<f32, DeclinationError> {
+        if !lat_deg.is_finite() || !lon_deg.is_finite() {
+            return Err(DeclinationError::NonFinite);
+        }
+        if !(-90.0..=90.0).contains(&lat_deg) {
+            return Err(DeclinationError::InvalidLatitude);
+        }
+        if !(-180.0..=180.0).contains(&lon_deg) {
+            return Err(DeclinationError::InvalidLongitude);
+        }
+        if self.scale_lat == 0.0 || self.scale_lon == 0.0 || !self.scale_lat.is_finite() || !self.scale_lon.is_finite() {
+            return Err(DeclinationError::InvalidScale);
+        }
+        let u = (lat_deg - self.origin_lat) / self.scale_lat;
+        let v = (lon_deg - self.origin_lon) / self.scale_lon;
+        let [c0, c1, c2, c3, c4, c5] = self.coeffs;
+        Ok(c0 + c1 * u + c2 * v + c3 * u * u + c4 * u * v + c5 * v * v)
+    }
 }
