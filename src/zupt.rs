@@ -42,3 +42,25 @@ impl Default for ZuptConfig {
         }
     }
 }
+
+impl ZuptConfig {
+    /// Validates configuration thresholds.
+    pub fn validate(&self) -> Result<(), ZuptError> {
+        let finite = self.accel_var_thresh.is_finite()
+            && self.gyro_norm_thresh.is_finite()
+            && self.accel_mag_thresh.is_finite()
+            && self.gravity_magnitude.is_finite();
+        if !finite {
+            return Err(ZuptError::NonFinite);
+        }
+        let positive = self.accel_var_thresh > 0.0
+            && self.gyro_norm_thresh > 0.0
+            && self.accel_mag_thresh > 0.0
+            && self.gravity_magnitude > 0.0
+            && self.min_stance_samples > 0;
+        if !positive {
+            return Err(ZuptError::InvalidThreshold);
+        }
+        Ok(())
+    }
+}
