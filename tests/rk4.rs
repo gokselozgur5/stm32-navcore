@@ -34,3 +34,13 @@ fn harmonic_oscillator_2d() {
     assert!((state[0] - expected_x).abs() < 1e-4);
     assert!((state[1] - expected_v).abs() < 1e-4);
 }
+
+use stm32_navcore::rk4::rk4_integrate_scalar;
+
+#[test]
+fn multi_step_scalar_integration() {
+    let y = rk4_integrate_scalar(0.0, 1.0, 0.1, 10, |_t, val| val)
+        .expect("multi step rk4");
+    let exact = core::f32::consts::E;
+    assert!((y - exact).abs() < 1e-4);
+}
