@@ -178,3 +178,14 @@ impl<const WINDOW: usize> ZuptDetector<WINDOW> {
             self.count += 1;
         }
     }
+
+    fn evaluate_stance_criteria(&self, var_a: f32, max_w: f32, diff_a: f32) -> (bool, f32) {
+        let ratio_var = var_a / self.config.accel_var_thresh;
+        let ratio_w = max_w / self.config.gyro_norm_thresh;
+        let ratio_diff = diff_a / self.config.accel_mag_thresh;
+        let stat = ratio_var + ratio_w + ratio_diff;
+        let meets = var_a <= self.config.accel_var_thresh
+            && max_w <= self.config.gyro_norm_thresh
+            && diff_a <= self.config.accel_mag_thresh;
+        (meets, stat)
+    }
