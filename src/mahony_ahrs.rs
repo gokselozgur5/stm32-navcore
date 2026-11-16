@@ -187,3 +187,20 @@ fn step_correction(
     ];
     (nb, w)
 }
+
+/// Perform one 6-DOF Mahony AHRS filter step.
+pub fn mahony_ahrs_6dof_step(
+    q: Quaternion,
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    gyro_bias: [f32; 3],
+    kp: f32,
+    ki: f32,
+    dt: f32,
+) -> Result<(Quaternion, [f32; 3]), MahonyAhrsError> {
+    validate_6dof(gyro, accel, dt)?;
+    let e = MahonyAhrs::compute_gravity_error(&q, accel);
+    let (next_bias, w) = step_correction(gyro, gyro_bias, e, kp, ki, dt);
+    let next_q = q.integrate_gyro(w, dt)?;
+    Ok((next_q, next_bias))
+}
