@@ -67,3 +67,18 @@ fn test_ahrs_gravity_tilt_convergence() {
     assert!((pitch - target_pitch).abs() < 0.5f32.to_radians());
     assert!(yaw.abs() < 0.5f32.to_radians());
 }
+
+#[test]
+fn test_ahrs_step_function_and_stability() {
+    let mut ahrs = MadgwickAhrs::default();
+    let gyro = [0.05, -0.02, 0.01];
+    let accel = [0.1, -0.2, 9.80];
+    let dt = 0.01;
+
+    for _ in 0..10_000 {
+        let q_step = madgwick_ahrs_6dof_step(ahrs.quaternion(), gyro, accel, ahrs.beta, dt).unwrap();
+        let q_up = ahrs.update(gyro, accel, dt).unwrap();
+        assert_eq!(q_step, q_up);
+        assert!((q_up.norm() - 1.0).abs() < 1e-5);
+    }
+}
