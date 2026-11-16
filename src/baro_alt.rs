@@ -88,3 +88,20 @@ fn validate_baro_inputs(
     }
     Ok(())
 }
+
+/// Computes hypsometric altitude given reference conditions and lapse rate.
+pub fn hypsometric_altitude(
+    pressure_pa: f32,
+    p_ref_pa: f32,
+    t_ref_k: f32,
+    lapse_rate: f32,
+) -> Result<f32, BaroAltError> {
+    validate_baro_inputs(pressure_pa, p_ref_pa, t_ref_k, lapse_rate)?;
+    let ratio = pressure_pa / p_ref_pa;
+    if lapse_rate < 1e-7 {
+        let scale = (GAS_CONSTANT_DRY_AIR * t_ref_k) / STANDARD_GRAVITY_M_S2;
+        return Ok(scale * -libm::logf(ratio));
+    }
+    let exp = (GAS_CONSTANT_DRY_AIR * lapse_rate) / STANDARD_GRAVITY_M_S2;
+    Ok((t_ref_k / lapse_rate) * (1.0 - libm::powf(ratio, exp)))
+}
