@@ -83,3 +83,16 @@ impl MahonyAhrs {
         self.gyro_bias = bias;
     }
 }
+
+impl MahonyAhrs {
+    /// Reset estimated gyroscope bias to zero.
+    pub fn reset_gyro_bias(&mut self) {
+        self.gyro_bias = [0.0; 3];
+    }
+
+    /// Reset filter state to identity quaternion and zero bias.
+    pub fn reset(&mut self) {
+        self.quat = Quaternion::IDENTITY;
+        self.gyro_bias = [0.0; 3];
+    }
+}
