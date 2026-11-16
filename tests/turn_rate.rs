@@ -67,3 +67,16 @@ fn test_load_factor_and_stall_speed() {
     let expected_vs = v_s0 * libm::sqrtf(2.0);
     assert!((v_s - expected_vs).abs() < 1e-3);
 }
+
+#[test]
+fn test_standard_rate_and_time_to_turn() {
+    let tas = 100.0;
+    let g = STANDARD_GRAVITY_MPS2;
+    let phi = standard_rate_bank_angle_rad(tas, g).unwrap();
+    let rate = turn_rate_rad_s(tas, phi, g).unwrap();
+    assert!((rate - STANDARD_RATE_TURN_RAD_S).abs() < 1e-5);
+
+    let turn_360 = 360.0 * DEG_TO_RAD;
+    let t = time_to_turn_s(turn_360, rate).unwrap();
+    assert!((t - 120.0).abs() < 0.2);
+}
