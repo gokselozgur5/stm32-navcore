@@ -106,3 +106,28 @@ fn test_mahony_9dof_heading_fusion() {
     let (_, _, yaw) = ahrs.euler_zyx();
     assert!((yaw - heading).abs() < 1.0f32.to_radians());
 }
+
+#[test]
+fn test_mahony_step_equivalence_and_norm_stability() {
+    let mut ahrs = MahonyAhrs::default();
+    let gyro = [0.05, -0.02, 0.01];
+    let accel = [0.1, -0.2, 9.80];
+    let dt = 0.01;
+
+    for _ in 0..5_000 {
+        let (q_step, b_step) = mahony_ahrs_6dof_step(
+            ahrs.quaternion(),
+            gyro,
+            accel,
+            ahrs.gyro_bias(),
+            ahrs.kp,
+            ahrs.ki,
+            dt,
+        )
+        .unwrap();
+        let q_up = ahrs.update(gyro, accel, dt).unwrap();
+        assert_eq!(q_step, q_up);
+        assert_eq!(b_step, ahrs.gyro_bias());
+        assert!((q_up.norm() - 1.0).abs() < 1e-5);
+    }
+}
