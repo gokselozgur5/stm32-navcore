@@ -23,3 +23,13 @@ pub fn quat_nlerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, 
     )
     .normalize()
 }
+
+#[inline]
+fn slerp_weights(cos_theta: f32, sign: f32, t: f32) -> (f32, f32) {
+    let theta = libm::acosf(cos_theta);
+    let inv_sin = 1.0 / libm::sinf(theta);
+    (
+        libm::sinf((1.0 - t) * theta) * inv_sin,
+        sign * libm::sinf(t * theta) * inv_sin,
+    )
+}
