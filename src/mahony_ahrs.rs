@@ -150,3 +150,18 @@ fn validate_6dof(gyro: [f32; 3], accel: [f32; 3], dt: f32) -> Result<(), MahonyA
     }
     Ok(())
 }
+
+fn validate_9dof(
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    mag: [f32; 3],
+    dt: f32,
+) -> Result<(), MahonyAhrsError> {
+    validate_6dof(gyro, accel, dt)?;
+    for &m in &mag {
+        if !m.is_finite() {
+            return Err(MahonyAhrsError::NonFinite);
+        }
+    }
+    Ok(())
+}
