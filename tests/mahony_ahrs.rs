@@ -19,3 +19,14 @@ fn test_mahony_initialization_and_reset() {
     ahrs.reset_gyro_bias();
     assert_eq!(ahrs.gyro_bias(), [0.0; 3]);
 }
+
+#[test]
+fn test_mahony_invalid_dt_rejected() {
+    let mut ahrs = MahonyAhrs::default();
+    let g_ok = [0.0, 0.0, 0.0];
+    let a_ok = [0.0, 0.0, 9.81];
+
+    assert_eq!(ahrs.update(g_ok, a_ok, 0.0), Err(MahonyAhrsError::InvalidDt));
+    assert_eq!(ahrs.update(g_ok, a_ok, -0.01), Err(MahonyAhrsError::InvalidDt));
+    assert_eq!(ahrs.update(g_ok, a_ok, f32::NAN), Err(MahonyAhrsError::InvalidDt));
+}
