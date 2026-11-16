@@ -43,6 +43,14 @@ pub use slerp::{quat_nlerp, quat_slerp};
 pub use wmm_declination::{
     wmm_declination_deg, wmm_declination_rad, DeclinationError, DeclinationPolynomial,
 };
+/// Turn rate, bank angle, and aerodynamic turn state calculations.
+pub use turn_rate::{
+    accelerated_stall_speed, bank_angle_deg, bank_angle_from_radius, bank_angle_rad,
+    centripetal_accel_mps2, compute_coordinated_turn, load_factor,
+    standard_rate_bank_angle_rad, time_to_turn_s, turn_radius_from_rate, turn_radius_m,
+    turn_rate_deg_s, turn_rate_rad_s, TurnAerodynamics, TurnRateError,
+    STANDARD_GRAVITY_MPS2, STANDARD_RATE_TURN_DEG_S, STANDARD_RATE_TURN_RAD_S,
+};
 /// Decoded u-blox UBX messages and the streaming parser that produces them.
 pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 
