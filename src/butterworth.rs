@@ -88,3 +88,30 @@ impl ButterworthFilter {
         }
     }
 }
+
+impl ButterworthFilter {
+    /// Resets filter delay states to zero.
+    pub fn reset(&mut self) {
+        self.s1 = 0.0;
+        self.s2 = 0.0;
+    }
+
+    /// Direct Form II Transposed update step.
+    pub fn update(&mut self, x: f32) -> f32 {
+        let y = self.coeffs.b0 * x + self.s1;
+        self.s1 = self.coeffs.b1 * x - self.coeffs.a1 * y + self.s2;
+        self.s2 = self.coeffs.b2 * x - self.coeffs.a2 * y;
+        y
+    }
+
+    /// Returns current filter internal state (s1, s2).
+    pub const fn state(&self) -> (f32, f32) {
+        (self.s1, self.s2)
+    }
+
+    /// Sets internal delay states explicitly.
+    pub fn set_state(&mut self, s1: f32, s2: f32) {
+        self.s1 = s1;
+        self.s2 = s2;
+    }
+}
