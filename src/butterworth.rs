@@ -63,3 +63,28 @@ impl ButterworthCoefficients {
         self.a2.abs() < 1.0 && self.a1.abs() < (1.0 + self.a2)
     }
 }
+
+/// Second-order low-pass Butterworth IIR filter (DF2T).
+#[derive(Debug, Clone, Copy)]
+pub struct ButterworthFilter {
+    coeffs: ButterworthCoefficients,
+    s1: f32,
+    s2: f32,
+}
+
+impl ButterworthFilter {
+    /// Creates a filter with specified cutoff and sample interval.
+    pub fn try_new(cutoff_hz: f32, sample_interval_s: f32) -> Result<Self, ButterworthError> {
+        let coeffs = ButterworthCoefficients::try_new(cutoff_hz, sample_interval_s)?;
+        Ok(Self::from_coeffs(coeffs))
+    }
+
+    /// Creates a filter from precomputed coefficients.
+    pub const fn from_coeffs(coeffs: ButterworthCoefficients) -> Self {
+        Self {
+            coeffs,
+            s1: 0.0,
+            s2: 0.0,
+        }
+    }
+}
