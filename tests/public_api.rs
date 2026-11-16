@@ -3,7 +3,8 @@
 use stm32_navcore::{
     quat_nlerp, quat_slerp, wmm_declination_deg, wmm_declination_rad, CalibrationBlock,
     DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
-    UbxNavRelPosNed, UbxParser,
+    UbxNavRelPosNed, UbxParser, Variometer, VariometerConfig, VariometerError,
+    VarioTone,
 };
 
 #[test]
@@ -29,6 +30,10 @@ fn crate_root_reexports_are_usable() {
     let _ = stm32_navcore::turn_rate_deg_s(50.0, 15.0, 9.80665);
     let _ = stm32_navcore::bank_angle_deg(50.0, 3.0, 9.80665);
     let _ = stm32_navcore::MahonyAhrs::default();
+    let _ = core::mem::size_of::<Variometer>();
+    let _ = core::mem::size_of::<VariometerConfig>();
+    let _ = core::mem::size_of::<VariometerError>();
+    let _ = core::mem::size_of::<VarioTone>();
 }
 
 use core::mem::{align_of, size_of};
