@@ -41,3 +41,11 @@ fn test_northward_displacement_step() {
     assert_eq!(next.lon_rad, 0.0);
     assert_eq!(next.height_m, 0.0);
 }
+
+
+#[test]
+fn test_vertical_displacement_step() {
+    let state = DeadReckoningState::new(0.0, 0.0, 100.0, 0.0, 0.0, -10.0);
+    let next = dead_reckoning_step(&state, 2.0).unwrap();
+    assert_eq!(next.height_m, 120.0);
+}
