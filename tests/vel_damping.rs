@@ -21,3 +21,24 @@ fn test_config_validation_and_errors() {
     cfg.max_innovation_mps = -1.0;
     assert_eq!(cfg.validate(), Err(VelDampingError::InvalidGateThreshold));
 }
+
+#[test]
+fn test_damp_velocity_step_decay() {
+    use stm32_navcore::vel_damping::damp_velocity_step;
+
+    let v0 = [10.0, -20.0, 5.0];
+    let tau = 100.0;
+    let dt = 1.0;
+    let v1 = damp_velocity_step(v0, tau, dt).unwrap();
+
+    let expected_decay = libm::expf(-1.0 / 100.0);
+    assert!((v1[0] - v0[0] * expected_decay).abs() < 1e-6);
+    assert!((v1[1] - v0[1] * expected_decay).abs() < 1e-6);
+    assert!((v1[2] - v0[2] * expected_decay).abs() < 1e-6);
+
+    let err_dt = damp_velocity_step(v0, tau, -0.1);
+    assert_eq!(err_dt, Err(VelDampingError::InvalidSampleInterval));
+
+    let err_tau = damp_velocity_step(v0, 0.0, dt);
+    assert_eq!(err_tau, Err(VelDampingError::InvalidTimeConstant));
+}
