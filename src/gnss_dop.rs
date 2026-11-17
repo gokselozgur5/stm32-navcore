@@ -113,3 +113,12 @@ impl SatelliteLos {
         })
     }
 }
+
+/// Online incremental normal matrix accumulator for GNSS DOP calculation.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct DopAccumulator {
+    /// Normal matrix G^T * G (4x4 symmetric).
+    normal_mat: Mat<4, 4>,
+    /// Number of accumulated satellite observations.
+    count: usize,
+}
