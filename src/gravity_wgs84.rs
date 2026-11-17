@@ -172,3 +172,24 @@ pub fn centrifugal_accel_ecef_f32(pos_ecef: [f32; 3]) -> Result<[f32; 3], Wgs84G
     let omega2 = omega * omega;
     Ok([omega2 * pos_ecef[0], omega2 * pos_ecef[1], 0.0f32])
 }
+
+/// Pure gravitational acceleration in ECEF coordinates including J2 perturbation.
+pub fn gravitational_accel_ecef_j2(pos: [f64; 3]) -> Result<[f64; 3], Wgs84GravityError> {
+    let (x, y, z) = (pos[0], pos[1], pos[2]);
+    if !x.is_finite() || !y.is_finite() || !z.is_finite() {
+        return Err(Wgs84GravityError::NonFinite);
+    }
+    let r2 = x * x + y * y + z * z;
+    if r2 < 1.0 {
+        return Err(Wgs84GravityError::SingularRadius);
+    }
+    let r = libm::sqrt(r2);
+    let r3 = r * r2;
+    let a_r2 = (WGS84_A * WGS84_A) / r2;
+    let z2_r2 = (z * z) / r2;
+    let j2_fac = 1.5 * WGS84_J2 * a_r2;
+    let fac_xy = 1.0 - j2_fac * (5.0 * z2_r2 - 1.0);
+    let fac_z = 1.0 - j2_fac * (5.0 * z2_r2 - 3.0);
+    let k = -WGS84_GM / r3;
+    Ok([k * x * fac_xy, k * y * fac_xy, k * z * fac_z])
+}
