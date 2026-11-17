@@ -324,3 +324,23 @@ impl WindEstimator {
             direction_from_deg: from_rad * (180.0 / PI),
         })
     }
+    /// Update filter state from ground speed, course track, TAS, and heading with time delta.
+    pub fn update_from_course(
+        &mut self,
+        ground_speed_mps: f32,
+        course_rad: f32,
+        tas_mps: f32,
+        heading_rad: f32,
+        dt_s: f32,
+    ) -> Result<WindEstimate, WindEstimatorError> {
+        if !ground_speed_mps.is_finite() || !course_rad.is_finite() {
+            return Err(WindEstimatorError::NonFinite);
+        }
+        if ground_speed_mps < 0.0 {
+            return Err(WindEstimatorError::NegativeGroundSpeed);
+        }
+        let vg_n = ground_speed_mps * libm::cosf(course_rad);
+        let vg_e = ground_speed_mps * libm::sinf(course_rad);
+        self.update([vg_n, vg_e], tas_mps, heading_rad, dt_s)
+    }
+}
