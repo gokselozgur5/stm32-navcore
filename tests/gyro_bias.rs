@@ -110,3 +110,15 @@ fn test_stationary_bias_tracking() {
     assert!((est[2] - 0.005).abs() < 1e-3);
     assert!(tracker.stationary_count() >= 150);
 }
+
+#[test]
+fn test_stationary_rejection_on_motion() {
+    let cfg = GyroBiasConfig::default();
+    let mut tracker = GyroBiasTracker::new(cfg).unwrap();
+
+    let motion_sample = [0.5, 0.0, 0.0];
+    let updated = tracker.update_stationary(motion_sample, 0.01).unwrap();
+    assert!(!updated);
+    assert_eq!(tracker.stationary_count(), 0);
+    assert_eq!(tracker.bias(), [0.0; 3]);
+}
