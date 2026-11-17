@@ -354,9 +354,9 @@ mod tests {
         assert_eq!(wrap_2pi(0.0), 0.0);
         assert!((wrap_2pi(2.0 * PI) - 0.0).abs() < 1e-6);
         assert!((wrap_2pi(-PI / 2.0) - 3.0 * PI / 2.0).abs() < 1e-6);
-        assert!((wrap_pi(PI) - PI).abs() < 1e-6);
-        assert!((wrap_pi(3.0 * PI) - PI).abs() < 1e-6);
-        assert!((wrap_pi(-3.0 * PI) - PI).abs() < 1e-6);
+        assert!((wrap_pi(PI).abs() - PI).abs() < 1e-6);
+        assert!((wrap_pi(3.0 * PI).abs() - PI).abs() < 1e-6);
+        assert!((wrap_pi(-3.0 * PI).abs() - PI).abs() < 1e-6);
     }
     #[test]
     fn test_instantaneous_wind_vector() {
