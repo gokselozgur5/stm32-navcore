@@ -118,3 +118,23 @@ pub fn impact_pressure_to_mach(diff_p_pa: f32, static_p_pa: f32) -> Result<f32, 
 
 /// Calibrated airspeed (CAS) with subsonic compressibility correction.
 pub fn calibrated_airspeed(diff_p_pa: f32) -> Result<f32, AirspeedError> {
+    if !diff_p_pa.is_finite() {
+        return Err(AirspeedError::NonFinite);
+    }
+    if diff_p_pa < 0.0 {
+        return Err(AirspeedError::NegativeDifferentialPressure);
+    }
+    if diff_p_pa == 0.0 {
+        return Ok(0.0);
+    }
+    let pr = diff_p_pa / STANDARD_PRESSURE_PA;
+    let base = pr + 1.0;
+    let factor = libm::powf(base, 2.0 / 7.0) - 1.0;
+    if factor < 0.0 {
+        return Ok(0.0);
+    }
+    let cas = STANDARD_SPEED_OF_SOUND_MPS * libm::sqrtf(5.0 * factor);
+    Ok(cas)
+}
+
+/// Compute true airspeed (TAS) in m/s from pitot-static state.
