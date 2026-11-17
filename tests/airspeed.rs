@@ -38,3 +38,23 @@ fn test_true_airspeed_at_altitude() {
     let ias = incompressible_ias(q).unwrap();
     assert!(tas > ias);
 }
+
+#[test]
+fn test_pressure_and_density_altitude() {
+    let p_alt_sea = pressure_altitude(STANDARD_PRESSURE_PA).unwrap();
+    assert!(p_alt_sea.abs() < 0.5);
+
+    let d_alt_sea = density_altitude(STANDARD_PRESSURE_PA, STANDARD_TEMP_K).unwrap();
+    assert!(d_alt_sea.abs() < 1.0);
+}
+
+#[test]
+fn test_calculator_struct_and_errors() {
+    let calc = AirspeedCalculator::new();
+    let state = calc
+        .compute(1000.0, STANDARD_PRESSURE_PA, STANDARD_TEMP_K)
+        .unwrap();
+    assert!(state.tas_mps > 0.0);
+    assert!(state.mach > 0.0);
+
+    assert_eq!(
