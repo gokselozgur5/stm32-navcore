@@ -166,3 +166,11 @@ impl DopAccumulator {
         Ok(())
     }
 }
+
+impl DopAccumulator {
+    /// Accumulates observation from satellite azimuth and elevation angles.
+    pub fn add_azimuth_elevation(&mut self, az_rad: f32, el_rad: f32) -> Result<(), DopError> {
+        let los = SatelliteLos::from_azimuth_elevation(az_rad, el_rad)?;
+        self.add_satellite(&los)
+    }
+}
