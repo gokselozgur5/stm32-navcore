@@ -67,6 +67,11 @@ pub use vel_damping::{
 pub use ubx::{UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser};
 /// Barometric vertical speed indicator and variometer estimator.
 pub use variometer::{Variometer, VariometerConfig, VariometerError, VarioTone};
+/// Gyroscope bias drift estimator and complementary tracking filter.
+pub use gyro_bias::{
+    apply_bias_slew_limit, clamp_bias_vector, correct_gyro_sample, track_bias_from_error,
+    track_bias_stationary, GyroBiasConfig, GyroBiasError, GyroBiasTracker,
+};
 
 #[cfg(test)]
 mod footprint {
