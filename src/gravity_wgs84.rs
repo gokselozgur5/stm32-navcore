@@ -124,3 +124,32 @@ pub struct SphericalHarmonicGravity {
     /// Total magnitude of gravitational acceleration vector in m/s^2.
     pub magnitude: f64,
 }
+
+/// Gravitational acceleration from J2 and J4 zonal spherical harmonics.
+pub fn spherical_harmonic_gravity(
+    r_m: f64,
+    lat_rad: f64,
+) -> Result<SphericalHarmonicGravity, Wgs84GravityError> {
+    if !r_m.is_finite() || !lat_rad.is_finite() {
+        return Err(Wgs84GravityError::NonFinite);
+    }
+    if r_m < 1.0 {
+        return Err(Wgs84GravityError::SingularRadius);
+    }
+    let half_pi = core::f64::consts::FRAC_PI_2;
+    if lat_rad < -half_pi || lat_rad > half_pi {
+        return Err(Wgs84GravityError::InvalidLatitude);
+    }
+    let (s, c) = (libm::sin(lat_rad), libm::cos(lat_rad));
+    let (s2, a_r) = (s * s, WGS84_A / r_m);
+    let (a_r2, a_r4) = (a_r * a_r, a_r * a_r * a_r * a_r);
+    let p2 = 0.5 * (3.0 * s2 - 1.0);
+    let p4 = 0.125 * (35.0 * s2 * s2 - 30.0 * s2 + 3.0);
+    let dp2 = 3.0 * s * c;
+    let dp4 = 2.5 * (7.0 * s2 - 3.0) * s * c;
+    let gm_r2 = WGS84_GM / (r_m * r_m);
+    let radial = gm_r2 * (1.0 - 3.0 * WGS84_J2 * a_r2 * p2 - 5.0 * WGS84_J4 * a_r4 * p4);
+    let north = -gm_r2 * (WGS84_J2 * a_r2 * dp2 + WGS84_J4 * a_r4 * dp4);
+    let mag = libm::sqrt(radial * radial + north * north);
+    Ok(SphericalHarmonicGravity { radial, north, magnitude: mag })
+}
