@@ -25,3 +25,18 @@ pub enum WindEstimatorError {
     /// Configuration parameter is out of valid range.
     InvalidConfig,
 }
+
+/// Wind vector speed and direction representation.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WindVectorInfo {
+    /// Wind speed magnitude in m/s.
+    pub speed_mps: f32,
+    /// Meteorological wind direction (FROM which wind blows) in radians [0, 2pi).
+    pub direction_from_rad: f32,
+    /// Meteorological wind direction in degrees [0, 360).
+    pub direction_from_deg: f32,
+    /// Direction towards which wind blows in radians [0, 2pi).
+    pub direction_to_rad: f32,
+    /// Direction towards which wind blows in degrees [0, 360).
+    pub direction_to_deg: f32,
+}
