@@ -47,3 +47,24 @@ impl MadgwickAhrs {
         })
     }
 }
+
+impl MadgwickAhrs {
+    /// Create filter with custom initial quaternion and beta gain.
+    pub fn with_attitude(beta: f32, quat: Quaternion) -> Result<Self, MadgwickAhrsError> {
+        if !beta.is_finite() || beta <= 0.0 {
+            return Err(MadgwickAhrsError::InvalidBeta);
+        }
+        let q = quat.normalize()?;
+        Ok(Self { quat: q, beta })
+    }
+
+    /// Current estimated orientation quaternion.
+    pub const fn quaternion(&self) -> Quaternion {
+        self.quat
+    }
+
+    /// Current filter beta gain.
+    pub const fn beta(&self) -> f32 {
+        self.beta
+    }
+}
