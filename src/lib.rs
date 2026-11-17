@@ -106,3 +106,12 @@ pub mod vel_damping;
 pub mod airspeed;
 
 pub mod gyro_bias;
+
+/// Attitude kinematics and propagation matrices.
+pub use kinematics::{
+    attitude_transition_matrix, body_rates_to_euler_rates, body_to_euler_rates_matrix,
+    euler_rates_to_body_matrix, euler_rates_to_body_rates, euler_rates_to_quat_rates,
+    omega_matrix, propagate_attitude_quaternion, propagate_euler_angles,
+    quat_derivative, quat_derivative_to_body_rates, quat_rates_to_euler_rates,
+    xi_matrix, EulerAngles, KinematicsError, GIMBAL_LOCK_COS_THRESHOLD,
+};
