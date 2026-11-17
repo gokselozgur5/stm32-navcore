@@ -102,3 +102,23 @@ impl Default for WindEstimatorConfig {
         }
     }
 }
+
+/// Wrap angle into [0, 2*pi) radians.
+pub fn wrap_2pi(angle_rad: f32) -> f32 {
+    let two_pi = 2.0 * PI;
+    let mut wrapped = angle_rad % two_pi;
+    if wrapped < 0.0 {
+        wrapped += two_pi;
+    }
+    wrapped
+}
+
+/// Wrap angle into [-pi, pi] radians.
+pub fn wrap_pi(angle_rad: f32) -> f32 {
+    let two_pi = 2.0 * PI;
+    let mut wrapped = (angle_rad + PI) % two_pi;
+    if wrapped < 0.0 {
+        wrapped += two_pi;
+    }
+    wrapped - PI
+}
