@@ -207,3 +207,15 @@ pub fn effective_gravity_ecef_f32(pos: [f32; 3]) -> Result<[f32; 3], Wgs84Gravit
     let eff = effective_gravity_ecef(pos_f64)?;
     Ok([eff[0] as f32, eff[1] as f32, eff[2] as f32])
 }
+
+/// Local NED frame normal gravity vector [0, 0, g_down] in m/s^2 (f64).
+pub fn gravity_ned(lat_rad: f64, alt_m: f64) -> Result<[f64; 3], Wgs84GravityError> {
+    let g = normal_gravity_elevation(lat_rad, alt_m)?;
+    Ok([0.0, 0.0, g])
+}
+
+/// Local NED frame normal gravity vector [0, 0, g_down] in m/s^2 (f32).
+pub fn gravity_ned_f32(lat_rad: f32, alt_m: f32) -> Result<[f32; 3], Wgs84GravityError> {
+    let g = normal_gravity_elevation_f32(lat_rad, alt_m)?;
+    Ok([0.0f32, 0.0f32, g])
+}
