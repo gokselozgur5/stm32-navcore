@@ -133,3 +133,16 @@ impl Default for HypsometricProfile {
         Self::standard_isa()
     }
 }
+
+impl HypsometricProfile {
+    /// Calculate geometric altitude from ambient pressure.
+    pub fn altitude_at_pressure(&self, pressure_pa: f32) -> Result<f32, HypsometricError> {
+        let delta_h = hypsometric_altitude(
+            pressure_pa,
+            self.ref_pressure_pa,
+            self.ref_temp_k,
+            self.lapse_rate_k_per_m,
+        )?;
+        Ok(self.ref_altitude_m + delta_h)
+    }
+}
