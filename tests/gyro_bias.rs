@@ -13,3 +13,16 @@ fn test_config_validation_and_errors() {
     cfg.ki = f32::NAN;
     assert_eq!(cfg.validate(), Err(GyroBiasError::InvalidGain));
     cfg.ki = 0.01;
+    cfg.stationary_learning_rate = 0.0;
+    assert_eq!(cfg.validate(), Err(GyroBiasError::InvalidGain));
+    cfg.stationary_learning_rate = 1.5;
+    assert_eq!(cfg.validate(), Err(GyroBiasError::InvalidGain));
+    cfg.stationary_learning_rate = 0.05;
+
+    cfg.max_bias_rad_s = -0.1;
+    assert_eq!(cfg.validate(), Err(GyroBiasError::InvalidLimit));
+    cfg.max_bias_rad_s = 0.1;
+
+    cfg.max_drift_rate_rad_s2 = 0.0;
+    assert_eq!(cfg.validate(), Err(GyroBiasError::InvalidLimit));
+}
