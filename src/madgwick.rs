@@ -183,6 +183,21 @@ fn integrate_step(
     Ok(next.normalize()?)
 }
 
+/// Perform one 6-DOF Madgwick AHRS sensor fusion integration step.
+pub fn madgwick_imu_step(
+    q: Quaternion,
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    beta: f32,
+    dt: f32,
+) -> Result<Quaternion, MadgwickAhrsError> {
+    validate_imu(gyro, accel, beta, dt)?;
+    let qw = MadgwickAhrs::gyro_rate(&q, gyro);
+    let s = MadgwickAhrs::accel_gradient(&q, accel);
+    let sh = normalize_gradient(s);
+    integrate_step(q, qw, sh, beta, dt)
+}
+
 fn validate_imu(
     gyro: [f32; 3],
     accel: [f32; 3],
