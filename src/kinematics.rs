@@ -252,3 +252,20 @@ pub fn propagate_attitude_quaternion(
     let res = Quaternion::new(next[0], next[1], next[2], next[3]);
     res.normalize().map_err(|_| KinematicsError::ZeroQuaternion)
 }
+
+/// Propagate Euler angles forward by time step dt using Euler rate kinematics.
+pub fn propagate_euler_angles(
+    euler: EulerAngles,
+    omega: [f32; 3],
+    dt: f32,
+) -> Result<EulerAngles, KinematicsError> {
+    if !dt.is_finite() || dt <= 0.0 {
+        return Err(KinematicsError::InvalidDeltaTime);
+    }
+    let rates = body_rates_to_euler_rates(euler, omega)?;
+    Ok(EulerAngles {
+        roll: euler.roll + rates[0] * dt,
+        pitch: euler.pitch + rates[1] * dt,
+        yaw: euler.yaw + rates[2] * dt,
+    })
+}
