@@ -25,6 +25,7 @@ pub mod gravity;
 pub mod kinematics;
 pub mod rk4;
 pub mod linalg;
+pub mod madgwick;
 pub mod math;
 pub mod pitot_tas;
 pub mod protocol;
