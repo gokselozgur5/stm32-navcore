@@ -35,3 +35,25 @@ impl MagFieldEstimate {
         self.inclination_deg * (core::f32::consts::PI / 180.0)
     }
 }
+
+/// Number of latitude rows in the magnetic lookup table.
+pub const WMM_LAT_ROWS: usize = 7;
+/// Number of longitude columns in the magnetic lookup table.
+pub const WMM_LON_COLS: usize = 13;
+/// Minimum latitude covered by the table in degrees.
+pub const WMM_LAT_MIN: f32 = -90.0;
+/// Latitude step in degrees.
+pub const WMM_LAT_STEP: f32 = 30.0;
+/// Minimum longitude covered by the table in degrees.
+pub const WMM_LON_MIN: f32 = -180.0;
+/// Longitude step in degrees.
+pub const WMM_LON_STEP: f32 = 30.0;
+
+/// World Magnetic Model 2020 lookup table for declination and inclination.
+#[derive(Clone, Copy, Debug)]
+pub struct MagDeclinationLut {
+    /// Declination grid in degrees: [row_lat][col_lon].
+    pub declination: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
+    /// Inclination grid in degrees: [row_lat][col_lon].
+    pub inclination: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
+}
