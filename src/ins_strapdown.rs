@@ -276,3 +276,20 @@ impl InsStrapdownIntegrator {
         }
     }
 }
+
+impl InsStrapdownIntegrator {
+    /// Returns current navigation state.
+    pub fn state(&self) -> &StrapdownState {
+        &self.state
+    }
+
+    /// Returns mutable reference to navigation state.
+    pub fn state_mut(&mut self) -> &mut StrapdownState {
+        &mut self.state
+    }
+
+    /// Returns reference to integrator config.
+    pub fn config(&self) -> &InsStrapdownConfig {
+        &self.config
+    }
+}
