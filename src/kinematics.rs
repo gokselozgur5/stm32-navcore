@@ -140,3 +140,14 @@ pub fn body_rates_to_euler_rates(
         m[2][0] * omega[0] + m[2][1] * omega[1] + m[2][2] * omega[2],
     ])
 }
+
+/// Skew-symmetric 4x4 matrix Omega(omega) for quaternion kinematic propagation.
+pub fn omega_matrix(omega: [f32; 3]) -> [[f32; 4]; 4] {
+    let (wx, wy, wz) = (omega[0], omega[1], omega[2]);
+    [
+        [0.0, -wx, -wy, -wz],
+        [wx, 0.0, wz, -wy],
+        [wy, -wz, 0.0, wx],
+        [wz, wy, -wx, 0.0],
+    ]
+}
