@@ -312,7 +312,8 @@ mod tests {
 
     #[test]
     fn test_los_coordinate_frames() {
-        let zenith = SatelliteLos::from_azimuth_elevation(0.0, core::f32::consts::FRAC_PI_2).unwrap();
+        let zenith =
+            SatelliteLos::from_azimuth_elevation(0.0, core::f32::consts::FRAC_PI_2).unwrap();
         assert!(zenith.x.abs() < 1e-6);
         assert!(zenith.y.abs() < 1e-6);
         assert!((zenith.z - 1.0).abs() < 1e-6);
