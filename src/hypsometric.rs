@@ -377,4 +377,24 @@ mod tests {
         let true_alt_cold = comp.true_altitude_from_indicated(1000.0, 271.65).unwrap();
         assert!(true_alt_cold < 1000.0);
     }
+
+    #[test]
+    fn test_error_handling_and_bounds() {
+        assert_eq!(
+            hypsometric_thickness(100000.0, 101000.0, 288.15),
+            Err(HypsometricError::InvalidPressure)
+        );
+        assert_eq!(
+            hypsometric_altitude(f32::NAN, 101325.0, 288.15, 0.0065),
+            Err(HypsometricError::NonFinite)
+        );
+        assert_eq!(
+            hypsometric_altitude(100000.0, 101325.0, -10.0, 0.0065),
+            Err(HypsometricError::InvalidTemperature)
+        );
+        assert_eq!(
+            hypsometric_altitude(100000.0, 101325.0, 288.15, -0.01),
+            Err(HypsometricError::InvalidLapseRate)
+        );
+    }
 }
