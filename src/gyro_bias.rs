@@ -64,3 +64,16 @@ impl Default for GyroBiasConfig {
         }
     }
 }
+
+/// Correct raw gyroscope measurement with estimated bias.
+pub fn correct_gyro_sample(
+    raw: [f32; 3],
+    bias: [f32; 3],
+) -> Result<[f32; 3], GyroBiasError> {
+    for i in 0..3 {
+        if !raw[i].is_finite() || !bias[i].is_finite() {
+            return Err(GyroBiasError::NonFinite);
+        }
+    }
+    Ok([raw[0] - bias[0], raw[1] - bias[1], raw[2] - bias[2]])
+}
