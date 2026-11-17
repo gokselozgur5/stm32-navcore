@@ -300,3 +300,24 @@ impl TempLapseCompensator {
         self.true_altitude_from_indicated(pressure_alt, measured_temp_k)
     }
 }
+
+impl TempLapseCompensator {
+    /// Compute density altitude in meters from ambient pressure and OAT.
+    pub fn density_altitude(
+        &self,
+        pressure_pa: f32,
+        measured_temp_k: f32,
+    ) -> Result<f32, HypsometricError> {
+        validate_state(pressure_pa, self.ref_qnh_pa, measured_temp_k)?;
+        let pressure_alt = hypsometric_altitude(
+            pressure_pa,
+            STANDARD_SEA_LEVEL_PRESSURE_PA,
+            STANDARD_SEA_LEVEL_TEMP_K,
+            self.lapse_rate_k_per_m,
+        )?;
+        let isa_t = Self::isa_temperature_at_altitude(pressure_alt)?;
+        let delta_isa = measured_temp_k - isa_t;
+        // Density altitude approximation: 118.8 m per 1 K temperature delta.
+        Ok(pressure_alt + 118.8 * delta_isa)
+    }
+}
