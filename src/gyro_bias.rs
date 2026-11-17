@@ -163,3 +163,22 @@ pub fn track_bias_from_error(
     ];
     clamp_bias_vector(raw_next, max_bias)
 }
+
+/// Perform one complementary low-pass bias tracking step when stationary.
+pub fn track_bias_stationary(
+    prev_bias: [f32; 3],
+    gyro_raw: [f32; 3],
+    alpha: f32,
+    max_bias: f32,
+) -> Result<[f32; 3], GyroBiasError> {
+    if !alpha.is_finite() || alpha <= 0.0 || alpha > 1.0 {
+        return Err(GyroBiasError::InvalidGain);
+    }
+    if !max_bias.is_finite() || max_bias <= 0.0 {
+        return Err(GyroBiasError::InvalidLimit);
+    }
+    for i in 0..3 {
+        if !prev_bias[i].is_finite() || !gyro_raw[i].is_finite() {
+            return Err(GyroBiasError::NonFinite);
+        }
+    }
