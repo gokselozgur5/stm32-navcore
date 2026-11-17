@@ -178,3 +178,23 @@ pub fn density_altitude(static_p_pa: f32, temp_k: f32) -> Result<f32, AirspeedEr
     let rho = air_density(static_p_pa, temp_k)?;
     let dr = rho / STANDARD_DENSITY_KG_M3;
     let factor = 1.0 - libm::powf(dr, ISA_DENSITY_EXPONENT);
+    let scale = STANDARD_TEMP_K / TROPO_LAPSE_RATE_K_PER_M;
+    Ok(scale * factor)
+}
+
+/// Complete pitot-static atmospheric and airspeed telemetry state.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct AirspeedState {
+    /// Incompressible indicated airspeed in m/s.
+    pub ias_mps: f32,
+    /// Calibrated airspeed in m/s.
+    pub cas_mps: f32,
+    /// Equivalent airspeed in m/s.
+    pub eas_mps: f32,
+    /// True airspeed in m/s.
+    pub tas_mps: f32,
+    /// Flight Mach number.
+    pub mach: f32,
+    /// Local air density in kg/m^3.
+    pub density_kg_m3: f32,
+    /// Pressure altitude in meters.
