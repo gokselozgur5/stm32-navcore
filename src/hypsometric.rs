@@ -115,3 +115,21 @@ impl HypsometricProfile {
         })
     }
 }
+
+impl HypsometricProfile {
+    /// Construct standard ISA sea-level profile.
+    pub fn standard_isa() -> Self {
+        Self {
+            ref_pressure_pa: STANDARD_SEA_LEVEL_PRESSURE_PA,
+            ref_temp_k: STANDARD_SEA_LEVEL_TEMP_K,
+            lapse_rate_k_per_m: STANDARD_LAPSE_RATE_K_PER_M,
+            ref_altitude_m: 0.0,
+        }
+    }
+}
+
+impl Default for HypsometricProfile {
+    fn default() -> Self {
+        Self::standard_isa()
+    }
+}
