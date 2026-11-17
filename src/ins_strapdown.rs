@@ -150,3 +150,20 @@ pub fn gravity_ned(lat_rad: f64, alt_m: f64) -> Result<[f64; 3], InsStrapdownErr
     let g = somigliana_gravity(lat_rad, alt_m)?;
     Ok([0.0, 0.0, g])
 }
+
+/// Navigation state for INS strapdown integration in local navigation frame.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct StrapdownState {
+    /// Geodetic latitude in radians.
+    pub lat_rad: f64,
+    /// Geodetic longitude in radians.
+    pub lon_rad: f64,
+    /// Geodetic altitude above reference ellipsoid in meters.
+    pub alt_m: f64,
+    /// Velocity in NED frame [v_North, v_East, v_Down] in m/s.
+    pub vel_ned: [f64; 3],
+    /// Integrated relative displacement in NED frame in meters.
+    pub pos_ned: [f64; 3],
+    /// Body-to-NED attitude quaternion [w, x, y, z].
+    pub quat: [f64; 4],
+}
