@@ -182,3 +182,14 @@ impl HypsometricProfile {
         Ok(t)
     }
 }
+
+/// Temperature lapse compensator for true altitude and density altitude corrections.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct TempLapseCompensator {
+    /// Sea-level reference QNH barometric pressure in Pascals.
+    pub ref_qnh_pa: f32,
+    /// Station or baseline field elevation in meters.
+    pub base_elevation_m: f32,
+    /// Estimated or standard temperature lapse rate in K/m.
+    pub lapse_rate_k_per_m: f32,
+}
