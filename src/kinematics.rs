@@ -73,3 +73,13 @@ impl EulerAngles {
         )
     }
 }
+
+/// Threshold on |cos(pitch)| below which kinematic mapping becomes singular.
+pub const GIMBAL_LOCK_COS_THRESHOLD: f32 = 1e-3;
+
+impl EulerAngles {
+    /// Check whether the current attitude is in gimbal lock (|cos(pitch)| < threshold).
+    pub fn is_gimbal_locked(&self) -> bool {
+        libm::fabsf(libm::cosf(self.pitch)) < GIMBAL_LOCK_COS_THRESHOLD
+    }
+}
