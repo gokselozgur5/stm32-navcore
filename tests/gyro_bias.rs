@@ -64,3 +64,12 @@ fn test_apply_bias_slew_limit() {
     assert!((limited[1] - (-0.015)).abs() < 1e-6);
     assert!((limited[2] - 0.001).abs() < 1e-6);
 }
+
+#[test]
+fn test_apply_bias_slew_limit_errors() {
+    let prev = [0.0, 0.0, 0.0];
+    let next = [0.01, 0.0, 0.0];
+    assert_eq!(apply_bias_slew_limit(next, prev, 0.01, -0.1), Err(GyroBiasError::InvalidSampleInterval));
+    assert_eq!(apply_bias_slew_limit(next, prev, 0.0, 0.1), Err(GyroBiasError::InvalidLimit));
+    assert_eq!(apply_bias_slew_limit([f32::NAN, 0.0, 0.0], prev, 0.01, 0.1), Err(GyroBiasError::NonFinite));
+}
