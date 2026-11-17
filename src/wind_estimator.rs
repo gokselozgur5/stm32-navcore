@@ -40,3 +40,25 @@ pub struct WindVectorInfo {
     /// Direction towards which wind blows in degrees [0, 360).
     pub direction_to_deg: f32,
 }
+
+/// Relative wind components resolved into the aircraft heading frame.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct RelativeWind {
+    /// Headwind component in m/s (positive = headwind, negative = tailwind).
+    pub headwind_mps: f32,
+    /// Crosswind component in m/s (positive = from starboard, negative = from port).
+    pub crosswind_mps: f32,
+}
+
+/// Filtered wind estimate containing vector and derived quantities.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WindEstimate {
+    /// Wind velocity vector [North, East] in m/s.
+    pub wind_ne_mps: [f32; 2],
+    /// Wind speed magnitude in m/s.
+    pub speed_mps: f32,
+    /// Direction FROM which wind blows in radians [0, 2pi).
+    pub direction_from_rad: f32,
+    /// Direction FROM which wind blows in degrees [0, 360).
+    pub direction_from_deg: f32,
+}
