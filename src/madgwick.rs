@@ -68,3 +68,24 @@ impl MadgwickAhrs {
         self.beta
     }
 }
+
+impl MadgwickAhrs {
+    /// Update beta gain value.
+    pub fn set_beta(&mut self, beta: f32) -> Result<(), MadgwickAhrsError> {
+        if !beta.is_finite() || beta <= 0.0 {
+            return Err(MadgwickAhrsError::InvalidBeta);
+        }
+        self.beta = beta;
+        Ok(())
+    }
+
+    /// Reset orientation quaternion to identity.
+    pub fn reset(&mut self) {
+        self.quat = Quaternion::IDENTITY;
+    }
+
+    /// Current Euler angles (roll, pitch, yaw) in radians.
+    pub fn euler_zyx(&self) -> (f32, f32, f32) {
+        self.quat.to_euler_zyx()
+    }
+}
