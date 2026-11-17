@@ -1,4 +1,7 @@
-use stm32_navcore::mag_declination::{estimate_wmm2020, estimate_wmm2020_rad, MagDeclinationError};
+use stm32_navcore::mag_declination::{
+    estimate_wmm2020, estimate_wmm2020_rad, magnetic_to_true_heading_rad,
+    true_to_magnetic_heading_rad, MagDeclinationError,
+};
 
 #[test]
 fn test_wmm_invalid_inputs() {
@@ -44,4 +47,16 @@ fn test_wmm_bilinear_interpolation_midpoint() {
     let rad = estimate_wmm2020_rad(0.0, 0.0).unwrap();
     let expected_rad = -10.0 * core::f32::consts::PI / 180.0;
     assert!((rad.declination_rad() - expected_rad).abs() < 1e-4);
+}
+
+#[test]
+fn test_heading_conversions() {
+    let pi = core::f32::consts::PI;
+    let true_hdg = magnetic_to_true_heading_rad(0.5, 0.1);
+    assert!((true_hdg - 0.6).abs() < 1e-5);
+    let mag_hdg = true_to_magnetic_heading_rad(true_hdg, 0.1);
+    assert!((mag_hdg - 0.5).abs() < 1e-5);
+
+    let wrap_true = magnetic_to_true_heading_rad(2.0 * pi - 0.1, 0.2);
+    assert!((wrap_true - 0.1).abs() < 1e-5);
 }
