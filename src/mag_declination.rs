@@ -57,3 +57,28 @@ pub struct MagDeclinationLut {
     /// Inclination grid in degrees: [row_lat][col_lon].
     pub inclination: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
 }
+
+impl MagDeclinationLut {
+    /// Create a new lookup table with provided grid values.
+    pub const fn new(
+        declination: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
+        inclination: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
+    ) -> Self {
+        Self {
+            declination,
+            inclination,
+        }
+    }
+
+    /// Normalize longitude in degrees to [-180.0, 180.0].
+    pub fn normalize_lon_deg(lon_deg: f32) -> f32 {
+        let mut lon = lon_deg;
+        while lon > 180.0 {
+            lon -= 360.0;
+        }
+        while lon < -180.0 {
+            lon += 360.0;
+        }
+        lon
+    }
+}
