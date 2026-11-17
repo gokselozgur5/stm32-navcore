@@ -284,5 +284,12 @@ mod tests {
         assert!(dop.pdop > 0.0);
         assert!(dop.hdop > 0.0);
         assert!(dop.vdop > 0.0);
+        let gdop_sq = dop.gdop * dop.gdop;
+        let pdop_sq = dop.pdop * dop.pdop;
+        let tdop_sq = dop.tdop * dop.tdop;
+        let hdop_sq = dop.hdop * dop.hdop;
+        let vdop_sq = dop.vdop * dop.vdop;
+        assert!((gdop_sq - (pdop_sq + tdop_sq)).abs() < 1e-3);
+        assert!((pdop_sq - (hdop_sq + vdop_sq)).abs() < 1e-3);
     }
 }
