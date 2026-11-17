@@ -184,3 +184,27 @@ pub fn estimate_wmm2020_rad(
     let rad_to_deg = 180.0 / core::f32::consts::PI;
     estimate_wmm2020(lat_rad * rad_to_deg, lon_rad * rad_to_deg)
 }
+
+/// Convert magnetic heading to true heading in radians given declination in radians.
+#[inline]
+pub fn magnetic_to_true_heading_rad(mag_hdg_rad: f32, dec_rad: f32) -> f32 {
+    let two_pi = 2.0 * core::f32::consts::PI;
+    let rem = (mag_hdg_rad + dec_rad) % two_pi;
+    if rem < 0.0 {
+        rem + two_pi
+    } else {
+        rem
+    }
+}
+
+/// Convert true heading to magnetic heading in radians given declination in radians.
+#[inline]
+pub fn true_to_magnetic_heading_rad(true_hdg_rad: f32, dec_rad: f32) -> f32 {
+    let two_pi = 2.0 * core::f32::consts::PI;
+    let rem = (true_hdg_rad - dec_rad) % two_pi;
+    if rem < 0.0 {
+        rem + two_pi
+    } else {
+        rem
+    }
+}
