@@ -240,3 +240,24 @@ impl Wgs84GravityCalculator {
         normal_gravity_elevation(lat_rad, alt_m)
     }
 }
+
+impl Wgs84GravityCalculator {
+    /// Calculate spherical harmonic gravity components at radius and latitude.
+    pub fn spherical_harmonic(
+        &self,
+        r_m: f64,
+        lat_rad: f64,
+    ) -> Result<SphericalHarmonicGravity, Wgs84GravityError> {
+        spherical_harmonic_gravity(r_m, lat_rad)
+    }
+
+    /// Calculate effective gravity vector in ECEF frame [gx, gy, gz].
+    pub fn ecef(&self, pos: [f64; 3]) -> Result<[f64; 3], Wgs84GravityError> {
+        effective_gravity_ecef(pos)
+    }
+
+    /// Calculate local NED frame normal gravity vector [0, 0, g_down].
+    pub fn ned(&self, lat_rad: f64, alt_m: f64) -> Result<[f64; 3], Wgs84GravityError> {
+        gravity_ned(lat_rad, alt_m)
+    }
+}
