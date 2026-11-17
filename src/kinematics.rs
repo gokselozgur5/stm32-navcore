@@ -199,3 +199,11 @@ pub fn euler_rates_to_quat_rates(euler: EulerAngles, euler_rates: [f32; 3]) -> [
     let omega = euler_rates_to_body_rates(euler, euler_rates);
     quat_derivative(&q, omega)
 }
+
+fn phi_scales(norm: f32, half_angle: f32, dt: f32) -> (f32, f32) {
+    if norm < 1e-7 {
+        (1.0 - 0.5 * half_angle * half_angle, 0.5 * dt)
+    } else {
+        (libm::cosf(half_angle), libm::sinf(half_angle) / norm)
+    }
+}
