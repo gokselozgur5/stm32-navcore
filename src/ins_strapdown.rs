@@ -347,3 +347,20 @@ impl InsStrapdownIntegrator {
         Ok(self.state.quat)
     }
 }
+
+impl InsStrapdownIntegrator {
+    /// Computes kinematic acceleration in NED frame from body specific force.
+    pub fn kinematic_accel(&self, accel_b: [f64; 3]) -> Result<[f64; 3], InsStrapdownError> {
+        let f_n = quat_rotate_vec(self.state.quat, accel_b);
+        let g = match self.config.gravity_override {
+            Some(g_val) => g_val,
+            None => somigliana_gravity(self.state.lat_rad, self.state.alt_m)?,
+        };
+        let a_cor = if self.config.enable_coriolis {
+            coriolis_acceleration(self.state.lat_rad, self.state.alt_m, self.state.vel_ned)?
+        } else {
+            [0.0, 0.0, 0.0]
+        };
+        Ok([f_n[0] - a_cor[0], f_n[1] - a_cor[1], f_n[2] + g - a_cor[2]])
+    }
+}
