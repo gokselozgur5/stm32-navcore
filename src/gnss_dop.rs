@@ -174,3 +174,13 @@ impl DopAccumulator {
         self.add_satellite(&los)
     }
 }
+
+impl DopAccumulator {
+    /// Inverts accumulated normal matrix using Cholesky SPD decomposition.
+    pub fn invert_normal_matrix(&self) -> Result<Mat<4, 4>, DopError> {
+        if self.count < 4 {
+            return Err(DopError::InsufficientSatellites);
+        }
+        spd_inverse(&self.normal_mat).map_err(|_| DopError::SingularGeometry)
+    }
+}
