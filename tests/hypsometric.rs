@@ -21,3 +21,15 @@ fn test_integration_hypsometric_profile_reversibility() {
         assert!((recovered - alt).abs() < 0.2);
     }
 }
+
+#[test]
+fn test_integration_temp_lapse_compensation() {
+    let comp = TempLapseCompensator::standard();
+    let indicated_alt = 2000.0;
+    let oat_hot = 300.0;
+    let oat_cold = 250.0;
+    let true_alt_hot = comp.true_altitude_from_indicated(indicated_alt, oat_hot).unwrap();
+    let true_alt_cold = comp.true_altitude_from_indicated(indicated_alt, oat_cold).unwrap();
+    assert!(true_alt_hot > indicated_alt);
+    assert!(true_alt_cold < indicated_alt);
+}
