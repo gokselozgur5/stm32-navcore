@@ -181,3 +181,16 @@ impl StrapdownState {
         }
     }
 }
+
+/// Configuration options for INS strapdown integrator.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct InsStrapdownConfig {
+    /// Enable Coriolis acceleration compensation.
+    pub enable_coriolis: bool,
+    /// Enable Earth rate attitude compensation.
+    pub enable_earth_rate: bool,
+    /// Enable transport rate attitude compensation.
+    pub enable_transport_rate: bool,
+    /// Constant gravity override in m/s^2 (None uses WGS-84 Somigliana).
+    pub gravity_override: Option<f64>,
+}
