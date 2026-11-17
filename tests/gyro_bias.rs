@@ -132,3 +132,17 @@ fn test_tracker_reference_update_and_reset() {
 
     let raw = [0.03, -0.02, 0.01];
     let reference = [0.0, 0.0, 0.0];
+    for _ in 0..50 {
+        tracker.update_from_reference(raw, reference, 0.1).unwrap();
+    }
+    assert!(tracker.bias()[0] > 0.01);
+    assert!(tracker.bias()[1] < -0.01);
+
+    tracker.reset();
+    assert_eq!(tracker.bias(), [0.0; 3]);
+    assert_eq!(tracker.stationary_count(), 0);
+
+    tracker.set_bias([0.5, -0.5, 0.0]).unwrap();
+    assert_eq!(tracker.bias()[0], cfg.max_bias_rad_s);
+    assert_eq!(tracker.bias()[1], -cfg.max_bias_rad_s);
+}
