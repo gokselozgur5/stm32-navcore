@@ -400,3 +400,28 @@ impl InsStrapdownIntegrator {
         Ok(())
     }
 }
+
+impl InsStrapdownIntegrator {
+    /// Steps strapdown mechanization forward by dt_s with IMU measurements.
+    pub fn step(
+        &mut self,
+        accel_b: [f64; 3],
+        gyro_b: [f64; 3],
+        dt_s: f64,
+    ) -> Result<StrapdownState, InsStrapdownError> {
+        if !dt_s.is_finite() || dt_s <= 0.0 {
+            return Err(InsStrapdownError::InvalidDeltaTime);
+        }
+        if !accel_b[0].is_finite() || !accel_b[1].is_finite() || !accel_b[2].is_finite() {
+            return Err(InsStrapdownError::NonFinite);
+        }
+        if !gyro_b[0].is_finite() || !gyro_b[1].is_finite() || !gyro_b[2].is_finite() {
+            return Err(InsStrapdownError::NonFinite);
+        }
+        self.update_attitude(gyro_b, dt_s)?;
+        let a_n = self.kinematic_accel(accel_b)?;
+        let v_avg = self.update_velocity(a_n, dt_s);
+        self.update_position(v_avg, dt_s)?;
+        Ok(self.state)
+    }
+}
