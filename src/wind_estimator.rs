@@ -306,3 +306,21 @@ impl WindEstimator {
         if inst_speed > self.config.max_wind_speed_mps {
             return Err(WindEstimatorError::WindSpeedExceeded);
         }
+        if !self.initialized {
+            self.wind_ne_mps = inst_w;
+            self.initialized = true;
+        } else {
+            let alpha = dt_s / (self.config.time_constant_s + dt_s);
+            self.wind_ne_mps[0] += alpha * (inst_w[0] - self.wind_ne_mps[0]);
+            self.wind_ne_mps[1] += alpha * (inst_w[1] - self.wind_ne_mps[1]);
+        }
+        self.sample_count = self.sample_count.saturating_add(1);
+        let speed = self.wind_speed();
+        let from_rad = self.wind_direction_from_rad();
+        Ok(WindEstimate {
+            wind_ne_mps: self.wind_ne_mps,
+            speed_mps: speed,
+            direction_from_rad: from_rad,
+            direction_from_deg: from_rad * (180.0 / PI),
+        })
+    }
