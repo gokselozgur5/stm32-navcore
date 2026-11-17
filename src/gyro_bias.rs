@@ -251,3 +251,25 @@ impl GyroBiasTracker {
         let thresh = self.config.stationary_threshold_rad_s;
         mag_sq <= thresh * thresh
     }
+    /// Update bias estimate from rate/attitude error vector with slew limiting.
+    pub fn update_from_error(
+        &mut self,
+        rate_error: [f32; 3],
+        dt_s: f32,
+    ) -> Result<[f32; 3], GyroBiasError> {
+        let candidate = track_bias_from_error(
+            self.bias_rad_s,
+            rate_error,
+            self.config.ki,
+            dt_s,
+            self.config.max_bias_rad_s,
+        )?;
+        let limited = apply_bias_slew_limit(
+            candidate,
+            self.bias_rad_s,
+            self.config.max_drift_rate_rad_s2,
+            dt_s,
+        )?;
+        self.bias_rad_s = limited;
+        Ok(self.bias_rad_s)
+    }
