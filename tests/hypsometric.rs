@@ -33,3 +33,20 @@ fn test_integration_temp_lapse_compensation() {
     assert!(true_alt_hot > indicated_alt);
     assert!(true_alt_cold < indicated_alt);
 }
+
+#[test]
+fn test_integration_density_altitude_and_errors() {
+    let comp = TempLapseCompensator::standard();
+    let da = comp
+        .density_altitude(
+            STANDARD_SEA_LEVEL_PRESSURE_PA,
+            STANDARD_SEA_LEVEL_TEMP_K + 10.0,
+        )
+        .unwrap();
+    assert!(da > 1000.0 && da < 1300.0);
+
+    assert_eq!(
+        comp.density_altitude(0.0, 288.15),
+        Err(HypsometricError::InvalidPressure)
+    );
+}
