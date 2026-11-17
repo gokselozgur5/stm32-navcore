@@ -149,3 +149,20 @@ impl DopAccumulator {
         self.count
     }
 }
+
+impl DopAccumulator {
+    /// Accumulates one satellite LOS observation into normal matrix.
+    pub fn add_satellite(&mut self, los: &SatelliteLos) -> Result<(), DopError> {
+        if !los.x.is_finite() || !los.y.is_finite() || !los.z.is_finite() {
+            return Err(DopError::NonFiniteInput);
+        }
+        let g = [-los.x, -los.y, -los.z, 1.0f32];
+        for r in 0..4 {
+            for c in 0..4 {
+                self.normal_mat.0[r][c] += g[r] * g[c];
+            }
+        }
+        self.count += 1;
+        Ok(())
+    }
+}
