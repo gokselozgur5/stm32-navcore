@@ -158,3 +158,23 @@ pub fn equivalent_airspeed(tas_mps: f32, density_kg_m3: f32) -> Result<f32, Airs
     let sigma = density_kg_m3 / STANDARD_DENSITY_KG_M3;
     Ok(tas_mps * libm::sqrtf(sigma))
 }
+
+/// Pressure altitude in meters from static pressure.
+pub fn pressure_altitude(static_p_pa: f32) -> Result<f32, AirspeedError> {
+    if !static_p_pa.is_finite() {
+        return Err(AirspeedError::NonFinite);
+    }
+    if static_p_pa <= 0.0 {
+        return Err(AirspeedError::InvalidPressure);
+    }
+    let pr = static_p_pa / STANDARD_PRESSURE_PA;
+    let factor = 1.0 - libm::powf(pr, ISA_PRESSURE_EXPONENT);
+    let scale = STANDARD_TEMP_K / TROPO_LAPSE_RATE_K_PER_M;
+    Ok(scale * factor)
+}
+
+/// Density altitude in meters from static pressure and temperature.
+pub fn density_altitude(static_p_pa: f32, temp_k: f32) -> Result<f32, AirspeedError> {
+    let rho = air_density(static_p_pa, temp_k)?;
+    let dr = rho / STANDARD_DENSITY_KG_M3;
+    let factor = 1.0 - libm::powf(dr, ISA_DENSITY_EXPONENT);
