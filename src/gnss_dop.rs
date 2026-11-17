@@ -68,3 +68,27 @@ pub struct SatelliteLos {
     /// Up component of unit line-of-sight vector.
     pub z: f32,
 }
+
+impl SatelliteLos {
+    /// Creates a line-of-sight vector from pre-normalized components.
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
+        Self { x, y, z }
+    }
+
+    /// Normalizes a 3D vector to a unit line-of-sight vector.
+    pub fn from_vector(x: f32, y: f32, z: f32) -> Result<Self, DopError> {
+        if !x.is_finite() || !y.is_finite() || !z.is_finite() {
+            return Err(DopError::NonFiniteInput);
+        }
+        let norm_sq = x * x + y * y + z * z;
+        if norm_sq <= 1e-12 {
+            return Err(DopError::SingularGeometry);
+        }
+        let inv_norm = 1.0 / libm::sqrtf(norm_sq);
+        Ok(Self {
+            x: x * inv_norm,
+            y: y * inv_norm,
+            z: z * inv_norm,
+        })
+    }
+}
