@@ -17,3 +17,22 @@ pub enum DopError {
     /// Input vector or coordinates contained non-finite values (NaN/Inf).
     NonFiniteInput,
 }
+
+/// Dilution of precision metrics.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct GnssDop {
+    /// Geometric Dilution of Precision (3D position + time).
+    pub gdop: f32,
+    /// Position Dilution of Precision (3D position).
+    pub pdop: f32,
+    /// Horizontal Dilution of Precision (East + North).
+    pub hdop: f32,
+    /// Vertical Dilution of Precision (Up/Down).
+    pub vdop: f32,
+    /// Time Dilution of Precision (receiver clock bias).
+    pub tdop: f32,
+    /// North Dilution of Precision.
+    pub ndop: f32,
+    /// East Dilution of Precision.
+    pub edop: f32,
+}
