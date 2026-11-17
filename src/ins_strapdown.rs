@@ -322,3 +322,28 @@ pub fn nav_frame_rate(
 pub fn quat_rotate_vec_inv(q: [f64; 4], v: [f64; 3]) -> [f64; 3] {
     quat_rotate_vec([q[0], -q[1], -q[2], -q[3]], v)
 }
+
+impl InsStrapdownIntegrator {
+    /// Integrates craft attitude with gyro reading and Earth/transport rate compensation.
+    pub fn update_attitude(
+        &mut self,
+        gyro_b: [f64; 3],
+        dt_s: f64,
+    ) -> Result<[f64; 4], InsStrapdownError> {
+        let w_in_n = nav_frame_rate(
+            self.state.lat_rad,
+            self.state.alt_m,
+            self.state.vel_ned,
+            self.config.enable_earth_rate,
+            self.config.enable_transport_rate,
+        )?;
+        let w_in_b = quat_rotate_vec_inv(self.state.quat, w_in_n);
+        let w_nb_b = [
+            gyro_b[0] - w_in_b[0],
+            gyro_b[1] - w_in_b[1],
+            gyro_b[2] - w_in_b[2],
+        ];
+        self.state.quat = quat_integrate(self.state.quat, w_nb_b, dt_s)?;
+        Ok(self.state.quat)
+    }
+}
