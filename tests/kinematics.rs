@@ -80,3 +80,16 @@ fn test_transition_matrix_and_propagation() {
     assert!(euler.pitch.abs() < 1e-4);
     assert!((euler.yaw - core::f32::consts::FRAC_PI_2).abs() < 1e-4);
 }
+
+#[test]
+fn test_euler_propagation_and_cross_rates() {
+    let euler0 = EulerAngles::new(0.05, 0.10, -0.20);
+    let euler_rates = [0.02, -0.01, 0.04];
+    let q_dot = euler_rates_to_quat_rates(euler0, euler_rates);
+    let q = euler0.to_quat();
+
+    let recovered_euler_rates = quat_rates_to_euler_rates(&q, q_dot).unwrap();
+    assert!((recovered_euler_rates[0] - euler_rates[0]).abs() < 1e-4);
+    assert!((recovered_euler_rates[1] - euler_rates[1]).abs() < 1e-4);
+    assert!((recovered_euler_rates[2] - euler_rates[2]).abs() < 1e-4);
+}
