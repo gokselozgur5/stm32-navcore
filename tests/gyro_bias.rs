@@ -51,3 +51,16 @@ fn test_clamp_bias_vector() {
     assert_eq!(clamp_bias_vector(bias, 0.0), Err(GyroBiasError::InvalidLimit));
     assert_eq!(clamp_bias_vector([f32::INFINITY, 0.0, 0.0], 0.1), Err(GyroBiasError::NonFinite));
 }
+
+#[test]
+fn test_apply_bias_slew_limit() {
+    let prev = [0.01, -0.01, 0.0];
+    let candidate = [0.05, -0.05, 0.001];
+    let max_rate = 0.01;
+    let dt = 0.5; // max delta = 0.005
+
+    let limited = apply_bias_slew_limit(candidate, prev, max_rate, dt).unwrap();
+    assert!((limited[0] - 0.015).abs() < 1e-6);
+    assert!((limited[1] - (-0.015)).abs() < 1e-6);
+    assert!((limited[2] - 0.001).abs() < 1e-6);
+}
