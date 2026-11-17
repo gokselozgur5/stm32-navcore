@@ -93,3 +93,20 @@ fn test_euler_propagation_and_cross_rates() {
     assert!((recovered_euler_rates[1] - euler_rates[1]).abs() < 1e-4);
     assert!((recovered_euler_rates[2] - euler_rates[2]).abs() < 1e-4);
 }
+
+#[test]
+fn test_invalid_inputs_and_edge_cases() {
+    let q = Quaternion::IDENTITY;
+    assert_eq!(
+        propagate_attitude_quaternion(&q, [0.0, 0.0, 0.0], -0.1),
+        Err(KinematicsError::InvalidDeltaTime)
+    );
+    assert_eq!(
+        propagate_attitude_quaternion(&q, [f32::NAN, 0.0, 0.0], 0.1),
+        Err(KinematicsError::NonFinite)
+    );
+    assert_eq!(
+        propagate_euler_angles(EulerAngles::ZERO, [0.0, 0.0, 0.0], 0.0),
+        Err(KinematicsError::InvalidDeltaTime)
+    );
+}
