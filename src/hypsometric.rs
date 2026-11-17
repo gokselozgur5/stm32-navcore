@@ -218,3 +218,20 @@ impl TempLapseCompensator {
         })
     }
 }
+
+impl TempLapseCompensator {
+    /// Create standard sea-level compensator (1013.25 hPa, 0 m, 0.0065 K/m).
+    pub fn standard() -> Self {
+        Self {
+            ref_qnh_pa: STANDARD_SEA_LEVEL_PRESSURE_PA,
+            base_elevation_m: 0.0,
+            lapse_rate_k_per_m: STANDARD_LAPSE_RATE_K_PER_M,
+        }
+    }
+}
+
+impl Default for TempLapseCompensator {
+    fn default() -> Self {
+        Self::standard()
+    }
+}
