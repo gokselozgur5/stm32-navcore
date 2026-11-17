@@ -510,4 +510,14 @@ mod tests {
         let ff_st = ff_ins.step([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 1.0).expect("ff");
         assert!((ff_st.vel_ned[2] - g).abs() < 1e-4);
     }
+
+    #[test]
+    fn test_input_validation_and_errors() {
+        let mut ins = InsStrapdownIntegrator::new(StrapdownState::new(0.0, 0.0, 0.0));
+        assert_eq!(ins.step([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 0.0), Err(InsStrapdownError::InvalidDeltaTime));
+        assert_eq!(ins.step([f64::NAN, 0.0, 0.0], [0.0, 0.0, 0.0], 0.1), Err(InsStrapdownError::NonFinite));
+        assert_eq!(ins.step([0.0, 0.0, 0.0], [f64::INFINITY, 0.0, 0.0], 0.1), Err(InsStrapdownError::NonFinite));
+        let err = InsStrapdownError::InvalidLatitude;
+        assert_eq!(format!("{}", err), "latitude must be within [-pi/2, pi/2]");
+    }
 }
