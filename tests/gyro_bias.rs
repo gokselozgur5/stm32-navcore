@@ -26,3 +26,16 @@ fn test_config_validation_and_errors() {
     cfg.max_drift_rate_rad_s2 = 0.0;
     assert_eq!(cfg.validate(), Err(GyroBiasError::InvalidLimit));
 }
+
+#[test]
+fn test_correct_gyro_sample() {
+    let raw = [0.15, -0.08, 0.02];
+    let bias = [0.05, -0.03, 0.01];
+    let corr = correct_gyro_sample(raw, bias).unwrap();
+    assert!((corr[0] - 0.10).abs() < 1e-6);
+    assert!((corr[1] - (-0.05)).abs() < 1e-6);
+    assert!((corr[2] - 0.01).abs() < 1e-6);
+
+    let nan_raw = [f32::NAN, 0.0, 0.0];
+    assert_eq!(correct_gyro_sample(nan_raw, bias), Err(GyroBiasError::NonFinite));
+}
