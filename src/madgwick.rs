@@ -114,3 +114,19 @@ fn validate_imu(
     }
     Ok(())
 }
+
+fn validate_marg(
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    mag: [f32; 3],
+    beta: f32,
+    dt: f32,
+) -> Result<(), MadgwickAhrsError> {
+    validate_imu(gyro, accel, beta, dt)?;
+    for &m in &mag {
+        if !m.is_finite() {
+            return Err(MadgwickAhrsError::NonFinite);
+        }
+    }
+    Ok(())
+}
