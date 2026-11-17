@@ -97,3 +97,23 @@ pub fn euler_rates_to_body_matrix(euler: EulerAngles) -> [[f32; 3]; 3] {
         [0.0, -s_phi, c_phi * c_theta],
     ]
 }
+
+/// Transformation matrix mapping body rates (p, q, r) to Euler rates (roll_dot, pitch_dot, yaw_dot).
+pub fn body_to_euler_rates_matrix(euler: EulerAngles) -> Result<[[f32; 3]; 3], KinematicsError> {
+    let c_theta = libm::cosf(euler.pitch);
+    if libm::fabsf(c_theta) < GIMBAL_LOCK_COS_THRESHOLD {
+        return Err(KinematicsError::GimbalLock {
+            pitch_rad: euler.pitch,
+        });
+    }
+    let s_phi = libm::sinf(euler.roll);
+    let c_phi = libm::cosf(euler.roll);
+    let tan_theta = libm::tanf(euler.pitch);
+    let sec_theta = 1.0 / c_theta;
+
+    Ok([
+        [1.0, s_phi * tan_theta, c_phi * tan_theta],
+        [0.0, c_phi, -s_phi],
+        [0.0, s_phi * sec_theta, c_phi * sec_theta],
+    ])
+}
