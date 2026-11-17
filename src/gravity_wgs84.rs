@@ -45,3 +45,19 @@ pub const GAMMA_P: f64 = 9.832_184_937_8;
 
 /// Somigliana formula parameter k.
 pub const SOMIGLIANA_K: f64 = 0.001_931_852_652_41;
+
+/// Somigliana normal gravity at the surface of the WGS-84 ellipsoid in m/s^2.
+pub fn somigliana_surface(lat_rad: f64) -> Result<f64, Wgs84GravityError> {
+    if !lat_rad.is_finite() {
+        return Err(Wgs84GravityError::NonFinite);
+    }
+    let half_pi = core::f64::consts::FRAC_PI_2;
+    if lat_rad < -half_pi || lat_rad > half_pi {
+        return Err(Wgs84GravityError::InvalidLatitude);
+    }
+    let s = libm::sin(lat_rad);
+    let s2 = s * s;
+    let num = 1.0 + SOMIGLIANA_K * s2;
+    let den = libm::sqrt(1.0 - WGS84_E2 * s2);
+    Ok(GAMMA_E * (num / den))
+}
