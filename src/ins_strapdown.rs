@@ -316,3 +316,9 @@ pub fn nav_frame_rate(
     }
     Ok(w)
 }
+
+/// Rotates 3D vector from navigation to body frame via conjugate quaternion.
+#[inline]
+pub fn quat_rotate_vec_inv(q: [f64; 4], v: [f64; 3]) -> [f64; 3] {
+    quat_rotate_vec([q[0], -q[1], -q[2], -q[3]], v)
+}
