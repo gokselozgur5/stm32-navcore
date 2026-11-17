@@ -132,3 +132,21 @@ pub fn apply_bias_slew_limit(
     }
     Ok(limited)
 }
+
+/// Perform one integral tracking step using rate/attitude error feedback.
+pub fn track_bias_from_error(
+    prev_bias: [f32; 3],
+    error: [f32; 3],
+    ki: f32,
+    dt_s: f32,
+    max_bias: f32,
+) -> Result<[f32; 3], GyroBiasError> {
+    if !dt_s.is_finite() || dt_s <= 0.0 {
+        return Err(GyroBiasError::InvalidSampleInterval);
+    }
+    if !ki.is_finite() || ki < 0.0 {
+        return Err(GyroBiasError::InvalidGain);
+    }
+    if !max_bias.is_finite() || max_bias <= 0.0 {
+        return Err(GyroBiasError::InvalidLimit);
+    }
