@@ -182,3 +182,13 @@ pub fn quat_derivative_to_body_rates(q: &Quaternion, q_dot: [f32; 4]) -> [f32; 3
         2.0 * (xi[0][2] * q_dot[0] + xi[1][2] * q_dot[1] + xi[2][2] * q_dot[2] + xi[3][2] * q_dot[3]),
     ]
 }
+
+/// Convert quaternion rates to Euler angle rates given current attitude quaternion.
+pub fn quat_rates_to_euler_rates(
+    q: &Quaternion,
+    q_dot: [f32; 4],
+) -> Result<[f32; 3], KinematicsError> {
+    let euler = EulerAngles::from_quat(q);
+    let omega = quat_derivative_to_body_rates(q, q_dot);
+    body_rates_to_euler_rates(euler, omega)
+}
