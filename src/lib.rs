@@ -40,6 +40,10 @@ pub use fdir::{DualImuManager, ImuId, ImuReading};
 pub use mahony_ahrs::{
     mahony_ahrs_6dof_step, mahony_ahrs_9dof_step, MahonyAhrs, MahonyAhrsError,
 };
+/// Madgwick AHRS sensor fusion filter for MARG and IMU configurations.
+pub use madgwick::{
+    madgwick_imu_step, madgwick_marg_step, MadgwickAhrs, MadgwickAhrsError,
+};
 pub use protocol::CalibrationBlock;
 /// Quaternion spherical linear and normalized linear interpolation.
 pub use slerp::{quat_nlerp, quat_slerp};
