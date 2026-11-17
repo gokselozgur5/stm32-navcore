@@ -27,3 +27,19 @@ fn test_wgs84_elevation_gradient() {
     let g_f32 = normal_gravity_elevation_f32(lat_45 as f32, 5000.0f32).unwrap();
     assert!((g_f32 - (g5000 as f32)).abs() < 1e-4);
 }
+
+#[test]
+fn test_wgs84_harmonics_and_ecef_gravity() {
+    let sh = spherical_harmonic_gravity(WGS84_A, 0.0).unwrap();
+    assert!(sh.radial > 9.78 && sh.radial < 9.85);
+
+    let ecef = effective_gravity_ecef([WGS84_A, 0.0, 0.0]).unwrap();
+    let norm = libm::sqrt(ecef[0] * ecef[0] + ecef[1] * ecef[1] + ecef[2] * ecef[2]);
+    assert!((norm - GAMMA_E).abs() < 0.05);
+
+    let calc = Wgs84GravityCalculator::new();
+    let ned = calc.ned(0.0, 0.0).unwrap();
+    assert_eq!(ned[0], 0.0);
+    assert_eq!(ned[1], 0.0);
+    assert!((ned[2] - GAMMA_E).abs() < 1e-6);
+}
