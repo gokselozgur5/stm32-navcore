@@ -61,3 +61,19 @@ pub fn somigliana_surface(lat_rad: f64) -> Result<f64, Wgs84GravityError> {
     let den = libm::sqrt(1.0 - WGS84_E2 * s2);
     Ok(GAMMA_E * (num / den))
 }
+
+/// Somigliana normal gravity at surface in f32 for Cortex-M4F navigation.
+pub fn somigliana_surface_f32(lat_rad: f32) -> Result<f32, Wgs84GravityError> {
+    if !lat_rad.is_finite() {
+        return Err(Wgs84GravityError::NonFinite);
+    }
+    let half_pi = core::f32::consts::FRAC_PI_2;
+    if lat_rad < -half_pi || lat_rad > half_pi {
+        return Err(Wgs84GravityError::InvalidLatitude);
+    }
+    let s = libm::sinf(lat_rad);
+    let s2 = s * s;
+    let num = 1.0f32 + (SOMIGLIANA_K as f32) * s2;
+    let den = libm::sqrtf(1.0f32 - (WGS84_E2 as f32) * s2);
+    Ok((GAMMA_E as f32) * (num / den))
+}
