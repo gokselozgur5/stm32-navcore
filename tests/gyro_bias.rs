@@ -146,3 +146,13 @@ fn test_tracker_reference_update_and_reset() {
     assert_eq!(tracker.bias()[0], cfg.max_bias_rad_s);
     assert_eq!(tracker.bias()[1], -cfg.max_bias_rad_s);
 }
+
+#[test]
+fn test_track_bias_stationary_free_function() {
+    let prev = [0.01, -0.01, 0.0];
+    let raw = [0.02, -0.02, 0.01];
+    let next = track_bias_stationary(prev, raw, 0.5, 0.1).unwrap();
+    assert!((next[0] - 0.015).abs() < 1e-6);
+    assert!((next[1] - (-0.015)).abs() < 1e-6);
+    assert!((next[2] - 0.005).abs() < 1e-6);
+}
