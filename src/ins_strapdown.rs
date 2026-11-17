@@ -167,3 +167,17 @@ pub struct StrapdownState {
     /// Body-to-NED attitude quaternion [w, x, y, z].
     pub quat: [f64; 4],
 }
+
+impl StrapdownState {
+    /// Creates a new StrapdownState with initial geodetic position.
+    pub fn new(lat_rad: f64, lon_rad: f64, alt_m: f64) -> Self {
+        Self {
+            lat_rad,
+            lon_rad,
+            alt_m,
+            vel_ned: [0.0, 0.0, 0.0],
+            pos_ned: [0.0, 0.0, 0.0],
+            quat: [1.0, 0.0, 0.0, 0.0],
+        }
+    }
+}
