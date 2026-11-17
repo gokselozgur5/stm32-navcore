@@ -229,3 +229,19 @@ pub fn compute_dop_from_az_el(satellites: &[(f32, f32)]) -> Result<GnssDop, DopE
     }
     acc.compute()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_insufficient_satellites_returns_error() {
+        let sats = [
+            SatelliteLos::new(1.0, 0.0, 0.0),
+            SatelliteLos::new(0.0, 1.0, 0.0),
+            SatelliteLos::new(0.0, 0.0, 1.0),
+        ];
+        assert_eq!(compute_dop(&sats), Err(DopError::InsufficientSatellites));
+        assert_eq!(compute_dop(&[]), Err(DopError::InsufficientSatellites));
+    }
+}
