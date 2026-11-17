@@ -81,3 +81,16 @@ pub fn hypsometric_altitude(
     let exponent = (GAS_CONSTANT_DRY_AIR * lapse_rate) / STANDARD_GRAVITY_M_S2;
     Ok((ref_temp_k / lapse_rate) * (1.0 - libm::powf(ratio, exponent)))
 }
+
+/// Profile describing local reference state and troposphere lapse rate.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct HypsometricProfile {
+    /// Reference atmospheric pressure in Pascals.
+    pub ref_pressure_pa: f32,
+    /// Reference atmospheric temperature in Kelvin.
+    pub ref_temp_k: f32,
+    /// Vertical temperature lapse rate in K/m.
+    pub lapse_rate_k_per_m: f32,
+    /// Reference geopotential altitude in meters.
+    pub ref_altitude_m: f32,
+}
