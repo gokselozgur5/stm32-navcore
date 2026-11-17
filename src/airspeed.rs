@@ -198,3 +198,23 @@ pub struct AirspeedState {
     /// Local air density in kg/m^3.
     pub density_kg_m3: f32,
     /// Pressure altitude in meters.
+    pub pressure_alt_m: f32,
+    /// Density altitude in meters.
+    pub density_alt_m: f32,
+}
+
+/// Pitot-static airspeed estimator with sensor calibration parameters.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct AirspeedCalculator {
+    /// Calibration scale factor for impact differential pressure.
+    pub pitot_scale: f32,
+    /// Additive static pressure bias correction in Pa.
+    pub static_bias_pa: f32,
+}
+
+impl AirspeedCalculator {
+    /// Create new calculator with default nominal calibration.
+    pub const fn new() -> Self {
+        Self {
+            pitot_scale: 1.0,
+            static_bias_pa: 0.0,
