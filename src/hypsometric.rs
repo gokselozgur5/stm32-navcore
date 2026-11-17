@@ -94,3 +94,24 @@ pub struct HypsometricProfile {
     /// Reference geopotential altitude in meters.
     pub ref_altitude_m: f32,
 }
+
+impl HypsometricProfile {
+    /// Create new profile with specified reference level and lapse rate.
+    pub fn new(
+        p_ref: f32,
+        t_ref: f32,
+        lapse: f32,
+        alt_ref: f32,
+    ) -> Result<Self, HypsometricError> {
+        validate_state(p_ref, p_ref, t_ref)?;
+        if !lapse.is_finite() || lapse < 0.0 || lapse > 0.05 || !alt_ref.is_finite() {
+            return Err(HypsometricError::InvalidLapseRate);
+        }
+        Ok(Self {
+            ref_pressure_pa: p_ref,
+            ref_temp_k: t_ref,
+            lapse_rate_k_per_m: lapse,
+            ref_altitude_m: alt_ref,
+        })
+    }
+}
