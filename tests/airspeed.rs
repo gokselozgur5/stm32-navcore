@@ -18,3 +18,23 @@ fn test_incompressible_and_calibrated_airspeed() {
     assert!((cas - 37.06).abs() < 0.2);
     assert!((ias - cas).abs() < 0.1);
 }
+
+#[test]
+fn test_high_subsonic_compressibility() {
+    let q = 15000.0;
+    let ias = incompressible_ias(q).unwrap();
+    let cas = calibrated_airspeed(q).unwrap();
+    assert!(cas < ias);
+    let mach = impact_pressure_to_mach(q, STANDARD_PRESSURE_PA).unwrap();
+    assert!(mach > 0.4 && mach < 0.5);
+}
+
+#[test]
+fn test_true_airspeed_at_altitude() {
+    let p_stat = 54020.0;
+    let t_k = 255.65;
+    let q = 2000.0;
+    let tas = true_airspeed(q, p_stat, t_k).unwrap();
+    let ias = incompressible_ias(q).unwrap();
+    assert!(tas > ias);
+}
