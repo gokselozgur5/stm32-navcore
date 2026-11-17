@@ -89,3 +89,28 @@ impl MadgwickAhrs {
         self.quat.to_euler_zyx()
     }
 }
+
+fn validate_imu(
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    beta: f32,
+    dt: f32,
+) -> Result<(), MadgwickAhrsError> {
+    if !dt.is_finite() || dt <= 0.0 {
+        return Err(MadgwickAhrsError::InvalidDt);
+    }
+    if !beta.is_finite() || beta <= 0.0 {
+        return Err(MadgwickAhrsError::InvalidBeta);
+    }
+    for &g in &gyro {
+        if !g.is_finite() {
+            return Err(MadgwickAhrsError::NonFinite);
+        }
+    }
+    for &a in &accel {
+        if !a.is_finite() {
+            return Err(MadgwickAhrsError::NonFinite);
+        }
+    }
+    Ok(())
+}
