@@ -50,3 +50,15 @@ fn test_integration_density_altitude_and_errors() {
         Err(HypsometricError::InvalidPressure)
     );
 }
+
+#[test]
+fn test_integration_hypsometric_altitude_free_function() {
+    let alt = hypsometric_altitude(
+        STANDARD_SEA_LEVEL_PRESSURE_PA,
+        STANDARD_SEA_LEVEL_PRESSURE_PA,
+        STANDARD_SEA_LEVEL_TEMP_K,
+        0.0065,
+    )
+    .unwrap();
+    assert!(alt.abs() < 1e-3);
+}
