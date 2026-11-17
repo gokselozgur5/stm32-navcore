@@ -153,6 +153,20 @@ impl MadgwickAhrs {
     }
 }
 
+fn normalize_gradient(g: [f32; 4]) -> [f32; 4] {
+    let norm_sq = g[0] * g[0] + g[1] * g[1] + g[2] * g[2] + g[3] * g[3];
+    if norm_sq < 1e-12 || !norm_sq.is_finite() {
+        return [0.0; 4];
+    }
+    let inv_norm = 1.0 / libm::sqrtf(norm_sq);
+    [
+        g[0] * inv_norm,
+        g[1] * inv_norm,
+        g[2] * inv_norm,
+        g[3] * inv_norm,
+    ]
+}
+
 fn validate_imu(
     gyro: [f32; 3],
     accel: [f32; 3],
