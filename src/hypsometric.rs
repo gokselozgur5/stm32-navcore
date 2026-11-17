@@ -235,3 +235,29 @@ impl Default for TempLapseCompensator {
         Self::standard()
     }
 }
+
+impl TempLapseCompensator {
+    /// Calculate standard ISA temperature in Kelvin at geopotential altitude.
+    pub fn isa_temperature_at_altitude(altitude_m: f32) -> Result<f32, HypsometricError> {
+        if !altitude_m.is_finite() {
+            return Err(HypsometricError::NonFinite);
+        }
+        let t = STANDARD_SEA_LEVEL_TEMP_K - STANDARD_LAPSE_RATE_K_PER_M * altitude_m;
+        if t <= 0.0 {
+            return Err(HypsometricError::InvalidTemperature);
+        }
+        Ok(t)
+    }
+
+    /// Compute delta ISA (deviation of measured temperature from ISA) at altitude.
+    pub fn isa_temperature_deviation(
+        altitude_m: f32,
+        measured_temp_k: f32,
+    ) -> Result<f32, HypsometricError> {
+        if !measured_temp_k.is_finite() || measured_temp_k <= 0.0 {
+            return Err(HypsometricError::InvalidTemperature);
+        }
+        let isa_t = Self::isa_temperature_at_altitude(altitude_m)?;
+        Ok(measured_temp_k - isa_t)
+    }
+}
