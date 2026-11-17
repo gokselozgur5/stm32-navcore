@@ -151,3 +151,13 @@ pub fn omega_matrix(omega: [f32; 3]) -> [[f32; 4]; 4] {
         [wz, wy, -wx, 0.0],
     ]
 }
+
+/// Xi matrix (4x3) mapping body angular velocity to quaternion rate: q_dot = 0.5 * Xi(q) * omega.
+pub fn xi_matrix(q: &Quaternion) -> [[f32; 3]; 4] {
+    [
+        [-q.x, -q.y, -q.z],
+        [q.w, -q.z, q.y],
+        [q.z, q.w, -q.x],
+        [-q.y, q.x, q.w],
+    ]
+}
