@@ -90,6 +90,11 @@ pub use wind_estimator::{
     wind_correction_angle_rad, wind_speed_and_direction, RelativeWind, WindEstimate,
     WindEstimator, WindEstimatorConfig, WindEstimatorError, WindVectorInfo,
 };
+/// Hypsometric altitude equation and temperature lapse compensator.
+pub use hypsometric::{
+    hypsometric_altitude, hypsometric_thickness, HypsometricError, HypsometricProfile,
+    TempLapseCompensator,
+};
 
 #[cfg(test)]
 mod footprint {
