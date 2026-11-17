@@ -293,3 +293,26 @@ impl InsStrapdownIntegrator {
         &self.config
     }
 }
+
+/// Computes total navigation frame rotation rate in NED frame.
+pub fn nav_frame_rate(
+    lat_rad: f64,
+    alt_m: f64,
+    vel_ned: [f64; 3],
+    enable_earth: bool,
+    enable_transport: bool,
+) -> Result<[f64; 3], InsStrapdownError> {
+    let mut w = [0.0; 3];
+    if enable_earth {
+        let w_ie = earth_rate_ned(lat_rad)?;
+        w[0] += w_ie[0];
+        w[2] += w_ie[2];
+    }
+    if enable_transport {
+        let w_en = transport_rate_ned(lat_rad, alt_m, vel_ned)?;
+        w[0] += w_en[0];
+        w[1] += w_en[1];
+        w[2] += w_en[2];
+    }
+    Ok(w)
+}
