@@ -117,3 +117,13 @@ pub fn body_to_euler_rates_matrix(euler: EulerAngles) -> Result<[[f32; 3]; 3], K
         [0.0, s_phi * sec_theta, c_phi * sec_theta],
     ])
 }
+
+/// Compute body angular rates (p, q, r) from Euler angles and Euler angle rates.
+pub fn euler_rates_to_body_rates(euler: EulerAngles, rates: [f32; 3]) -> [f32; 3] {
+    let m = euler_rates_to_body_matrix(euler);
+    [
+        m[0][0] * rates[0] + m[0][1] * rates[1] + m[0][2] * rates[2],
+        m[1][0] * rates[0] + m[1][1] * rates[1] + m[1][2] * rates[2],
+        m[2][0] * rates[0] + m[2][1] * rates[1] + m[2][2] * rates[2],
+    ]
+}
