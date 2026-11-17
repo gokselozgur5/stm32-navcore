@@ -254,3 +254,25 @@ pub fn quat_integrate(q: [f64; 4], omega: [f64; 3], dt_s: f64) -> Result<[f64; 4
     let dq = [c, omega[0] * s, omega[1] * s, omega[2] * s];
     quat_normalize(quat_mul(q, dq))
 }
+
+/// INS strapdown mechanization and Coriolis compensator.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct InsStrapdownIntegrator {
+    state: StrapdownState,
+    config: InsStrapdownConfig,
+}
+
+impl InsStrapdownIntegrator {
+    /// Creates a new INS strapdown integrator with initial state and default config.
+    pub fn new(initial_state: StrapdownState) -> Self {
+        Self::with_config(initial_state, InsStrapdownConfig::default())
+    }
+
+    /// Creates a new INS strapdown integrator with custom config.
+    pub fn with_config(initial_state: StrapdownState, config: InsStrapdownConfig) -> Self {
+        Self {
+            state: initial_state,
+            config,
+        }
+    }
+}
