@@ -118,3 +118,19 @@ pub fn transport_rate_ned(
     let v_e = vel_ned[1];
     Ok([v_e / (r_n + alt_m), -v_n / (r_m + alt_m), -v_e * tan_lat / (r_n + alt_m)])
 }
+
+/// Computes Coriolis and transport acceleration in NED frame.
+pub fn coriolis_acceleration(
+    lat_rad: f64,
+    alt_m: f64,
+    vel_ned: [f64; 3],
+) -> Result<[f64; 3], InsStrapdownError> {
+    let w_ie = earth_rate_ned(lat_rad)?;
+    let w_en = transport_rate_ned(lat_rad, alt_m, vel_ned)?;
+    let w_sum = [
+        2.0 * w_ie[0] + w_en[0],
+        2.0 * w_ie[1] + w_en[1],
+        2.0 * w_ie[2] + w_en[2],
+    ];
+    Ok(cross_product(w_sum, vel_ned))
+}
