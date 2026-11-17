@@ -117,3 +117,18 @@ pub fn apply_bias_slew_limit(
     }
     let max_delta = max_drift_rate * dt_s;
     let mut limited = [0.0f32; 3];
+    for i in 0..3 {
+        if !new_bias[i].is_finite() || !prev_bias[i].is_finite() {
+            return Err(GyroBiasError::NonFinite);
+        }
+        let delta = new_bias[i] - prev_bias[i];
+        if delta > max_delta {
+            limited[i] = prev_bias[i] + max_delta;
+        } else if delta < -max_delta {
+            limited[i] = prev_bias[i] - max_delta;
+        } else {
+            limited[i] = new_bias[i];
+        }
+    }
+    Ok(limited)
+}
