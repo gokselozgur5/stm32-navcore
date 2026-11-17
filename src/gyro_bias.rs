@@ -150,3 +150,16 @@ pub fn track_bias_from_error(
     if !max_bias.is_finite() || max_bias <= 0.0 {
         return Err(GyroBiasError::InvalidLimit);
     }
+    for i in 0..3 {
+        if !prev_bias[i].is_finite() || !error[i].is_finite() {
+            return Err(GyroBiasError::NonFinite);
+        }
+    }
+    let step = ki * dt_s;
+    let raw_next = [
+        prev_bias[0] - step * error[0],
+        prev_bias[1] - step * error[1],
+        prev_bias[2] - step * error[2],
+    ];
+    clamp_bias_vector(raw_next, max_bias)
+}
