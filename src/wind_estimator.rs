@@ -80,3 +80,25 @@ impl WindEstimatorConfig {
         if !self.time_constant_s.is_finite() || self.time_constant_s <= 0.0 {
             return Err(WindEstimatorError::InvalidTimeConstant);
         }
+        if !self.min_airspeed_mps.is_finite() || self.min_airspeed_mps < 0.0 {
+            return Err(WindEstimatorError::InvalidConfig);
+        }
+        if !self.max_wind_speed_mps.is_finite() || self.max_wind_speed_mps <= 0.0 {
+            return Err(WindEstimatorError::InvalidConfig);
+        }
+        if self.min_airspeed_mps >= self.max_wind_speed_mps {
+            return Err(WindEstimatorError::InvalidConfig);
+        }
+        Ok(())
+    }
+}
+
+impl Default for WindEstimatorConfig {
+    fn default() -> Self {
+        Self {
+            time_constant_s: 15.0,
+            min_airspeed_mps: 3.0,
+            max_wind_speed_mps: 60.0,
+        }
+    }
+}
