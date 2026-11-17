@@ -484,4 +484,16 @@ mod tests {
         let a_north = coriolis_acceleration(0.0, 0.0, [100.0, 0.0, 0.0]).expect("north");
         assert_eq!(a_north[2], 0.0);
     }
+
+    #[test]
+    fn test_quaternion_rotations_and_integration() {
+        let q_id = [1.0, 0.0, 0.0, 0.0];
+        let v = [1.0, 2.0, 3.0];
+        assert_eq!(quat_rotate_vec(q_id, v), v);
+        assert_eq!(quat_rotate_vec_inv(q_id, v), v);
+        let q_rot = quat_integrate(q_id, [0.0, 0.0, 0.0], 0.1).expect("int zero");
+        assert_eq!(q_rot, q_id);
+        let q_deg = [0.0, 0.0, 0.0, 0.0];
+        assert_eq!(quat_normalize(q_deg), Err(InsStrapdownError::SingularQuaternion));
+    }
 }
