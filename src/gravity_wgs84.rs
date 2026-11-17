@@ -305,4 +305,16 @@ mod tests {
         assert_eq!(ned[1], 0.0);
         assert!((ned[2] - GAMMA_E).abs() < 1e-6);
     }
+
+    #[test]
+    fn test_wgs84_gravity_errors_and_calculator() {
+        assert_eq!(somigliana_surface(f64::NAN), Err(Wgs84GravityError::NonFinite));
+        assert_eq!(somigliana_surface(2.0), Err(Wgs84GravityError::InvalidLatitude));
+        assert_eq!(normal_gravity_elevation(0.0, 200_000.0), Err(Wgs84GravityError::InvalidAltitude));
+        assert_eq!(spherical_harmonic_gravity(0.5, 0.0), Err(Wgs84GravityError::SingularRadius));
+
+        let calc = Wgs84GravityCalculator::new();
+        assert_eq!(calc.surface(0.0), somigliana_surface(0.0));
+        assert_eq!(calc.ned(0.0, 0.0), gravity_ned(0.0, 0.0));
+    }
 }
