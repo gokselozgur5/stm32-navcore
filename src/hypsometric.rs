@@ -361,4 +361,20 @@ mod tests {
         let t_500m = profile.temperature_at_altitude(500.0).unwrap();
         assert!((t_500m - (STANDARD_SEA_LEVEL_TEMP_K - 0.0065 * 500.0)).abs() < 1e-3);
     }
+
+    #[test]
+    fn test_compensator_true_altitude_and_density_altitude() {
+        let comp = TempLapseCompensator::standard();
+        let isa_t = TempLapseCompensator::isa_temperature_at_altitude(1000.0).unwrap();
+        assert!((isa_t - 281.65).abs() < 1e-2);
+
+        let dev = TempLapseCompensator::isa_temperature_deviation(1000.0, 291.65).unwrap();
+        assert!((dev - 10.0).abs() < 1e-2);
+
+        let true_alt_warm = comp.true_altitude_from_indicated(1000.0, 291.65).unwrap();
+        assert!(true_alt_warm > 1000.0);
+
+        let true_alt_cold = comp.true_altitude_from_indicated(1000.0, 271.65).unwrap();
+        assert!(true_alt_cold < 1000.0);
+    }
 }
