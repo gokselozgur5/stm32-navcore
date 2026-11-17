@@ -123,6 +123,8 @@ pub mod gravity_wgs84;
 
 pub mod wind_estimator;
 
+pub mod gnss_dop;
+
 /// Attitude kinematics and propagation matrices.
 pub use kinematics::{
     attitude_transition_matrix, body_rates_to_euler_rates, body_to_euler_rates_matrix,
