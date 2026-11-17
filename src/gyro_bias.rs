@@ -189,3 +189,22 @@ pub fn track_bias_stationary(
     ];
     clamp_bias_vector(updated, max_bias)
 }
+
+/// Complementary filter gyroscope bias drift estimator and tracker.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct GyroBiasTracker {
+    config: GyroBiasConfig,
+    bias_rad_s: [f32; 3],
+    stationary_count: u32,
+}
+
+impl GyroBiasTracker {
+    /// Construct tracker with specified configuration.
+    pub fn new(config: GyroBiasConfig) -> Result<Self, GyroBiasError> {
+        config.validate()?;
+        Ok(Self {
+            config,
+            bias_rad_s: [0.0; 3],
+            stationary_count: 0,
+        })
+    }
