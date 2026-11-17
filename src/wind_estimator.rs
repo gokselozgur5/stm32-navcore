@@ -358,3 +358,15 @@ mod tests {
         assert!((wrap_pi(3.0 * PI) - PI).abs() < 1e-6);
         assert!((wrap_pi(-3.0 * PI) - PI).abs() < 1e-6);
     }
+    #[test]
+    fn test_instantaneous_wind_vector() {
+        // Aircraft flying North at 25 m/s TAS, ground velocity North 30 m/s => tailwind 5 m/s
+        let res = instantaneous_wind_vector([30.0, 0.0], 25.0, 0.0).unwrap();
+        assert!((res[0] - 5.0).abs() < 1e-5);
+        assert!(res[1].abs() < 1e-5);
+
+        // Aircraft heading East at 20 m/s TAS, ground speed 20 m/s East, 5 m/s North
+        let res2 = instantaneous_wind_vector([5.0, 20.0], 20.0, PI / 2.0).unwrap();
+        assert!((res2[0] - 5.0).abs() < 1e-5);
+        assert!(res2[1].abs() < 1e-5);
+    }
