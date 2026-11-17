@@ -81,3 +81,13 @@ fn test_track_bias_from_error_integral() {
     let dt = 0.1f32;
     let max_bias = 0.1f32;
     let error = [-0.02f32, 0.01f32, 0.0f32];
+    for _ in 0..100 {
+        bias = track_bias_from_error(bias, error, ki, dt, max_bias).unwrap();
+    }
+    assert!(bias[0] > 0.03);
+    assert!(bias[1] < -0.01);
+    assert_eq!(bias[2], 0.0);
+
+    assert_eq!(track_bias_from_error(bias, error, ki, -0.1, max_bias), Err(GyroBiasError::InvalidSampleInterval));
+    assert_eq!(track_bias_from_error(bias, error, -0.1, dt, max_bias), Err(GyroBiasError::InvalidGain));
+}
