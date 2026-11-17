@@ -208,3 +208,29 @@ impl GyroBiasTracker {
             stationary_count: 0,
         })
     }
+    /// Access tracker configuration.
+    pub const fn config(&self) -> &GyroBiasConfig {
+        &self.config
+    }
+
+    /// Get current estimated bias vector in rad/s.
+    pub const fn bias(&self) -> [f32; 3] {
+        self.bias_rad_s
+    }
+
+    /// Number of consecutive stationary updates processed.
+    pub const fn stationary_count(&self) -> u32 {
+        self.stationary_count
+    }
+
+    /// Set bias vector directly, bounded by configured maximum.
+    pub fn set_bias(&mut self, bias: [f32; 3]) -> Result<(), GyroBiasError> {
+        self.bias_rad_s = clamp_bias_vector(bias, self.config.max_bias_rad_s)?;
+        Ok(())
+    }
+
+    /// Reset estimated bias and stationary counter to zero.
+    pub fn reset(&mut self) {
+        self.bias_rad_s = [0.0; 3];
+        self.stationary_count = 0;
+    }
