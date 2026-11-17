@@ -205,3 +205,28 @@ impl Default for InsStrapdownConfig {
         }
     }
 }
+
+/// Normalizes a 4D quaternion [w, x, y, z].
+pub fn quat_normalize(q: [f64; 4]) -> Result<[f64; 4], InsStrapdownError> {
+    let norm_sq = q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3];
+    if !norm_sq.is_finite() || norm_sq < 1e-12 {
+        return Err(InsStrapdownError::SingularQuaternion);
+    }
+    let inv_norm = 1.0 / libm::sqrt(norm_sq);
+    Ok([q[0] * inv_norm, q[1] * inv_norm, q[2] * inv_norm, q[3] * inv_norm])
+}
+
+/// Rotates 3D vector v from body frame to navigation frame via quaternion.
+pub fn quat_rotate_vec(q: [f64; 4], v: [f64; 3]) -> [f64; 3] {
+    let qv = [q[1], q[2], q[3]];
+    let t = [
+        2.0 * (qv[1] * v[2] - qv[2] * v[1]),
+        2.0 * (qv[2] * v[0] - qv[0] * v[2]),
+        2.0 * (qv[0] * v[1] - qv[1] * v[0]),
+    ];
+    [
+        v[0] + q[0] * t[0] + (qv[1] * t[2] - qv[2] * t[1]),
+        v[1] + q[0] * t[1] + (qv[2] * t[0] - qv[0] * t[2]),
+        v[2] + q[0] * t[2] + (qv[0] * t[1] - qv[1] * t[0]),
+    ]
+}
