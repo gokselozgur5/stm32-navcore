@@ -40,6 +40,11 @@ fn crate_root_reexports_are_usable() {
     let _ = core::mem::size_of::<GyroBiasConfig>();
     let _ = core::mem::size_of::<GyroBiasError>();
     let _ = core::mem::size_of::<GyroBiasTracker>();
+    let _ = core::mem::size_of::<stm32_navcore::Wgs84GravityCalculator>();
+    let _ = core::mem::size_of::<stm32_navcore::Wgs84GravityError>();
+    let _ = stm32_navcore::somigliana_surface(0.0);
+    let _ = stm32_navcore::normal_gravity_elevation(0.0, 0.0);
+    let _ = stm32_navcore::gravity_ned(0.0, 0.0);
 }
 
 use core::mem::{align_of, size_of};
