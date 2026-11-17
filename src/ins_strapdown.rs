@@ -70,3 +70,17 @@ pub fn transverse_radius(lat_rad: f64) -> Result<f64, InsStrapdownError> {
     let denom = 1.0 - WGS84_E2 * s * s;
     Ok(WGS84_A / libm::sqrt(denom))
 }
+
+/// Computes Earth rotation rate vector in local NED navigation frame.
+pub fn earth_rate_ned(lat_rad: f64) -> Result<[f64; 3], InsStrapdownError> {
+    if !lat_rad.is_finite() {
+        return Err(InsStrapdownError::NonFinite);
+    }
+    let half_pi = core::f64::consts::FRAC_PI_2;
+    if lat_rad < -half_pi || lat_rad > half_pi {
+        return Err(InsStrapdownError::InvalidLatitude);
+    }
+    let c = libm::cos(lat_rad);
+    let s = libm::sin(lat_rad);
+    Ok([EARTH_ROTATION_RATE * c, 0.0, -EARTH_ROTATION_RATE * s])
+}
