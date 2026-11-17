@@ -211,3 +211,20 @@ pub fn decompose_relative_wind(
         crosswind_mps,
     })
 }
+
+/// Calculate wind correction angle (drift angle) in radians: `WCA = course - heading`.
+pub fn wind_correction_angle_rad(course_rad: f32, heading_rad: f32) -> Result<f32, WindEstimatorError> {
+    if !course_rad.is_finite() || !heading_rad.is_finite() {
+        return Err(WindEstimatorError::NonFinite);
+    }
+    Ok(wrap_pi(course_rad - heading_rad))
+}
+
+/// Stateful recursive low-pass wind vector estimator.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WindEstimator {
+    config: WindEstimatorConfig,
+    wind_ne_mps: [f32; 2],
+    initialized: bool,
+    sample_count: u32,
+}
