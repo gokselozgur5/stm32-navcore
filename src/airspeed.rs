@@ -238,3 +238,23 @@ impl AirspeedCalculator {
     ) -> Result<AirspeedState, AirspeedError> {
         let cal_diff = raw_diff_pa * self.pitot_scale;
         let cal_static = raw_static_pa + self.static_bias_pa;
+
+        let ias = incompressible_ias(cal_diff)?;
+        let cas = calibrated_airspeed(cal_diff)?;
+        let mach = impact_pressure_to_mach(cal_diff, cal_static)?;
+        let a = speed_of_sound(temp_k)?;
+        let tas = mach * a;
+        let rho = air_density(cal_static, temp_k)?;
+        let eas = equivalent_airspeed(tas, rho)?;
+        let p_alt = pressure_altitude(cal_static)?;
+        let d_alt = density_altitude(cal_static, temp_k)?;
+
+        Ok(AirspeedState {
+            ias_mps: ias,
+            cas_mps: cas,
+            eas_mps: eas,
+            tas_mps: tas,
+            mach,
+            density_kg_m3: rho,
+            pressure_alt_m: p_alt,
+            density_alt_m: d_alt,
