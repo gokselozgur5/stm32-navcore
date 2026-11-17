@@ -50,3 +50,15 @@ fn test_madgwick_validation_errors() {
     assert_eq!(ahrs.update_marg(g, a, [f32::NAN, 0.0, 0.0], 0.01), Err(MadgwickAhrsError::NonFinite));
     assert!(ahrs.update_marg(g, a, m, 0.01).is_ok());
 }
+
+#[test]
+fn test_madgwick_pure_gyro_integration() {
+    let mut ahrs = MadgwickAhrs::new(0.001).unwrap();
+    let dt = 0.01;
+    let rate_z = 1.0;
+    for _ in 0..100 {
+        ahrs.update_imu([0.0, 0.0, rate_z], [0.0, 0.0, 0.0], dt).unwrap();
+    }
+    let (_roll, _pitch, yaw) = ahrs.euler_zyx();
+    assert!((yaw - 1.0).abs() < 0.05);
+}
