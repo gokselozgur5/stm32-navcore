@@ -383,3 +383,20 @@ mod tests {
         assert!((rel.headwind_mps - (-10.0)).abs() < 1e-5);
         assert!(rel.crosswind_mps.abs() < 1e-5);
     }
+    #[test]
+    fn test_wind_estimator_filter_convergence() {
+        let cfg = WindEstimatorConfig {
+            time_constant_s: 2.0,
+            min_airspeed_mps: 5.0,
+            max_wind_speed_mps: 40.0,
+        };
+        let mut est = WindEstimator::new(cfg).unwrap();
+        // Step with steady 10 m/s East wind: TAS 20 m/s North, ground vel [20, 10]
+        for _ in 0..50 {
+            let _ = est.update([20.0, 10.0], 20.0, 0.0, 0.1).unwrap();
+        }
+        let w = est.wind_vector();
+        assert!(w[0].abs() < 0.1);
+        assert!((w[1] - 10.0).abs() < 0.1);
+    }
+}
