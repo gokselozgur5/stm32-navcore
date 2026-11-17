@@ -138,3 +138,23 @@ pub fn calibrated_airspeed(diff_p_pa: f32) -> Result<f32, AirspeedError> {
 }
 
 /// Compute true airspeed (TAS) in m/s from pitot-static state.
+pub fn true_airspeed(diff_p_pa: f32, static_p_pa: f32, temp_k: f32) -> Result<f32, AirspeedError> {
+    let mach = impact_pressure_to_mach(diff_p_pa, static_p_pa)?;
+    let a = speed_of_sound(temp_k)?;
+    Ok(mach * a)
+}
+
+/// Compute equivalent airspeed (EAS) in m/s from TAS and density.
+pub fn equivalent_airspeed(tas_mps: f32, density_kg_m3: f32) -> Result<f32, AirspeedError> {
+    if !tas_mps.is_finite() || !density_kg_m3.is_finite() {
+        return Err(AirspeedError::NonFinite);
+    }
+    if tas_mps < 0.0 {
+        return Err(AirspeedError::NegativeAirspeed);
+    }
+    if density_kg_m3 <= 0.0 {
+        return Err(AirspeedError::InvalidDensity);
+    }
+    let sigma = density_kg_m3 / STANDARD_DENSITY_KG_M3;
+    Ok(tas_mps * libm::sqrtf(sigma))
+}
