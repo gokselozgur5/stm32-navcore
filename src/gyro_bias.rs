@@ -77,3 +77,13 @@ pub fn correct_gyro_sample(
     }
     Ok([raw[0] - bias[0], raw[1] - bias[1], raw[2] - bias[2]])
 }
+
+/// Clamp bias vector components to allowable maximum absolute value.
+pub fn clamp_bias_vector(
+    bias: [f32; 3],
+    max_bias: f32,
+) -> Result<[f32; 3], GyroBiasError> {
+    if !max_bias.is_finite() || max_bias <= 0.0 {
+        return Err(GyroBiasError::InvalidLimit);
+    }
+    let mut clamped = [0.0f32; 3];
