@@ -207,3 +207,28 @@ fn phi_scales(norm: f32, half_angle: f32, dt: f32) -> (f32, f32) {
         (libm::cosf(half_angle), libm::sinf(half_angle) / norm)
     }
 }
+
+/// Discrete quaternion state transition matrix Phi(dt) = exp(0.5 * Omega * dt).
+pub fn attitude_transition_matrix(
+    omega: [f32; 3],
+    dt: f32,
+) -> Result<[[f32; 4]; 4], KinematicsError> {
+    if !dt.is_finite() || dt <= 0.0 {
+        return Err(KinematicsError::InvalidDeltaTime);
+    }
+    let (wx, wy, wz) = (omega[0], omega[1], omega[2]);
+    if !wx.is_finite() || !wy.is_finite() || !wz.is_finite() {
+        return Err(KinematicsError::NonFinite);
+    }
+    let norm = libm::sqrtf(wx * wx + wy * wy + wz * wz);
+    let (c, s) = phi_scales(norm, 0.5 * norm * dt, dt);
+    let om = omega_matrix(omega);
+    let mut phi = [[0.0f32; 4]; 4];
+    for r in 0..4 {
+        for c_idx in 0..4 {
+            let diag = if r == c_idx { c } else { 0.0 };
+            phi[r][c_idx] = diag + s * om[r][c_idx];
+        }
+    }
+    Ok(phi)
+}
