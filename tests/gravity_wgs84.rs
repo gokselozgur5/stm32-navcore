@@ -14,3 +14,16 @@ fn test_wgs84_equator_polar_gravity() {
     let sp = somigliana_surface(-half_pi).unwrap();
     assert!((sp - GAMMA_P).abs() < 1e-6);
 }
+
+#[test]
+fn test_wgs84_elevation_gradient() {
+    let lat_45 = core::f64::consts::FRAC_PI_4;
+    let g0 = normal_gravity_elevation(lat_45, 0.0).unwrap();
+    let g5000 = normal_gravity_elevation(lat_45, 5000.0).unwrap();
+    assert!(g5000 < g0);
+    let delta = g0 - g5000;
+    assert!((delta - 5.0 * 0.003086).abs() < 0.01);
+
+    let g_f32 = normal_gravity_elevation_f32(lat_45 as f32, 5000.0f32).unwrap();
+    assert!((g_f32 - (g5000 as f32)).abs() < 1e-4);
+}
