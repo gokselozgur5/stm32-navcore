@@ -520,4 +520,16 @@ mod tests {
         let err = InsStrapdownError::InvalidLatitude;
         assert_eq!(format!("{}", err), "latitude must be within [-pi/2, pi/2]");
     }
+
+    #[test]
+    fn test_trajectory_and_step_f32() {
+        let mut ins = InsStrapdownIntegrator::new(StrapdownState::new(0.0, 0.0, 0.0));
+        let g = somigliana_gravity(0.0, 0.0).expect("gravity");
+        let st = ins.step([10.0, 0.0, -g], [0.0, 0.0, 0.0], 1.0).expect("step");
+        assert!((st.vel_ned[0] - 10.0).abs() < 1e-4);
+        assert!((st.pos_ned[0] - 5.0).abs() < 1e-4);
+        assert!(st.lat_rad > 0.0);
+        let st_f32 = ins.step_f32([0.0f32, 0.0f32, -g as f32], [0.0f32; 3], 0.1f32).expect("f32");
+        assert!(st_f32.pos_ned[0] > 5.0);
+    }
 }
