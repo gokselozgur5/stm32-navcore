@@ -91,3 +91,22 @@ fn test_track_bias_from_error_integral() {
     assert_eq!(track_bias_from_error(bias, error, ki, -0.1, max_bias), Err(GyroBiasError::InvalidSampleInterval));
     assert_eq!(track_bias_from_error(bias, error, -0.1, dt, max_bias), Err(GyroBiasError::InvalidGain));
 }
+
+#[test]
+fn test_stationary_bias_tracking() {
+    let mut cfg = GyroBiasConfig::default();
+    cfg.max_drift_rate_rad_s2 = 1.0;
+    cfg.stationary_learning_rate = 0.1;
+    let mut tracker = GyroBiasTracker::new(cfg).unwrap();
+
+    let static_sample = [0.02f32, -0.015f32, 0.005f32];
+    for _ in 0..150 {
+        let updated = tracker.update_stationary(static_sample, 0.1).unwrap();
+        assert!(updated);
+    }
+    let est = tracker.bias();
+    assert!((est[0] - 0.02).abs() < 1e-3);
+    assert!((est[1] - (-0.015)).abs() < 1e-3);
+    assert!((est[2] - 0.005).abs() < 1e-3);
+    assert!(tracker.stationary_count() >= 150);
+}
