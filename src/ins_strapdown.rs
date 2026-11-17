@@ -425,3 +425,19 @@ impl InsStrapdownIntegrator {
         Ok(self.state)
     }
 }
+
+impl InsStrapdownIntegrator {
+    /// Steps strapdown mechanization forward using single-precision f32 IMU inputs.
+    pub fn step_f32(
+        &mut self,
+        accel_b: [f32; 3],
+        gyro_b: [f32; 3],
+        dt_s: f32,
+    ) -> Result<StrapdownState, InsStrapdownError> {
+        self.step(
+            [accel_b[0] as f64, accel_b[1] as f64, accel_b[2] as f64],
+            [gyro_b[0] as f64, gyro_b[1] as f64, gyro_b[2] as f64],
+            dt_s as f64,
+        )
+    }
+}
