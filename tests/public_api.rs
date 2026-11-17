@@ -4,7 +4,8 @@ use stm32_navcore::{
     quat_nlerp, quat_slerp, wmm_declination_deg, wmm_declination_rad, CalibrationBlock,
     DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
     UbxNavRelPosNed, UbxParser, Variometer, VariometerConfig, VariometerError,
-    VarioTone, VelDampingConfig, VelDampingFilter,
+    GyroBiasConfig, GyroBiasError, GyroBiasTracker, VarioTone, VelDampingConfig,
+    VelDampingFilter,
 };
 
 #[test]
