@@ -44,3 +44,32 @@ impl EulerAngles {
         [self.roll, self.pitch, self.yaw]
     }
 }
+
+impl EulerAngles {
+    /// Convert a unit quaternion to Euler angles (ZYX convention: roll, pitch, yaw).
+    pub fn from_quat(q: &Quaternion) -> Self {
+        let (r, p, y) = q.to_euler_zyx();
+        Self {
+            roll: r,
+            pitch: p,
+            yaw: y,
+        }
+    }
+
+    /// Convert Euler angles (roll, pitch, yaw) to unit quaternion.
+    pub fn to_quat(&self) -> Quaternion {
+        let cr = libm::cosf(self.roll * 0.5);
+        let sr = libm::sinf(self.roll * 0.5);
+        let cp = libm::cosf(self.pitch * 0.5);
+        let sp = libm::sinf(self.pitch * 0.5);
+        let cy = libm::cosf(self.yaw * 0.5);
+        let sy = libm::sinf(self.yaw * 0.5);
+
+        Quaternion::new(
+            cr * cp * cy + sr * sp * sy,
+            sr * cp * cy - cr * sp * sy,
+            cr * sp * cy + sr * cp * sy,
+            cr * cp * sy - sr * sp * cy,
+        )
+    }
+}
