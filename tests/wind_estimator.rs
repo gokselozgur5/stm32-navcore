@@ -10,3 +10,16 @@ fn test_wind_estimator_public_api_and_reexports() {
     assert_eq!(estimator.wind_vector(), [0.0, 0.0]);
     assert_eq!(estimator.wind_speed(), 0.0);
 }
+
+#[test]
+fn test_wind_triangle_geometry_headwind_tailwind() {
+    // Aircraft heading North (psi = 0) at 30 m/s TAS
+    // Pure tailwind of 10 m/s (blowing North): ground vel [40.0, 0.0]
+    let w_vec = instantaneous_wind_vector([40.0, 0.0], 30.0, 0.0).unwrap();
+    assert!((w_vec[0] - 10.0).abs() < 1e-5);
+    assert!(w_vec[1].abs() < 1e-5);
+
+    let rel = decompose_relative_wind(w_vec, 0.0).unwrap();
+    assert!((rel.headwind_mps - (-10.0)).abs() < 1e-5);
+    assert!(rel.crosswind_mps.abs() < 1e-5);
+}
