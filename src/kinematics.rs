@@ -20,3 +20,27 @@ impl core::fmt::Display for KinematicsError {
         write!(f, "{:?}", self)
     }
 }
+
+/// Euler angles representation (Roll-Pitch-Yaw in radians).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct EulerAngles {
+    pub roll: f32,
+    pub pitch: f32,
+    pub yaw: f32,
+}
+
+impl EulerAngles {
+    pub const ZERO: Self = Self {
+        roll: 0.0,
+        pitch: 0.0,
+        yaw: 0.0,
+    };
+
+    pub const fn new(roll: f32, pitch: f32, yaw: f32) -> Self {
+        Self { roll, pitch, yaw }
+    }
+
+    pub fn to_array(&self) -> [f32; 3] {
+        [self.roll, self.pitch, self.yaw]
+    }
+}
