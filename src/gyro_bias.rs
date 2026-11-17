@@ -27,3 +27,19 @@ pub struct GyroBiasConfig {
     /// Angular rate magnitude threshold for stationary detection in rad/s.
     pub stationary_threshold_rad_s: f32,
 }
+
+impl GyroBiasConfig {
+    /// Validate configuration invariants.
+    pub fn validate(&self) -> Result<(), GyroBiasError> {
+        if !self.ki.is_finite() || self.ki < 0.0 {
+            return Err(GyroBiasError::InvalidGain);
+        }
+        if !self.stationary_learning_rate.is_finite()
+            || self.stationary_learning_rate <= 0.0
+            || self.stationary_learning_rate > 1.0
+        {
+            return Err(GyroBiasError::InvalidGain);
+        }
+        if !self.max_bias_rad_s.is_finite() || self.max_bias_rad_s <= 0.0 {
+            return Err(GyroBiasError::InvalidLimit);
+        }
