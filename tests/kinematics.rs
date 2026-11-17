@@ -22,3 +22,16 @@ fn test_identity_quaternion_euler() {
     assert_eq!(angles.pitch, 0.0);
     assert_eq!(angles.yaw, 0.0);
 }
+
+#[test]
+fn test_euler_rates_and_body_rates_inversion() {
+    let euler = EulerAngles::new(0.2, -0.1, 0.5);
+    let original_rates = [0.05, -0.02, 0.08];
+
+    let body_rates = euler_rates_to_body_rates(euler, original_rates);
+    let recovered_rates = body_rates_to_euler_rates(euler, body_rates).unwrap();
+
+    assert!((recovered_rates[0] - original_rates[0]).abs() < 1e-5);
+    assert!((recovered_rates[1] - original_rates[1]).abs() < 1e-5);
+    assert!((recovered_rates[2] - original_rates[2]).abs() < 1e-5);
+}
