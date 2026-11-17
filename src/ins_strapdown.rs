@@ -496,4 +496,18 @@ mod tests {
         let q_deg = [0.0, 0.0, 0.0, 0.0];
         assert_eq!(quat_normalize(q_deg), Err(InsStrapdownError::SingularQuaternion));
     }
+
+    #[test]
+    fn test_stationary_holding_and_free_fall() {
+        let initial_state = StrapdownState::new(0.0, 0.0, 0.0);
+        let mut ins = InsStrapdownIntegrator::new(initial_state);
+        let g = somigliana_gravity(0.0, 0.0).expect("gravity");
+        let st = ins.step([0.0, 0.0, -g], [0.0, 0.0, 0.0], 0.01).expect("step");
+        assert!(st.vel_ned[0].abs() < 1e-6);
+        assert!(st.vel_ned[1].abs() < 1e-6);
+        assert!(st.vel_ned[2].abs() < 1e-6);
+        let mut ff_ins = InsStrapdownIntegrator::new(initial_state);
+        let ff_st = ff_ins.step([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 1.0).expect("ff");
+        assert!((ff_st.vel_ned[2] - g).abs() < 1e-4);
+    }
 }
