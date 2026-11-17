@@ -146,3 +146,24 @@ impl HypsometricProfile {
         Ok(self.ref_altitude_m + delta_h)
     }
 }
+
+impl HypsometricProfile {
+    /// Calculate pressure at geometric altitude under this profile.
+    pub fn pressure_at_altitude(&self, altitude_m: f32) -> Result<f32, HypsometricError> {
+        if !altitude_m.is_finite() {
+            return Err(HypsometricError::NonFinite);
+        }
+        let delta_h = altitude_m - self.ref_altitude_m;
+        if self.lapse_rate_k_per_m < 1e-7 {
+            let scale = (GAS_CONSTANT_DRY_AIR * self.ref_temp_k) / STANDARD_GRAVITY_M_S2;
+            return Ok(self.ref_pressure_pa * libm::expf(-delta_h / scale));
+        }
+        let temp_ratio = 1.0 - (self.lapse_rate_k_per_m * delta_h) / self.ref_temp_k;
+        if temp_ratio <= 0.0 {
+            return Err(HypsometricError::InvalidTemperature);
+        }
+        let inv_exp =
+            STANDARD_GRAVITY_M_S2 / (GAS_CONSTANT_DRY_AIR * self.lapse_rate_k_per_m);
+        Ok(self.ref_pressure_pa * libm::powf(temp_ratio, inv_exp))
+    }
+}
