@@ -17,3 +17,21 @@ fn test_madgwick_init_and_getters() {
     ahrs.reset();
     assert_eq!(ahrs.quaternion(), Quaternion::IDENTITY);
 }
+
+#[test]
+fn test_madgwick_with_attitude_and_euler() {
+    let q = Quaternion::new(0.0, 1.0, 0.0, 0.0);
+    let filter = MadgwickAhrs::with_attitude(0.05, q).unwrap();
+    assert_eq!(filter.quaternion(), q);
+
+    let (roll, pitch, yaw) = filter.euler_zyx();
+    assert!((roll.abs() - core::f32::consts::PI).abs() < 1e-4);
+    assert!(pitch.abs() < 1e-4);
+    assert!(yaw.abs() < 1e-4);
+
+    let zero_q = Quaternion::new(0.0, 0.0, 0.0, 0.0);
+    assert_eq!(
+        MadgwickAhrs::with_attitude(0.05, zero_q),
+        Err(MadgwickAhrsError::NormalizationFailed)
+    );
+}
