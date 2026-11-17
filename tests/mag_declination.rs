@@ -23,3 +23,14 @@ fn test_wmm_invalid_inputs() {
         Err(MagDeclinationError::InvalidLongitude)
     );
 }
+
+#[test]
+fn test_wmm_exact_grid_nodes() {
+    let est = estimate_wmm2020(0.0, 0.0).unwrap();
+    assert!((est.declination_deg - (-10.0)).abs() < 1e-4);
+    assert!((est.inclination_deg - 6.0).abs() < 1e-4);
+
+    let north = estimate_wmm2020(90.0, 0.0).unwrap();
+    assert!((north.declination_deg - 180.0).abs() < 1e-4);
+    assert!((north.inclination_deg - 85.0).abs() < 1e-4);
+}
