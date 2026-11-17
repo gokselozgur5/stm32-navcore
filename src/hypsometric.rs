@@ -46,3 +46,18 @@ fn validate_state(p: f32, p_ref: f32, temp_k: f32) -> Result<(), HypsometricErro
     }
     Ok(())
 }
+
+/// Compute layer thickness between two pressure boundaries using mean virtual temperature.
+pub fn hypsometric_thickness(
+    p_base_pa: f32,
+    p_top_pa: f32,
+    mean_temp_k: f32,
+) -> Result<f32, HypsometricError> {
+    validate_state(p_top_pa, p_base_pa, mean_temp_k)?;
+    if p_top_pa > p_base_pa {
+        return Err(HypsometricError::InvalidPressure);
+    }
+    let ratio = p_base_pa / p_top_pa;
+    let factor = (GAS_CONSTANT_DRY_AIR * mean_temp_k) / STANDARD_GRAVITY_M_S2;
+    Ok(factor * libm::logf(ratio))
+}
