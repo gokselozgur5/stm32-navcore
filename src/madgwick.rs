@@ -90,6 +90,17 @@ impl MadgwickAhrs {
     }
 }
 
+impl MadgwickAhrs {
+    fn gyro_rate(q: &Quaternion, w: [f32; 3]) -> [f32; 4] {
+        [
+            0.5 * (-q.x * w[0] - q.y * w[1] - q.z * w[2]),
+            0.5 * (q.w * w[0] + q.y * w[2] - q.z * w[1]),
+            0.5 * (q.w * w[1] - q.x * w[2] + q.z * w[0]),
+            0.5 * (q.w * w[2] + q.x * w[1] - q.y * w[0]),
+        ]
+    }
+}
+
 fn validate_imu(
     gyro: [f32; 3],
     accel: [f32; 3],
