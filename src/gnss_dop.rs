@@ -217,3 +217,15 @@ pub fn compute_dop(satellites: &[SatelliteLos]) -> Result<GnssDop, DopError> {
     }
     acc.compute()
 }
+
+/// Computes GNSS DOP metrics from satellite (azimuth_rad, elevation_rad) pairs.
+pub fn compute_dop_from_az_el(satellites: &[(f32, f32)]) -> Result<GnssDop, DopError> {
+    if satellites.len() < 4 {
+        return Err(DopError::InsufficientSatellites);
+    }
+    let mut acc = DopAccumulator::new();
+    for &(az, el) in satellites {
+        acc.add_azimuth_elevation(az, el)?;
+    }
+    acc.compute()
+}
