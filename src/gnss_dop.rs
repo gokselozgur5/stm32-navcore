@@ -270,4 +270,19 @@ mod tests {
         ];
         assert_eq!(compute_dop(&sats), Err(DopError::SingularGeometry));
     }
+
+    #[test]
+    fn test_four_satellite_pyramid_dop() {
+        let sats = [
+            SatelliteLos::new(0.0, 0.0, 1.0),
+            SatelliteLos::new(0.0, 0.8660254, 0.5),
+            SatelliteLos::new(0.75, -0.4330127, 0.5),
+            SatelliteLos::new(-0.75, -0.4330127, 0.5),
+        ];
+        let dop = compute_dop(&sats).unwrap();
+        assert!(dop.is_valid());
+        assert!(dop.pdop > 0.0);
+        assert!(dop.hdop > 0.0);
+        assert!(dop.vdop > 0.0);
+    }
 }
