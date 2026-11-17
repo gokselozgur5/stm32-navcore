@@ -441,3 +441,20 @@ impl InsStrapdownIntegrator {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_constants_and_radii() {
+        assert_eq!(WGS84_A, 6_378_137.0);
+        let rm_eq = meridian_radius(0.0).expect("meridian eq");
+        let rn_eq = transverse_radius(0.0).expect("transverse eq");
+        assert!((rn_eq - WGS84_A).abs() < 1e-6);
+        assert!(rm_eq < rn_eq);
+        assert!((rm_eq - WGS84_A * (1.0 - WGS84_E2)).abs() < 1e-4);
+        assert_eq!(meridian_radius(2.0), Err(InsStrapdownError::InvalidLatitude));
+        assert_eq!(transverse_radius(f64::NAN), Err(InsStrapdownError::NonFinite));
+    }
+}
