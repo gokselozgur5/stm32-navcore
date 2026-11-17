@@ -244,4 +244,19 @@ mod tests {
         assert_eq!(compute_dop(&sats), Err(DopError::InsufficientSatellites));
         assert_eq!(compute_dop(&[]), Err(DopError::InsufficientSatellites));
     }
+
+    #[test]
+    fn test_non_finite_input_handling() {
+        let sats = [
+            SatelliteLos::new(f32::NAN, 0.0, 1.0),
+            SatelliteLos::new(0.0, 1.0, 0.0),
+            SatelliteLos::new(0.0, 0.0, 1.0),
+            SatelliteLos::new(1.0, 1.0, 1.0),
+        ];
+        assert_eq!(compute_dop(&sats), Err(DopError::NonFiniteInput));
+        assert_eq!(
+            SatelliteLos::from_vector(f32::NAN, 1.0, 2.0),
+            Err(DopError::NonFiniteInput)
+        );
+    }
 }
