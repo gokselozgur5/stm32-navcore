@@ -170,3 +170,24 @@ pub fn instantaneous_wind_from_course(
     let vg_e = ground_speed_mps * libm::sinf(course_rad);
     instantaneous_wind_vector([vg_n, vg_e], tas_mps, heading_rad)
 }
+
+/// Calculate wind speed and meteorological/trajectory directions from wind vector.
+pub fn wind_speed_and_direction(wind_ne_mps: [f32; 2]) -> Result<WindVectorInfo, WindEstimatorError> {
+    if !wind_ne_mps[0].is_finite() || !wind_ne_mps[1].is_finite() {
+        return Err(WindEstimatorError::NonFinite);
+    }
+    let wn = wind_ne_mps[0];
+    let we = wind_ne_mps[1];
+    let speed = libm::sqrtf(wn * wn + we * we);
+    let to_rad = wrap_2pi(libm::atan2f(we, wn));
+    let to_deg = to_rad * (180.0 / PI);
+    let from_rad = wrap_2pi(libm::atan2f(-we, -wn));
+    let from_deg = from_rad * (180.0 / PI);
+    Ok(WindVectorInfo {
+        speed_mps: speed,
+        direction_from_rad: from_rad,
+        direction_from_deg: from_deg,
+        direction_to_rad: to_rad,
+        direction_to_deg: to_deg,
+    })
+}
