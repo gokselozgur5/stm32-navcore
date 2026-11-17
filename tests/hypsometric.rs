@@ -11,3 +11,13 @@ fn test_integration_hypsometric_thickness() {
     let thickness = hypsometric_thickness(p_sea, p_1km, t_avg).unwrap();
     assert!((thickness - 1000.0).abs() < 25.0);
 }
+
+#[test]
+fn test_integration_hypsometric_profile_reversibility() {
+    let profile = HypsometricProfile::standard_isa();
+    for &alt in &[0.0, 500.0, 1500.0, 3000.0, 8000.0] {
+        let p = profile.pressure_at_altitude(alt).unwrap();
+        let recovered = profile.altitude_at_pressure(p).unwrap();
+        assert!((recovered - alt).abs() < 0.2);
+    }
+}
