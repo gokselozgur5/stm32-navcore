@@ -190,9 +190,15 @@ impl MadgwickAhrs {
 
         [
             -2.0 * bz * y * f1 + (-2.0 * bx * z + 2.0 * bz * x) * f2 + 2.0 * bx * y * f3,
-            2.0 * bz * z * f1 + (2.0 * bx * y + 2.0 * bz * w) * f2 + (2.0 * bx * z - 4.0 * bz * x) * f3,
-            (-4.0 * bx * y - 2.0 * bz * w) * f1 + (2.0 * bx * x + 2.0 * bz * z) * f2 + (2.0 * bx * w - 4.0 * bz * y) * f3,
-            (-4.0 * bx * z + 2.0 * bz * x) * f1 + (-2.0 * bx * w + 2.0 * bz * y) * f2 + 2.0 * bx * x * f3,
+            2.0 * bz * z * f1
+                + (2.0 * bx * y + 2.0 * bz * w) * f2
+                + (2.0 * bx * z - 4.0 * bz * x) * f3,
+            (-4.0 * bx * y - 2.0 * bz * w) * f1
+                + (2.0 * bx * x + 2.0 * bz * z) * f2
+                + (2.0 * bx * w - 4.0 * bz * y) * f3,
+            (-4.0 * bx * z + 2.0 * bz * x) * f1
+                + (-2.0 * bx * w + 2.0 * bz * y) * f2
+                + 2.0 * bx * x * f3,
         ]
     }
 }
