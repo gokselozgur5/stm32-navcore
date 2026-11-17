@@ -364,3 +364,21 @@ impl InsStrapdownIntegrator {
         Ok([f_n[0] - a_cor[0], f_n[1] - a_cor[1], f_n[2] + g - a_cor[2]])
     }
 }
+
+impl InsStrapdownIntegrator {
+    /// Integrates velocity using kinematic acceleration and returns average velocity over step.
+    pub fn update_velocity(&mut self, a_n: [f64; 3], dt_s: f64) -> [f64; 3] {
+        let v_old = self.state.vel_ned;
+        let v_new = [
+            v_old[0] + a_n[0] * dt_s,
+            v_old[1] + a_n[1] * dt_s,
+            v_old[2] + a_n[2] * dt_s,
+        ];
+        self.state.vel_ned = v_new;
+        [
+            0.5 * (v_old[0] + v_new[0]),
+            0.5 * (v_old[1] + v_new[1]),
+            0.5 * (v_old[2] + v_new[2]),
+        ]
+    }
+}
