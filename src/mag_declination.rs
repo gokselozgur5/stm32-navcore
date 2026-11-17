@@ -81,4 +81,22 @@ impl MagDeclinationLut {
         }
         lon
     }
+
+    /// Compute cell indices and bilinear interpolation weights.
+    fn cell_weights(lat_deg: f32, lon_deg: f32) -> (usize, usize, usize, usize, f32, f32) {
+        let lat_clamped = lat_deg.clamp(-90.0, 90.0);
+        let lat_idx = ((lat_clamped - WMM_LAT_MIN) / WMM_LAT_STEP) as usize;
+        let r0 = lat_idx.min(WMM_LAT_ROWS - 2);
+        let r1 = r0 + 1;
+        let u = ((lat_clamped - (WMM_LAT_MIN + r0 as f32 * WMM_LAT_STEP)) / WMM_LAT_STEP)
+            .clamp(0.0, 1.0);
+
+        let lon_norm = Self::normalize_lon_deg(lon_deg);
+        let lon_idx = ((lon_norm - WMM_LON_MIN) / WMM_LON_STEP) as usize;
+        let c0 = lon_idx.min(WMM_LON_COLS - 2);
+        let c1 = c0 + 1;
+        let v =
+            ((lon_norm - (WMM_LON_MIN + c0 as f32 * WMM_LON_STEP)) / WMM_LON_STEP).clamp(0.0, 1.0);
+        (r0, r1, c0, c1, u, v)
+    }
 }
