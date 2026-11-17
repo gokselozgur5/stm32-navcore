@@ -345,4 +345,20 @@ mod tests {
         .unwrap();
         assert!(alt_iso > 5000.0 && alt_iso < 6500.0);
     }
+
+    #[test]
+    fn test_profile_methods_and_reversibility() {
+        let profile = HypsometricProfile::standard_isa();
+        let alt0 = profile
+            .altitude_at_pressure(STANDARD_SEA_LEVEL_PRESSURE_PA)
+            .unwrap();
+        assert!(alt0.abs() < 1e-2);
+
+        let p_500m = profile.pressure_at_altitude(500.0).unwrap();
+        let alt_rec = profile.altitude_at_pressure(p_500m).unwrap();
+        assert!((alt_rec - 500.0).abs() < 1e-1);
+
+        let t_500m = profile.temperature_at_altitude(500.0).unwrap();
+        assert!((t_500m - (STANDARD_SEA_LEVEL_TEMP_K - 0.0065 * 500.0)).abs() < 1e-3);
+    }
 }
