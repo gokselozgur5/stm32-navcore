@@ -259,4 +259,15 @@ mod tests {
             Err(DopError::NonFiniteInput)
         );
     }
+
+    #[test]
+    fn test_singular_geometry_returns_error() {
+        let sats = [
+            SatelliteLos::new(1.0, 0.0, 0.0),
+            SatelliteLos::new(1.0, 0.0, 0.0),
+            SatelliteLos::new(1.0, 0.0, 0.0),
+            SatelliteLos::new(1.0, 0.0, 0.0),
+        ];
+        assert_eq!(compute_dop(&sats), Err(DopError::SingularGeometry));
+    }
 }
