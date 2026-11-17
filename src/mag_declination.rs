@@ -166,3 +166,21 @@ pub const WMM2020_INCLINATION: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS] = [
 /// Global default instance of WMM2020 lookup table.
 pub const WMM2020_LUT: MagDeclinationLut =
     MagDeclinationLut::new(WMM2020_DECLINATION, WMM2020_INCLINATION);
+
+/// Estimate magnetic declination and inclination in degrees using WMM2020 LUT.
+#[inline]
+pub fn estimate_wmm2020(
+    lat_deg: f32,
+    lon_deg: f32,
+) -> Result<MagFieldEstimate, MagDeclinationError> {
+    WMM2020_LUT.estimate(lat_deg, lon_deg)
+}
+
+/// Estimate magnetic declination and inclination from lat/lon in radians.
+pub fn estimate_wmm2020_rad(
+    lat_rad: f32,
+    lon_rad: f32,
+) -> Result<MagFieldEstimate, MagDeclinationError> {
+    let rad_to_deg = 180.0 / core::f32::consts::PI;
+    estimate_wmm2020(lat_rad * rad_to_deg, lon_rad * rad_to_deg)
+}
