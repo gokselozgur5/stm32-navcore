@@ -228,3 +228,27 @@ pub struct WindEstimator {
     initialized: bool,
     sample_count: u32,
 }
+
+impl WindEstimator {
+    /// Create new wind estimator with given configuration.
+    pub fn new(config: WindEstimatorConfig) -> Result<Self, WindEstimatorError> {
+        config.validate()?;
+        Ok(Self {
+            config,
+            wind_ne_mps: [0.0, 0.0],
+            initialized: false,
+            sample_count: 0,
+        })
+    }
+
+    /// Reset estimator internal filter state.
+    pub fn reset(&mut self) {
+        self.wind_ne_mps = [0.0, 0.0];
+        self.initialized = false;
+        self.sample_count = 0;
+    }
+
+    /// Current configuration reference.
+    pub fn config(&self) -> &WindEstimatorConfig {
+        &self.config
+    }
