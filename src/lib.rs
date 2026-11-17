@@ -122,6 +122,7 @@ pub mod gyro_bias;
 pub mod gravity_wgs84;
 
 pub mod wind_estimator;
+pub mod mag_declination;
 
 /// Attitude kinematics and propagation matrices.
 pub use kinematics::{
