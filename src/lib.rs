@@ -146,3 +146,13 @@ pub use kinematics::{
     quat_derivative, quat_derivative_to_body_rates, quat_rates_to_euler_rates,
     xi_matrix, EulerAngles, KinematicsError, GIMBAL_LOCK_COS_THRESHOLD,
 };
+
+
+pub mod ins_strapdown;
+
+/// Inertial navigation system strapdown integrator and Coriolis compensator.
+pub use ins_strapdown::{
+    coriolis_acceleration, earth_rate_ned, meridian_radius, somigliana_gravity,
+    transverse_radius, transport_rate_ned, InsStrapdownConfig, InsStrapdownError,
+    InsStrapdownIntegrator, StrapdownState,
+};
