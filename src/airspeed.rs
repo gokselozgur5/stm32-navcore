@@ -218,3 +218,23 @@ impl AirspeedCalculator {
         Self {
             pitot_scale: 1.0,
             static_bias_pa: 0.0,
+        }
+    }
+
+    /// Create calculator with custom calibration scale and static bias.
+    pub const fn with_calibration(pitot_scale: f32, static_bias_pa: f32) -> Self {
+        Self {
+            pitot_scale,
+            static_bias_pa,
+        }
+    }
+
+    /// Compute complete airspeed and atmospheric state.
+    pub fn compute(
+        &self,
+        raw_diff_pa: f32,
+        raw_static_pa: f32,
+        temp_k: f32,
+    ) -> Result<AirspeedState, AirspeedError> {
+        let cal_diff = raw_diff_pa * self.pitot_scale;
+        let cal_static = raw_static_pa + self.static_bias_pa;
