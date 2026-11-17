@@ -88,6 +88,18 @@ impl MadgwickAhrs {
     pub fn euler_zyx(&self) -> (f32, f32, f32) {
         self.quat.to_euler_zyx()
     }
+
+    /// Update orientation estimate using 6-DOF IMU (gyro + accel).
+    pub fn update_imu(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        dt: f32,
+    ) -> Result<Quaternion, MadgwickAhrsError> {
+        let q_next = madgwick_imu_step(self.quat, gyro, accel, self.beta, dt)?;
+        self.quat = q_next;
+        Ok(self.quat)
+    }
 }
 
 impl MadgwickAhrs {
