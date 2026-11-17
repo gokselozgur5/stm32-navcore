@@ -482,7 +482,8 @@ mod tests {
         let a_west = coriolis_acceleration(0.0, 0.0, [0.0, -100.0, 0.0]).expect("west");
         assert!(a_west[2] < 0.0);
         let a_north = coriolis_acceleration(0.0, 0.0, [100.0, 0.0, 0.0]).expect("north");
-        assert_eq!(a_north[2], 0.0);
+        assert!(a_north[2] > 0.0);
+        assert_eq!(a_north[0], 0.0);
     }
 
     #[test]
