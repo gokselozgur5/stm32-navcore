@@ -116,4 +116,25 @@ impl MagDeclinationLut {
         let p11 = grid[r1][c1];
         (1.0 - u) * ((1.0 - v) * p00 + v * p01) + u * ((1.0 - v) * p10 + v * p11)
     }
+
+    /// Estimate magnetic field angular components using bilinear interpolation.
+    pub fn estimate(
+        &self,
+        lat_deg: f32,
+        lon_deg: f32,
+    ) -> Result<MagFieldEstimate, MagDeclinationError> {
+        if !lat_deg.is_finite() || !lon_deg.is_finite() {
+            return Err(MagDeclinationError::NonFinite);
+        }
+        if !(-90.0..=90.0).contains(&lat_deg) {
+            return Err(MagDeclinationError::InvalidLatitude);
+        }
+        if !(-360.0..=360.0).contains(&lon_deg) {
+            return Err(MagDeclinationError::InvalidLongitude);
+        }
+        let (r0, r1, c0, c1, u, v) = Self::cell_weights(lat_deg, lon_deg);
+        let dec = Self::interp_2d(&self.declination, r0, r1, c0, c1, u, v);
+        let inc = Self::interp_2d(&self.inclination, r0, r1, c0, c1, u, v);
+        Ok(MagFieldEstimate::new(dec, inc))
+    }
 }
