@@ -36,3 +36,24 @@ pub struct GnssDop {
     /// East Dilution of Precision.
     pub edop: f32,
 }
+
+impl GnssDop {
+    /// Returns true if all metrics are finite and strictly positive.
+    pub fn is_valid(&self) -> bool {
+        self.gdop.is_finite()
+            && self.gdop > 0.0
+            && self.pdop.is_finite()
+            && self.pdop > 0.0
+            && self.hdop.is_finite()
+            && self.hdop > 0.0
+            && self.vdop.is_finite()
+            && self.vdop > 0.0
+            && self.tdop.is_finite()
+            && self.tdop > 0.0
+    }
+
+    /// Returns true if valid and PDOP is within threshold.
+    pub fn is_good(&self, max_pdop: f32) -> bool {
+        self.is_valid() && self.pdop <= max_pdop
+    }
+}
