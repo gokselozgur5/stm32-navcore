@@ -35,3 +35,18 @@ fn test_euler_rates_and_body_rates_inversion() {
     assert!((recovered_rates[1] - original_rates[1]).abs() < 1e-5);
     assert!((recovered_rates[2] - original_rates[2]).abs() < 1e-5);
 }
+
+#[test]
+fn test_gimbal_lock_singularity_detection() {
+    let pitch_near_90 = core::f32::consts::FRAC_PI_2;
+    let locked = EulerAngles::new(0.0, pitch_near_90, 0.0);
+    assert!(locked.is_gimbal_locked());
+
+    let res = body_rates_to_euler_rates(locked, [0.1, 0.0, 0.0]);
+    match res {
+        Err(KinematicsError::GimbalLock { pitch_rad }) => {
+            assert!((pitch_rad - pitch_near_90).abs() < 1e-6);
+        }
+        _ => panic!("Expected GimbalLock error"),
+    }
+}
