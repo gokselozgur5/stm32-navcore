@@ -73,6 +73,12 @@ pub use gyro_bias::{
     apply_bias_slew_limit, clamp_bias_vector, correct_gyro_sample, track_bias_from_error,
     track_bias_stationary, GyroBiasConfig, GyroBiasError, GyroBiasTracker,
 };
+/// Earth gravity spherical harmonic WGS84 normal gravity calculator.
+pub use gravity_wgs84::{
+    gravity_ned, gravity_ned_f32, normal_gravity_elevation, normal_gravity_elevation_f32,
+    somigliana_surface, somigliana_surface_f32, SphericalHarmonicGravity,
+    Wgs84GravityCalculator, Wgs84GravityError,
+};
 
 #[cfg(test)]
 mod footprint {
