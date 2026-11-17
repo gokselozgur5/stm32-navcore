@@ -153,3 +153,22 @@ pub fn spherical_harmonic_gravity(
     let mag = libm::sqrt(radial * radial + north * north);
     Ok(SphericalHarmonicGravity { radial, north, magnitude: mag })
 }
+
+/// Centrifugal acceleration in ECEF frame from Earth rotation (f64).
+pub fn centrifugal_accel_ecef(pos_ecef: [f64; 3]) -> Result<[f64; 3], Wgs84GravityError> {
+    if !pos_ecef[0].is_finite() || !pos_ecef[1].is_finite() || !pos_ecef[2].is_finite() {
+        return Err(Wgs84GravityError::NonFinite);
+    }
+    let omega2 = WGS84_OMEGA * WGS84_OMEGA;
+    Ok([omega2 * pos_ecef[0], omega2 * pos_ecef[1], 0.0])
+}
+
+/// Centrifugal acceleration in ECEF frame (f32).
+pub fn centrifugal_accel_ecef_f32(pos_ecef: [f32; 3]) -> Result<[f32; 3], Wgs84GravityError> {
+    if !pos_ecef[0].is_finite() || !pos_ecef[1].is_finite() || !pos_ecef[2].is_finite() {
+        return Err(Wgs84GravityError::NonFinite);
+    }
+    let omega = WGS84_OMEGA as f32;
+    let omega2 = omega * omega;
+    Ok([omega2 * pos_ecef[0], omega2 * pos_ecef[1], 0.0f32])
+}
