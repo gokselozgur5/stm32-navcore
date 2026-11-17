@@ -291,4 +291,18 @@ mod tests {
         assert!(g_1000 < g_surf);
         assert!((g_surf - g_1000 - 0.00308).abs() < 1e-4);
     }
+
+    #[test]
+    fn test_spherical_harmonic_and_ecef() {
+        let sh = spherical_harmonic_gravity(WGS84_A, 0.0).expect("sh equator");
+        assert!((sh.radial - 9.798).abs() < 0.05);
+
+        let eff = effective_gravity_ecef([WGS84_A, 0.0, 0.0]).expect("eff equator");
+        assert!((eff[0].abs() - GAMMA_E).abs() < 0.05);
+
+        let ned = gravity_ned(0.0, 0.0).expect("ned");
+        assert_eq!(ned[0], 0.0);
+        assert_eq!(ned[1], 0.0);
+        assert!((ned[2] - GAMMA_E).abs() < 1e-6);
+    }
 }
