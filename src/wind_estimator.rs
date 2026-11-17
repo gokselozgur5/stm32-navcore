@@ -145,3 +145,28 @@ pub fn instantaneous_wind_vector(
     let w_e = ground_vel_ne[1] - v_air_e;
     Ok([w_n, w_e])
 }
+
+/// Calculate instantaneous wind vector [North, East] from ground speed, course track, TAS, and heading.
+pub fn instantaneous_wind_from_course(
+    ground_speed_mps: f32,
+    course_rad: f32,
+    tas_mps: f32,
+    heading_rad: f32,
+) -> Result<[f32; 2], WindEstimatorError> {
+    if !ground_speed_mps.is_finite()
+        || !course_rad.is_finite()
+        || !tas_mps.is_finite()
+        || !heading_rad.is_finite()
+    {
+        return Err(WindEstimatorError::NonFinite);
+    }
+    if ground_speed_mps < 0.0 {
+        return Err(WindEstimatorError::NegativeGroundSpeed);
+    }
+    if tas_mps < 0.0 {
+        return Err(WindEstimatorError::NegativeAirspeed);
+    }
+    let vg_n = ground_speed_mps * libm::cosf(course_rad);
+    let vg_e = ground_speed_mps * libm::sinf(course_rad);
+    instantaneous_wind_vector([vg_n, vg_e], tas_mps, heading_rad)
+}
