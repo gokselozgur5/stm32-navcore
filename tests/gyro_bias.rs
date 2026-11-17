@@ -39,3 +39,15 @@ fn test_correct_gyro_sample() {
     let nan_raw = [f32::NAN, 0.0, 0.0];
     assert_eq!(correct_gyro_sample(nan_raw, bias), Err(GyroBiasError::NonFinite));
 }
+
+#[test]
+fn test_clamp_bias_vector() {
+    let bias = [0.25, -0.30, 0.05];
+    let clamped = clamp_bias_vector(bias, 0.1).unwrap();
+    assert!((clamped[0] - 0.1).abs() < 1e-6);
+    assert!((clamped[1] - (-0.1)).abs() < 1e-6);
+    assert!((clamped[2] - 0.05).abs() < 1e-6);
+
+    assert_eq!(clamp_bias_vector(bias, 0.0), Err(GyroBiasError::InvalidLimit));
+    assert_eq!(clamp_bias_vector([f32::INFINITY, 0.0, 0.0], 0.1), Err(GyroBiasError::NonFinite));
+}
