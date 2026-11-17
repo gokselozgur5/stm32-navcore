@@ -219,3 +219,24 @@ pub fn gravity_ned_f32(lat_rad: f32, alt_m: f32) -> Result<[f32; 3], Wgs84Gravit
     let g = normal_gravity_elevation_f32(lat_rad, alt_m)?;
     Ok([0.0f32, 0.0f32, g])
 }
+
+/// Unified WGS84 normal gravity and harmonic calculator.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Wgs84GravityCalculator;
+
+impl Wgs84GravityCalculator {
+    /// Create a new WGS84 gravity calculator.
+    pub const fn new() -> Self {
+        Self
+    }
+
+    /// Calculate surface normal gravity in m/s^2.
+    pub fn surface(&self, lat_rad: f64) -> Result<f64, Wgs84GravityError> {
+        somigliana_surface(lat_rad)
+    }
+
+    /// Calculate normal gravity at altitude in m/s^2.
+    pub fn at_altitude(&self, lat_rad: f64, alt_m: f64) -> Result<f64, Wgs84GravityError> {
+        normal_gravity_elevation(lat_rad, alt_m)
+    }
+}
