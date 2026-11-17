@@ -302,3 +302,23 @@ impl GyroBiasTracker {
         self.stationary_count = self.stationary_count.saturating_add(1);
         Ok(true)
     }
+    /// Update bias estimate by comparing raw gyro against reference rates.
+    pub fn update_from_reference(
+        &mut self,
+        gyro_raw: [f32; 3],
+        gyro_ref: [f32; 3],
+        dt_s: f32,
+    ) -> Result<[f32; 3], GyroBiasError> {
+        for i in 0..3 {
+            if !gyro_raw[i].is_finite() || !gyro_ref[i].is_finite() {
+                return Err(GyroBiasError::NonFinite);
+            }
+        }
+        let err = [
+            gyro_ref[0] - (gyro_raw[0] - self.bias_rad_s[0]),
+            gyro_ref[1] - (gyro_raw[1] - self.bias_rad_s[1]),
+            gyro_ref[2] - (gyro_raw[2] - self.bias_rad_s[2]),
+        ];
+        self.update_from_error(err, dt_s)
+    }
+}
