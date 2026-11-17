@@ -321,3 +321,28 @@ impl TempLapseCompensator {
         Ok(pressure_alt + 118.8 * delta_isa)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hypsometric_thickness_and_isothermal() {
+        let thickness = hypsometric_thickness(
+            STANDARD_SEA_LEVEL_PRESSURE_PA,
+            89874.6,
+            STANDARD_SEA_LEVEL_TEMP_K,
+        )
+        .unwrap();
+        assert!(thickness > 950.0 && thickness < 1050.0);
+
+        let alt_iso = hypsometric_altitude(
+            50000.0,
+            STANDARD_SEA_LEVEL_PRESSURE_PA,
+            STANDARD_SEA_LEVEL_TEMP_K,
+            0.0,
+        )
+        .unwrap();
+        assert!(alt_iso > 5000.0 && alt_iso < 6500.0);
+    }
+}
