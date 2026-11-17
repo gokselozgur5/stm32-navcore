@@ -252,3 +252,29 @@ impl WindEstimator {
     pub fn config(&self) -> &WindEstimatorConfig {
         &self.config
     }
+    /// Check if estimator has received at least one valid measurement.
+    pub fn is_initialized(&self) -> bool {
+        self.initialized
+    }
+
+    /// Total valid updates processed since creation or reset.
+    pub fn sample_count(&self) -> u32 {
+        self.sample_count
+    }
+
+    /// Get current filtered wind vector [North, East] in m/s.
+    pub fn wind_vector(&self) -> [f32; 2] {
+        self.wind_ne_mps
+    }
+
+    /// Get current filtered wind speed in m/s.
+    pub fn wind_speed(&self) -> f32 {
+        let [wn, we] = self.wind_ne_mps;
+        libm::sqrtf(wn * wn + we * we)
+    }
+
+    /// Get current meteorological wind direction (FROM) in radians [0, 2pi).
+    pub fn wind_direction_from_rad(&self) -> f32 {
+        let [wn, we] = self.wind_ne_mps;
+        wrap_2pi(libm::atan2f(-we, -wn))
+    }
