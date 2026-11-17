@@ -79,6 +79,12 @@ pub use gravity_wgs84::{
     somigliana_surface, somigliana_surface_f32, SphericalHarmonicGravity,
     Wgs84GravityCalculator, Wgs84GravityError,
 };
+/// Wind vector triangle estimator and relative wind calculator.
+pub use wind_estimator::{
+    decompose_relative_wind, instantaneous_wind_from_course, instantaneous_wind_vector,
+    wind_correction_angle_rad, wind_speed_and_direction, RelativeWind, WindEstimate,
+    WindEstimator, WindEstimatorConfig, WindEstimatorError, WindVectorInfo,
+};
 
 #[cfg(test)]
 mod footprint {
