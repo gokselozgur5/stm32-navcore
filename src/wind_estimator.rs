@@ -191,3 +191,23 @@ pub fn wind_speed_and_direction(wind_ne_mps: [f32; 2]) -> Result<WindVectorInfo,
         direction_to_deg: to_deg,
     })
 }
+
+/// Decompose wind vector into headwind and crosswind relative to aircraft heading.
+pub fn decompose_relative_wind(
+    wind_ne_mps: [f32; 2],
+    heading_rad: f32,
+) -> Result<RelativeWind, WindEstimatorError> {
+    if !wind_ne_mps[0].is_finite() || !wind_ne_mps[1].is_finite() || !heading_rad.is_finite() {
+        return Err(WindEstimatorError::NonFinite);
+    }
+    let wn = wind_ne_mps[0];
+    let we = wind_ne_mps[1];
+    let cos_psi = libm::cosf(heading_rad);
+    let sin_psi = libm::sinf(heading_rad);
+    let headwind_mps = -(wn * cos_psi + we * sin_psi);
+    let crosswind_mps = wn * sin_psi - we * cos_psi;
+    Ok(RelativeWind {
+        headwind_mps,
+        crosswind_mps,
+    })
+}
