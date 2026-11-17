@@ -261,3 +261,21 @@ impl Wgs84GravityCalculator {
         gravity_ned(lat_rad, alt_m)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_somigliana_equator_and_pole() {
+        let g_eq = somigliana_surface(0.0).expect("equator");
+        assert!((g_eq - GAMMA_E).abs() < 1e-6);
+
+        let half_pi = core::f64::consts::FRAC_PI_2;
+        let g_np = somigliana_surface(half_pi).expect("north pole");
+        assert!((g_np - GAMMA_P).abs() < 1e-6);
+
+        let g_sp = somigliana_surface(-half_pi).expect("south pole");
+        assert!((g_sp - GAMMA_P).abs() < 1e-6);
+    }
+}
