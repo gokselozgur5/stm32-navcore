@@ -182,3 +182,10 @@ pub fn track_bias_stationary(
             return Err(GyroBiasError::NonFinite);
         }
     }
+    let updated = [
+        prev_bias[0] + alpha * (gyro_raw[0] - prev_bias[0]),
+        prev_bias[1] + alpha * (gyro_raw[1] - prev_bias[1]),
+        prev_bias[2] + alpha * (gyro_raw[2] - prev_bias[2]),
+    ];
+    clamp_bias_vector(updated, max_bias)
+}
