@@ -472,4 +472,16 @@ mod tests {
         assert!((w_trans[0] - 100.0 / WGS84_A).abs() < 1e-8);
         assert_eq!(w_trans[1], 0.0);
     }
+
+    #[test]
+    fn test_coriolis_and_eotvos() {
+        let a_stat = coriolis_acceleration(0.0, 0.0, [0.0, 0.0, 0.0]).expect("stationary");
+        assert_eq!(a_stat, [0.0, 0.0, 0.0]);
+        let a_east = coriolis_acceleration(0.0, 0.0, [0.0, 100.0, 0.0]).expect("east");
+        assert!(a_east[2] > 0.0);
+        let a_west = coriolis_acceleration(0.0, 0.0, [0.0, -100.0, 0.0]).expect("west");
+        assert!(a_west[2] < 0.0);
+        let a_north = coriolis_acceleration(0.0, 0.0, [100.0, 0.0, 0.0]).expect("north");
+        assert_eq!(a_north[2], 0.0);
+    }
 }
