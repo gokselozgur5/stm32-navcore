@@ -26,3 +26,18 @@ impl core::fmt::Display for InsStrapdownError {
         }
     }
 }
+
+/// WGS-84 semi-major axis in meters.
+pub const WGS84_A: f64 = 6_378_137.0;
+
+/// WGS-84 first eccentricity squared.
+pub const WGS84_E2: f64 = 0.006_694_379_990_14;
+
+/// Earth rotation angular velocity in rad/s.
+pub const EARTH_ROTATION_RATE: f64 = 7.292_115e-5;
+
+/// Somigliana formula equatorial normal gravity in m/s^2.
+pub const GAMMA_E: f64 = 9.780_325_335_9;
+
+/// Somigliana formula parameter k.
+pub const SOMIGLIANA_K: f64 = 0.001_931_852_652_41;
