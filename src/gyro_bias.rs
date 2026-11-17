@@ -101,3 +101,19 @@ pub fn clamp_bias_vector(
     }
     Ok(clamped)
 }
+
+/// Apply slew-rate limit to prevent discontinuous jumps in estimated bias.
+pub fn apply_bias_slew_limit(
+    new_bias: [f32; 3],
+    prev_bias: [f32; 3],
+    max_drift_rate: f32,
+    dt_s: f32,
+) -> Result<[f32; 3], GyroBiasError> {
+    if !dt_s.is_finite() || dt_s <= 0.0 {
+        return Err(GyroBiasError::InvalidSampleInterval);
+    }
+    if !max_drift_rate.is_finite() || max_drift_rate <= 0.0 {
+        return Err(GyroBiasError::InvalidLimit);
+    }
+    let max_delta = max_drift_rate * dt_s;
+    let mut limited = [0.0f32; 3];
