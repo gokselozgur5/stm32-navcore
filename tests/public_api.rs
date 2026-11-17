@@ -37,6 +37,9 @@ fn crate_root_reexports_are_usable() {
     let _ = core::mem::size_of::<VarioTone>();
     let _ = core::mem::size_of::<VelDampingConfig>();
     let _ = core::mem::size_of::<VelDampingFilter>();
+    let _ = core::mem::size_of::<GyroBiasConfig>();
+    let _ = core::mem::size_of::<GyroBiasError>();
+    let _ = core::mem::size_of::<GyroBiasTracker>();
 }
 
 use core::mem::{align_of, size_of};
