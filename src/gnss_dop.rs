@@ -292,4 +292,21 @@ mod tests {
         assert!((gdop_sq - (pdop_sq + tdop_sq)).abs() < 1e-3);
         assert!((pdop_sq - (hdop_sq + vdop_sq)).abs() < 1e-3);
     }
+
+    #[test]
+    fn test_eight_satellite_constellation_and_accumulator() {
+        let az_el = [
+            (0.0f32, 0.5f32),
+            (0.785f32, 0.8f32),
+            (1.57f32, 0.4f32),
+            (2.356f32, 0.9f32),
+            (3.14f32, 0.6f32),
+            (3.926f32, 0.7f32),
+            (4.71f32, 0.3f32),
+            (5.497f32, 1.1f32),
+        ];
+        let dop = compute_dop_from_az_el(&az_el).unwrap();
+        assert!(dop.is_valid());
+        assert!(dop.pdop < 3.0);
+    }
 }
