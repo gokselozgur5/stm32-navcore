@@ -84,3 +84,13 @@ pub fn earth_rate_ned(lat_rad: f64) -> Result<[f64; 3], InsStrapdownError> {
     let s = libm::sin(lat_rad);
     Ok([EARTH_ROTATION_RATE * c, 0.0, -EARTH_ROTATION_RATE * s])
 }
+
+/// Computes 3D vector cross product u x v.
+#[inline]
+pub fn cross_product(u: [f64; 3], v: [f64; 3]) -> [f64; 3] {
+    [
+        u[1] * v[2] - u[2] * v[1],
+        u[2] * v[0] - u[0] * v[2],
+        u[0] * v[1] - u[1] * v[0],
+    ]
+}
