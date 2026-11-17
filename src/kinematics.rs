@@ -161,3 +161,14 @@ pub fn xi_matrix(q: &Quaternion) -> [[f32; 3]; 4] {
         [-q.y, q.x, q.w],
     ]
 }
+
+/// Compute quaternion derivative [w_dot, x_dot, y_dot, z_dot] from body rates.
+pub fn quat_derivative(q: &Quaternion, omega: [f32; 3]) -> [f32; 4] {
+    let xi = xi_matrix(q);
+    [
+        0.5 * (xi[0][0] * omega[0] + xi[0][1] * omega[1] + xi[0][2] * omega[2]),
+        0.5 * (xi[1][0] * omega[0] + xi[1][1] * omega[1] + xi[1][2] * omega[2]),
+        0.5 * (xi[2][0] * omega[0] + xi[2][1] * omega[1] + xi[2][2] * omega[2]),
+        0.5 * (xi[3][0] * omega[0] + xi[3][1] * omega[1] + xi[3][2] * omega[2]),
+    ]
+}
