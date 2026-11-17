@@ -61,3 +61,23 @@ pub fn hypsometric_thickness(
     let factor = (GAS_CONSTANT_DRY_AIR * mean_temp_k) / STANDARD_GRAVITY_M_S2;
     Ok(factor * libm::logf(ratio))
 }
+
+/// Compute altitude from pressure using reference level and temperature lapse rate.
+pub fn hypsometric_altitude(
+    pressure_pa: f32,
+    ref_pressure_pa: f32,
+    ref_temp_k: f32,
+    lapse_rate: f32,
+) -> Result<f32, HypsometricError> {
+    validate_state(pressure_pa, ref_pressure_pa, ref_temp_k)?;
+    if !lapse_rate.is_finite() || lapse_rate < 0.0 || lapse_rate > 0.05 {
+        return Err(HypsometricError::InvalidLapseRate);
+    }
+    let ratio = pressure_pa / ref_pressure_pa;
+    if lapse_rate < 1e-7 {
+        let scale = (GAS_CONSTANT_DRY_AIR * ref_temp_k) / STANDARD_GRAVITY_M_S2;
+        return Ok(scale * -libm::logf(ratio));
+    }
+    let exponent = (GAS_CONSTANT_DRY_AIR * lapse_rate) / STANDARD_GRAVITY_M_S2;
+    Ok((ref_temp_k / lapse_rate) * (1.0 - libm::powf(ratio, exponent)))
+}
