@@ -198,6 +198,24 @@ pub fn madgwick_imu_step(
     integrate_step(q, qw, sh, beta, dt)
 }
 
+/// Perform one 9-DOF Madgwick AHRS MARG integration step.
+pub fn madgwick_marg_step(
+    q: Quaternion,
+    gyro: [f32; 3],
+    accel: [f32; 3],
+    mag: [f32; 3],
+    beta: f32,
+    dt: f32,
+) -> Result<Quaternion, MadgwickAhrsError> {
+    validate_marg(gyro, accel, mag, beta, dt)?;
+    let qw = MadgwickAhrs::gyro_rate(&q, gyro);
+    let sa = MadgwickAhrs::accel_gradient(&q, accel);
+    let sm = MadgwickAhrs::mag_gradient(&q, mag);
+    let s = [sa[0] + sm[0], sa[1] + sm[1], sa[2] + sm[2], sa[3] + sm[3]];
+    let sh = normalize_gradient(s);
+    integrate_step(q, qw, sh, beta, dt)
+}
+
 fn validate_imu(
     gyro: [f32; 3],
     accel: [f32; 3],
