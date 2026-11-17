@@ -98,3 +98,23 @@ pub fn impact_pressure_to_mach(diff_p_pa: f32, static_p_pa: f32) -> Result<f32, 
     }
     if static_p_pa <= 0.0 {
         return Err(AirspeedError::InvalidPressure);
+    }
+    if diff_p_pa == 0.0 {
+        return Ok(0.0);
+    }
+    let pr = diff_p_pa / static_p_pa;
+    let base = pr + 1.0;
+    let factor = libm::powf(base, 2.0 / 7.0) - 1.0;
+    if factor < 0.0 {
+        return Ok(0.0);
+    }
+    let m2 = 5.0 * factor;
+    let mach = libm::sqrtf(m2);
+    if mach >= 1.0 {
+        return Err(AirspeedError::SupersonicFlow);
+    }
+    Ok(mach)
+}
+
+/// Calibrated airspeed (CAS) with subsonic compressibility correction.
+pub fn calibrated_airspeed(diff_p_pa: f32) -> Result<f32, AirspeedError> {
