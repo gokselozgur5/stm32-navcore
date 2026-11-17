@@ -120,6 +120,19 @@ impl MadgwickAhrs {
             2.0 * x * f1 + 2.0 * y * f2,
         ]
     }
+
+    fn mag_flux(q: &Quaternion, m: [f32; 3]) -> Option<([f32; 3], f32, f32)> {
+        let m_sq = m[0] * m[0] + m[1] * m[1] + m[2] * m[2];
+        if m_sq < 1e-12 || !m_sq.is_finite() {
+            return None;
+        }
+        let inv_m = 1.0 / libm::sqrtf(m_sq);
+        let m_hat = [m[0] * inv_m, m[1] * inv_m, m[2] * inv_m];
+        let h = q.rotate_vec(m_hat);
+        let bx = libm::sqrtf(h[0] * h[0] + h[1] * h[1]);
+        let bz = h[2];
+        Some((m_hat, bx, bz))
+    }
 }
 
 fn validate_imu(
