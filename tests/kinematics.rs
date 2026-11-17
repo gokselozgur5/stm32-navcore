@@ -67,3 +67,16 @@ fn test_omega_matrix_and_quat_derivative() {
     assert!((recovered_omega[1] - omega[1]).abs() < 1e-6);
     assert!((recovered_omega[2] - omega[2]).abs() < 1e-6);
 }
+
+#[test]
+fn test_transition_matrix_and_propagation() {
+    let q0 = Quaternion::IDENTITY;
+    let omega = [0.0, 0.0, core::f32::consts::PI];
+    let dt = 0.5;
+    let q1 = propagate_attitude_quaternion(&q0, omega, dt).unwrap();
+
+    let euler = EulerAngles::from_quat(&q1);
+    assert!(euler.roll.abs() < 1e-4);
+    assert!(euler.pitch.abs() < 1e-4);
+    assert!((euler.yaw - core::f32::consts::FRAC_PI_2).abs() < 1e-4);
+}
