@@ -127,3 +127,16 @@ pub fn euler_rates_to_body_rates(euler: EulerAngles, rates: [f32; 3]) -> [f32; 3
         m[2][0] * rates[0] + m[2][1] * rates[1] + m[2][2] * rates[2],
     ]
 }
+
+/// Compute Euler angle rates (roll_dot, pitch_dot, yaw_dot) from body angular rates (p, q, r).
+pub fn body_rates_to_euler_rates(
+    euler: EulerAngles,
+    omega: [f32; 3],
+) -> Result<[f32; 3], KinematicsError> {
+    let m = body_to_euler_rates_matrix(euler)?;
+    Ok([
+        m[0][0] * omega[0] + m[0][1] * omega[1] + m[0][2] * omega[2],
+        m[1][0] * omega[0] + m[1][1] * omega[1] + m[1][2] * omega[2],
+        m[2][0] * omega[0] + m[2][1] * omega[1] + m[2][2] * omega[2],
+    ])
+}
