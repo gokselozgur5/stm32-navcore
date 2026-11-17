@@ -122,3 +122,13 @@ fn test_stationary_rejection_on_motion() {
     assert_eq!(tracker.stationary_count(), 0);
     assert_eq!(tracker.bias(), [0.0; 3]);
 }
+
+#[test]
+fn test_tracker_reference_update_and_reset() {
+    let mut cfg = GyroBiasConfig::default();
+    cfg.max_drift_rate_rad_s2 = 1.0;
+    cfg.ki = 0.5;
+    let mut tracker = GyroBiasTracker::new(cfg).unwrap();
+
+    let raw = [0.03, -0.02, 0.01];
+    let reference = [0.0, 0.0, 0.0];
