@@ -83,3 +83,17 @@ impl EulerAngles {
         libm::fabsf(libm::cosf(self.pitch)) < GIMBAL_LOCK_COS_THRESHOLD
     }
 }
+
+/// Transformation matrix mapping Euler rates (roll_dot, pitch_dot, yaw_dot) to body rates (p, q, r).
+pub fn euler_rates_to_body_matrix(euler: EulerAngles) -> [[f32; 3]; 3] {
+    let s_phi = libm::sinf(euler.roll);
+    let c_phi = libm::cosf(euler.roll);
+    let s_theta = libm::sinf(euler.pitch);
+    let c_theta = libm::cosf(euler.pitch);
+
+    [
+        [1.0, 0.0, -s_theta],
+        [0.0, c_phi, s_phi * c_theta],
+        [0.0, -s_phi, c_phi * c_theta],
+    ]
+}
