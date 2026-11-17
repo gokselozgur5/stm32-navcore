@@ -58,3 +58,15 @@ fn test_calculator_struct_and_errors() {
     assert!(state.mach > 0.0);
 
     assert_eq!(
+        calc.compute(-10.0, STANDARD_PRESSURE_PA, STANDARD_TEMP_K),
+        Err(AirspeedError::NegativeDifferentialPressure)
+    );
+    assert_eq!(
+        calc.compute(1000.0, -100.0, STANDARD_TEMP_K),
+        Err(AirspeedError::InvalidPressure)
+    );
+    assert_eq!(
+        calc.compute(1000.0, STANDARD_PRESSURE_PA, -50.0),
+        Err(AirspeedError::InvalidTemperature)
+    );
+}
