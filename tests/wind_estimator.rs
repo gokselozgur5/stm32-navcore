@@ -52,3 +52,20 @@ fn test_wind_estimator_input_validation_config() {
     cfg.max_wind_speed_mps = 60.0;
     assert_eq!(WindEstimator::new(cfg), Err(WindEstimatorError::InvalidConfig));
 }
+
+#[test]
+fn test_wind_estimator_runtime_validation_errors() {
+    let mut est = WindEstimator::new(WindEstimatorConfig::default()).unwrap();
+    assert_eq!(
+        est.update([20.0, 0.0], 20.0, 0.0, 0.0),
+        Err(WindEstimatorError::InvalidSampleInterval)
+    );
+    assert_eq!(
+        est.update([20.0, 0.0], 1.0, 0.0, 0.1),
+        Err(WindEstimatorError::AirspeedTooLow)
+    );
+    assert_eq!(
+        est.update([100.0, 0.0], 10.0, 0.0, 0.1),
+        Err(WindEstimatorError::WindSpeedExceeded)
+    );
+}
