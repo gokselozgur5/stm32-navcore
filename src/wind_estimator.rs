@@ -278,3 +278,12 @@ impl WindEstimator {
         let [wn, we] = self.wind_ne_mps;
         wrap_2pi(libm::atan2f(-we, -wn))
     }
+    /// Get current meteorological wind direction (FROM) in degrees [0, 360).
+    pub fn wind_direction_from_deg(&self) -> f32 {
+        self.wind_direction_from_rad() * (180.0 / PI)
+    }
+
+    /// Get current relative wind decomposition against a heading.
+    pub fn relative_wind(&self, heading_rad: f32) -> Result<RelativeWind, WindEstimatorError> {
+        decompose_relative_wind(self.wind_ne_mps, heading_rad)
+    }
