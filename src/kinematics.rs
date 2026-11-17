@@ -232,3 +232,23 @@ pub fn attitude_transition_matrix(
     }
     Ok(phi)
 }
+
+/// Propagate attitude quaternion forward by time step dt using exact transition matrix.
+pub fn propagate_attitude_quaternion(
+    q: &Quaternion,
+    omega: [f32; 3],
+    dt: f32,
+) -> Result<Quaternion, KinematicsError> {
+    let phi = attitude_transition_matrix(omega, dt)?;
+    let q_vec = [q.w, q.x, q.y, q.z];
+    let mut next = [0.0f32; 4];
+    for r in 0..4 {
+        let mut sum = 0.0;
+        for c in 0..4 {
+            sum += phi[r][c] * q_vec[c];
+        }
+        next[r] = sum;
+    }
+    let res = Quaternion::new(next[0], next[1], next[2], next[3]);
+    res.normalize().map_err(|_| KinematicsError::ZeroQuaternion)
+}
