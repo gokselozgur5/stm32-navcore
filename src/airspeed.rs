@@ -258,3 +258,12 @@ impl AirspeedCalculator {
             density_kg_m3: rho,
             pressure_alt_m: p_alt,
             density_alt_m: d_alt,
+        })
+    }
+}
+
+impl Default for AirspeedCalculator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
