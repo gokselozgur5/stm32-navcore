@@ -87,3 +87,17 @@ pub fn clamp_bias_vector(
         return Err(GyroBiasError::InvalidLimit);
     }
     let mut clamped = [0.0f32; 3];
+    for i in 0..3 {
+        if !bias[i].is_finite() {
+            return Err(GyroBiasError::NonFinite);
+        }
+        if bias[i] > max_bias {
+            clamped[i] = max_bias;
+        } else if bias[i] < -max_bias {
+            clamped[i] = -max_bias;
+        } else {
+            clamped[i] = bias[i];
+        }
+    }
+    Ok(clamped)
+}
