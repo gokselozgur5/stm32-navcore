@@ -100,6 +100,29 @@ impl MadgwickAhrs {
         self.quat = q_next;
         Ok(self.quat)
     }
+
+    /// Update orientation estimate using 9-DOF MARG (gyro + accel + mag).
+    pub fn update_marg(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        mag: [f32; 3],
+        dt: f32,
+    ) -> Result<Quaternion, MadgwickAhrsError> {
+        let q_next = madgwick_marg_step(self.quat, gyro, accel, mag, self.beta, dt)?;
+        self.quat = q_next;
+        Ok(self.quat)
+    }
+
+    /// Update orientation estimate using 6-DOF IMU (alias for update_imu).
+    pub fn update(
+        &mut self,
+        gyro: [f32; 3],
+        accel: [f32; 3],
+        dt: f32,
+    ) -> Result<Quaternion, MadgwickAhrsError> {
+        self.update_imu(gyro, accel, dt)
+    }
 }
 
 impl MadgwickAhrs {
