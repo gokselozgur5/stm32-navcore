@@ -167,3 +167,18 @@ impl HypsometricProfile {
         Ok(self.ref_pressure_pa * libm::powf(temp_ratio, inv_exp))
     }
 }
+
+impl HypsometricProfile {
+    /// Calculate expected temperature in Kelvin at geometric altitude.
+    pub fn temperature_at_altitude(&self, altitude_m: f32) -> Result<f32, HypsometricError> {
+        if !altitude_m.is_finite() {
+            return Err(HypsometricError::NonFinite);
+        }
+        let delta_h = altitude_m - self.ref_altitude_m;
+        let t = self.ref_temp_k - self.lapse_rate_k_per_m * delta_h;
+        if t <= 0.0 {
+            return Err(HypsometricError::InvalidTemperature);
+        }
+        Ok(t)
+    }
+}
