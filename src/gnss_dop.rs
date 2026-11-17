@@ -322,4 +322,15 @@ mod tests {
         assert!(east.y.abs() < 1e-6);
         assert!(east.z.abs() < 1e-6);
     }
+
+    #[test]
+    fn test_accumulator_reset_and_reuse() {
+        let mut acc = DopAccumulator::new();
+        let sat = SatelliteLos::new(1.0, 0.0, 0.0);
+        assert!(acc.add_satellite(&sat).is_ok());
+        assert_eq!(acc.count(), 1);
+        acc.reset();
+        assert_eq!(acc.count(), 0);
+        assert_eq!(acc.compute(), Err(DopError::InsufficientSatellites));
+    }
 }
