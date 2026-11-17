@@ -113,3 +113,14 @@ pub fn normal_gravity_elevation_f32(lat_rad: f32, alt_m: f32) -> Result<f32, Wgs
     let term2 = (3.0f32 / (a * a)) * alt_m * alt_m;
     Ok(g0 * (1.0f32 - term1 + term2))
 }
+
+/// Spherical harmonic gravitational and centrifugal acceleration components.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SphericalHarmonicGravity {
+    /// Inward radial gravitational acceleration component in m/s^2.
+    pub radial: f64,
+    /// Northward latitudinal gravitational acceleration component in m/s^2.
+    pub north: f64,
+    /// Total magnitude of gravitational acceleration vector in m/s^2.
+    pub magnitude: f64,
+}
