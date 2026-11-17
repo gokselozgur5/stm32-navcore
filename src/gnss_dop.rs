@@ -333,4 +333,20 @@ mod tests {
         assert_eq!(acc.count(), 0);
         assert_eq!(acc.compute(), Err(DopError::InsufficientSatellites));
     }
+
+    #[test]
+    fn test_dop_quality_thresholds() {
+        let dop = GnssDop {
+            gdop: 2.5,
+            pdop: 2.0,
+            hdop: 1.2,
+            vdop: 1.6,
+            tdop: 1.5,
+            ndop: 0.9,
+            edop: 0.8,
+        };
+        assert!(dop.is_valid());
+        assert!(dop.is_good(3.0));
+        assert!(!dop.is_good(1.5));
+    }
 }
