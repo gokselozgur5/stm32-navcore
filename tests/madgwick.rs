@@ -35,3 +35,18 @@ fn test_madgwick_with_attitude_and_euler() {
         Err(MadgwickAhrsError::NormalizationFailed)
     );
 }
+
+#[test]
+fn test_madgwick_validation_errors() {
+    let mut ahrs = MadgwickAhrs::default();
+    let g = [0.0, 0.0, 0.0];
+    let a = [0.0, 0.0, 9.81];
+    let m = [0.2, 0.0, 0.4];
+
+    assert_eq!(ahrs.update_imu(g, a, 0.0), Err(MadgwickAhrsError::InvalidDt));
+    assert_eq!(ahrs.update_imu(g, a, -0.01), Err(MadgwickAhrsError::InvalidDt));
+    assert_eq!(ahrs.update_imu([f32::NAN, 0.0, 0.0], a, 0.01), Err(MadgwickAhrsError::NonFinite));
+    assert_eq!(ahrs.update_imu(g, [0.0, f32::INFINITY, 0.0], 0.01), Err(MadgwickAhrsError::NonFinite));
+    assert_eq!(ahrs.update_marg(g, a, [f32::NAN, 0.0, 0.0], 0.01), Err(MadgwickAhrsError::NonFinite));
+    assert!(ahrs.update_marg(g, a, m, 0.01).is_ok());
+}
