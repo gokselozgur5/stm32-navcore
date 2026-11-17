@@ -230,3 +230,27 @@ pub fn quat_rotate_vec(q: [f64; 4], v: [f64; 3]) -> [f64; 3] {
         v[2] + q[0] * t[2] + (qv[0] * t[1] - qv[1] * t[0]),
     ]
 }
+
+/// Multiplies two quaternions p * q.
+pub fn quat_mul(p: [f64; 4], q: [f64; 4]) -> [f64; 4] {
+    [
+        p[0] * q[0] - p[1] * q[1] - p[2] * q[2] - p[3] * q[3],
+        p[0] * q[1] + p[1] * q[0] + p[2] * q[3] - p[3] * q[2],
+        p[0] * q[2] - p[1] * q[3] + p[2] * q[0] + p[3] * q[1],
+        p[0] * q[3] + p[1] * q[2] - p[2] * q[1] + p[3] * q[0],
+    ]
+}
+
+/// Integrates attitude quaternion with angular rate vector omega_b over dt.
+pub fn quat_integrate(q: [f64; 4], omega: [f64; 3], dt_s: f64) -> Result<[f64; 4], InsStrapdownError> {
+    let theta_sq = (omega[0] * omega[0] + omega[1] * omega[1] + omega[2] * omega[2]) * dt_s * dt_s;
+    let theta = libm::sqrt(theta_sq);
+    let (s, c) = if theta < 1e-8 {
+        (0.5 * dt_s, 1.0 - 0.125 * theta_sq)
+    } else {
+        let half_th = 0.5 * theta;
+        (libm::sin(half_th) / (theta / dt_s), libm::cos(half_th))
+    };
+    let dq = [c, omega[0] * s, omega[1] * s, omega[2] * s];
+    quat_normalize(quat_mul(q, dq))
+}
