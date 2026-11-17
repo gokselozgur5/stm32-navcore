@@ -91,3 +91,17 @@ fn test_madgwick_marg_heading_tracking() {
     assert!(pitch.abs() < 0.05);
     assert!(yaw.abs() < 0.05);
 }
+
+#[test]
+fn test_madgwick_free_step_functions() {
+    let q = Quaternion::IDENTITY;
+    let g = [0.0, 0.0, 0.0];
+    let a = [0.0, 0.0, 9.81];
+    let m = [0.2, 0.0, 0.4];
+
+    let q_imu = madgwick_imu_step(q, g, a, 0.1, 0.01).unwrap();
+    assert!((q_imu.norm() - 1.0).abs() < 1e-6);
+
+    let q_marg = madgwick_marg_step(q, g, a, m, 0.1, 0.01).unwrap();
+    assert!((q_marg.norm() - 1.0).abs() < 1e-6);
+}
