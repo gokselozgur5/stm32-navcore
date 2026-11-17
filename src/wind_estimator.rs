@@ -287,3 +287,22 @@ impl WindEstimator {
     pub fn relative_wind(&self, heading_rad: f32) -> Result<RelativeWind, WindEstimatorError> {
         decompose_relative_wind(self.wind_ne_mps, heading_rad)
     }
+    /// Update filter state from ground velocity vector, TAS, and heading with time delta.
+    pub fn update(
+        &mut self,
+        ground_vel_ne: [f32; 2],
+        tas_mps: f32,
+        heading_rad: f32,
+        dt_s: f32,
+    ) -> Result<WindEstimate, WindEstimatorError> {
+        if !dt_s.is_finite() || dt_s <= 0.0 {
+            return Err(WindEstimatorError::InvalidSampleInterval);
+        }
+        let inst_w = instantaneous_wind_vector(ground_vel_ne, tas_mps, heading_rad)?;
+        if tas_mps < self.config.min_airspeed_mps {
+            return Err(WindEstimatorError::AirspeedTooLow);
+        }
+        let inst_speed = libm::sqrtf(inst_w[0] * inst_w[0] + inst_w[1] * inst_w[1]);
+        if inst_speed > self.config.max_wind_speed_mps {
+            return Err(WindEstimatorError::WindSpeedExceeded);
+        }
