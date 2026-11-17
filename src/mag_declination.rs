@@ -99,4 +99,21 @@ impl MagDeclinationLut {
             ((lon_norm - (WMM_LON_MIN + c0 as f32 * WMM_LON_STEP)) / WMM_LON_STEP).clamp(0.0, 1.0);
         (r0, r1, c0, c1, u, v)
     }
+
+    /// Bilinear interpolation over a 2D scalar grid.
+    fn interp_2d(
+        grid: &[[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
+        r0: usize,
+        r1: usize,
+        c0: usize,
+        c1: usize,
+        u: f32,
+        v: f32,
+    ) -> f32 {
+        let p00 = grid[r0][c0];
+        let p01 = grid[r0][c1];
+        let p10 = grid[r1][c0];
+        let p11 = grid[r1][c1];
+        (1.0 - u) * ((1.0 - v) * p00 + v * p01) + u * ((1.0 - v) * p10 + v * p11)
+    }
 }
