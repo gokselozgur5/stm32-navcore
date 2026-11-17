@@ -38,3 +38,23 @@ pub const HEAT_CAPACITY_RATIO: f32 = 1.4;
 pub const STANDARD_SPEED_OF_SOUND_MPS: f32 = 340.294;
 
 /// Tropospheric lapse rate in K/m.
+pub const TROPO_LAPSE_RATE_K_PER_M: f32 = 0.0065;
+
+/// Barometric pressure exponent: (R * L) / g0.
+pub const ISA_PRESSURE_EXPONENT: f32 = 0.190263;
+
+/// Density altitude exponent.
+pub const ISA_DENSITY_EXPONENT: f32 = 0.234969;
+
+/// Compute air density from static pressure and temperature.
+pub fn air_density(static_p_pa: f32, temp_k: f32) -> Result<f32, AirspeedError> {
+    if !static_p_pa.is_finite() || !temp_k.is_finite() {
+        return Err(AirspeedError::NonFinite);
+    }
+    if static_p_pa <= 0.0 {
+        return Err(AirspeedError::InvalidPressure);
+    }
+    if temp_k <= 0.0 {
+        return Err(AirspeedError::InvalidTemperature);
+    }
+    let rho = static_p_pa / (GAS_CONSTANT_AIR * temp_k);
