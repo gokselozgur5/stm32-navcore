@@ -58,3 +58,23 @@ pub fn air_density(static_p_pa: f32, temp_k: f32) -> Result<f32, AirspeedError> 
         return Err(AirspeedError::InvalidTemperature);
     }
     let rho = static_p_pa / (GAS_CONSTANT_AIR * temp_k);
+    if !rho.is_finite() || rho <= 0.0 {
+        return Err(AirspeedError::InvalidDensity);
+    }
+    Ok(rho)
+}
+
+/// Compute speed of sound in m/s at given temperature.
+pub fn speed_of_sound(temp_k: f32) -> Result<f32, AirspeedError> {
+    if !temp_k.is_finite() {
+        return Err(AirspeedError::NonFinite);
+    }
+    if temp_k <= 0.0 {
+        return Err(AirspeedError::InvalidTemperature);
+    }
+    let a = libm::sqrtf(HEAT_CAPACITY_RATIO * GAS_CONSTANT_AIR * temp_k);
+    Ok(a)
+}
+
+/// Incompressible indicated airspeed in m/s.
+pub fn incompressible_ias(diff_p_pa: f32) -> Result<f32, AirspeedError> {
