@@ -76,3 +76,18 @@ fn test_madgwick_imu_convergence() {
     assert!(roll.abs() < 0.05);
     assert!(pitch.abs() < 0.05);
 }
+
+#[test]
+fn test_madgwick_marg_heading_tracking() {
+    let mut ahrs = MadgwickAhrs::new(0.5).unwrap();
+    let dt = 0.02;
+    let accel = [0.0, 0.0, 9.81];
+    let mag = [0.2, 0.0, 0.4];
+    for _ in 0..300 {
+        ahrs.update_marg([0.0, 0.0, 0.0], accel, mag, dt).unwrap();
+    }
+    let (roll, pitch, yaw) = ahrs.euler_zyx();
+    assert!(roll.abs() < 0.05);
+    assert!(pitch.abs() < 0.05);
+    assert!(yaw.abs() < 0.05);
+}
