@@ -16,3 +16,12 @@ pub enum WindEstimatorError {
     NegativeGroundSpeed,
     /// Airspeed is below minimum threshold for reliable estimation.
     AirspeedTooLow,
+    /// Estimated wind speed exceeds maximum physical plausibility limit.
+    WindSpeedExceeded,
+    /// Sample time interval is non-positive or non-finite.
+    InvalidSampleInterval,
+    /// Filter time constant is non-positive or non-finite.
+    InvalidTimeConstant,
+    /// Configuration parameter is out of valid range.
+    InvalidConfig,
+}
