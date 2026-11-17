@@ -133,6 +133,24 @@ impl MadgwickAhrs {
         let bz = h[2];
         Some((m_hat, bx, bz))
     }
+
+    fn mag_gradient(q: &Quaternion, m: [f32; 3]) -> [f32; 4] {
+        let (m_hat, bx, bz) = match Self::mag_flux(q, m) {
+            Some(res) => res,
+            None => return [0.0; 4],
+        };
+        let (w, x, y, z) = (q.w, q.x, q.y, q.z);
+        let f1 = 2.0 * bx * (0.5 - y * y - z * z) + 2.0 * bz * (x * z - w * y) - m_hat[0];
+        let f2 = 2.0 * bx * (x * y - w * z) + 2.0 * bz * (w * x + y * z) - m_hat[1];
+        let f3 = 2.0 * bx * (w * y + x * z) + 2.0 * bz * (0.5 - x * x - y * y) - m_hat[2];
+
+        [
+            -2.0 * bz * y * f1 + (-2.0 * bx * z + 2.0 * bz * x) * f2 + 2.0 * bx * y * f3,
+            2.0 * bz * z * f1 + (2.0 * bx * y + 2.0 * bz * w) * f2 + (2.0 * bx * z - 4.0 * bz * x) * f3,
+            (-4.0 * bx * y - 2.0 * bz * w) * f1 + (2.0 * bx * x + 2.0 * bz * z) * f2 + (2.0 * bx * w - 4.0 * bz * y) * f3,
+            (-4.0 * bx * z + 2.0 * bz * x) * f1 + (-2.0 * bx * w + 2.0 * bz * y) * f2 + 2.0 * bx * x * f3,
+        ]
+    }
 }
 
 fn validate_imu(
