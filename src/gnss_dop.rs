@@ -184,3 +184,24 @@ impl DopAccumulator {
         spd_inverse(&self.normal_mat).map_err(|_| DopError::SingularGeometry)
     }
 }
+
+impl DopAccumulator {
+    /// Computes dilution of precision metrics from accumulated satellites.
+    pub fn compute(&self) -> Result<GnssDop, DopError> {
+        let q = self.invert_normal_matrix()?;
+        let (ve, vn, vu, vt) = (q.0[0][0], q.0[1][1], q.0[2][2], q.0[3][3]);
+        if ve <= 0.0 || vn <= 0.0 || vu <= 0.0 || vt <= 0.0 {
+            return Err(DopError::SingularGeometry);
+        }
+        let (h_sq, p_sq) = (ve + vn, ve + vn + vu);
+        Ok(GnssDop {
+            gdop: libm::sqrtf(p_sq + vt),
+            pdop: libm::sqrtf(p_sq),
+            hdop: libm::sqrtf(h_sq),
+            vdop: libm::sqrtf(vu),
+            tdop: libm::sqrtf(vt),
+            ndop: libm::sqrtf(vn),
+            edop: libm::sqrtf(ve),
+        })
+    }
+}
