@@ -382,3 +382,21 @@ impl InsStrapdownIntegrator {
         ]
     }
 }
+
+impl InsStrapdownIntegrator {
+    /// Integrates relative NED position and geodetic coordinates using average velocity.
+    pub fn update_position(&mut self, v_avg: [f64; 3], dt_s: f64) -> Result<(), InsStrapdownError> {
+        self.state.pos_ned[0] += v_avg[0] * dt_s;
+        self.state.pos_ned[1] += v_avg[1] * dt_s;
+        self.state.pos_ned[2] += v_avg[2] * dt_s;
+        let r_m = meridian_radius(self.state.lat_rad)?;
+        let r_n = transverse_radius(self.state.lat_rad)?;
+        self.state.lat_rad += (v_avg[0] * dt_s) / (r_m + self.state.alt_m);
+        let cos_lat = libm::cos(self.state.lat_rad);
+        if libm::fabs(cos_lat) > 1e-6 {
+            self.state.lon_rad += (v_avg[1] * dt_s) / ((r_n + self.state.alt_m) * cos_lat);
+        }
+        self.state.alt_m -= v_avg[2] * dt_s;
+        Ok(())
+    }
+}
