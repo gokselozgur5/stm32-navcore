@@ -43,3 +43,24 @@ impl GyroBiasConfig {
         if !self.max_bias_rad_s.is_finite() || self.max_bias_rad_s <= 0.0 {
             return Err(GyroBiasError::InvalidLimit);
         }
+        if !self.max_drift_rate_rad_s2.is_finite() || self.max_drift_rate_rad_s2 <= 0.0 {
+            return Err(GyroBiasError::InvalidLimit);
+        }
+        if !self.stationary_threshold_rad_s.is_finite() || self.stationary_threshold_rad_s <= 0.0 {
+            return Err(GyroBiasError::InvalidLimit);
+        }
+        Ok(())
+    }
+}
+
+impl Default for GyroBiasConfig {
+    fn default() -> Self {
+        Self {
+            ki: 0.01,
+            stationary_learning_rate: 0.05,
+            max_bias_rad_s: 0.1,
+            max_drift_rate_rad_s2: 0.005,
+            stationary_threshold_rad_s: 0.035,
+        }
+    }
+}
