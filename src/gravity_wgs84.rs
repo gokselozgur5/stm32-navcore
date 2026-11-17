@@ -94,3 +94,22 @@ pub fn normal_gravity_elevation(lat_rad: f64, alt_m: f64) -> Result<f64, Wgs84Gr
     let term2 = (3.0 / (WGS84_A * WGS84_A)) * alt_m * alt_m;
     Ok(g0 * (1.0 - term1 + term2))
 }
+
+/// Somigliana normal gravity with elevation correction (f32).
+pub fn normal_gravity_elevation_f32(lat_rad: f32, alt_m: f32) -> Result<f32, Wgs84GravityError> {
+    if !alt_m.is_finite() {
+        return Err(Wgs84GravityError::NonFinite);
+    }
+    if alt_m < -10_000.0 || alt_m > 100_000.0 {
+        return Err(Wgs84GravityError::InvalidAltitude);
+    }
+    let g0 = somigliana_surface_f32(lat_rad)?;
+    let a = WGS84_A as f32;
+    let f = WGS84_F as f32;
+    let m = 0.003_449_786_5f32;
+    let s = libm::sinf(lat_rad);
+    let s2 = s * s;
+    let term1 = (2.0f32 / a) * (1.0f32 + f + m - 2.0f32 * f * s2) * alt_m;
+    let term2 = (3.0f32 / (a * a)) * alt_m * alt_m;
+    Ok(g0 * (1.0f32 - term1 + term2))
+}
