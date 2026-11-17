@@ -282,3 +282,21 @@ impl TempLapseCompensator {
         Ok(self.base_elevation_m + corrected_layer)
     }
 }
+
+impl TempLapseCompensator {
+    /// Compute true altitude directly from measured ambient pressure and OAT.
+    pub fn compensate_altitude(
+        &self,
+        pressure_pa: f32,
+        measured_temp_k: f32,
+    ) -> Result<f32, HypsometricError> {
+        validate_state(pressure_pa, self.ref_qnh_pa, measured_temp_k)?;
+        let pressure_alt = hypsometric_altitude(
+            pressure_pa,
+            self.ref_qnh_pa,
+            STANDARD_SEA_LEVEL_TEMP_K,
+            self.lapse_rate_k_per_m,
+        )?;
+        self.true_altitude_from_indicated(pressure_alt, measured_temp_k)
+    }
+}
