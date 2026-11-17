@@ -278,4 +278,17 @@ mod tests {
         let g_sp = somigliana_surface(-half_pi).expect("south pole");
         assert!((g_sp - GAMMA_P).abs() < 1e-6);
     }
+
+    #[test]
+    fn test_somigliana_f32_and_elevation() {
+        let g_eq = somigliana_surface_f32(0.0).expect("equator f32");
+        assert!((g_eq - (GAMMA_E as f32)).abs() < 1e-4);
+
+        let g_surf = normal_gravity_elevation(0.0, 0.0).expect("surf");
+        assert!((g_surf - GAMMA_E).abs() < 1e-6);
+
+        let g_1000 = normal_gravity_elevation(0.0, 1000.0).expect("1000m");
+        assert!(g_1000 < g_surf);
+        assert!((g_surf - g_1000 - 0.00308).abs() < 1e-4);
+    }
 }
