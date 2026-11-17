@@ -370,3 +370,16 @@ mod tests {
         assert!((res2[0] - 5.0).abs() < 1e-5);
         assert!(res2[1].abs() < 1e-5);
     }
+    #[test]
+    fn test_wind_directions_and_relative() {
+        // Wind blowing North at 10 m/s => comes FROM South (180 deg)
+        let info = wind_speed_and_direction([10.0, 0.0]).unwrap();
+        assert!((info.speed_mps - 10.0).abs() < 1e-5);
+        assert!((info.direction_from_deg - 180.0).abs() < 1e-3);
+        assert!((info.direction_to_deg - 0.0).abs() < 1e-3);
+
+        // Heading North, wind blowing North (tailwind)
+        let rel = decompose_relative_wind([10.0, 0.0], 0.0).unwrap();
+        assert!((rel.headwind_mps - (-10.0)).abs() < 1e-5);
+        assert!(rel.crosswind_mps.abs() < 1e-5);
+    }
