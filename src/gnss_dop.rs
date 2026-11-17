@@ -309,4 +309,17 @@ mod tests {
         assert!(dop.is_valid());
         assert!(dop.pdop < 3.0);
     }
+
+    #[test]
+    fn test_los_coordinate_frames() {
+        let zenith = SatelliteLos::from_azimuth_elevation(0.0, core::f32::consts::FRAC_PI_2).unwrap();
+        assert!(zenith.x.abs() < 1e-6);
+        assert!(zenith.y.abs() < 1e-6);
+        assert!((zenith.z - 1.0).abs() < 1e-6);
+
+        let east = SatelliteLos::from_azimuth_elevation(core::f32::consts::FRAC_PI_2, 0.0).unwrap();
+        assert!((east.x - 1.0).abs() < 1e-6);
+        assert!(east.y.abs() < 1e-6);
+        assert!(east.z.abs() < 1e-6);
+    }
 }
