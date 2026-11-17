@@ -72,7 +72,8 @@ fn test_madgwick_pure_gyro_integration() {
     let dt = 0.01;
     let rate_z = 1.0;
     for _ in 0..100 {
-        ahrs.update_imu([0.0, 0.0, rate_z], [0.0, 0.0, 0.0], dt).unwrap();
+        ahrs.update_imu([0.0, 0.0, rate_z], [0.0, 0.0, 0.0], dt)
+            .unwrap();
     }
     let (_roll, _pitch, yaw) = ahrs.euler_zyx();
     assert!((yaw - 1.0).abs() < 0.05);
