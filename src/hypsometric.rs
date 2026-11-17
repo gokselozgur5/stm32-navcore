@@ -261,3 +261,24 @@ impl TempLapseCompensator {
         Ok(measured_temp_k - isa_t)
     }
 }
+
+impl TempLapseCompensator {
+    /// Correct indicated barometric altitude to true altitude using measured OAT.
+    pub fn true_altitude_from_indicated(
+        &self,
+        indicated_alt_m: f32,
+        measured_temp_k: f32,
+    ) -> Result<f32, HypsometricError> {
+        if !indicated_alt_m.is_finite() || !measured_temp_k.is_finite() {
+            return Err(HypsometricError::NonFinite);
+        }
+        if measured_temp_k <= 0.0 {
+            return Err(HypsometricError::InvalidTemperature);
+        }
+        let delta_h = indicated_alt_m - self.base_elevation_m;
+        let isa_t = Self::isa_temperature_at_altitude(indicated_alt_m)?;
+        let delta_isa = measured_temp_k - isa_t;
+        let corrected_layer = delta_h * (1.0 + delta_isa / isa_t);
+        Ok(self.base_elevation_m + corrected_layer)
+    }
+}
