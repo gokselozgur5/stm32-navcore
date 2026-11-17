@@ -457,4 +457,19 @@ mod tests {
         assert_eq!(meridian_radius(2.0), Err(InsStrapdownError::InvalidLatitude));
         assert_eq!(transverse_radius(f64::NAN), Err(InsStrapdownError::NonFinite));
     }
+
+    #[test]
+    fn test_earth_and_transport_rate() {
+        let w_eq = earth_rate_ned(0.0).expect("earth rate eq");
+        assert!((w_eq[0] - EARTH_ROTATION_RATE).abs() < 1e-10);
+        assert_eq!(w_eq[1], 0.0);
+        assert!((w_eq[2] - 0.0).abs() < 1e-10);
+        let half_pi = core::f64::consts::FRAC_PI_2;
+        let w_np = earth_rate_ned(half_pi).expect("earth rate np");
+        assert!(w_np[0].abs() < 1e-10);
+        assert!((w_np[2] + EARTH_ROTATION_RATE).abs() < 1e-10);
+        let w_trans = transport_rate_ned(0.0, 0.0, [0.0, 100.0, 0.0]).expect("transport");
+        assert!((w_trans[0] - 100.0 / WGS84_A).abs() < 1e-8);
+        assert_eq!(w_trans[1], 0.0);
+    }
 }
