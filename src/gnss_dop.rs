@@ -92,3 +92,24 @@ impl SatelliteLos {
         })
     }
 }
+
+impl SatelliteLos {
+    /// Computes unit LOS vector from azimuth and elevation in radians.
+    ///
+    /// Azimuth is clockwise from North; elevation is above horizon.
+    pub fn from_azimuth_elevation(azimuth_rad: f32, elevation_rad: f32) -> Result<Self, DopError> {
+        if !azimuth_rad.is_finite() || !elevation_rad.is_finite() {
+            return Err(DopError::NonFiniteInput);
+        }
+        let cos_el = libm::cosf(elevation_rad);
+        let sin_el = libm::sinf(elevation_rad);
+        let sin_az = libm::sinf(azimuth_rad);
+        let cos_az = libm::cosf(azimuth_rad);
+
+        Ok(Self {
+            x: cos_el * sin_az, // East
+            y: cos_el * cos_az, // North
+            z: sin_el,          // Up
+        })
+    }
+}
