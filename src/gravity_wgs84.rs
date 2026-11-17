@@ -151,7 +151,11 @@ pub fn spherical_harmonic_gravity(
     let radial = gm_r2 * (1.0 - 3.0 * WGS84_J2 * a_r2 * p2 - 5.0 * WGS84_J4 * a_r4 * p4);
     let north = -gm_r2 * (WGS84_J2 * a_r2 * dp2 + WGS84_J4 * a_r4 * dp4);
     let mag = libm::sqrt(radial * radial + north * north);
-    Ok(SphericalHarmonicGravity { radial, north, magnitude: mag })
+    Ok(SphericalHarmonicGravity {
+        radial,
+        north,
+        magnitude: mag,
+    })
 }
 
 /// Centrifugal acceleration in ECEF frame from Earth rotation (f64).
@@ -198,7 +202,11 @@ pub fn gravitational_accel_ecef_j2(pos: [f64; 3]) -> Result<[f64; 3], Wgs84Gravi
 pub fn effective_gravity_ecef(pos: [f64; 3]) -> Result<[f64; 3], Wgs84GravityError> {
     let g_grav = gravitational_accel_ecef_j2(pos)?;
     let g_cent = centrifugal_accel_ecef(pos)?;
-    Ok([g_grav[0] + g_cent[0], g_grav[1] + g_cent[1], g_grav[2] + g_cent[2]])
+    Ok([
+        g_grav[0] + g_cent[0],
+        g_grav[1] + g_cent[1],
+        g_grav[2] + g_cent[2],
+    ])
 }
 
 /// Total effective gravity vector in ECEF coordinates (f32).
