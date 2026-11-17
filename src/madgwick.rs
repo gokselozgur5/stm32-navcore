@@ -125,6 +125,15 @@ impl MadgwickAhrs {
     }
 }
 
+impl Default for MadgwickAhrs {
+    fn default() -> Self {
+        Self {
+            quat: Quaternion::IDENTITY,
+            beta: Self::DEFAULT_BETA_IMU,
+        }
+    }
+}
+
 impl MadgwickAhrs {
     fn gyro_rate(q: &Quaternion, w: [f32; 3]) -> [f32; 4] {
         [
