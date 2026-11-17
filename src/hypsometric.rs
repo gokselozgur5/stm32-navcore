@@ -193,3 +193,28 @@ pub struct TempLapseCompensator {
     /// Estimated or standard temperature lapse rate in K/m.
     pub lapse_rate_k_per_m: f32,
 }
+
+impl TempLapseCompensator {
+    /// Create new compensator with specified QNH, elevation, and lapse rate.
+    pub fn new(
+        qnh_pa: f32,
+        base_elevation_m: f32,
+        lapse_rate_k_per_m: f32,
+    ) -> Result<Self, HypsometricError> {
+        validate_state(qnh_pa, qnh_pa, STANDARD_SEA_LEVEL_TEMP_K)?;
+        if !base_elevation_m.is_finite() {
+            return Err(HypsometricError::NonFinite);
+        }
+        if !lapse_rate_k_per_m.is_finite()
+            || lapse_rate_k_per_m < 0.0
+            || lapse_rate_k_per_m > 0.05
+        {
+            return Err(HypsometricError::InvalidLapseRate);
+        }
+        Ok(Self {
+            ref_qnh_pa: qnh_pa,
+            base_elevation_m,
+            lapse_rate_k_per_m,
+        })
+    }
+}
