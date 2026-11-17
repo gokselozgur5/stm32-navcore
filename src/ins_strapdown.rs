@@ -56,3 +56,17 @@ pub fn meridian_radius(lat_rad: f64) -> Result<f64, InsStrapdownError> {
     let sqrt_denom = libm::sqrt(denom);
     Ok(WGS84_A * (1.0 - WGS84_E2) / (denom * sqrt_denom))
 }
+
+/// Computes WGS-84 prime vertical (transverse) radius of curvature R_N in meters.
+pub fn transverse_radius(lat_rad: f64) -> Result<f64, InsStrapdownError> {
+    if !lat_rad.is_finite() {
+        return Err(InsStrapdownError::NonFinite);
+    }
+    let half_pi = core::f64::consts::FRAC_PI_2;
+    if lat_rad < -half_pi || lat_rad > half_pi {
+        return Err(InsStrapdownError::InvalidLatitude);
+    }
+    let s = libm::sin(lat_rad);
+    let denom = 1.0 - WGS84_E2 * s * s;
+    Ok(WGS84_A / libm::sqrt(denom))
+}
