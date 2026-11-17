@@ -205,3 +205,15 @@ impl DopAccumulator {
         })
     }
 }
+
+/// Computes GNSS DOP metrics from a slice of satellite LOS vectors.
+pub fn compute_dop(satellites: &[SatelliteLos]) -> Result<GnssDop, DopError> {
+    if satellites.len() < 4 {
+        return Err(DopError::InsufficientSatellites);
+    }
+    let mut acc = DopAccumulator::new();
+    for sat in satellites {
+        acc.add_satellite(sat)?;
+    }
+    acc.compute()
+}
