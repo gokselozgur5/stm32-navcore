@@ -50,3 +50,20 @@ fn test_gimbal_lock_singularity_detection() {
         _ => panic!("Expected GimbalLock error"),
     }
 }
+
+#[test]
+fn test_omega_matrix_and_quat_derivative() {
+    let q = Quaternion::IDENTITY;
+    let omega = [0.1, -0.2, 0.3];
+    let q_dot = quat_derivative(&q, omega);
+
+    assert_eq!(q_dot[0], 0.0);
+    assert!((q_dot[1] - 0.05).abs() < 1e-6);
+    assert!((q_dot[2] - (-0.1)).abs() < 1e-6);
+    assert!((q_dot[3] - 0.15).abs() < 1e-6);
+
+    let recovered_omega = quat_derivative_to_body_rates(&q, q_dot);
+    assert!((recovered_omega[0] - omega[0]).abs() < 1e-6);
+    assert!((recovered_omega[1] - omega[1]).abs() < 1e-6);
+    assert!((recovered_omega[2] - omega[2]).abs() < 1e-6);
+}
