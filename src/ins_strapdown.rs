@@ -94,3 +94,27 @@ pub fn cross_product(u: [f64; 3], v: [f64; 3]) -> [f64; 3] {
         u[0] * v[1] - u[1] * v[0],
     ]
 }
+
+/// Computes craft transport rate vector in local NED navigation frame.
+pub fn transport_rate_ned(
+    lat_rad: f64,
+    alt_m: f64,
+    vel_ned: [f64; 3],
+) -> Result<[f64; 3], InsStrapdownError> {
+    if !alt_m.is_finite()
+        || !vel_ned[0].is_finite()
+        || !vel_ned[1].is_finite()
+        || !vel_ned[2].is_finite()
+    {
+        return Err(InsStrapdownError::NonFinite);
+    }
+    if alt_m < -10_000.0 || alt_m > 100_000.0 {
+        return Err(InsStrapdownError::InvalidAltitude);
+    }
+    let r_m = meridian_radius(lat_rad)?;
+    let r_n = transverse_radius(lat_rad)?;
+    let tan_lat = libm::tan(lat_rad);
+    let v_n = vel_ned[0];
+    let v_e = vel_ned[1];
+    Ok([v_e / (r_n + alt_m), -v_n / (r_m + alt_m), -v_e * tan_lat / (r_n + alt_m)])
+}
