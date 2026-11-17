@@ -30,3 +30,18 @@ pub const WGS84_GM: f64 = 3.986_004_418e14;
 
 /// WGS-84 Earth angular velocity in rad/s.
 pub const WGS84_OMEGA: f64 = 7.292_115e-5;
+
+/// WGS-84 second zonal harmonic coefficient J2.
+pub const WGS84_J2: f64 = 1.082_629_821_31e-3;
+
+/// WGS-84 fourth zonal harmonic coefficient J4.
+pub const WGS84_J4: f64 = -2.370_912_22e-6;
+
+/// WGS-84 equatorial normal gravity in m/s^2 (gamma_e).
+pub const GAMMA_E: f64 = 9.780_325_335_9;
+
+/// WGS-84 polar normal gravity in m/s^2 (gamma_p).
+pub const GAMMA_P: f64 = 9.832_184_937_8;
+
+/// Somigliana formula parameter k.
+pub const SOMIGLIANA_K: f64 = 0.001_931_852_652_41;
