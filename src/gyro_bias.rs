@@ -234,3 +234,20 @@ impl GyroBiasTracker {
         self.bias_rad_s = [0.0; 3];
         self.stationary_count = 0;
     }
+    /// Correct a raw gyroscope sample by subtracting current bias.
+    pub fn correct(&self, gyro_raw: [f32; 3]) -> Result<[f32; 3], GyroBiasError> {
+        correct_gyro_sample(gyro_raw, self.bias_rad_s)
+    }
+
+    /// Determine whether a raw measurement indicates stationary conditions.
+    pub fn is_stationary(&self, gyro_raw: [f32; 3]) -> bool {
+        let corrected = match self.correct(gyro_raw) {
+            Ok(c) => c,
+            Err(_) => return false,
+        };
+        let mag_sq = corrected[0] * corrected[0]
+            + corrected[1] * corrected[1]
+            + corrected[2] * corrected[2];
+        let thresh = self.config.stationary_threshold_rad_s;
+        mag_sq <= thresh * thresh
+    }
