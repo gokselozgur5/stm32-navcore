@@ -193,3 +193,17 @@ pub fn gravitational_accel_ecef_j2(pos: [f64; 3]) -> Result<[f64; 3], Wgs84Gravi
     let k = -WGS84_GM / r3;
     Ok([k * x * fac_xy, k * y * fac_xy, k * z * fac_z])
 }
+
+/// Total effective gravity vector in ECEF coordinates (gravitation + centrifugal).
+pub fn effective_gravity_ecef(pos: [f64; 3]) -> Result<[f64; 3], Wgs84GravityError> {
+    let g_grav = gravitational_accel_ecef_j2(pos)?;
+    let g_cent = centrifugal_accel_ecef(pos)?;
+    Ok([g_grav[0] + g_cent[0], g_grav[1] + g_cent[1], g_grav[2] + g_cent[2]])
+}
+
+/// Total effective gravity vector in ECEF coordinates (f32).
+pub fn effective_gravity_ecef_f32(pos: [f32; 3]) -> Result<[f32; 3], Wgs84GravityError> {
+    let pos_f64 = [pos[0] as f64, pos[1] as f64, pos[2] as f64];
+    let eff = effective_gravity_ecef(pos_f64)?;
+    Ok([eff[0] as f32, eff[1] as f32, eff[2] as f32])
+}
