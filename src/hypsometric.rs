@@ -14,3 +14,21 @@ pub enum HypsometricError {
     /// Division by zero or indeterminate ratio.
     ZeroDivision,
 }
+
+/// Standard sea-level pressure in Pascals (1013.25 hPa).
+pub const STANDARD_SEA_LEVEL_PRESSURE_PA: f32 = 101325.0;
+
+/// Standard sea-level temperature in Kelvin (15.0 deg C).
+pub const STANDARD_SEA_LEVEL_TEMP_K: f32 = 288.15;
+
+/// Standard tropospheric temperature lapse rate in K/m (0.0065 K/m).
+pub const STANDARD_LAPSE_RATE_K_PER_M: f32 = 0.0065;
+
+/// Dry adiabatic lapse rate in K/m (~0.00976 K/m).
+pub const DRY_ADIABATIC_LAPSE_RATE_K_PER_M: f32 = 0.00976;
+
+/// Specific gas constant for dry air in J/(kg*K).
+pub const GAS_CONSTANT_DRY_AIR: f32 = 287.05287;
+
+/// Standard gravitational acceleration in m/s^2.
+pub const STANDARD_GRAVITY_M_S2: f32 = 9.80665;
