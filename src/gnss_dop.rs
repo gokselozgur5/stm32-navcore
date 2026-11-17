@@ -57,3 +57,14 @@ impl GnssDop {
         self.is_valid() && self.pdop <= max_pdop
     }
 }
+
+/// Unit line-of-sight vector from receiver to satellite in local ENU frame.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SatelliteLos {
+    /// East component of unit line-of-sight vector.
+    pub x: f32,
+    /// North component of unit line-of-sight vector.
+    pub y: f32,
+    /// Up component of unit line-of-sight vector.
+    pub z: f32,
+}
