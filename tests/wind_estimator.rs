@@ -86,3 +86,16 @@ fn test_wind_estimator_tracking_convergence() {
     assert!((est.wind_vector()[0] - 5.0).abs() < 0.05);
     assert!((est.wind_vector()[1] - 5.0).abs() < 0.05);
 }
+
+#[test]
+fn test_wind_estimator_reset_and_from_course() {
+    let mut est = WindEstimator::new(WindEstimatorConfig::default()).unwrap();
+    let res = est.update_from_course(25.0, 0.0, 20.0, 0.0, 0.1).unwrap();
+    assert_eq!(est.sample_count(), 1);
+    assert!((res.wind_ne_mps[0] - 5.0).abs() < 1e-4);
+
+    est.reset();
+    assert!(!est.is_initialized());
+    assert_eq!(est.sample_count(), 0);
+    assert_eq!(est.wind_vector(), [0.0, 0.0]);
+}
