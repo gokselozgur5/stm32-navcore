@@ -62,3 +62,21 @@ pub struct WindEstimate {
     /// Direction FROM which wind blows in degrees [0, 360).
     pub direction_from_deg: f32,
 }
+
+/// Configuration for recursive wind vector estimator.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WindEstimatorConfig {
+    /// Filter time constant tau in seconds for exponential smoothing.
+    pub time_constant_s: f32,
+    /// Minimum airspeed in m/s required to update wind state.
+    pub min_airspeed_mps: f32,
+    /// Maximum plausible wind speed in m/s to gate outliers.
+    pub max_wind_speed_mps: f32,
+}
+
+impl WindEstimatorConfig {
+    /// Validate configuration values.
+    pub fn validate(&self) -> Result<(), WindEstimatorError> {
+        if !self.time_constant_s.is_finite() || self.time_constant_s <= 0.0 {
+            return Err(WindEstimatorError::InvalidTimeConstant);
+        }
