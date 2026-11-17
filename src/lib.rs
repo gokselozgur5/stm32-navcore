@@ -96,3 +96,5 @@ pub mod ecef_ned;
 pub mod variometer;
 
 pub mod vel_damping;
+
+pub mod airspeed;
