@@ -192,3 +192,10 @@ pub fn quat_rates_to_euler_rates(
     let omega = quat_derivative_to_body_rates(q, q_dot);
     body_rates_to_euler_rates(euler, omega)
 }
+
+/// Convert Euler angle rates to quaternion rates given current Euler angles.
+pub fn euler_rates_to_quat_rates(euler: EulerAngles, euler_rates: [f32; 3]) -> [f32; 4] {
+    let q = euler.to_quat();
+    let omega = euler_rates_to_body_rates(euler, euler_rates);
+    quat_derivative(&q, omega)
+}
