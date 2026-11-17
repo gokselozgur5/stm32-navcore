@@ -99,6 +99,27 @@ impl MadgwickAhrs {
             0.5 * (q.w * w[2] + q.x * w[1] - q.y * w[0]),
         ]
     }
+
+    fn accel_gradient(q: &Quaternion, a: [f32; 3]) -> [f32; 4] {
+        let a_sq = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
+        if a_sq < 1e-12 || !a_sq.is_finite() {
+            return [0.0; 4];
+        }
+        let inv_a = 1.0 / libm::sqrtf(a_sq);
+        let (ax, ay, az) = (a[0] * inv_a, a[1] * inv_a, a[2] * inv_a);
+
+        let (w, x, y, z) = (q.w, q.x, q.y, q.z);
+        let f1 = 2.0 * (x * z - w * y) - ax;
+        let f2 = 2.0 * (w * x + y * z) - ay;
+        let f3 = 1.0 - 2.0 * (x * x + y * y) - az;
+
+        [
+            -2.0 * y * f1 + 2.0 * x * f2,
+            2.0 * z * f1 + 2.0 * w * f2 - 4.0 * x * f3,
+            -2.0 * w * f1 + 2.0 * z * f2 - 4.0 * y * f3,
+            2.0 * x * f1 + 2.0 * y * f2,
+        ]
+    }
 }
 
 fn validate_imu(
