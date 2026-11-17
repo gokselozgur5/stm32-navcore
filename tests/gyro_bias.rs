@@ -73,3 +73,11 @@ fn test_apply_bias_slew_limit_errors() {
     assert_eq!(apply_bias_slew_limit(next, prev, 0.0, 0.1), Err(GyroBiasError::InvalidLimit));
     assert_eq!(apply_bias_slew_limit([f32::NAN, 0.0, 0.0], prev, 0.01, 0.1), Err(GyroBiasError::NonFinite));
 }
+
+#[test]
+fn test_track_bias_from_error_integral() {
+    let mut bias = [0.0f32; 3];
+    let ki = 0.2f32;
+    let dt = 0.1f32;
+    let max_bias = 0.1f32;
+    let error = [-0.02f32, 0.01f32, 0.0f32];
