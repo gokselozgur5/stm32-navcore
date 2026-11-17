@@ -62,3 +62,17 @@ fn test_madgwick_pure_gyro_integration() {
     let (_roll, _pitch, yaw) = ahrs.euler_zyx();
     assert!((yaw - 1.0).abs() < 0.05);
 }
+
+#[test]
+fn test_madgwick_imu_convergence() {
+    let q_init = Quaternion::new(0.92388, 0.38268, 0.0, 0.0);
+    let mut ahrs = MadgwickAhrs::with_attitude(0.5, q_init).unwrap();
+    let dt = 0.02;
+    let accel = [0.0, 0.0, 9.81];
+    for _ in 0..300 {
+        ahrs.update_imu([0.0, 0.0, 0.0], accel, dt).unwrap();
+    }
+    let (roll, pitch, _yaw) = ahrs.euler_zyx();
+    assert!(roll.abs() < 0.05);
+    assert!(pitch.abs() < 0.05);
+}
