@@ -122,3 +122,30 @@ pub struct DopAccumulator {
     /// Number of accumulated satellite observations.
     count: usize,
 }
+
+impl Default for DopAccumulator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl DopAccumulator {
+    /// Creates a fresh accumulator with zeroed normal matrix.
+    pub const fn new() -> Self {
+        Self {
+            normal_mat: Mat::zeros(),
+            count: 0,
+        }
+    }
+
+    /// Resets the accumulator for a new measurement epoch.
+    pub fn reset(&mut self) {
+        self.normal_mat = Mat::zeros();
+        self.count = 0;
+    }
+
+    /// Returns the number of accumulated satellites.
+    pub const fn count(&self) -> usize {
+        self.count
+    }
+}
