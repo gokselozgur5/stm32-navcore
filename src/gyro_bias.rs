@@ -273,3 +273,32 @@ impl GyroBiasTracker {
         self.bias_rad_s = limited;
         Ok(self.bias_rad_s)
     }
+    /// Update bias estimate when stationary using complementary low-pass filter.
+    pub fn update_stationary(
+        &mut self,
+        gyro_raw: [f32; 3],
+        dt_s: f32,
+    ) -> Result<bool, GyroBiasError> {
+        if !dt_s.is_finite() || dt_s <= 0.0 {
+            return Err(GyroBiasError::InvalidSampleInterval);
+        }
+        if !self.is_stationary(gyro_raw) {
+            self.stationary_count = 0;
+            return Ok(false);
+        }
+        let candidate = track_bias_stationary(
+            self.bias_rad_s,
+            gyro_raw,
+            self.config.stationary_learning_rate,
+            self.config.max_bias_rad_s,
+        )?;
+        let limited = apply_bias_slew_limit(
+            candidate,
+            self.bias_rad_s,
+            self.config.max_drift_rate_rad_s2,
+            dt_s,
+        )?;
+        self.bias_rad_s = limited;
+        self.stationary_count = self.stationary_count.saturating_add(1);
+        Ok(true)
+    }
