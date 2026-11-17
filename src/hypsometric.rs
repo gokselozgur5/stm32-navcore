@@ -32,3 +32,17 @@ pub const GAS_CONSTANT_DRY_AIR: f32 = 287.05287;
 
 /// Standard gravitational acceleration in m/s^2.
 pub const STANDARD_GRAVITY_M_S2: f32 = 9.80665;
+
+/// Validate pressure and temperature state parameters.
+fn validate_state(p: f32, p_ref: f32, temp_k: f32) -> Result<(), HypsometricError> {
+    if !p.is_finite() || !p_ref.is_finite() || !temp_k.is_finite() {
+        return Err(HypsometricError::NonFinite);
+    }
+    if p <= 0.0 || p_ref <= 0.0 {
+        return Err(HypsometricError::InvalidPressure);
+    }
+    if temp_k <= 0.0 {
+        return Err(HypsometricError::InvalidTemperature);
+    }
+    Ok(())
+}
