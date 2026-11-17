@@ -69,3 +69,20 @@ fn test_wind_estimator_runtime_validation_errors() {
         Err(WindEstimatorError::WindSpeedExceeded)
     );
 }
+
+#[test]
+fn test_wind_estimator_tracking_convergence() {
+    let cfg = WindEstimatorConfig {
+        time_constant_s: 1.0,
+        min_airspeed_mps: 5.0,
+        max_wind_speed_mps: 50.0,
+    };
+    let mut est = WindEstimator::new(cfg).unwrap();
+    // 5 m/s North, 5 m/s East wind
+    // Aircraft heading North at 20 m/s TAS -> ground vel [25.0, 5.0]
+    for _ in 0..100 {
+        let _ = est.update([25.0, 5.0], 20.0, 0.0, 0.05).unwrap();
+    }
+    assert!((est.wind_vector()[0] - 5.0).abs() < 0.05);
+    assert!((est.wind_vector()[1] - 5.0).abs() < 0.05);
+}
