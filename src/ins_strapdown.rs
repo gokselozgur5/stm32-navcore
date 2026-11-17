@@ -194,3 +194,14 @@ pub struct InsStrapdownConfig {
     /// Constant gravity override in m/s^2 (None uses WGS-84 Somigliana).
     pub gravity_override: Option<f64>,
 }
+
+impl Default for InsStrapdownConfig {
+    fn default() -> Self {
+        Self {
+            enable_coriolis: true,
+            enable_earth_rate: true,
+            enable_transport_rate: true,
+            gravity_override: None,
+        }
+    }
+}
