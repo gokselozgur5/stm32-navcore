@@ -78,3 +78,23 @@ pub fn speed_of_sound(temp_k: f32) -> Result<f32, AirspeedError> {
 
 /// Incompressible indicated airspeed in m/s.
 pub fn incompressible_ias(diff_p_pa: f32) -> Result<f32, AirspeedError> {
+    if !diff_p_pa.is_finite() {
+        return Err(AirspeedError::NonFinite);
+    }
+    if diff_p_pa < 0.0 {
+        return Err(AirspeedError::NegativeDifferentialPressure);
+    }
+    let v2 = (2.0 * diff_p_pa) / STANDARD_DENSITY_KG_M3;
+    Ok(libm::sqrtf(v2))
+}
+
+/// Compute Mach number from impact and static pressure.
+pub fn impact_pressure_to_mach(diff_p_pa: f32, static_p_pa: f32) -> Result<f32, AirspeedError> {
+    if !diff_p_pa.is_finite() || !static_p_pa.is_finite() {
+        return Err(AirspeedError::NonFinite);
+    }
+    if diff_p_pa < 0.0 {
+        return Err(AirspeedError::NegativeDifferentialPressure);
+    }
+    if static_p_pa <= 0.0 {
+        return Err(AirspeedError::InvalidPressure);
