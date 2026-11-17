@@ -167,6 +167,22 @@ fn normalize_gradient(g: [f32; 4]) -> [f32; 4] {
     ]
 }
 
+fn integrate_step(
+    q: Quaternion,
+    qw: [f32; 4],
+    sh: [f32; 4],
+    beta: f32,
+    dt: f32,
+) -> Result<Quaternion, MadgwickAhrsError> {
+    let next = Quaternion::new(
+        q.w + (qw[0] - beta * sh[0]) * dt,
+        q.x + (qw[1] - beta * sh[1]) * dt,
+        q.y + (qw[2] - beta * sh[2]) * dt,
+        q.z + (qw[3] - beta * sh[3]) * dt,
+    );
+    Ok(next.normalize()?)
+}
+
 fn validate_imu(
     gyro: [f32; 3],
     accel: [f32; 3],
