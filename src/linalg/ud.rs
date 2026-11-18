@@ -4,7 +4,6 @@ use super::LinalgError;
 use crate::math::Mat;
 
 /// Returns `(U, D)` with `U D U^T = P`, where `U` has a unit diagonal.
-#[allow(clippy::needless_range_loop)]
 pub fn ud_factor<const N: usize>(p: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]), LinalgError> {
     if !p.0.iter().flatten().all(|v| v.is_finite()) {
         return Err(LinalgError::NonFinite);
@@ -30,7 +29,6 @@ pub fn ud_factor<const N: usize>(p: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]),
 }
 
 /// Rebuilds `U D U^T` from its factors.
-#[allow(clippy::needless_range_loop)]
 pub fn ud_reconstruct<const N: usize>(u: &Mat<N, N>, d: &[f32; N]) -> Mat<N, N> {
     let mut ud = *u;
     for r in 0..N {
