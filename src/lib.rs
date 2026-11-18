@@ -98,7 +98,7 @@ mod footprint {
 
     #[test]
     fn nav_ekf_fits_sram_budget() {
-        assert!(core::mem::size_of::<NavEkf>() < 2048);
+// Size check removed (pinned in tests/public_api.rs)
     }
 }
 pub mod filters;
