@@ -16,7 +16,6 @@ pub fn spd_solve<const N: usize>(a: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N]
 }
 
 /// Inverts SPD `A` by solving against each unit vector.
-#[allow(clippy::needless_range_loop)]
 pub fn spd_inverse<const N: usize>(a: &Mat<N, N>) -> Result<Mat<N, N>, LinalgError> {
     let l = cholesky(a)?;
     let lt = l.transpose();

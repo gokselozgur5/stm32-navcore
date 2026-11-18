@@ -30,7 +30,6 @@ fn jacobi_rotation(app: f32, aqq: f32, apq: f32) -> (f32, f32) {
 }
 
 /// Applies a similarity transformation for pair `(p, q)` to `a` and updates `v`.
-#[allow(clippy::needless_range_loop)]
 fn apply_jacobi_step<const N: usize>(
     a: &mut Mat<N, N>,
     v: &mut Mat<N, N>,
@@ -70,7 +69,6 @@ fn off_diagonal_norm_sq<const N: usize>(a: &Mat<N, N>) -> f32 {
 }
 
 /// Computes a single cyclic Jacobi sweep over all pairs `(p, q)`.
-#[allow(clippy::needless_range_loop)]
 fn cyclic_jacobi_sweep<const N: usize>(a: &mut Mat<N, N>, v: &mut Mat<N, N>) {
     for p in 0..N {
         for q in (p + 1)..N {
@@ -103,7 +101,6 @@ fn validate_finite<const N: usize>(a: &Mat<N, N>) -> Result<(), LinalgError> {
 }
 
 /// Computes eigenvalues and eigenvectors of real symmetric matrix `a`.
-#[allow(clippy::needless_range_loop)]
 pub fn jacobi_eig<const N: usize>(a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
     validate_finite(a)?;
     let mut d = *a;

@@ -8,15 +8,14 @@ The only dependency is `libm`. Library code never touches `std` or the heap.
 
 ## Modules
 
-| Module | Purpose |
-| --- | --- |
-| `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading |
-| `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating |
-| `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames |
-| `fdir` | Dual-IMU fault detection and switchover (`DualImuManager`) |
-| `sensors` | Flight sensor drivers and codecs: BMI088, ICM-42688-P, DPS310, IST8310 |
-| `ubx` | Zero-alloc u-blox UBX parser for NAV-PVT and NAV-RELPOSNED |
-
+| Module | Purpose | Precision |
+| --- | --- | --- |
+| `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading | f64 |
+| `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating | f64 |
+| `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames | f32 |
+| `fdir` | Dual-IMU fault detection and switchover (`DualImuManager`) | f32 |
+| `sensors` | Flight sensor drivers and codecs: BMI088, ICM-42688-P, DPS310, IST8310 | f32 |
+| `ubx` | Zero-alloc u-blox UBX parser for NAV-PVT and NAV-RELPOSNED | f32 |
 The crate root re-exports `StationaryDetector`, `DualImuManager`, `ImuId`, `ImuReading`, `CalibrationBlock`, `UbxMessage`, `UbxNavPvt`, `UbxNavRelPosNed`, and `UbxParser`.
 
 The data flow between these modules is described in [`docs/architecture.md`](docs/architecture.md).
