@@ -56,7 +56,7 @@ fn math_and_ekf_layout_is_packed_f32() {
     assert_eq!(align_of::<Quaternion>(), 4);
     assert_eq!(size_of::<Mat<3, 3>>(), 36);
     assert_eq!(align_of::<Mat<3, 3>>(), 4);
-    assert_eq!(size_of::<NavEkf>(), 300);
+    assert_eq!(size_of::<NavEkf>(), 300, "NavEkf size budget exceeded");
     assert_eq!(align_of::<NavEkf>(), 4);
 }
 
