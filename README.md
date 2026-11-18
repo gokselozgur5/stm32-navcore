@@ -8,15 +8,15 @@ The only dependency is `libm`. Library code never touches `std` or the heap.
 
 ## Modules
 
-| Module | Purpose |
-| --- | --- |
-| `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading |
-| `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating |
-| `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames |
-| `fdir` | Dual-IMU fault detection and switchover (`DualImuManager`) |
-| `sensors` | Flight sensor drivers and codecs: BMI088, ICM-42688-P, DPS310, IST8310 |
-| `ubx` | Zero-alloc u-blox UBX parser for NAV-PVT and NAV-RELPOSNED |
-
+| Module | Purpose | Precision |
+| --- | --- | --- |
+| `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading | f64 |
+| `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating | f64 |
+| `ins_strapdown` | Deterministic INS strapdown integration and Coriolis compensator | f64 |
+| `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames | f32 |
+| `fdir` | Dual-IMU fault detection and switchover (`DualImuManager`) | f32 |
+| `sensors` | Flight sensor drivers and codecs: BMI088, ICM-42688-P, DPS310, IST8310 | f32 |
+| `ubx` | Zero-alloc u-blox UBX parser for NAV-PVT and NAV-RELPOSNED | f32 |
 The crate root re-exports `StationaryDetector`, `DualImuManager`, `ImuId`, `ImuReading`, `CalibrationBlock`, `UbxMessage`, `UbxNavPvt`, `UbxNavRelPosNed`, and `UbxParser`.
 
 The data flow between these modules is described in [`docs/architecture.md`](docs/architecture.md).
@@ -96,6 +96,11 @@ cargo check --target thumbv7em-none-eabihf
 ## Memory footprint
 
 Sizes measured with `core::mem::size_of`. None of the listed types has a `usize` field, and each has 4-byte alignment, so the values match on `thumbv7em-none-eabihf`.
+
+> [!NOTE]
+> The `thumbv7em-none-eabihf` target uses a Cortex-M4F CPU, which has a hardware FPU limited to single-precision (f32) floats.
+> Modules marked as `f64` use software-based floating-point emulation, which increases code size and execution latency.
+> Approximately 17 source files contain double-precision (f64) arithmetic.
 
 | Type | Bytes |
 | --- | --- |

@@ -172,7 +172,9 @@ pub fn instantaneous_wind_from_course(
 }
 
 /// Calculate wind speed and meteorological/trajectory directions from wind vector.
-pub fn wind_speed_and_direction(wind_ne_mps: [f32; 2]) -> Result<WindVectorInfo, WindEstimatorError> {
+pub fn wind_speed_and_direction(
+    wind_ne_mps: [f32; 2],
+) -> Result<WindVectorInfo, WindEstimatorError> {
     if !wind_ne_mps[0].is_finite() || !wind_ne_mps[1].is_finite() {
         return Err(WindEstimatorError::NonFinite);
     }
@@ -213,7 +215,10 @@ pub fn decompose_relative_wind(
 }
 
 /// Calculate wind correction angle (drift angle) in radians: `WCA = course - heading`.
-pub fn wind_correction_angle_rad(course_rad: f32, heading_rad: f32) -> Result<f32, WindEstimatorError> {
+pub fn wind_correction_angle_rad(
+    course_rad: f32,
+    heading_rad: f32,
+) -> Result<f32, WindEstimatorError> {
     if !course_rad.is_finite() || !heading_rad.is_finite() {
         return Err(WindEstimatorError::NonFinite);
     }

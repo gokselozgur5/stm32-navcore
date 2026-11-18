@@ -29,7 +29,6 @@ impl<const R: usize, const C: usize> Mat<R, C> {
 }
 
 impl<const R: usize, const C: usize> Mat<R, C> {
-    #[allow(clippy::needless_range_loop)]
     pub fn add(&self, other: &Self) -> Self {
         let mut out = [[0.0; C]; R];
         for r in 0..R {
@@ -40,7 +39,6 @@ impl<const R: usize, const C: usize> Mat<R, C> {
         Self(out)
     }
 
-    #[allow(clippy::needless_range_loop)]
     pub fn sub(&self, other: &Self) -> Self {
         let mut out = [[0.0; C]; R];
         for r in 0..R {
@@ -53,7 +51,6 @@ impl<const R: usize, const C: usize> Mat<R, C> {
 }
 
 impl<const R: usize, const C: usize> Mat<R, C> {
-    #[allow(clippy::needless_range_loop)]
     pub fn matmul<const K: usize>(&self, other: &Mat<C, K>) -> Mat<R, K> {
         let mut out = [[0.0; K]; R];
         for r in 0..R {
@@ -70,7 +67,6 @@ impl<const R: usize, const C: usize> Mat<R, C> {
 }
 
 impl<const R: usize, const C: usize> Mat<R, C> {
-    #[allow(clippy::needless_range_loop)]
     pub fn transpose(&self) -> Mat<C, R> {
         let mut out = [[0.0; R]; C];
         for r in 0..R {
@@ -83,7 +79,6 @@ impl<const R: usize, const C: usize> Mat<R, C> {
 }
 
 impl<const N: usize> Mat<N, N> {
-    #[allow(clippy::needless_range_loop)]
     pub fn symmetrize(&self) -> Self {
         let mut out = [[0.0; N]; N];
         for r in 0..N {
