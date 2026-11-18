@@ -4,7 +4,6 @@ use super::LinalgError;
 use crate::math::Mat;
 
 /// Returns `(L, D)` with `L D L^T = A`, where `L` has a unit diagonal.
-#[allow(clippy::needless_range_loop)]
 pub fn ldl<const N: usize>(a: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]), LinalgError> {
     if !a.0.iter().flatten().all(|v| v.is_finite()) {
         return Err(LinalgError::NonFinite);
@@ -30,7 +29,6 @@ pub fn ldl<const N: usize>(a: &Mat<N, N>) -> Result<(Mat<N, N>, [f32; N]), Linal
 }
 
 /// Rebuilds `L D L^T` from its factors.
-#[allow(clippy::needless_range_loop)]
 pub fn ldl_reconstruct<const N: usize>(l: &Mat<N, N>, d: &[f32; N]) -> Mat<N, N> {
     let mut ld = *l;
     for r in 0..N {
@@ -60,7 +58,6 @@ pub fn ldl_log_det<const N: usize>(d: &[f32; N]) -> f32 {
 }
 
 /// Solves `A x = b` for SPD matrix `A` decomposed into `(L, D)` via `ldl`.
-#[allow(clippy::needless_range_loop)]
 pub fn ldl_solve<const N: usize>(
     l: &Mat<N, N>,
     d: &[f32; N],
