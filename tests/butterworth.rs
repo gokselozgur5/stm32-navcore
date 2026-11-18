@@ -31,7 +31,7 @@ fn test_cutoff_and_high_frequency_attenuation() {
             max_high = max_high.max(y_high.abs());
         }
     }
-    assert!((max_cut - 0.7071).abs() < 0.05);
+    assert!((max_cut - core::f32::consts::FRAC_1_SQRT_2).abs() < 0.05);
     assert!(max_high < 0.02);
 }
 
