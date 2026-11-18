@@ -37,7 +37,10 @@ fn test_correct_gyro_sample() {
     assert!((corr[2] - 0.01).abs() < 1e-6);
 
     let nan_raw = [f32::NAN, 0.0, 0.0];
-    assert_eq!(correct_gyro_sample(nan_raw, bias), Err(GyroBiasError::NonFinite));
+    assert_eq!(
+        correct_gyro_sample(nan_raw, bias),
+        Err(GyroBiasError::NonFinite)
+    );
 }
 
 #[test]
@@ -48,8 +51,14 @@ fn test_clamp_bias_vector() {
     assert!((clamped[1] - (-0.1)).abs() < 1e-6);
     assert!((clamped[2] - 0.05).abs() < 1e-6);
 
-    assert_eq!(clamp_bias_vector(bias, 0.0), Err(GyroBiasError::InvalidLimit));
-    assert_eq!(clamp_bias_vector([f32::INFINITY, 0.0, 0.0], 0.1), Err(GyroBiasError::NonFinite));
+    assert_eq!(
+        clamp_bias_vector(bias, 0.0),
+        Err(GyroBiasError::InvalidLimit)
+    );
+    assert_eq!(
+        clamp_bias_vector([f32::INFINITY, 0.0, 0.0], 0.1),
+        Err(GyroBiasError::NonFinite)
+    );
 }
 
 #[test]
@@ -69,9 +78,18 @@ fn test_apply_bias_slew_limit() {
 fn test_apply_bias_slew_limit_errors() {
     let prev = [0.0, 0.0, 0.0];
     let next = [0.01, 0.0, 0.0];
-    assert_eq!(apply_bias_slew_limit(next, prev, 0.01, -0.1), Err(GyroBiasError::InvalidSampleInterval));
-    assert_eq!(apply_bias_slew_limit(next, prev, 0.0, 0.1), Err(GyroBiasError::InvalidLimit));
-    assert_eq!(apply_bias_slew_limit([f32::NAN, 0.0, 0.0], prev, 0.01, 0.1), Err(GyroBiasError::NonFinite));
+    assert_eq!(
+        apply_bias_slew_limit(next, prev, 0.01, -0.1),
+        Err(GyroBiasError::InvalidSampleInterval)
+    );
+    assert_eq!(
+        apply_bias_slew_limit(next, prev, 0.0, 0.1),
+        Err(GyroBiasError::InvalidLimit)
+    );
+    assert_eq!(
+        apply_bias_slew_limit([f32::NAN, 0.0, 0.0], prev, 0.01, 0.1),
+        Err(GyroBiasError::NonFinite)
+    );
 }
 
 #[test]
@@ -88,8 +106,14 @@ fn test_track_bias_from_error_integral() {
     assert!(bias[1] < -0.01);
     assert_eq!(bias[2], 0.0);
 
-    assert_eq!(track_bias_from_error(bias, error, ki, -0.1, max_bias), Err(GyroBiasError::InvalidSampleInterval));
-    assert_eq!(track_bias_from_error(bias, error, -0.1, dt, max_bias), Err(GyroBiasError::InvalidGain));
+    assert_eq!(
+        track_bias_from_error(bias, error, ki, -0.1, max_bias),
+        Err(GyroBiasError::InvalidSampleInterval)
+    );
+    assert_eq!(
+        track_bias_from_error(bias, error, -0.1, dt, max_bias),
+        Err(GyroBiasError::InvalidGain)
+    );
 }
 
 #[test]

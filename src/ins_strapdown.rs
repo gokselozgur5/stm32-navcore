@@ -116,7 +116,11 @@ pub fn transport_rate_ned(
     let tan_lat = libm::tan(lat_rad);
     let v_n = vel_ned[0];
     let v_e = vel_ned[1];
-    Ok([v_e / (r_n + alt_m), -v_n / (r_m + alt_m), -v_e * tan_lat / (r_n + alt_m)])
+    Ok([
+        v_e / (r_n + alt_m),
+        -v_n / (r_m + alt_m),
+        -v_e * tan_lat / (r_n + alt_m),
+    ])
 }
 
 /// Computes Coriolis and transport acceleration in NED frame.
@@ -139,8 +143,12 @@ pub fn coriolis_acceleration(
 pub fn somigliana_gravity(lat_rad: f64, alt_m: f64) -> Result<f64, InsStrapdownError> {
     crate::gravity_wgs84::normal_gravity_elevation(lat_rad, alt_m).map_err(|e| match e {
         crate::gravity_wgs84::Wgs84GravityError::NonFinite => InsStrapdownError::NonFinite,
-        crate::gravity_wgs84::Wgs84GravityError::InvalidLatitude => InsStrapdownError::InvalidLatitude,
-        crate::gravity_wgs84::Wgs84GravityError::InvalidAltitude => InsStrapdownError::InvalidAltitude,
+        crate::gravity_wgs84::Wgs84GravityError::InvalidLatitude => {
+            InsStrapdownError::InvalidLatitude
+        }
+        crate::gravity_wgs84::Wgs84GravityError::InvalidAltitude => {
+            InsStrapdownError::InvalidAltitude
+        }
         crate::gravity_wgs84::Wgs84GravityError::SingularRadius => InsStrapdownError::NonFinite,
     })
 }
@@ -213,7 +221,12 @@ pub fn quat_normalize(q: [f64; 4]) -> Result<[f64; 4], InsStrapdownError> {
         return Err(InsStrapdownError::SingularQuaternion);
     }
     let inv_norm = 1.0 / libm::sqrt(norm_sq);
-    Ok([q[0] * inv_norm, q[1] * inv_norm, q[2] * inv_norm, q[3] * inv_norm])
+    Ok([
+        q[0] * inv_norm,
+        q[1] * inv_norm,
+        q[2] * inv_norm,
+        q[3] * inv_norm,
+    ])
 }
 
 /// Rotates 3D vector v from body frame to navigation frame via quaternion.
@@ -242,7 +255,11 @@ pub fn quat_mul(p: [f64; 4], q: [f64; 4]) -> [f64; 4] {
 }
 
 /// Integrates attitude quaternion with angular rate vector omega_b over dt.
-pub fn quat_integrate(q: [f64; 4], omega: [f64; 3], dt_s: f64) -> Result<[f64; 4], InsStrapdownError> {
+pub fn quat_integrate(
+    q: [f64; 4],
+    omega: [f64; 3],
+    dt_s: f64,
+) -> Result<[f64; 4], InsStrapdownError> {
     let theta_sq = (omega[0] * omega[0] + omega[1] * omega[1] + omega[2] * omega[2]) * dt_s * dt_s;
     let theta = libm::sqrt(theta_sq);
     let (s, c) = if theta < 1e-8 {
@@ -454,8 +471,14 @@ mod tests {
         assert!((rn_eq - WGS84_A).abs() < 1e-6);
         assert!(rm_eq < rn_eq);
         assert!((rm_eq - WGS84_A * (1.0 - WGS84_E2)).abs() < 1e-4);
-        assert_eq!(meridian_radius(2.0), Err(InsStrapdownError::InvalidLatitude));
-        assert_eq!(transverse_radius(f64::NAN), Err(InsStrapdownError::NonFinite));
+        assert_eq!(
+            meridian_radius(2.0),
+            Err(InsStrapdownError::InvalidLatitude)
+        );
+        assert_eq!(
+            transverse_radius(f64::NAN),
+            Err(InsStrapdownError::NonFinite)
+        );
     }
 
     #[test]
@@ -495,7 +518,10 @@ mod tests {
         let q_rot = quat_integrate(q_id, [0.0, 0.0, 0.0], 0.1).expect("int zero");
         assert_eq!(q_rot, q_id);
         let q_deg = [0.0, 0.0, 0.0, 0.0];
-        assert_eq!(quat_normalize(q_deg), Err(InsStrapdownError::SingularQuaternion));
+        assert_eq!(
+            quat_normalize(q_deg),
+            Err(InsStrapdownError::SingularQuaternion)
+        );
     }
 
     #[test]
@@ -503,21 +529,34 @@ mod tests {
         let initial_state = StrapdownState::new(0.0, 0.0, 0.0);
         let mut ins = InsStrapdownIntegrator::new(initial_state);
         let g = somigliana_gravity(0.0, 0.0).expect("gravity");
-        let st = ins.step([0.0, 0.0, -g], [0.0, 0.0, 0.0], 0.01).expect("step");
+        let st = ins
+            .step([0.0, 0.0, -g], [0.0, 0.0, 0.0], 0.01)
+            .expect("step");
         assert!(st.vel_ned[0].abs() < 1e-6);
         assert!(st.vel_ned[1].abs() < 1e-6);
         assert!(st.vel_ned[2].abs() < 1e-6);
         let mut ff_ins = InsStrapdownIntegrator::new(initial_state);
-        let ff_st = ff_ins.step([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 1.0).expect("ff");
+        let ff_st = ff_ins
+            .step([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 1.0)
+            .expect("ff");
         assert!((ff_st.vel_ned[2] - g).abs() < 1e-4);
     }
 
     #[test]
     fn test_input_validation_and_errors() {
         let mut ins = InsStrapdownIntegrator::new(StrapdownState::new(0.0, 0.0, 0.0));
-        assert_eq!(ins.step([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 0.0), Err(InsStrapdownError::InvalidDeltaTime));
-        assert_eq!(ins.step([f64::NAN, 0.0, 0.0], [0.0, 0.0, 0.0], 0.1), Err(InsStrapdownError::NonFinite));
-        assert_eq!(ins.step([0.0, 0.0, 0.0], [f64::INFINITY, 0.0, 0.0], 0.1), Err(InsStrapdownError::NonFinite));
+        assert_eq!(
+            ins.step([0.0, 0.0, 0.0], [0.0, 0.0, 0.0], 0.0),
+            Err(InsStrapdownError::InvalidDeltaTime)
+        );
+        assert_eq!(
+            ins.step([f64::NAN, 0.0, 0.0], [0.0, 0.0, 0.0], 0.1),
+            Err(InsStrapdownError::NonFinite)
+        );
+        assert_eq!(
+            ins.step([0.0, 0.0, 0.0], [f64::INFINITY, 0.0, 0.0], 0.1),
+            Err(InsStrapdownError::NonFinite)
+        );
         let err = InsStrapdownError::InvalidLatitude;
         assert_eq!(format!("{}", err), "latitude must be within [-pi/2, pi/2]");
     }
@@ -526,11 +565,15 @@ mod tests {
     fn test_trajectory_and_step_f32() {
         let mut ins = InsStrapdownIntegrator::new(StrapdownState::new(0.0, 0.0, 0.0));
         let g = somigliana_gravity(0.0, 0.0).expect("gravity");
-        let st = ins.step([10.0, 0.0, -g], [0.0, 0.0, 0.0], 1.0).expect("step");
+        let st = ins
+            .step([10.0, 0.0, -g], [0.0, 0.0, 0.0], 1.0)
+            .expect("step");
         assert!((st.vel_ned[0] - 10.0).abs() < 1e-4);
         assert!((st.pos_ned[0] - 5.0).abs() < 1e-4);
         assert!(st.lat_rad > 0.0);
-        let st_f32 = ins.step_f32([0.0f32, 0.0f32, -g as f32], [0.0f32; 3], 0.1f32).expect("f32");
+        let st_f32 = ins
+            .step_f32([0.0f32, 0.0f32, -g as f32], [0.0f32; 3], 0.1f32)
+            .expect("f32");
         assert!(st_f32.pos_ned[0] > 5.0);
     }
 }

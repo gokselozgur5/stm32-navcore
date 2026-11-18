@@ -22,7 +22,6 @@ fn test_stationary_dr_invariance() {
     assert_eq!(next.height_m, state.height_m);
 }
 
-
 #[test]
 fn test_eastward_displacement_step() {
     let state = DeadReckoningState::new(0.0, 0.0, 0.0, 0.0, 100.0, 0.0);
@@ -32,7 +31,6 @@ fn test_eastward_displacement_step() {
     assert_eq!(next.height_m, 0.0);
 }
 
-
 #[test]
 fn test_northward_displacement_step() {
     let state = DeadReckoningState::new(0.0, 0.0, 0.0, 100.0, 0.0, 0.0);
@@ -41,7 +39,6 @@ fn test_northward_displacement_step() {
     assert_eq!(next.lon_rad, 0.0);
     assert_eq!(next.height_m, 0.0);
 }
-
 
 #[test]
 fn test_vertical_displacement_step() {
