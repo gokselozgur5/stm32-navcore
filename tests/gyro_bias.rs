@@ -94,9 +94,11 @@ fn test_track_bias_from_error_integral() {
 
 #[test]
 fn test_stationary_bias_tracking() {
-    let mut cfg = GyroBiasConfig::default();
-    cfg.max_drift_rate_rad_s2 = 1.0;
-    cfg.stationary_learning_rate = 0.1;
+    let cfg = GyroBiasConfig {
+        max_drift_rate_rad_s2: 1.0,
+        stationary_learning_rate: 0.1,
+        ..Default::default()
+    };
     let mut tracker = GyroBiasTracker::new(cfg).unwrap();
 
     let static_sample = [0.02f32, -0.015f32, 0.005f32];
@@ -125,9 +127,11 @@ fn test_stationary_rejection_on_motion() {
 
 #[test]
 fn test_tracker_reference_update_and_reset() {
-    let mut cfg = GyroBiasConfig::default();
-    cfg.max_drift_rate_rad_s2 = 1.0;
-    cfg.ki = 0.5;
+    let cfg = GyroBiasConfig {
+        max_drift_rate_rad_s2: 1.0,
+        ki: 0.5,
+        ..Default::default()
+    };
     let mut tracker = GyroBiasTracker::new(cfg).unwrap();
 
     let raw = [0.03, -0.02, 0.01];
