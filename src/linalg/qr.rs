@@ -43,7 +43,6 @@ impl Givens {
 
 impl Givens {
     /// Applies rotation to rows `j` and `i` of matrix `r`.
-    #[allow(clippy::needless_range_loop)]
     pub fn apply_rows<const M: usize, const N: usize>(
         &self,
         r: &mut Mat<M, N>,
@@ -59,7 +58,6 @@ impl Givens {
     }
 
     /// Applies transpose rotation to columns `j` and `i` of `q`.
-    #[allow(clippy::needless_range_loop)]
     pub fn apply_cols<const M: usize>(&self, q: &mut Mat<M, M>, j: usize, i: usize) {
         for k in 0..M {
             let q_j = q.0[k][j];

@@ -3,7 +3,6 @@
 use super::LinalgError;
 use crate::math::Mat;
 
-#[allow(clippy::needless_range_loop)]
 fn project_qt_b<const M: usize, const N: usize>(q: &Mat<M, M>, b: &[f32; M]) -> [f32; N] {
     let mut c = [0.0f32; N];
     for j in 0..N {
@@ -14,7 +13,6 @@ fn project_qt_b<const M: usize, const N: usize>(q: &Mat<M, M>, b: &[f32; M]) -> 
     c
 }
 
-#[allow(clippy::needless_range_loop)]
 fn solve_lstsq_qr<const M: usize, const N: usize>(
     q: &Mat<M, M>,
     r: &Mat<M, N>,
