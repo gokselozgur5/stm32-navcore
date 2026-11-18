@@ -40,7 +40,7 @@ impl ButterworthCoefficients {
         }
         let k = tanf(PI * cutoff_hz * sample_interval_s);
         let k2 = k * k;
-        let sqrt2_k = 1.41421356f32 * k;
+        let sqrt2_k = core::f32::consts::SQRT_2 * k;
         let a0 = 1.0 + sqrt2_k + k2;
         let inv_a0 = 1.0 / a0;
 
