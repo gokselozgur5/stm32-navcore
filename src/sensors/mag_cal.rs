@@ -27,7 +27,6 @@ impl Default for MagMinMax {
 
 impl MagMinMax {
     /// Folds one raw sample into the running extremes.
-    #[allow(clippy::needless_range_loop)]
     pub fn update(&mut self, s: [f32; 3]) {
         for i in 0..3 {
             self.min[i] = self.min[i].min(s[i]);
@@ -163,7 +162,6 @@ impl Default for SphereFit {
 
 impl SphereFit {
     /// Adds one raw sample to the normal equations.
-    #[allow(clippy::needless_range_loop)]
     pub fn add(&mut self, s: [f32; 3]) {
         let (x, y, z) = (s[0] as f64, s[1] as f64, s[2] as f64);
         let row = [x, y, z, 1.0];
@@ -179,7 +177,6 @@ impl SphereFit {
 }
 
 /// Gauss-Jordan solve of a 4x4 augmented system; `None` if singular.
-#[allow(clippy::needless_range_loop)]
 fn solve4(mut a: [[f64; 5]; 4]) -> Option<[f64; 4]> {
     for i in 0..4 {
         let mut p = i;
@@ -208,7 +205,6 @@ fn solve4(mut a: [[f64; 5]; 4]) -> Option<[f64; 4]> {
 impl SphereFit {
     /// Solves for `(centre, radius)`; `None` with fewer than four samples
     /// or a singular system.
-    #[allow(clippy::needless_range_loop)]
     pub fn solve(&self) -> Option<([f32; 3], f32)> {
         if self.count < 4 {
             return None;
@@ -241,7 +237,6 @@ impl MagCoverage {
     }
 
     /// Marks the octant of `s` relative to `centre`.
-    #[allow(clippy::needless_range_loop)]
     pub fn add(&mut self, s: [f32; 3], centre: [f32; 3]) {
         let mut bit = 0;
         for i in 0..3 {
