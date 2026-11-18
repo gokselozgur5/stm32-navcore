@@ -2,6 +2,16 @@
 
 use crate::math::{MathError, Quaternion};
 
+pub struct MahonyInputs {
+    pub gyro: [f32; 3],
+    pub accel: [f32; 3],
+    pub mag: Option<[f32; 3]>,
+    pub gyro_bias: [f32; 3],
+    pub kp: f32,
+    pub ki: f32,
+    pub dt: f32,
+}
+
 /// Error conditions for Mahony AHRS operations.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MahonyAhrsError {
