@@ -94,7 +94,6 @@ pub use wmm_declination::{
 
 #[cfg(test)]
 mod footprint {
-    use crate::ekf::NavEkf;
 
     #[test]
     fn nav_ekf_fits_sram_budget() {
