@@ -111,7 +111,6 @@ const PIVOT_FLOOR_EPS: f32 = 16.0;
 /// Symmetry tolerance relative to sqrt(P_ii * P_jj).
 const SYMMETRY_REL_TOL: f32 = 1e-4;
 
-#[allow(clippy::needless_range_loop)]
 fn cholesky_is_positive(m: &Mat<STATE_DIM, STATE_DIM>) -> bool {
     let mut l = [[0.0f32; STATE_DIM]; STATE_DIM];
     for j in 0..STATE_DIM {
@@ -320,7 +319,6 @@ mod gyro_bias_clamp_scenario_tests {
 }
 
 impl NavEkf {
-    #[allow(clippy::needless_range_loop)]
     fn apply_scalar_joseph_cov(&mut self, k: [f32; STATE_DIM], h: [f32; STATE_DIM], r: f32) {
         let mut i_kh = Mat::<STATE_DIM, STATE_DIM>::identity();
         for i in 0..STATE_DIM {
@@ -342,7 +340,6 @@ impl NavEkf {
 }
 
 impl NavEkf {
-    #[allow(clippy::needless_range_loop)]
     fn compute_ph_t_and_s(
         &self,
         h: [f32; STATE_DIM],
@@ -864,7 +861,6 @@ impl AccelBiasEstimator {
 
 impl AccelBiasEstimator {
     /// Fuses one stationary sample against the expected specific force R^T * [0, 0, -g].
-    #[allow(clippy::needless_range_loop)]
     pub fn update(&mut self, att: &Quaternion, accel_body: [f32; 3]) -> Result<(), EkfError> {
         check_finite_3(accel_body)?;
         if !self.r_mps2_sq.is_finite() || self.r_mps2_sq <= 0.0 {
@@ -889,7 +885,6 @@ mod accel_bias_tests {
     const BIAS: [f32; 3] = [0.12, -0.08, 0.2];
 
     #[test]
-    #[allow(clippy::needless_range_loop)]
     fn converges_to_known_bias_under_noise() {
         let mut est = AccelBiasEstimator::new(1.0, 0.01);
         let mut seed = 0x2468_ace1u32;
@@ -911,7 +906,6 @@ mod accel_bias_tilt_tests {
     use super::*;
 
     #[test]
-    #[allow(clippy::needless_range_loop)]
     fn tilted_attitude_uses_rotated_gravity() {
         let roll = 0.3f32;
         let att = Quaternion::new(libm::cosf(0.5 * roll), libm::sinf(0.5 * roll), 0.0, 0.0);
