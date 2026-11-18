@@ -66,10 +66,7 @@ impl Default for GyroBiasConfig {
 }
 
 /// Correct raw gyroscope measurement with estimated bias.
-pub fn correct_gyro_sample(
-    raw: [f32; 3],
-    bias: [f32; 3],
-) -> Result<[f32; 3], GyroBiasError> {
+pub fn correct_gyro_sample(raw: [f32; 3], bias: [f32; 3]) -> Result<[f32; 3], GyroBiasError> {
     for i in 0..3 {
         if !raw[i].is_finite() || !bias[i].is_finite() {
             return Err(GyroBiasError::NonFinite);
@@ -79,10 +76,7 @@ pub fn correct_gyro_sample(
 }
 
 /// Clamp bias vector components to allowable maximum absolute value.
-pub fn clamp_bias_vector(
-    bias: [f32; 3],
-    max_bias: f32,
-) -> Result<[f32; 3], GyroBiasError> {
+pub fn clamp_bias_vector(bias: [f32; 3], max_bias: f32) -> Result<[f32; 3], GyroBiasError> {
     if !max_bias.is_finite() || max_bias <= 0.0 {
         return Err(GyroBiasError::InvalidLimit);
     }
@@ -245,9 +239,8 @@ impl GyroBiasTracker {
             Ok(c) => c,
             Err(_) => return false,
         };
-        let mag_sq = corrected[0] * corrected[0]
-            + corrected[1] * corrected[1]
-            + corrected[2] * corrected[2];
+        let mag_sq =
+            corrected[0] * corrected[0] + corrected[1] * corrected[1] + corrected[2] * corrected[2];
         let thresh = self.config.stationary_threshold_rad_s;
         mag_sq <= thresh * thresh
     }

@@ -26,9 +26,18 @@ fn test_mahony_invalid_dt_rejected() {
     let g_ok = [0.0, 0.0, 0.0];
     let a_ok = [0.0, 0.0, 9.81];
 
-    assert_eq!(ahrs.update(g_ok, a_ok, 0.0), Err(MahonyAhrsError::InvalidDt));
-    assert_eq!(ahrs.update(g_ok, a_ok, -0.01), Err(MahonyAhrsError::InvalidDt));
-    assert_eq!(ahrs.update(g_ok, a_ok, f32::NAN), Err(MahonyAhrsError::InvalidDt));
+    assert_eq!(
+        ahrs.update(g_ok, a_ok, 0.0),
+        Err(MahonyAhrsError::InvalidDt)
+    );
+    assert_eq!(
+        ahrs.update(g_ok, a_ok, -0.01),
+        Err(MahonyAhrsError::InvalidDt)
+    );
+    assert_eq!(
+        ahrs.update(g_ok, a_ok, f32::NAN),
+        Err(MahonyAhrsError::InvalidDt)
+    );
 }
 
 #[test]
@@ -38,10 +47,16 @@ fn test_mahony_non_finite_inputs_rejected() {
     let a_ok = [0.0, 0.0, 9.81];
 
     let g_nan = [f32::NAN, 0.0, 0.0];
-    assert_eq!(ahrs.update(g_nan, a_ok, 0.01), Err(MahonyAhrsError::NonFinite));
+    assert_eq!(
+        ahrs.update(g_nan, a_ok, 0.01),
+        Err(MahonyAhrsError::NonFinite)
+    );
 
     let a_inf = [0.0, f32::INFINITY, 9.81];
-    assert_eq!(ahrs.update(g_ok, a_inf, 0.01), Err(MahonyAhrsError::NonFinite));
+    assert_eq!(
+        ahrs.update(g_ok, a_inf, 0.01),
+        Err(MahonyAhrsError::NonFinite)
+    );
 }
 
 #[test]

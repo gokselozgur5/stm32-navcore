@@ -2,7 +2,7 @@
 
 use crate::math::{MathError, Quaternion};
 
-pub pub struct MahonyInputs {
+pub struct MahonyInputs {
     pub gyro: [f32; 3],
     pub accel: [f32; 3],
     pub mag: [f32; 3],
@@ -140,7 +140,11 @@ impl MahonyAhrs {
         let q_conj = Quaternion::new(q.w, -q.x, -q.y, -q.z);
         let w = q_conj.rotate_vec([bx, 0.0, bz]);
 
-        [my * w[2] - mz * w[1], mz * w[0] - mx * w[2], mx * w[1] - my * w[0]]
+        [
+            my * w[2] - mz * w[1],
+            mz * w[0] - mx * w[2],
+            mx * w[1] - my * w[0],
+        ]
     }
 }
 
@@ -224,7 +228,14 @@ pub fn mahony_ahrs_9dof_step(
     let ea = MahonyAhrs::compute_gravity_error(&q, inputs.accel);
     let em = MahonyAhrs::compute_mag_error(&q, inputs.mag);
     let e = [ea[0] + em[0], ea[1] + em[1], ea[2] + em[2]];
-    let (next_bias, w) = step_correction(inputs.gyro, inputs.gyro_bias, e, inputs.kp, inputs.ki, inputs.dt);
+    let (next_bias, w) = step_correction(
+        inputs.gyro,
+        inputs.gyro_bias,
+        e,
+        inputs.kp,
+        inputs.ki,
+        inputs.dt,
+    );
     let next_q = q.integrate_gyro(w, inputs.dt)?;
     Ok((next_q, next_bias))
 }

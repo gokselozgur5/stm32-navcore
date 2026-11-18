@@ -97,12 +97,7 @@ pub struct HypsometricProfile {
 
 impl HypsometricProfile {
     /// Create new profile with specified reference level and lapse rate.
-    pub fn new(
-        p_ref: f32,
-        t_ref: f32,
-        lapse: f32,
-        alt_ref: f32,
-    ) -> Result<Self, HypsometricError> {
+    pub fn new(p_ref: f32, t_ref: f32, lapse: f32, alt_ref: f32) -> Result<Self, HypsometricError> {
         validate_state(p_ref, p_ref, t_ref)?;
         if !lapse.is_finite() || lapse < 0.0 || lapse > 0.05 || !alt_ref.is_finite() {
             return Err(HypsometricError::InvalidLapseRate);
@@ -162,8 +157,7 @@ impl HypsometricProfile {
         if temp_ratio <= 0.0 {
             return Err(HypsometricError::InvalidTemperature);
         }
-        let inv_exp =
-            STANDARD_GRAVITY_M_S2 / (GAS_CONSTANT_DRY_AIR * self.lapse_rate_k_per_m);
+        let inv_exp = STANDARD_GRAVITY_M_S2 / (GAS_CONSTANT_DRY_AIR * self.lapse_rate_k_per_m);
         Ok(self.ref_pressure_pa * libm::powf(temp_ratio, inv_exp))
     }
 }
@@ -205,9 +199,7 @@ impl TempLapseCompensator {
         if !base_elevation_m.is_finite() {
             return Err(HypsometricError::NonFinite);
         }
-        if !lapse_rate_k_per_m.is_finite()
-            || lapse_rate_k_per_m < 0.0
-            || lapse_rate_k_per_m > 0.05
+        if !lapse_rate_k_per_m.is_finite() || lapse_rate_k_per_m < 0.0 || lapse_rate_k_per_m > 0.05
         {
             return Err(HypsometricError::InvalidLapseRate);
         }
