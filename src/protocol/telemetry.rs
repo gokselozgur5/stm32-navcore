@@ -1,4 +1,4 @@
-use crate::protocol::{crc16_ccitt, cobs_decode, cobs_encode, ProtocolError};
+use crate::protocol::{cobs_decode, cobs_encode, crc16_ccitt, ProtocolError};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CanFrame20B {

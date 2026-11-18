@@ -14,7 +14,14 @@ pub struct DeadReckoningState {
 
 impl DeadReckoningState {
     pub fn new(lat: f64, lon: f64, h: f64, vn: f64, ve: f64, vd: f64) -> Self {
-        Self { lat_rad: lat, lon_rad: lon, height_m: h, v_n: vn, v_e: ve, v_d: vd }
+        Self {
+            lat_rad: lat,
+            lon_rad: lon,
+            height_m: h,
+            v_n: vn,
+            v_e: ve,
+            v_d: vd,
+        }
     }
 }
 
@@ -42,8 +49,7 @@ pub fn dead_reckoning_step(
     if dt_s == 0.0 || (state.v_n == 0.0 && state.v_e == 0.0 && state.v_d == 0.0) {
         return Ok(*state);
     }
-    let (r_m, r_n) = principal_radii_of_curvature(state.lat_rad)
-        .map_err(NavError::Geo)?;
+    let (r_m, r_n) = principal_radii_of_curvature(state.lat_rad).map_err(NavError::Geo)?;
 
     let cos_lat = libm::cos(state.lat_rad);
     if cos_lat.abs() < 1e-12 {

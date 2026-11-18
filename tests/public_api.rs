@@ -2,10 +2,9 @@
 
 use stm32_navcore::{
     quat_nlerp, quat_slerp, wmm_declination_deg, wmm_declination_rad, CalibrationBlock,
-    DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
-    UbxNavRelPosNed, UbxParser, Variometer, VariometerConfig, VariometerError,
-    GyroBiasConfig, GyroBiasError, GyroBiasTracker, VarioTone, VelDampingConfig,
-    VelDampingFilter,
+    DualImuManager, GyroBiasConfig, GyroBiasError, GyroBiasTracker, ImuId, ImuReading,
+    StationaryDetector, UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser, VarioTone, Variometer,
+    VariometerConfig, VariometerError, VelDampingConfig, VelDampingFilter,
 };
 
 #[test]
