@@ -124,16 +124,7 @@ where
 
 
 
-/// Single RK4 step for high-precision N-dimensional state vector in f64.
-pub fn rk4_step_f64<const N: usize, F>(
-    t: f64,
-    y: &[f64; N],
-    dt: f64,
-    mut f: F,
-) -> Result<[f64; N], Rk4Error>
-where
-    F: FnMut(f64, &[f64; N], &mut [f64; N]),
-{
+
     if !t.is_finite() || !dt.is_finite() {
         return Err(Rk4Error::NonFinite);
     }
