@@ -294,7 +294,7 @@ impl Icm42688 {
 impl Icm42688 {
     /// Parse 20-bit packet from extended FIFO (20 bytes).
     pub fn parse_fifo_packet_20bit(buf: &[u8]) -> Option<RawSample20Bit> {
-        if buf.len() < 20 {
+        if buf.len() < 20 || buf[0] & 0x80 != 0 {
             return None;
         }
         let a = [
@@ -308,16 +308,16 @@ impl Icm42688 {
             i16::from_be_bytes([buf[11], buf[12]]),
         ];
         let temp = i16::from_be_bytes([buf[13], buf[14]]);
-        let (e1, e2, e3) = (buf[15], buf[16], buf[17]);
+        let (e1, e2, e3) = (buf[17], buf[18], buf[19]);
         let accel_20bit = [
             Self::extract_20bit(a[0], e1 >> 4),
-            Self::extract_20bit(a[1], e1),
-            Self::extract_20bit(a[2], e2 >> 4),
+            Self::extract_20bit(a[1], e2 >> 4),
+            Self::extract_20bit(a[2], e3 >> 4),
         ];
         let gyro_20bit = [
-            Self::extract_20bit(g[0], e2),
-            Self::extract_20bit(g[1], e3 >> 4),
-            Self::extract_20bit(g[2], e3),
+            Self::extract_20bit(g[0], e1 & 0x0F),
+            Self::extract_20bit(g[1], e2 & 0x0F),
+            Self::extract_20bit(g[2], e3 & 0x0F),
         ];
         Some(RawSample20Bit {
             accel_20bit,
