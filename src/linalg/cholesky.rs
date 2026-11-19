@@ -4,7 +4,6 @@ use super::LinalgError;
 use crate::math::Mat;
 
 /// Returns the lower factor `L` with `L L^T = A`, reading the lower triangle of `A`.
-#[allow(clippy::needless_range_loop)]
 pub fn cholesky<const N: usize>(a: &Mat<N, N>) -> Result<Mat<N, N>, LinalgError> {
     if !a.0.iter().flatten().all(|v| v.is_finite()) {
         return Err(LinalgError::NonFinite);

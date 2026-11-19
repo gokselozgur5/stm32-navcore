@@ -62,10 +62,22 @@ fn test_biquad_parameter_validation() {
 
     let dt = 0.001f32;
     let q = 0.707f32;
-    assert_eq!(BiquadCoefficients::try_lowpass_rbj(0.0, dt, q), Err(BiquadError::InvalidCutoffFrequency));
-    assert_eq!(BiquadCoefficients::try_lowpass_rbj(600.0, dt, q), Err(BiquadError::InvalidCutoffFrequency));
-    assert_eq!(BiquadCoefficients::try_lowpass_rbj(10.0, -0.001, q), Err(BiquadError::InvalidSampleInterval));
-    assert_eq!(BiquadCoefficients::try_lowpass_rbj(10.0, dt, 0.0), Err(BiquadError::InvalidQ));
+    assert_eq!(
+        BiquadCoefficients::try_lowpass_rbj(0.0, dt, q),
+        Err(BiquadError::InvalidCutoffFrequency)
+    );
+    assert_eq!(
+        BiquadCoefficients::try_lowpass_rbj(600.0, dt, q),
+        Err(BiquadError::InvalidCutoffFrequency)
+    );
+    assert_eq!(
+        BiquadCoefficients::try_lowpass_rbj(10.0, -0.001, q),
+        Err(BiquadError::InvalidSampleInterval)
+    );
+    assert_eq!(
+        BiquadCoefficients::try_lowpass_rbj(10.0, dt, 0.0),
+        Err(BiquadError::InvalidQ)
+    );
 }
 
 #[test]
@@ -74,8 +86,11 @@ fn test_biquad_stability_check() {
     assert!(coeffs.is_stable());
 
     let unstable = BiquadCoefficients {
-        b0: 1.0, b1: 0.0, b2: 0.0,
-        a1: 2.5, a2: 1.2,
+        b0: 1.0,
+        b1: 0.0,
+        b2: 0.0,
+        a1: 2.5,
+        a2: 1.2,
     };
     assert!(!unstable.is_stable());
 }
@@ -89,6 +104,3 @@ fn test_biquad_state_accessors() {
     let (s1, s2) = filter.state();
     assert!(s1 != 0.0 || s2 != 0.0);
 }
-
-
-

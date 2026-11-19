@@ -2,10 +2,9 @@
 
 use stm32_navcore::{
     quat_nlerp, quat_slerp, wmm_declination_deg, wmm_declination_rad, CalibrationBlock,
-    DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
-    UbxNavRelPosNed, UbxParser, Variometer, VariometerConfig, VariometerError,
-    GyroBiasConfig, GyroBiasError, GyroBiasTracker, VarioTone, VelDampingConfig,
-    VelDampingFilter,
+    DualImuManager, GyroBiasConfig, GyroBiasError, GyroBiasTracker, ImuId, ImuReading,
+    StationaryDetector, UbxMessage, UbxNavPvt, UbxNavRelPosNed, UbxParser, VarioTone, Variometer,
+    VariometerConfig, VariometerError, VelDampingConfig, VelDampingFilter,
 };
 
 #[test]
@@ -57,7 +56,7 @@ fn math_and_ekf_layout_is_packed_f32() {
     assert_eq!(align_of::<Quaternion>(), 4);
     assert_eq!(size_of::<Mat<3, 3>>(), 36);
     assert_eq!(align_of::<Mat<3, 3>>(), 4);
-    assert_eq!(size_of::<NavEkf>(), 300);
+    assert_eq!(size_of::<NavEkf>(), 300, "NavEkf size budget exceeded");
     assert_eq!(align_of::<NavEkf>(), 4);
 }
 

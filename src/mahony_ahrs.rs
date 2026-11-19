@@ -2,6 +2,16 @@
 
 use crate::math::{MathError, Quaternion};
 
+pub struct MahonyInputs {
+    pub gyro: [f32; 3],
+    pub accel: [f32; 3],
+    pub mag: [f32; 3],
+    pub gyro_bias: [f32; 3],
+    pub kp: f32,
+    pub ki: f32,
+    pub dt: f32,
+}
+
 /// Error conditions for Mahony AHRS operations.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MahonyAhrsError {
@@ -130,7 +140,11 @@ impl MahonyAhrs {
         let q_conj = Quaternion::new(q.w, -q.x, -q.y, -q.z);
         let w = q_conj.rotate_vec([bx, 0.0, bz]);
 
-        [my * w[2] - mz * w[1], mz * w[0] - mx * w[2], mx * w[1] - my * w[0]]
+        [
+            my * w[2] - mz * w[1],
+            mz * w[0] - mx * w[2],
+            mx * w[1] - my * w[0],
+        ]
     }
 }
 
@@ -208,20 +222,21 @@ pub fn mahony_ahrs_6dof_step(
 /// Perform one 9-DOF Mahony AHRS filter step with magnetometer correction.
 pub fn mahony_ahrs_9dof_step(
     q: Quaternion,
-    gyro: [f32; 3],
-    accel: [f32; 3],
-    mag: [f32; 3],
-    gyro_bias: [f32; 3],
-    kp: f32,
-    ki: f32,
-    dt: f32,
+    inputs: MahonyInputs,
 ) -> Result<(Quaternion, [f32; 3]), MahonyAhrsError> {
-    validate_9dof(gyro, accel, mag, dt)?;
-    let ea = MahonyAhrs::compute_gravity_error(&q, accel);
-    let em = MahonyAhrs::compute_mag_error(&q, mag);
+    validate_9dof(inputs.gyro, inputs.accel, inputs.mag, inputs.dt)?;
+    let ea = MahonyAhrs::compute_gravity_error(&q, inputs.accel);
+    let em = MahonyAhrs::compute_mag_error(&q, inputs.mag);
     let e = [ea[0] + em[0], ea[1] + em[1], ea[2] + em[2]];
-    let (next_bias, w) = step_correction(gyro, gyro_bias, e, kp, ki, dt);
-    let next_q = q.integrate_gyro(w, dt)?;
+    let (next_bias, w) = step_correction(
+        inputs.gyro,
+        inputs.gyro_bias,
+        e,
+        inputs.kp,
+        inputs.ki,
+        inputs.dt,
+    );
+    let next_q = q.integrate_gyro(w, inputs.dt)?;
     Ok((next_q, next_bias))
 }
 
@@ -262,13 +277,15 @@ impl MahonyAhrs {
     ) -> Result<Quaternion, MahonyAhrsError> {
         let (nq, nb) = mahony_ahrs_9dof_step(
             self.quat,
-            gyro,
-            accel,
-            mag,
-            self.gyro_bias,
-            self.kp,
-            self.ki,
-            dt,
+            MahonyInputs {
+                gyro,
+                accel,
+                mag,
+                gyro_bias: self.gyro_bias,
+                kp: self.kp,
+                ki: self.ki,
+                dt,
+            },
         )?;
         self.quat = nq;
         self.gyro_bias = nb;

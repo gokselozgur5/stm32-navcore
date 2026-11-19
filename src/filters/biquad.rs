@@ -28,7 +28,11 @@ pub struct BiquadFilter {
 }
 
 impl BiquadCoefficients {
-    pub fn try_lowpass_rbj(cutoff_hz: f32, sample_interval_s: f32, q: f32) -> Result<Self, BiquadError> {
+    pub fn try_lowpass_rbj(
+        cutoff_hz: f32,
+        sample_interval_s: f32,
+        q: f32,
+    ) -> Result<Self, BiquadError> {
         if !sample_interval_s.is_finite() || sample_interval_s <= 0.0 {
             return Err(BiquadError::InvalidSampleInterval);
         }

@@ -40,17 +40,28 @@ fn test_wind_triangle_geometry_crosswind() {
 
 #[test]
 fn test_wind_estimator_input_validation_config() {
-    let mut cfg = WindEstimatorConfig::default();
-    cfg.time_constant_s = 0.0;
-    assert_eq!(WindEstimator::new(cfg), Err(WindEstimatorError::InvalidTimeConstant));
+    let mut cfg = WindEstimatorConfig {
+        time_constant_s: 0.0,
+        ..Default::default()
+    };
+    assert_eq!(
+        WindEstimator::new(cfg),
+        Err(WindEstimatorError::InvalidTimeConstant)
+    );
 
     cfg.time_constant_s = 10.0;
     cfg.min_airspeed_mps = -1.0;
-    assert_eq!(WindEstimator::new(cfg), Err(WindEstimatorError::InvalidConfig));
+    assert_eq!(
+        WindEstimator::new(cfg),
+        Err(WindEstimatorError::InvalidConfig)
+    );
 
     cfg.min_airspeed_mps = 70.0;
     cfg.max_wind_speed_mps = 60.0;
-    assert_eq!(WindEstimator::new(cfg), Err(WindEstimatorError::InvalidConfig));
+    assert_eq!(
+        WindEstimator::new(cfg),
+        Err(WindEstimatorError::InvalidConfig)
+    );
 }
 
 #[test]

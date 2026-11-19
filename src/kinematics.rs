@@ -177,9 +177,18 @@ pub fn quat_derivative(q: &Quaternion, omega: [f32; 3]) -> [f32; 4] {
 pub fn quat_derivative_to_body_rates(q: &Quaternion, q_dot: [f32; 4]) -> [f32; 3] {
     let xi = xi_matrix(q);
     [
-        2.0 * (xi[0][0] * q_dot[0] + xi[1][0] * q_dot[1] + xi[2][0] * q_dot[2] + xi[3][0] * q_dot[3]),
-        2.0 * (xi[0][1] * q_dot[0] + xi[1][1] * q_dot[1] + xi[2][1] * q_dot[2] + xi[3][1] * q_dot[3]),
-        2.0 * (xi[0][2] * q_dot[0] + xi[1][2] * q_dot[1] + xi[2][2] * q_dot[2] + xi[3][2] * q_dot[3]),
+        2.0 * (xi[0][0] * q_dot[0]
+            + xi[1][0] * q_dot[1]
+            + xi[2][0] * q_dot[2]
+            + xi[3][0] * q_dot[3]),
+        2.0 * (xi[0][1] * q_dot[0]
+            + xi[1][1] * q_dot[1]
+            + xi[2][1] * q_dot[2]
+            + xi[3][1] * q_dot[3]),
+        2.0 * (xi[0][2] * q_dot[0]
+            + xi[1][2] * q_dot[1]
+            + xi[2][2] * q_dot[2]
+            + xi[3][2] * q_dot[3]),
     ]
 }
 

@@ -17,7 +17,7 @@ The only dependency is `libm`, used for trigonometry and square roots in `src/ma
 | `ekf` | `src/ekf.rs` | `NavEkf` error-state filter, scalar Joseph updates, stationary detector |
 | `fdir` | `src/fdir.rs` | `DualImuManager` chi-square comparison and primary/secondary switchover |
 | `sensors` | `src/sensors/` | Register codecs and scaling for BMI088, ICM-42688-P, DPS310, IST8310 |
-| `protocol` | `src/protocol.rs`, `src/protocol/rc_esc.rs` | COBS, CRC-16-CCITT, `NavTelemetry` UART and CAN framing, calibration block, CRSF and DShot codecs |
+| `protocol` | `src/protocol/mod.rs`, `src/protocol/rc_esc.rs` | COBS, CRC-16-CCITT, `NavTelemetry` UART and CAN framing, calibration block, CRSF and DShot codecs |
 | `ubx` | `src/ubx.rs` | Streaming UBX parser for NAV-PVT and NAV-RELPOSNED |
 
 ## Data flow

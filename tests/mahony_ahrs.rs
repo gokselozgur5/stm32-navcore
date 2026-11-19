@@ -1,5 +1,5 @@
 use stm32_navcore::mahony_ahrs::{
-    mahony_ahrs_6dof_step, mahony_ahrs_9dof_step, MahonyAhrs, MahonyAhrsError,
+    mahony_ahrs_6dof_step, mahony_ahrs_9dof_step, MahonyAhrs, MahonyAhrsError, MahonyInputs,
 };
 use stm32_navcore::math::Quaternion;
 
@@ -26,9 +26,18 @@ fn test_mahony_invalid_dt_rejected() {
     let g_ok = [0.0, 0.0, 0.0];
     let a_ok = [0.0, 0.0, 9.81];
 
-    assert_eq!(ahrs.update(g_ok, a_ok, 0.0), Err(MahonyAhrsError::InvalidDt));
-    assert_eq!(ahrs.update(g_ok, a_ok, -0.01), Err(MahonyAhrsError::InvalidDt));
-    assert_eq!(ahrs.update(g_ok, a_ok, f32::NAN), Err(MahonyAhrsError::InvalidDt));
+    assert_eq!(
+        ahrs.update(g_ok, a_ok, 0.0),
+        Err(MahonyAhrsError::InvalidDt)
+    );
+    assert_eq!(
+        ahrs.update(g_ok, a_ok, -0.01),
+        Err(MahonyAhrsError::InvalidDt)
+    );
+    assert_eq!(
+        ahrs.update(g_ok, a_ok, f32::NAN),
+        Err(MahonyAhrsError::InvalidDt)
+    );
 }
 
 #[test]
@@ -38,10 +47,16 @@ fn test_mahony_non_finite_inputs_rejected() {
     let a_ok = [0.0, 0.0, 9.81];
 
     let g_nan = [f32::NAN, 0.0, 0.0];
-    assert_eq!(ahrs.update(g_nan, a_ok, 0.01), Err(MahonyAhrsError::NonFinite));
+    assert_eq!(
+        ahrs.update(g_nan, a_ok, 0.01),
+        Err(MahonyAhrsError::NonFinite)
+    );
 
     let a_inf = [0.0, f32::INFINITY, 9.81];
-    assert_eq!(ahrs.update(g_ok, a_inf, 0.01), Err(MahonyAhrsError::NonFinite));
+    assert_eq!(
+        ahrs.update(g_ok, a_inf, 0.01),
+        Err(MahonyAhrsError::NonFinite)
+    );
 }
 
 #[test]
@@ -138,9 +153,19 @@ fn test_mahony_9dof_step_equivalence() {
     let g = [0.01, 0.02, 0.03];
     let a = [0.0, 0.0, 9.81];
     let m = [1.0, 0.0, 0.0];
-    let (q, b) =
-        mahony_ahrs_9dof_step(ahrs.quaternion(), g, a, m, ahrs.gyro_bias(), ahrs.kp, ahrs.ki, 0.01)
-            .unwrap();
+    let (q, b) = mahony_ahrs_9dof_step(
+        ahrs.quaternion(),
+        MahonyInputs {
+            gyro: g,
+            accel: a,
+            mag: m,
+            gyro_bias: ahrs.gyro_bias(),
+            kp: ahrs.kp,
+            ki: ahrs.ki,
+            dt: 0.01,
+        },
+    )
+    .unwrap();
     let q_up = ahrs.update_9dof(g, a, m, 0.01).unwrap();
     assert_eq!(q, q_up);
     assert_eq!(b, ahrs.gyro_bias());

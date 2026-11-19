@@ -27,8 +27,10 @@ fn test_total_energy_altitude() {
 
 #[test]
 fn test_config_validation_and_errors() {
-    let mut cfg = VariometerConfig::default();
-    cfg.time_constant_s = -1.0;
+    let mut cfg = VariometerConfig {
+        time_constant_s: -1.0,
+        ..Default::default()
+    };
     assert_eq!(
         Variometer::new(cfg),
         Err(VariometerError::InvalidTimeConstant)

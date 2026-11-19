@@ -4,7 +4,6 @@ use super::LinalgError;
 use crate::math::Mat;
 
 /// Solves `L x = b` for lower triangular `L`.
-#[allow(clippy::needless_range_loop)]
 pub fn solve_lower<const N: usize>(l: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N], LinalgError> {
     for row in &l.0 {
         for &v in row {
@@ -33,7 +32,6 @@ pub fn solve_lower<const N: usize>(l: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; 
 }
 
 /// Solves `U x = b` for upper triangular `U`.
-#[allow(clippy::needless_range_loop)]
 pub fn solve_upper<const N: usize>(u: &Mat<N, N>, b: &[f32; N]) -> Result<[f32; N], LinalgError> {
     for row in &u.0 {
         for &v in row {
