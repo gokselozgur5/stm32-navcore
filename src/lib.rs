@@ -21,6 +21,24 @@
 //! - [`ins_strapdown`]: Deterministic INS strapdown integration and Coriolis compensator.
 //! - [`kinematics`]: Attitude kinematic propagation and coordinate transform matrices.
 //! - [`linalg`]: Fixed-size linear algebra on `Mat<R, C>`.
+//! - [`madgwick`]: Madgwick AHRS sensor fusion filter for MARG and IMU configurations.
+//! - [`mag_declination`]: Magnetic declination and inclination WMM2020 lookup table estimator.
+//! - [`mahony_ahrs`]: Mahony AHRS complementary filter with integral gyro bias tracking.
+//! - [`math`]: Math module: Matrix algebra, Quaternion, and tilt-compensated heading.
+//! - [`nav`]: Inertial and integrated navigation modules.
+//! - [`pitot_tas`]: True airspeed (TAS) estimation from pitot differential pressure and IAS.
+//! - [`protocol`]: Telemetry framing, CRC-16-CCITT, COBS encoding, and RC ESC protocols.
+//! - [`rk4`]: Runge-Kutta 4th-order (RK4) numerical integrator for ODE propagation.
+//! - [`rotation`]: Rotation utilities built on the `math` types.
+//! - [`sensors`]: Flight sensor drivers and codecs (ICM-42688-P, BMI088, DPS310, IST8310).
+//! - [`slerp`]: Quaternion spherical linear and normalized linear interpolation.
+//! - [`turn_rate`]: Circular trajectory turn rate and bank angle aerodynamic calculator.
+//! - [`ubx`]: Zero-alloc u-blox Binary UBX Protocol Engine.
+//! - [`variometer`]: Barometric vertical speed and variometer estimator.
+//! - [`vel_damping`]: Dead reckoning velocity damping and GPS velocity fusion.
+//! - [`wind_estimator`]: Wind vector triangle estimator from ground speed, TAS, and heading.
+//! - [`wmm_declination`]: Magnetic declination polynomial approximation for navigation.
+//! - [`zupt`]: Zero-Velocity Update (ZUPT) stance detector for navigation.
 //!
 //! See `docs/architecture.md` in the repository for the data flow between modules.
 #![cfg_attr(not(test), no_std)]
