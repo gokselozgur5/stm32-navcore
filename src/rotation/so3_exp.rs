@@ -45,13 +45,14 @@ pub fn so3_log_dcm(d: &Dcm) -> Result<[f32; 3], RotationError> {
     let r = &d.0 .0;
     let tr = r[0][0] + r[1][1] + r[2][2];
     let cos_t = ((tr - 1.0) * 0.5).clamp(-1.0, 1.0);
+    if cos_t < -0.9 {
+        return so3_log(&d.to_quaternion()).map_err(|_| RotationError::NotOrthonormal);
+    }
     let theta = libm::acosf(cos_t);
     let k = if theta < 1e-4 {
         0.5 + theta * theta / 12.0
-    } else if theta < core::f32::consts::PI - 1e-3 {
-        theta / (2.0 * libm::sinf(theta))
     } else {
-        return so3_log(&d.to_quaternion()).map_err(|_| RotationError::NotOrthonormal);
+        theta / (2.0 * libm::sinf(theta))
     };
     Ok([
         k * (r[2][1] - r[1][2]),
