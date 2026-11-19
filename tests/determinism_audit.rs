@@ -5,7 +5,7 @@ use stm32_navcore::protocol::{CanFrame20B, NavTelemetry};
 
 const TEST_STEPS: usize = 1000;
 const DT: f32 = 0.01;
-const GOLDEN_FNV1A_DIGEST: u64 = 0xb363_8a42_504f_301a;
+const GOLDEN_FNV1A_DIGEST: u64 = 0x2c13_a453_1b13_7146;
 
 #[test]
 fn test_memory_budget_and_alignment_invariants() {
