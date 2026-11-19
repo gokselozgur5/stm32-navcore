@@ -50,7 +50,11 @@ impl ButterworthCoefficients {
         let a1 = 2.0 * (k2 - 1.0) * inv_a0;
         let a2 = (1.0 - sqrt2_k + k2) * inv_a0;
 
-        Ok(Self { b0, b1, b2, a1, a2 })
+        let coeffs = Self { b0, b1, b2, a1, a2 };
+        if !coeffs.is_stable() {
+            return Err(ButterworthError::InvalidCutoffFrequency);
+        }
+        Ok(coeffs)
     }
 }
 
