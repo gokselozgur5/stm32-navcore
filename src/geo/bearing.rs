@@ -23,6 +23,9 @@ pub fn initial_bearing_rad(
     if brng < 0.0 {
         brng += 2.0 * PI;
     }
+    if brng >= 2.0 * PI {
+        brng = 0.0;
+    }
     Ok(brng)
 }
 
@@ -48,5 +51,6 @@ pub fn initial_bearing_deg(
     let r3 = lat2_deg * (PI / 180.0);
     let r4 = lon2_deg * (PI / 180.0);
     let brng_rad = initial_bearing_rad(r1, r2, r3, r4)?;
-    Ok(brng_rad * (180.0 / PI))
+    let deg = brng_rad * (180.0 / PI);
+    Ok(if deg >= 360.0 { 0.0 } else { deg })
 }
