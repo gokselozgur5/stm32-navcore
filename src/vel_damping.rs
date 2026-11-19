@@ -212,12 +212,12 @@ impl VelDampingFilter {
 
     /// Fuse GPS velocity observation if innovation passes gate threshold.
     pub fn fuse_gps(&mut self, gps_vel_ned: [f32; 3]) -> Result<[f32; 3], VelDampingError> {
-        let fused = fuse_velocity_step(
-            self.vel_ned,
-            gps_vel_ned,
-            self.config.gps_gain,
-            self.config.max_innovation_mps,
-        )?;
+        let gate = if self.gps_valid {
+            self.config.max_innovation_mps
+        } else {
+            f32::MAX
+        };
+        let fused = fuse_velocity_step(self.vel_ned, gps_vel_ned, self.config.gps_gain, gate)?;
         self.vel_ned = fused;
         self.time_since_gps_s = 0.0;
         self.gps_valid = true;
