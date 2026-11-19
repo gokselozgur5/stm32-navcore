@@ -123,3 +123,17 @@ fn test_step_and_non_finite_rejection() {
     assert!(filter.reset_velocity([5.0, -5.0, 1.0]).is_ok());
     assert_eq!(filter.velocity(), [5.0, -5.0, 1.0]);
 }
+
+#[test]
+fn test_reacquire_gps_when_not_valid() {
+    use stm32_navcore::vel_damping::VelDampingFilter;
+
+    let mut filter = VelDampingFilter::new(VelDampingConfig::default()).unwrap();
+    assert!(!filter.is_gps_valid());
+    for _ in 0..100 {
+        let _ = filter.step([0.0; 3], Some([10.0, 0.0, 0.0]), 1.0);
+    }
+    assert!(filter.is_gps_valid());
+    let v = filter.velocity();
+    assert!((v[0] - 10.0).abs() < 3.0);
+}
