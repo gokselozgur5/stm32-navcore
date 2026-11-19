@@ -130,7 +130,11 @@ impl MahonyAhrs {
         let q_conj = Quaternion::new(q.w, -q.x, -q.y, -q.z);
         let w = q_conj.rotate_vec([bx, 0.0, bz]);
 
-        [my * w[2] - mz * w[1], mz * w[0] - mx * w[2], mx * w[1] - my * w[0]]
+        [
+            my * w[2] - mz * w[1],
+            mz * w[0] - mx * w[2],
+            mx * w[1] - my * w[0],
+        ]
     }
 }
 
