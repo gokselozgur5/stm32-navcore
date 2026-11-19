@@ -103,10 +103,11 @@ fn validate_finite<const N: usize>(a: &Mat<N, N>) -> Result<(), LinalgError> {
 /// Computes eigenvalues and eigenvectors of real symmetric matrix `a`.
 pub fn jacobi_eig<const N: usize>(a: &Mat<N, N>) -> Result<Eigen<N>, LinalgError> {
     validate_finite(a)?;
+    let tol = EPS_SQ * a.0.iter().flatten().map(|&x| x * x).sum::<f32>();
     let mut d = *a;
     let mut v = Mat::<N, N>::identity();
     for _ in 0..MAX_SWEEPS {
-        if off_diagonal_norm_sq(&d) <= EPS_SQ {
+        if off_diagonal_norm_sq(&d) <= tol {
             break;
         }
         cyclic_jacobi_sweep(&mut d, &mut v);
