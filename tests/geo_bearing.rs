@@ -38,3 +38,10 @@ fn test_bearing_validation_errors() {
         Err(GeoError::NonFinite)
     );
 }
+
+#[test]
+fn test_bearing_f32_suite_compiles() {
+    let deg = initial_bearing_deg(0.0_f32, 0.0_f32, 10.0_f32, 0.0_f32).unwrap();
+    // f32 tolerance ~1e-5 rad (~5.7e-4 deg)
+    assert!((deg - 0.0_f32).abs() < 1e-3);
+}
