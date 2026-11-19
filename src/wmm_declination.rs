@@ -42,6 +42,25 @@ fn compute_wmm_harmonics(
     }
 }
 
+#[inline]
+fn accumulate_wmm_order(
+    n: usize, m: usize, ar: f32, p_val: f32, dp_val: f32, cp_m: f32, sp_m: f32,
+    bt: &mut f32, bp: &mut f32, br: &mut f32,
+) {
+    let par = ar * p_val;
+    let (t1, t2) = if m == 0 {
+        (WMM2020_COEFFS[m][n] * cp_m, WMM2020_COEFFS[m][n] * sp_m)
+    } else {
+        (
+            WMM2020_COEFFS[m][n] * cp_m + WMM2020_COEFFS[n][m - 1] * sp_m,
+            WMM2020_COEFFS[m][n] * sp_m - WMM2020_COEFFS[n][m - 1] * cp_m,
+        )
+    };
+    *bt -= ar * t1 * dp_val;
+    *bp += (m as f32) * t2 * par;
+    *br += ((n + 1) as f32) * t1 * par;
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DeclinationError {
     NonFinite,
