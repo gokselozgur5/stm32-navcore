@@ -678,34 +678,6 @@ mod tests {
 }
 
 
-impl StationaryDetector {
-    pub const fn new(window_size: usize, var_accel_thresh: f32, norm_gyro_thresh: f32) -> Self {
-        Self {
-            window_size,
-            count: 0,
-            var_accel_thresh,
-            norm_gyro_thresh,
-            sum_accel_mag: 0.0,
-            sum_accel_mag_sq: 0.0,
-            max_gyro_norm: 0.0,
-        }
-    }
-}
-
-impl StationaryDetector {
-    pub fn reset(&mut self) {
-        self.count = 0;
-        self.sum_accel_mag = 0.0;
-        self.sum_accel_mag_sq = 0.0;
-        self.max_gyro_norm = 0.0;
-    }
-}
-
-impl Default for StationaryDetector {
-    fn default() -> Self {
-        Self::new(10, 0.05, 0.03)
-    }
-}
 
 impl StationaryDetector {
     pub fn update(&mut self, accel_body: [f32; 3], gyro_body: [f32; 3]) -> bool {
