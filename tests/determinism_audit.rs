@@ -9,7 +9,7 @@ const GOLDEN_FNV1A_DIGEST: u64 = 0xb363_8a42_504f_301a;
 
 #[test]
 fn test_memory_budget_and_alignment_invariants() {
-// Size check removed (pinned in tests/public_api.rs)
+    // Size check removed (pinned in tests/public_api.rs)
     assert!(
         size_of::<CanFrame20B>() <= 16,
         "CanFrame20B exceeds 16B budget"
