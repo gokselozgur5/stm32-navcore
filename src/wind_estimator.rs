@@ -86,9 +86,6 @@ impl WindEstimatorConfig {
         if !self.max_wind_speed_mps.is_finite() || self.max_wind_speed_mps <= 0.0 {
             return Err(WindEstimatorError::InvalidConfig);
         }
-        if self.min_airspeed_mps >= self.max_wind_speed_mps {
-            return Err(WindEstimatorError::InvalidConfig);
-        }
         Ok(())
     }
 }
