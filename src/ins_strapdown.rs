@@ -408,10 +408,16 @@ impl InsStrapdownIntegrator {
         self.state.pos_ned[2] += v_avg[2] * dt_s;
         let r_m = meridian_radius(self.state.lat_rad)?;
         let r_n = transverse_radius(self.state.lat_rad)?;
-        self.state.lat_rad += (v_avg[0] * dt_s) / (r_m + self.state.alt_m);
+        let new_lat = self.state.lat_rad + (v_avg[0] * dt_s) / (r_m + self.state.alt_m);
+        if libm::fabs(new_lat) > core::f64::consts::FRAC_PI_2 {
+            return Err(InsStrapdownError::InvalidLatitude);
+        }
+        self.state.lat_rad = new_lat;
         let cos_lat = libm::cos(self.state.lat_rad);
         if libm::fabs(cos_lat) > 1e-6 {
-            self.state.lon_rad += (v_avg[1] * dt_s) / ((r_n + self.state.alt_m) * cos_lat);
+            let two_pi = 2.0 * core::f64::consts::PI;
+            let lon = self.state.lon_rad + (v_avg[1] * dt_s) / ((r_n + self.state.alt_m) * cos_lat);
+            self.state.lon_rad = lon - two_pi * libm::round(lon / two_pi);
         }
         self.state.alt_m -= v_avg[2] * dt_s;
         Ok(())
