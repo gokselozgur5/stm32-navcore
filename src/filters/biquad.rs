@@ -42,7 +42,11 @@ impl BiquadCoefficients {
         if !q.is_finite() || q <= 0.0 {
             return Err(BiquadError::InvalidQ);
         }
-        Ok(Self::lowpass_rbj(cutoff_hz, sample_interval_s, q))
+        let coeffs = Self::lowpass_rbj(cutoff_hz, sample_interval_s, q);
+        if !coeffs.is_stable() {
+            return Err(BiquadError::InvalidCutoffFrequency);
+        }
+        Ok(coeffs)
     }
 
     pub fn lowpass_rbj(cutoff_hz: f32, sample_interval_s: f32, q: f32) -> Self {
