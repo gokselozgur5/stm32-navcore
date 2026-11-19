@@ -218,7 +218,16 @@ pub const WMM_GLOBAL_REF: DeclinationPolynomial =
 /// Compute approximate magnetic declination in degrees at (lat_deg, lon_deg).
 #[inline]
 pub fn wmm_declination_deg(lat_deg: f32, lon_deg: f32) -> Result<f32, DeclinationError> {
-    WMM_GLOBAL_REF.eval(lat_deg, lon_deg)
+    if !lat_deg.is_finite() || !lon_deg.is_finite() {
+        return Err(DeclinationError::NonFinite);
+    }
+    if !(-90.0..=90.0).contains(&lat_deg) {
+        return Err(DeclinationError::InvalidLatitude);
+    }
+    if !(-180.0..=180.0).contains(&lon_deg) {
+        return Err(DeclinationError::InvalidLongitude);
+    }
+    Ok(eval_wmm_field(lat_deg, lon_deg))
 }
 
 /// Compute approximate magnetic declination in radians at (lat_rad, lon_rad).
