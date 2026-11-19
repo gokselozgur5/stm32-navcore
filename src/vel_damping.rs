@@ -127,6 +127,7 @@ pub fn fuse_velocity_step(
 pub struct VelDampingFilter {
     config: VelDampingConfig,
     vel_ned: [f32; 3],
+    last_gps_vel: Option<[f32; 3]>,
     time_since_gps_s: f32,
     gps_valid: bool,
 }
@@ -151,6 +152,7 @@ impl VelDampingFilter {
         Ok(Self {
             config,
             vel_ned: initial_vel,
+            last_gps_vel: None,
             time_since_gps_s: 0.0,
             gps_valid: false,
         })
@@ -197,11 +199,17 @@ impl VelDampingFilter {
                 return Err(VelDampingError::NonFinite);
             }
         }
-        let damped = damp_velocity_step(self.vel_ned, self.config.tau_s, dt_s)?;
+        let ref_vel = self.last_gps_vel.unwrap_or(self.vel_ned);
+        let err = [
+            self.vel_ned[0] - ref_vel[0],
+            self.vel_ned[1] - ref_vel[1],
+            self.vel_ned[2] - ref_vel[2],
+        ];
+        let damped_err = damp_velocity_step(err, self.config.tau_s, dt_s)?;
         self.vel_ned = [
-            damped[0] + accel_ned[0] * dt_s,
-            damped[1] + accel_ned[1] * dt_s,
-            damped[2] + accel_ned[2] * dt_s,
+            ref_vel[0] + damped_err[0] + accel_ned[0] * dt_s,
+            ref_vel[1] + damped_err[1] + accel_ned[1] * dt_s,
+            ref_vel[2] + damped_err[2] + accel_ned[2] * dt_s,
         ];
         self.time_since_gps_s += dt_s;
         if self.time_since_gps_s > self.config.gps_timeout_s {
@@ -219,6 +227,7 @@ impl VelDampingFilter {
         };
         let fused = fuse_velocity_step(self.vel_ned, gps_vel_ned, self.config.gps_gain, gate)?;
         self.vel_ned = fused;
+        self.last_gps_vel = Some(gps_vel_ned);
         self.time_since_gps_s = 0.0;
         self.gps_valid = true;
         Ok(self.vel_ned)
