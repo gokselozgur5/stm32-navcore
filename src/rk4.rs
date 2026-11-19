@@ -125,21 +125,6 @@ where
 
 
 
-    if !t.is_finite() || !dt.is_finite() {
-        return Err(Rk4Error::NonFinite);
-    }
-    if dt <= 0.0 {
-        return Err(Rk4Error::InvalidTimeStep);
-    }
-    let (mut k1, mut k2, mut k3, mut k4, mut tmp) = (
-        [0.0f64; N],
-        [0.0f64; N],
-        [0.0f64; N],
-        [0.0f64; N],
-        [0.0f64; N],
-    );
-    let hdt = 0.5 * dt;
-    f(t, y, &mut k1);
     for i in 0..N {
         tmp[i] = y[i] + hdt * k1[i];
     }
