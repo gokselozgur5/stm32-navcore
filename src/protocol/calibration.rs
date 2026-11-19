@@ -1,5 +1,5 @@
-use crate::protocol::ProtocolError;
 use crate::protocol::codec::crc16_ccitt;
+use crate::protocol::ProtocolError;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CalibrationBlock {
