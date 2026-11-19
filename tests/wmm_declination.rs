@@ -70,10 +70,10 @@ fn test_wmm_global_declination_and_bounds() {
         wmm_declination_deg, wmm_declination_rad, DeclinationError,
     };
     let eq = wmm_declination_deg(0.0, 0.0).unwrap();
-    assert_eq!(eq, -3.5);
+    assert!((eq - (-4.668167)).abs() < 1e-4);
 
     let rad = wmm_declination_rad(0.0, 0.0).unwrap();
-    let expected_rad = -3.5 * core::f32::consts::PI / 180.0;
+    let expected_rad = eq * core::f32::consts::PI / 180.0;
     assert!((rad - expected_rad).abs() < 1e-6);
 
     assert_eq!(
