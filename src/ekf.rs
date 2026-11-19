@@ -15,6 +15,7 @@ pub const STATE_DIM: usize = 8;
 pub struct NavEkf {
     pub att: Quaternion,
     pub p_ned_m: [f32; 3],
+    pub p_ned_res_m: [f32; 3],
     pub v_ned_mps: [f32; 3],
     pub bg_z: f32,
     pub cov: Mat<STATE_DIM, STATE_DIM>,
@@ -34,6 +35,7 @@ impl NavEkf {
         Self {
             att: Quaternion::IDENTITY,
             p_ned_m: [0.0; 3],
+            p_ned_res_m: [0.0; 3],
             v_ned_mps: [0.0; 3],
             bg_z: 0.0,
             cov,
@@ -74,9 +76,13 @@ impl NavEkf {
         let a_nav = self.att.rotate_vec(accel_body_mps2);
         let a_eff = [a_nav[0], a_nav[1], a_nav[2] + 9.80665];
         let half_dt2 = 0.5 * dt_s * dt_s;
-        self.p_ned_m[0] += self.v_ned_mps[0] * dt_s + a_eff[0] * half_dt2;
-        self.p_ned_m[1] += self.v_ned_mps[1] * dt_s + a_eff[1] * half_dt2;
-        self.p_ned_m[2] += self.v_ned_mps[2] * dt_s + a_eff[2] * half_dt2;
+        for i in 0..3 {
+            let step = self.v_ned_mps[i] * dt_s + a_eff[i] * half_dt2;
+            let y = step + self.p_ned_res_m[i];
+            let t = self.p_ned_m[i] + y;
+            self.p_ned_res_m[i] = y - (t - self.p_ned_m[i]);
+            self.p_ned_m[i] = t;
+        }
         self.v_ned_mps[0] += a_eff[0] * dt_s;
         self.v_ned_mps[1] += a_eff[1] * dt_s;
         self.v_ned_mps[2] += a_eff[2] * dt_s;
