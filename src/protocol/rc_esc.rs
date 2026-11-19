@@ -212,10 +212,14 @@ impl CrsfParser {
             return Err(CrsfError::BufferTooShort);
         }
         if self.len >= 2 {
+            if !(2..=62).contains(&self.buffer[1]) {
+                self.discard(1);
+                return Err(CrsfError::InvalidLength);
+            }
             let expected_total = (self.buffer[1] as usize) + 2;
             if self.len == expected_total {
                 let res = Self::parse_frame(&self.buffer[..self.len]);
-                self.reset();
+                self.discard(if res.is_ok() { expected_total } else { 1 });
                 return res.map(Some);
             }
         }
