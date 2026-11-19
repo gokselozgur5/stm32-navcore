@@ -2,12 +2,25 @@
 //!
 //! Modules:
 //!
-//! - [`math`]: fixed-size matrices, SO(3) quaternion, tilt-compensated heading.
-//! - [`ekf`]: Joseph-form IMU/GNSS extended Kalman filter.
-//! - [`fdir`]: dual-IMU fault detection and switchover.
-//! - [`sensors`]: flight sensor drivers and register codecs.
-//! - [`protocol`]: COBS, CRC-16-CCITT, CAN 2.0B and UART telemetry framing.
-//! - [`ubx`]: streaming u-blox UBX parser.
+//! - [`ahrs`]: Madgwick AHRS 6-DOF sensor fusion implementation.
+//! - [`airspeed`]: Pitot-static indicated airspeed (IAS) and true airspeed (TAS) calculator.
+//! - [`attitude`]: Attitude determination algorithms (Madgwick, Mahony, covariance, SLERP).
+//! - [`baro_alt`]: Hypsometric barometric altitude estimator.
+//! - [`body_rot`]: NED to Body frame rotation matrix operations.
+//! - [`butterworth`]: Second-order low-pass IIR Butterworth filter with bilinear transform.
+//! - [`ecef_ned`]: Geodetic, ECEF, and local tangent plane NED coordinate transforms.
+//! - [`ekf`]: Extended Kalman Filter module for IMU/GNSS navigation.
+//! - [`fdir`]: Fault Detection, Isolation and Recovery (FDIR) for dual IMU sensors.
+//! - [`filters`]: Discrete filters and signal conditioners.
+//! - [`geo`]: Geodesy module: Earth reference models and coordinate transforms.
+//! - [`gnss_dop`]: GNSS Dilution of Precision (DOP) metric calculator.
+//! - [`gravity`]: Somigliana normal gravity formula and elevation correction.
+//! - [`gravity_wgs84`]: Earth gravity spherical harmonic WGS84 normal gravity calculator.
+//! - [`gyro_bias`]: Complementary filter gyroscope bias drift estimator and tracker.
+//! - [`hypsometric`]: Barometric altitude hypsometric equation and temperature lapse compensator.
+//! - [`ins_strapdown`]: Deterministic INS strapdown integration and Coriolis compensator.
+//! - [`kinematics`]: Attitude kinematic propagation and coordinate transform matrices.
+//! - [`linalg`]: Fixed-size linear algebra on `Mat<R, C>`.
 //!
 //! See `docs/architecture.md` in the repository for the data flow between modules.
 #![cfg_attr(not(test), no_std)]
