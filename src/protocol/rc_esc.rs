@@ -60,13 +60,14 @@ impl CrsfFrame {
             return 0.0;
         }
         let raw = self.raw_channels[index];
-        if raw <= CRSF_CHANNEL_MID {
+        let val = if raw <= CRSF_CHANNEL_MID {
             let span = (CRSF_CHANNEL_MID - CRSF_CHANNEL_MIN) as f32;
             ((raw as f32) - (CRSF_CHANNEL_MID as f32)) / span
         } else {
             let span = (CRSF_CHANNEL_MAX - CRSF_CHANNEL_MID) as f32;
             ((raw as f32) - (CRSF_CHANNEL_MID as f32)) / span
-        }
+        };
+        val.clamp(-1.0, 1.0)
     }
 }
 

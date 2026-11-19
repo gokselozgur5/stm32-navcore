@@ -110,6 +110,9 @@ pub fn wrap_2pi(angle_rad: f32) -> f32 {
     if wrapped < 0.0 {
         wrapped += two_pi;
     }
+    if wrapped >= two_pi {
+        wrapped = 0.0;
+    }
     wrapped
 }
 
