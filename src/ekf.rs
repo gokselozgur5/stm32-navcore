@@ -706,6 +706,10 @@ impl Default for StationaryDetector {
 
 impl StationaryDetector {
     pub fn update(&mut self, accel_body: [f32; 3], gyro_body: [f32; 3]) -> bool {
+        if check_finite_3(accel_body).is_err() || check_finite_3(gyro_body).is_err() {
+            self.reset();
+            return false;
+        }
         let a_mag = libm::sqrtf(
             accel_body[0] * accel_body[0]
                 + accel_body[1] * accel_body[1]
