@@ -61,7 +61,17 @@ impl ComplementaryFilter {
     ) {
         let pred_roll = self.roll + gyro_roll_rate * self.dt;
         let pred_pitch = self.pitch + gyro_pitch_rate * self.dt;
-        self.roll = self.alpha * pred_roll + (1.0 - self.alpha) * accel_roll;
+        let roll_diff = wrap_pi(accel_roll - pred_roll);
+        self.roll = wrap_pi(pred_roll + (1.0 - self.alpha) * roll_diff);
         self.pitch = self.alpha * pred_pitch + (1.0 - self.alpha) * accel_pitch;
     }
+}
+
+fn wrap_pi(rad: f32) -> f32 {
+    let two_pi = 2.0 * core::f32::consts::PI;
+    let mut wrapped = (rad + core::f32::consts::PI) % two_pi;
+    if wrapped <= 0.0 {
+        wrapped += two_pi;
+    }
+    wrapped - core::f32::consts::PI
 }
