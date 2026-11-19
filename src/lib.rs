@@ -40,6 +40,13 @@
 //! - [`wmm_declination`]: Magnetic declination polynomial approximation for navigation.
 //! - [`zupt`]: Zero-Velocity Update (ZUPT) stance detector for navigation.
 //!
+//! ## Supported Attitude Implementations
+//!
+//! The root re-export `MadgwickAhrs` resolves to [`madgwick::MadgwickAhrs`], which is the
+//! actively supported implementation supporting both 6-DOF IMU and 9-DOF MARG fusion.
+//! The legacy `ahrs::MadgwickAhrs` is a standalone 6-DOF implementation retained for backward
+//! compatibility.
+//!
 //! See `docs/architecture.md` in the repository for the data flow between modules.
 #![cfg_attr(not(test), no_std)]
 
