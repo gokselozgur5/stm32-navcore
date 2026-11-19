@@ -123,28 +123,6 @@ where
 }
 
 
-#[inline]
-pub(crate) fn accumulate_rk4_f64<const N: usize>(
-    y: &[f64; N],
-    k1: &[f64; N],
-    k2: &[f64; N],
-    k3: &[f64; N],
-    k4: &[f64; N],
-    dt: f64,
-) -> Result<[f64; N], Rk4Error> {
-    let mut out = [0.0f64; N];
-    for i in 0..N {
-        let sum = k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i];
-        if !sum.is_finite() {
-            return Err(Rk4Error::NonFinite);
-        }
-        out[i] = y[i] + (dt / 6.0) * sum;
-        if !out[i].is_finite() {
-            return Err(Rk4Error::NonFinite);
-        }
-    }
-    Ok(out)
-}
 
 /// Single RK4 step for high-precision N-dimensional state vector in f64.
 pub fn rk4_step_f64<const N: usize, F>(
