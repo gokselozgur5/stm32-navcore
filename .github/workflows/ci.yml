@@ -7,6 +7,20 @@ on:
     branches: [main]
 
 jobs:
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.99.0 --profile minimal --component rustfmt && rustup default 1.99.0
+      - run: cargo fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.99.0 --profile minimal --component clippy && rustup default 1.99.0
+      - run: cargo clippy --all-targets -- -D warnings
+
   build:
     runs-on: ubuntu-latest
     steps:
