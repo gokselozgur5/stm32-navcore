@@ -88,6 +88,31 @@ fn compute_wmm_geom(lat_deg: f32, lon_deg: f32) -> (f32, f32, f32, f32, f32, f32
     (ct, st, d / r, c2 * crlat * srlat / (r * d), re / r, dtr, sp, cp)
 }
 
+#[inline]
+fn eval_wmm_field(lat_deg: f32, lon_deg: f32) -> f32 {
+    let (ct, st, ca, sa, aor, dtr, sp, cp) = compute_wmm_geom(lat_deg, lon_deg);
+    let mut ar = aor * aor;
+    let (mut br, mut bt, mut bp, mut bpp) = (0.0f32, 0.0f32, 0.0f32, 0.0f32);
+    let mut p = [0.0f32; 169];
+    let mut dp = [[0.0f32; 13]; 13];
+    p[0] = 1.0;
+    let mut pp = [0.0f32; 13];
+    pp[0] = 1.0;
+    for n in 1..=12 {
+        ar *= aor;
+        compute_wmm_harmonics(n, st, ct, &mut p, &mut dp, &mut pp);
+        for m in 0..=n {
+            accumulate_wmm_order(n, m, ar, p[n + m * 13], dp[m][n], cp[m], sp[m], &mut bt, &mut bp, &mut br);
+            if st == 0.0 && m == 1 {
+                let t2 = WMM2020_COEFFS[m][n] * sp[m] - WMM2020_COEFFS[n][m - 1] * cp[m];
+                bpp += (m as f32) * t2 * ar * pp[n];
+            }
+        }
+    }
+    if st == 0.0 { bp = bpp; } else { bp /= st; }
+    atan2f(bp, -bt * ca - br * sa) / dtr
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DeclinationError {
     NonFinite,
