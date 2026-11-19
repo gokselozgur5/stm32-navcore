@@ -18,6 +18,14 @@ fn solve_lstsq_qr<const M: usize, const N: usize>(
     r: &Mat<M, N>,
     b: &[f32; M],
 ) -> Result<[f32; N], LinalgError> {
+    let mut max_diag = 0.0f32;
+    for i in 0..N {
+        let d = r.0[i][i].abs();
+        if d > max_diag {
+            max_diag = d;
+        }
+    }
+    let tol = (N as f32) * f32::EPSILON * max_diag;
     let c: [f32; N] = project_qt_b(q, b);
     let mut x = [0.0f32; N];
     for i in (0..N).rev() {
@@ -26,7 +34,7 @@ fn solve_lstsq_qr<const M: usize, const N: usize>(
             s -= r.0[i][k] * x[k];
         }
         let diag = r.0[i][i];
-        if !diag.is_finite() || diag.abs() < 1e-6 {
+        if !diag.is_finite() || diag.abs() <= tol {
             return Err(LinalgError::ZeroPivot);
         }
         x[i] = s / diag;
