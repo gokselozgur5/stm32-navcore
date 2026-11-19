@@ -55,9 +55,10 @@ impl BiquadCoefficients {
         let cos_w0 = libm::cosf(w0);
         let alpha = libm::sinf(w0) / (2.0 * q);
         let a0 = 1.0 + alpha;
-        let b0 = ((1.0 - cos_w0) / 2.0) / a0;
-        let b1 = (1.0 - cos_w0) / a0;
-        let b2 = ((1.0 - cos_w0) / 2.0) / a0;
+        let half_sin = libm::sinf(w0 * 0.5);
+        let b0 = (half_sin * half_sin) / a0;
+        let b1 = 2.0 * b0;
+        let b2 = b0;
         let a1 = (-2.0 * cos_w0) / a0;
         let a2 = (1.0 - alpha) / a0;
         Self { b0, b1, b2, a1, a2 }
