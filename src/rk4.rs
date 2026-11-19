@@ -125,17 +125,4 @@ where
 
 
 
-    for i in 0..N {
-        tmp[i] = y[i] + hdt * k1[i];
-    }
-    f(t + hdt, &tmp, &mut k2);
-    for i in 0..N {
-        tmp[i] = y[i] + hdt * k2[i];
-    }
-    f(t + hdt, &tmp, &mut k3);
-    for i in 0..N {
-        tmp[i] = y[i] + dt * k3[i];
-    }
-    f(t + dt, &tmp, &mut k4);
-    accumulate_rk4_f64(y, &k1, &k2, &k3, &k4, dt)
-}
+
