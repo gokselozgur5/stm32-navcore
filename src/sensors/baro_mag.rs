@@ -150,14 +150,14 @@ impl Dps310Driver {
         }
     }
 
-    /// Sets the temperature oversampling scale factor (e.g., 524288 for 1x, 1572864 for 4x, etc.).
+    /// Sets the temperature oversampling scale factor (e.g., 524288 for 1x, 1572864 for 2x, 3670016 for 4x, 7864320 for 8x).
     pub fn set_temperature_scale(&mut self, scale: f32) {
         if scale > 0.0 {
             self.t_scale = scale;
         }
     }
 
-    /// Sets the pressure oversampling scale factor (e.g., 524288 for 1x, 3670016 for 8x, etc.).
+    /// Sets the pressure oversampling scale factor (e.g., 524288 for 1x, 1572864 for 2x, 3670016 for 4x, 7864320 for 8x).
     pub fn set_pressure_scale(&mut self, scale: f32) {
         if scale > 0.0 {
             self.p_scale = scale;
@@ -250,7 +250,7 @@ pub struct Ist8310Driver {
     pub sensitivity_matrix: Mat<3, 3>,
     /// Hard-iron bias offset vector [Bx, By, Bz] in microteslas (uT).
     pub bias: [f32; 3],
-    /// Sensitivity scale factor (uT per LSB). IST8310 default is 0.3 uT/LSB (3300 LSB/Gauss).
+    /// Sensitivity scale factor (uT per LSB). IST8310 default is 0.3 uT/LSB (~333 LSB/Gauss).
     pub scale_ut_per_lsb: f32,
 }
 
