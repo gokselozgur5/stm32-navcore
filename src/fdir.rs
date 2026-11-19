@@ -82,7 +82,13 @@ impl DualImuManager {
             p.gyro_rps[1] - s.gyro_rps[1],
             p.gyro_rps[2] - s.gyro_rps[2],
         ];
-        let chi2 = Self::compute_chi_square(d_gyro, gyro_var);
+        let d_accel = [
+            p.accel_mps2[0] - s.accel_mps2[0],
+            p.accel_mps2[1] - s.accel_mps2[1],
+            p.accel_mps2[2] - s.accel_mps2[2],
+        ];
+        let chi2 = Self::compute_chi_square(d_gyro, gyro_var)
+            + Self::compute_chi_square(d_accel, gyro_var);
         chi2 > self.chi_square_threshold
     }
 }
