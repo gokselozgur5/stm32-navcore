@@ -30,8 +30,7 @@ pub const HYPSOMETRIC_EXPONENT: f32 =
     (GAS_CONSTANT_DRY_AIR * STANDARD_LAPSE_RATE_K_PER_M) / STANDARD_GRAVITY_M_S2;
 
 /// Standard troposphere temperature scale height factor: T0 / L.
-pub const TROPOSPHERE_TEMP_SCALE: f32 =
-    STANDARD_SEA_LEVEL_TEMP_K / STANDARD_LAPSE_RATE_K_PER_M;
+pub const TROPOSPHERE_TEMP_SCALE: f32 = STANDARD_SEA_LEVEL_TEMP_K / STANDARD_LAPSE_RATE_K_PER_M;
 
 /// Computes altitude in meters above sea level from pressure under standard ISA conditions.
 pub fn altitude_from_pressure_isa(pressure_pa: f32) -> Result<f32, BaroAltError> {
@@ -47,10 +46,7 @@ pub fn altitude_from_pressure_isa(pressure_pa: f32) -> Result<f32, BaroAltError>
 }
 
 /// Computes altitude in meters above sea level given measured pressure and local QNH.
-pub fn altitude_from_pressure_qnh(
-    pressure_pa: f32,
-    qnh_pa: f32,
-) -> Result<f32, BaroAltError> {
+pub fn altitude_from_pressure_qnh(pressure_pa: f32, qnh_pa: f32) -> Result<f32, BaroAltError> {
     if !pressure_pa.is_finite() || !qnh_pa.is_finite() {
         return Err(BaroAltError::NonFinite);
     }
