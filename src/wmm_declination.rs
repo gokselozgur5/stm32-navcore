@@ -19,6 +19,29 @@ const WMM2020_COEFFS: [[f32; 13]; 13] = [
     [-1076.43, 397.56, 843.99, -876.45, 33.40, 145.81, -11.71, 35.12, 5.11, -8.49, -0.00, 0.28, -0.17],
 ];
 
+#[inline]
+fn compute_wmm_harmonics(
+    n: usize, st: f32, ct: f32, p: &mut [f32; 169], dp: &mut [[f32; 13]; 13], pp: &mut [f32; 13],
+) {
+    for m in 0..=n {
+        if n == m {
+            p[n + m * 13] = st * p[n - 1 + (m - 1) * 13];
+            dp[m][n] = st * dp[m - 1][n - 1] + ct * p[n - 1 + (m - 1) * 13];
+        } else if n == 1 && m == 0 {
+            p[n + m * 13] = ct * p[n - 1 + m * 13];
+            dp[m][n] = ct * dp[m][n - 1] - st * p[n - 1 + m * 13];
+        } else {
+            let k = (((n - 1) * (n - 1) - m * m) as f32) / (((2 * n - 1) * (2 * n - 3)) as f32);
+            p[n + m * 13] = ct * p[n - 1 + m * 13] - k * p[n - 2 + m * 13];
+            dp[m][n] = ct * dp[m][n - 1] - st * p[n - 1 + m * 13] - k * dp[m][n - 2];
+        }
+        if st == 0.0 && m == 1 {
+            let k1 = (((n - 1) * (n - 1) - 1) as f32) / (((2 * n - 1) * (2 * n - 3)) as f32);
+            pp[n] = if n == 1 { pp[n - 1] } else { ct * pp[n - 1] - k1 * pp[n - 2] };
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DeclinationError {
     NonFinite,
