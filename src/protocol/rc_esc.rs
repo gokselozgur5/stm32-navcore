@@ -268,7 +268,7 @@ impl DshotFrame {
         }
     }
 
-    /// Encode DShot frame into raw 16-bit packet word with inverted XOR CRC.
+    /// Encode DShot frame into raw 16-bit packet word with standard XOR checksum.
     pub fn encode(&self) -> u16 {
         let payload = ((self.throttle & 0x07FF) << 1) | (if self.telemetry { 1 } else { 0 });
         let crc = (payload ^ (payload >> 4) ^ (payload >> 8)) & 0x0F;
