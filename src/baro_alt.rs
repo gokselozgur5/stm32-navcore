@@ -202,8 +202,23 @@ impl BaroAltEstimator {
         measured_pressure_pa: f32,
         known_altitude_m: f32,
     ) -> Result<(), BaroAltError> {
-        let qnh = calibrate_qnh(measured_pressure_pa, known_altitude_m)?;
-        self.ref_pressure_pa = qnh;
+        if !measured_pressure_pa.is_finite() || !known_altitude_m.is_finite() {
+            return Err(BaroAltError::NonFinite);
+        }
+        if measured_pressure_pa <= 0.0 {
+            return Err(BaroAltError::InvalidPressure);
+        }
+        if self.lapse_rate_k_per_m < 1e-7 {
+            let scale = (GAS_CONSTANT_DRY_AIR * self.ref_temp_k) / STANDARD_GRAVITY_M_S2;
+            self.ref_pressure_pa = measured_pressure_pa * libm::expf(known_altitude_m / scale);
+            return Ok(());
+        }
+        let temp_ratio = 1.0 - (self.lapse_rate_k_per_m * known_altitude_m) / self.ref_temp_k;
+        if temp_ratio <= 0.0 {
+            return Err(BaroAltError::InvalidTemperature);
+        }
+        let inv_exp = STANDARD_GRAVITY_M_S2 / (GAS_CONSTANT_DRY_AIR * self.lapse_rate_k_per_m);
+        self.ref_pressure_pa = measured_pressure_pa / libm::powf(temp_ratio, inv_exp);
         Ok(())
     }
 
