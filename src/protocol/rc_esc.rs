@@ -113,6 +113,22 @@ impl CrsfParser {
     pub fn reset(&mut self) {
         self.len = 0;
     }
+
+    /// Drop `n` buffered bytes, then keep bytes from the next plausible sync.
+    fn discard(&mut self, mut n: usize) {
+        loop {
+            let len = self.len;
+            let start = (n..len)
+                .find(|&i| self.buffer[i] == CRSF_SYNC_BYTE)
+                .unwrap_or(len);
+            self.buffer.copy_within(start..len, 0);
+            self.len = len - start;
+            if self.len < 2 || (2..=62).contains(&self.buffer[1]) {
+                return;
+            }
+            n = 1;
+        }
+    }
 }
 
 impl CrsfParser {
