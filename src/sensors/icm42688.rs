@@ -88,8 +88,8 @@ impl AafConfig {
     /// Pre-configured 536 Hz cutoff 2nd order AAF (2 kHz ODR).
     pub const fn cutoff_536hz() -> Self {
         Self {
-            delt: 13,
-            deltsqr: 169,
+            delt: 12,
+            deltsqr: 144,
             bitshift: 8,
         }
     }
