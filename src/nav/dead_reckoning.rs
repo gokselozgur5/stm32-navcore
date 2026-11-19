@@ -45,6 +45,9 @@ pub fn dead_reckoning_step(
     if !state.lat_rad.is_finite() || !state.lon_rad.is_finite() || !state.height_m.is_finite() {
         return Err(NavError::NonFinite);
     }
+    if !state.v_n.is_finite() || !state.v_e.is_finite() || !state.v_d.is_finite() {
+        return Err(NavError::NonFinite);
+    }
 
     if dt_s == 0.0 || (state.v_n == 0.0 && state.v_e == 0.0 && state.v_d == 0.0) {
         return Ok(*state);
