@@ -40,7 +40,7 @@ fn test_wind_triangle_geometry_crosswind() {
 
 #[test]
 fn test_wind_estimator_input_validation_config() {
-    let mut cfg = WindEstimatorConfig {
+    let cfg = WindEstimatorConfig {
         time_constant_s: 0.0,
         ..Default::default()
     };

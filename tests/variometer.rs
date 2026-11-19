@@ -27,7 +27,7 @@ fn test_total_energy_altitude() {
 
 #[test]
 fn test_config_validation_and_errors() {
-    let mut cfg = VariometerConfig {
+    let cfg = VariometerConfig {
         time_constant_s: -1.0,
         ..Default::default()
     };
