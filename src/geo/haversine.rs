@@ -40,11 +40,9 @@ fn initial_bearing(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     let y = libm::sin(dlon) * libm::cos(lat2);
     let x = libm::cos(lat1) * libm::sin(lat2) - libm::sin(lat1) * libm::cos(lat2) * libm::cos(dlon);
     let az = libm::atan2(y, x);
-    if az < 0.0 {
-        az + 2.0 * core::f64::consts::PI
-    } else {
-        az
-    }
+    let two_pi = 2.0 * core::f64::consts::PI;
+    let res = if az < 0.0 { az + two_pi } else { az };
+    if res >= two_pi { 0.0 } else { res }
 }
 
 /// Computes great-circle distance and initial bearing between two points in radians.
