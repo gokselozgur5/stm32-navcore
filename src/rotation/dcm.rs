@@ -145,3 +145,43 @@ impl core::ops::Mul<[f32; 3]> for Dcm {
         self.rotate_vec(rhs)
     }
 }
+
+/// Reorthonormalizes DCM via symmetric error correction and cross product.
+pub fn orthonormalize_gram_schmidt(m: &Mat<3, 3>) -> Mat<3, 3> {
+    let (mut x, mut y) = (m.0[0], m.0[1]);
+    let half_err = 0.5 * (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]);
+    for i in 0..3 {
+        let (xi, yi) = (x[i] - half_err * y[i], y[i] - half_err * x[i]);
+        x[i] = xi;
+        y[i] = yi;
+    }
+    let z = [
+        x[1] * y[2] - x[2] * y[1],
+        x[2] * y[0] - x[0] * y[2],
+        x[0] * y[1] - x[1] * y[0],
+    ];
+    let inv_mag_x = 1.0 / libm::sqrtf(x[0]*x[0] + x[1]*x[1] + x[2]*x[2]);
+    let inv_mag_y = 1.0 / libm::sqrtf(y[0]*y[0] + y[1]*y[1] + y[2]*y[2]);
+    let inv_mag_z = 1.0 / libm::sqrtf(z[0]*z[0] + z[1]*z[1] + z[2]*z[2]);
+    Mat([[
+        x[0] * inv_mag_x, x[1] * inv_mag_x, x[2] * inv_mag_x
+    ], [
+        y[0] * inv_mag_y, y[1] * inv_mag_y, y[2] * inv_mag_y
+    ], [
+        z[0] * inv_mag_z, z[1] * inv_mag_z, z[2] * inv_mag_z
+    ]])
+}
+
+impl Dcm {
+    /// Builds a rotation from Euler angles (roll, pitch, yaw) in NED-to-Body frame.
+    pub fn from_euler_ned_to_body(roll: f32, pitch: f32, yaw: f32) -> Self {
+        let (sr, cr) = (libm::sinf(roll), libm::cosf(roll));
+        let (sp, cp) = (libm::sinf(pitch), libm::cosf(pitch));
+        let (sy, cy) = (libm::sinf(yaw), libm::cosf(yaw));
+        Self(Mat([
+            [cp * cy, cp * sy, -sp],
+            [sr * sp * cy - cr * sy, sr * sp * sy + cr * cy, sr * cp],
+            [cr * sp * cy + sr * sy, cr * sp * sy - sr * cy, cr * cp],
+        ]))
+    }
+}
