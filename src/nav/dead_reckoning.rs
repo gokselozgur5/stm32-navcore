@@ -63,9 +63,15 @@ pub fn dead_reckoning_step(
     let dlat = (state.v_n * dt_s) / (r_m + state.height_m);
 
     let dh = -state.v_d * dt_s;
+    let lat_rad = state.lat_rad + dlat;
+    if lat_rad.abs() > core::f64::consts::FRAC_PI_2 {
+        return Err(NavError::InvalidState);
+    }
+    let two_pi = 2.0 * core::f64::consts::PI;
+    let lon_sum = state.lon_rad + dlon;
     Ok(DeadReckoningState {
-        lat_rad: state.lat_rad + dlat,
-        lon_rad: state.lon_rad + dlon,
+        lat_rad,
+        lon_rad: lon_sum - two_pi * libm::round(lon_sum / two_pi),
         height_m: state.height_m + dh,
         v_n: state.v_n,
         v_e: state.v_e,
