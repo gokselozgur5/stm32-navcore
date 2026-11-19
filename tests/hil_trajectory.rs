@@ -58,7 +58,7 @@ fn altitude_to_pressure_hpa(alt_m: f32, p0_hpa: f32) -> f32 {
 
 #[test]
 fn test_cortex_m4f_stack_and_state_footprint_invariants() {
-// Size check removed (pinned in tests/public_api.rs)
+    // Size check removed (pinned in tests/public_api.rs)
     assert!(core::mem::size_of::<StationaryDetector>() <= 64);
     assert!(core::mem::size_of::<NavTelemetry>() <= 128);
 }
