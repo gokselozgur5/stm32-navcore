@@ -2,7 +2,7 @@
 
 use stm32_navcore::{
     quat_nlerp, quat_slerp, wmm_declination_deg, wmm_declination_rad, CalibrationBlock,
-    DualImuManager, ImuId, ImuReading, StationaryDetector, UbxMessage, UbxNavPvt,
+    DualImuManager, ImuId, ImuReading, ZuptDetector, UbxMessage, UbxNavPvt,
     UbxNavRelPosNed, UbxParser, Variometer, VariometerConfig, VariometerError,
     GyroBiasConfig, GyroBiasError, GyroBiasTracker, VarioTone, VelDampingConfig,
     VelDampingFilter,
@@ -17,7 +17,7 @@ fn crate_root_reexports_are_usable() {
     };
     let _ = UbxParser::new();
     let _ = core::mem::size_of::<DualImuManager>();
-    let _ = core::mem::size_of::<StationaryDetector>();
+    let _ = core::mem::size_of::<ZuptDetector<10>>();
     let _ = core::mem::size_of::<CalibrationBlock>();
     let _ = core::mem::size_of::<UbxMessage>();
     let _ = core::mem::size_of::<UbxNavPvt>();
