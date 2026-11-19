@@ -137,3 +137,19 @@ fn test_reacquire_gps_when_not_valid() {
     let v = filter.velocity();
     assert!((v[0] - 10.0).abs() < 3.0);
 }
+
+#[test]
+fn constant_speed_flight_with_gps_does_not_decay() {
+    use stm32_navcore::vel_damping::VelDampingFilter;
+
+    let cfg = VelDampingConfig::default();
+    let mut filter = VelDampingFilter::with_initial_velocity(cfg, [20.0, 0.0, 0.0]).unwrap();
+    for _ in 0..300 {
+        let _ = filter.step([0.0; 3], Some([20.0, 0.0, 0.0]), 1.0).unwrap();
+    }
+    let v = filter.velocity();
+    assert!(
+        (v[0] - 20.0).abs() < 0.5,
+        "constant speed 20 m/s decayed to {v:?}"
+    );
+}
