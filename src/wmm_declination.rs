@@ -61,6 +61,33 @@ fn accumulate_wmm_order(
     *br += ((n + 1) as f32) * t1 * par;
 }
 
+#[inline]
+fn compute_wmm_geom(lat_deg: f32, lon_deg: f32) -> (f32, f32, f32, f32, f32, f32, [f32; 13], [f32; 13]) {
+    let dtr = core::f32::consts::PI / 180.0;
+    let (srlon, crlon) = (sinf(lon_deg * dtr), cosf(lon_deg * dtr));
+    let (srlat, crlat) = (sinf(lat_deg * dtr), cosf(lat_deg * dtr));
+    let mut sp = [0.0f32; 13];
+    let mut cp = [0.0f32; 13];
+    cp[0] = 1.0;
+    sp[1] = srlon;
+    cp[1] = crlon;
+    for m in 2..=12 {
+        sp[m] = sp[1] * cp[m - 1] + cp[1] * sp[m - 1];
+        cp[m] = cp[1] * cp[m - 1] - sp[1] * sp[m - 1];
+    }
+    let (a, b, re) = (6378.137f32, 6356.7523f32, 6371.2f32);
+    let (a2, b2) = (a * a, b * b);
+    let (c2, a4, c4) = (a2 - b2, a2 * a2, a2 * a2 - b2 * b2);
+    let (srlat2, crlat2) = (srlat * srlat, crlat * crlat);
+    let q = sqrtf(a2 - c2 * srlat2);
+    let q2 = (a2 / b2) * (a2 / b2);
+    let ct = srlat / sqrtf(q2 * crlat2 + srlat2);
+    let st = sqrtf((1.0 - ct * ct).max(0.0));
+    let r = sqrtf((a4 - c4 * srlat2) / (q * q));
+    let d = sqrtf(a2 * crlat2 + b2 * srlat2);
+    (ct, st, d / r, c2 * crlat * srlat / (r * d), re / r, dtr, sp, cp)
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DeclinationError {
     NonFinite,
