@@ -487,12 +487,7 @@ impl NavEkf {
         }
         let (_, _, current_yaw) = self.att.to_euler_zyx();
         let mut y = yaw_obs - current_yaw;
-        while y > core::f32::consts::PI {
-            y -= 2.0 * core::f32::consts::PI;
-        }
-        while y < -core::f32::consts::PI {
-            y += 2.0 * core::f32::consts::PI;
-        }
+        y -= 2.0 * core::f32::consts::PI * libm::roundf(y / (2.0 * core::f32::consts::PI));
         let mut h = [0.0f32; STATE_DIM];
         h[6] = 1.0;
         self.update_joseph_scalar(h, y, r_yaw, gate)
@@ -513,12 +508,7 @@ impl NavEkf {
         }
         let (_, _, current_yaw) = self.att.to_euler_zyx();
         let mut y = yaw_rad - current_yaw;
-        while y > core::f32::consts::PI {
-            y -= 2.0 * core::f32::consts::PI;
-        }
-        while y < -core::f32::consts::PI {
-            y += 2.0 * core::f32::consts::PI;
-        }
+        y -= 2.0 * core::f32::consts::PI * libm::roundf(y / (2.0 * core::f32::consts::PI));
         let mut h = [0.0f32; STATE_DIM];
         h[6] = 1.0;
         self.update_joseph_scalar(h, y, variance, 25.0)
