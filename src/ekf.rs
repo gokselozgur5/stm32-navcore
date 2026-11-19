@@ -833,7 +833,23 @@ mod zupt_tests_drift {
     }
 }
 
-/// Opt-in per-axis scalar Kalman filter for the body-frame accelerometer bias.
+#[cfg(test)]
+mod zupt_tests {
+    use crate::zupt::{StancePhase, ZuptConfig, ZuptDetector};
+
+    #[test]
+    fn test_stationary_detector_detects_static_motion() {
+        let mut detector = ZuptDetector::<5>::new(ZuptConfig::default()).unwrap();
+        let accel = [0.0, 0.0, -9.80665];
+        let gyro = [0.001, -0.001, 0.0];
+        let mut detected = false;
+        for _ in 0..5 {
+            detected = detector.update(accel, gyro).unwrap();
+        }
+        assert!(detected);
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct AccelBiasEstimator {
     pub bias_mps2: [f32; 3],
