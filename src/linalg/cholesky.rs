@@ -16,7 +16,7 @@ pub fn cholesky<const N: usize>(a: &Mat<N, N>) -> Result<Mat<N, N>, LinalgError>
                 s -= l.0[i][k] * l.0[j][k];
             }
             if i == j {
-                if s <= 0.0 {
+                if s <= a.0[i][i] * 1.0e-5 {
                     return Err(LinalgError::NotPositiveDefinite);
                 }
                 l.0[i][j] = libm::sqrtf(s);
