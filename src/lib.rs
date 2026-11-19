@@ -18,7 +18,7 @@ pub mod body_rot;
 pub mod butterworth;
 pub mod ekf;
 /// Zero-velocity detector over a sliding window of accelerometer and gyro samples.
-pub use ekf::StationaryDetector;
+pub use zupt::ZuptDetector;
 pub mod fdir;
 pub mod geo;
 pub mod gravity;
