@@ -272,7 +272,7 @@ impl Icm42688 {
             i16::from_be_bytes([buf[9], buf[10]]),
             i16::from_be_bytes([buf[11], buf[12]]),
         ];
-        let temp = i16::from_be_bytes([buf[13], buf[14]]);
+        let temp = (buf[13] as i8 as i16) * 64;
         Some(RawSample { accel, gyro, temp })
     }
 }
