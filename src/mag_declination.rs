@@ -52,9 +52,9 @@ pub const WMM_LON_STEP: f32 = 30.0;
 /// World Magnetic Model 2020 lookup table for declination and inclination.
 #[derive(Clone, Copy, Debug)]
 pub struct MagDeclinationLut {
-    /// Declination grid in degrees: [row_lat][col_lon].
+    /// Declination grid in degrees: `[row_lat][col_lon]`.
     pub declination: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
-    /// Inclination grid in degrees: [row_lat][col_lon].
+    /// Inclination grid in degrees: `[row_lat][col_lon]`.
     pub inclination: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
 }
 
