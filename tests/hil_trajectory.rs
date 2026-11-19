@@ -1,5 +1,6 @@
 use core::f32::consts::PI;
-use stm32_navcore::ekf::{NavEkf, StationaryDetector};
+use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::zupt::{ZuptConfig, ZuptDetector};
 use stm32_navcore::math::{pressure_hpa_to_altitude_m, tilt_compensated_yaw, Mat, Quaternion};
 use stm32_navcore::protocol::NavTelemetry;
 
@@ -59,7 +60,7 @@ fn altitude_to_pressure_hpa(alt_m: f32, p0_hpa: f32) -> f32 {
 #[test]
 fn test_cortex_m4f_stack_and_state_footprint_invariants() {
     assert!(core::mem::size_of::<NavEkf>() <= 1024);
-    assert!(core::mem::size_of::<StationaryDetector>() <= 64);
+    assert!(core::mem::size_of::<ZuptDetector<10>>() <= 64);
     assert!(core::mem::size_of::<NavTelemetry>() <= 128);
 }
 
@@ -67,7 +68,13 @@ fn test_cortex_m4f_stack_and_state_footprint_invariants() {
 fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
     let mut rng = XorShift64::new(1337);
     let mut ekf = NavEkf::new();
-    let mut zupt_detector = StationaryDetector::new(10, 0.05, 0.03);
+    let mut zupt_detector = ZuptDetector::<10>::new(ZuptConfig {
+        accel_var_thresh: 0.05,
+        gyro_norm_thresh: 0.03,
+        accel_mag_thresh: 0.35,
+        min_stance_samples: 5,
+        gravity_magnitude: 9.80665,
+    }).unwrap();
 
     let total_steps = 4000;
     let dt = 0.01f32;
