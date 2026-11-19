@@ -1,4 +1,7 @@
 //! Mahony AHRS complementary filter with integral gyro bias tracking.
+//!
+//! Accelerometer measurements follow the NED specific-force convention: a level
+//! sensor at rest measures `[0, 0, -g]`.
 
 use crate::math::{MathError, Quaternion};
 
@@ -117,9 +120,9 @@ impl MahonyAhrs {
         let (ax, ay, az) = (accel[0] * inv_a, accel[1] * inv_a, accel[2] * inv_a);
 
         let (w, x, y, z) = (q.w, q.x, q.y, q.z);
-        let vx = 2.0 * (x * z - w * y);
-        let vy = 2.0 * (w * x + y * z);
-        let vz = 1.0 - 2.0 * (x * x + y * y);
+        let vx = 2.0 * (w * y - x * z);
+        let vy = -2.0 * (w * x + y * z);
+        let vz = 2.0 * (x * x + y * y) - 1.0;
 
         [ay * vz - az * vy, az * vx - ax * vz, ax * vy - ay * vx]
     }

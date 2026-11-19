@@ -2,6 +2,9 @@ use crate::attitude::AttitudeError;
 use crate::math::Quaternion;
 
 /// Mahony non-linear complementary filter with PI gyro bias correction.
+///
+/// Accelerometer measurements follow the NED specific-force convention: a level
+/// sensor at rest measures `[0, 0, -g]`.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Mahony {
     pub q: Quaternion,
