@@ -12,5 +12,5 @@ fn tiny_diagonal_3x3_inverts() {
 #[test]
 fn large_nearly_singular_3x3_is_rejected() {
     let m = Mat([[1e6, 1e6, 1e6], [1e6, 1e6, 1e6], [1e6, 1e6, 1e6 + 1.0]]);
-    assert!(m.inv_3x3().is_none());
+    assert_eq!(m.inv_3x3(), None);
 }
