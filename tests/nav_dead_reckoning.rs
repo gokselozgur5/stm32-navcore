@@ -56,3 +56,13 @@ fn test_dr_validation_guards() {
     let valid = DeadReckoningState::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     assert_eq!(dead_reckoning_step(&valid, -1.0), Err(NavError::NonFinite));
 }
+
+#[test]
+fn dead_reckoning_matches_wgs84_reference_at_60_degrees() {
+    let lat = 60.0f64.to_radians();
+    let state = DeadReckoningState::new(lat, 0.0, 0.0, 100.0, 100.0, 0.0);
+    let next = dead_reckoning_step(&state, 1.0).unwrap();
+    let dlat = next.lat_rad - lat;
+    assert!((next.lon_rad - 3.127_830_11e-5).abs() < 1e-12, "dlon {}", next.lon_rad);
+    assert!((dlat - 1.566_550_06e-5).abs() < 1e-12, "dlat {dlat}");
+}
