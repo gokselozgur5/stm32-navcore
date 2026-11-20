@@ -74,4 +74,3 @@ fn normalize_lon_deg_large_input_terminates() {
     let done = rx.recv_timeout(Duration::from_millis(500));
     assert!(done.is_ok(), "normalize_lon_deg(1.0e20) did not return");
 }
-
