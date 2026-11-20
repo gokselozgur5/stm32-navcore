@@ -32,3 +32,10 @@ fn make_crsf_test_frame() -> ([u8; 26], [u16; 16]) {
     f[25] = crc8_dvb_s2(&f[2..25]);
     (f, ch)
 }
+
+#[test]
+fn test_crsf_parse_frame_distinct_channels() {
+    let (frame, ch) = make_crsf_test_frame();
+    let parsed = CrsfParser::parse_frame(&frame).unwrap();
+    assert_eq!(parsed.raw_channels, ch);
+}
