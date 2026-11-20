@@ -10,10 +10,22 @@ fn test_rejection_of_invalid_cutoff_and_dt() {
         LowPassFilter::new(-5.0, 0.01),
         Err(LowPassError::InvalidCutoffFrequency)
     );
-    assert!(LowPassFilter::new(50.0, 0.01).is_err());
-    assert!(LowPassFilter::new(60.0, 0.01).is_err());
-    assert!(LowPassFilter::new(10.0, 0.0).is_err());
-    assert!(LowPassFilter::new(10.0, -0.01).is_err());
+    assert_eq!(
+        LowPassFilter::new(50.0, 0.01),
+        Err(LowPassError::InvalidCutoffFrequency)
+    );
+    assert_eq!(
+        LowPassFilter::new(60.0, 0.01),
+        Err(LowPassError::InvalidCutoffFrequency)
+    );
+    assert_eq!(
+        LowPassFilter::new(10.0, 0.0),
+        Err(LowPassError::InvalidSampleInterval)
+    );
+    assert_eq!(
+        LowPassFilter::new(10.0, -0.01),
+        Err(LowPassError::InvalidSampleInterval)
+    );
 }
 
 #[test]
