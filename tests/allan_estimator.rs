@@ -57,7 +57,7 @@ fn counts_follow_tau_schedule() {
 }
 
 #[test]
-#[should_panic]
 fn undersized_ring_panics() {
-    let _ = AllanEstimator::<8, 3>::new(1.0);
+    let result = std::panic::catch_unwind(|| AllanEstimator::<8, 3>::new(1.0));
+    assert!(result.is_err(), "undersized ring buffer must panic");
 }
