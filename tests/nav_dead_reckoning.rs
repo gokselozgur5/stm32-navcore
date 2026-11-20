@@ -63,6 +63,10 @@ fn dead_reckoning_matches_wgs84_reference_at_60_degrees() {
     let state = DeadReckoningState::new(lat, 0.0, 0.0, 100.0, 100.0, 0.0);
     let next = dead_reckoning_step(&state, 1.0).unwrap();
     let dlat = next.lat_rad - lat;
-    assert!((next.lon_rad - 3.127_830_11e-5).abs() < 1e-12, "dlon {}", next.lon_rad);
+    assert!(
+        (next.lon_rad - 3.127_830_11e-5).abs() < 1e-12,
+        "dlon {}",
+        next.lon_rad
+    );
     assert!((dlat - 1.566_550_06e-5).abs() < 1e-12, "dlat {dlat}");
 }
