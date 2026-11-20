@@ -36,6 +36,9 @@ pub fn infinity_norm<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
         for c in 0..C {
             row_sum += libm::fabsf(a.0[r][c]);
         }
+        if row_sum.is_nan() {
+            return f32::NAN;
+        }
         if row_sum > max_row {
             max_row = row_sum;
         }
