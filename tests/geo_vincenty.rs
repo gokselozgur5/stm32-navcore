@@ -32,5 +32,5 @@ fn equator_quarter_arc() {
 
 #[test]
 fn antipodal_does_not_panic() {
-    let _ = inverse(0.0, 0.0, 0.0, core::f64::consts::PI);
+    assert!(inverse(0.0, 0.0, 0.0, core::f64::consts::PI).is_none());
 }
