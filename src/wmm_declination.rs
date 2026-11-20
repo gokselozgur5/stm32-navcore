@@ -21,7 +21,12 @@ const WMM2020_COEFFS: [[f32; 13]; 13] = [
 
 #[inline]
 fn compute_wmm_harmonics(
-    n: usize, st: f32, ct: f32, p: &mut [f32; 169], dp: &mut [[f32; 13]; 13], pp: &mut [f32; 13],
+    n: usize,
+    st: f32,
+    ct: f32,
+    p: &mut [f32; 169],
+    dp: &mut [[f32; 13]; 13],
+    pp: &mut [f32; 13],
 ) {
     for m in 0..=n {
         if n == m {
@@ -37,15 +42,27 @@ fn compute_wmm_harmonics(
         }
         if st == 0.0 && m == 1 {
             let k1 = (((n - 1) * (n - 1) - 1) as f32) / (((2 * n - 1) * (2 * n - 3)) as f32);
-            pp[n] = if n == 1 { pp[n - 1] } else { ct * pp[n - 1] - k1 * pp[n - 2] };
+            pp[n] = if n == 1 {
+                pp[n - 1]
+            } else {
+                ct * pp[n - 1] - k1 * pp[n - 2]
+            };
         }
     }
 }
 
 #[inline]
 fn accumulate_wmm_order(
-    n: usize, m: usize, ar: f32, p_val: f32, dp_val: f32, cp_m: f32, sp_m: f32,
-    bt: &mut f32, bp: &mut f32, br: &mut f32,
+    n: usize,
+    m: usize,
+    ar: f32,
+    p_val: f32,
+    dp_val: f32,
+    cp_m: f32,
+    sp_m: f32,
+    bt: &mut f32,
+    bp: &mut f32,
+    br: &mut f32,
 ) {
     let par = ar * p_val;
     let (t1, t2) = if m == 0 {
