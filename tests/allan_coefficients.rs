@@ -51,10 +51,10 @@ fn random_walk_coefficient_recovered() {
 #[test]
 fn invalid_ranges_return_none() {
     let mut est = Est::new(TAU0);
-    assert!(est.white_noise_coeff(0, 3).is_none());
+    assert_eq!(est.white_noise_coeff(0, 3), None);
     est.push(1.0);
     est.push(2.0);
-    assert!(est.white_noise_coeff(3, 1).is_none());
-    assert!(est.random_walk_coeff(0, 7).is_none());
-    assert!(est.loglog_slope(2, 2).is_none());
+    assert_eq!(est.white_noise_coeff(3, 1), None);
+    assert_eq!(est.random_walk_coeff(0, 7), None);
+    assert_eq!(est.loglog_slope(2, 2), None);
 }
