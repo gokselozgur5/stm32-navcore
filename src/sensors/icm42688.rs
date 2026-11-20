@@ -406,4 +406,30 @@ mod tests {
         assert!((scaled.gyro_rad_s[2] - (-3.19579)).abs() < 1e-4);
         assert!((scaled.temp_c - 34.6618).abs() < 1e-3);
     }
+
+    #[test]
+    fn test_icm42688_fifo_20bit_and_aaf_encode() {
+        let mut pkt = [0u8; 20];
+        pkt[0] = 0x00;
+        pkt[1..3].copy_from_slice(&1000i16.to_be_bytes());
+        pkt[3..5].copy_from_slice(&(-2000i16).to_be_bytes());
+        pkt[5..7].copy_from_slice(&3000i16.to_be_bytes());
+        pkt[7..9].copy_from_slice(&(-500i16).to_be_bytes());
+        pkt[9..11].copy_from_slice(&1200i16.to_be_bytes());
+        pkt[11..13].copy_from_slice(&(-800i16).to_be_bytes());
+        pkt[13..15].copy_from_slice(&450i16.to_be_bytes());
+        pkt[17] = 0x57;
+        pkt[18] = 0xAB;
+        pkt[19] = 0x32;
+        let s = Icm42688::parse_fifo_packet_20bit(&pkt).unwrap();
+        assert_eq!(s.accel_20bit, [16005, -31990, 48003]);
+        assert_eq!(s.gyro_20bit, [-7993, 19211, -12798]);
+        assert_eq!(s.temp, 450);
+        let mut imu = Icm42688::new();
+        imu.aaf = Some(AafConfig::cutoff_536hz());
+        let aaf = imu.encode_accel_aaf_regs().unwrap();
+        assert_eq!(aaf[0], [aaf_reg::ACCEL_CONFIG_STATIC2, 24]);
+        assert_eq!(aaf[1], [aaf_reg::ACCEL_CONFIG_STATIC3, 144]);
+        assert_eq!(aaf[2], [aaf_reg::ACCEL_CONFIG_STATIC4, 128]);
+    }
 }
