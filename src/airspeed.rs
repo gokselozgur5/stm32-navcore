@@ -168,13 +168,18 @@ pub fn equivalent_airspeed(tas_mps: f32, density_kg_m3: f32) -> Result<f32, Airs
     Ok(tas_mps * libm::sqrtf(sigma))
 }
 
-/// Pressure altitude in meters from static pressure.
+/// Pressure altitude in meters from static pressure (0 to 20000 m).
 pub fn pressure_altitude(static_p_pa: f32) -> Result<f32, AirspeedError> {
     if !static_p_pa.is_finite() {
         return Err(AirspeedError::NonFinite);
     }
     if static_p_pa <= 0.0 {
         return Err(AirspeedError::InvalidPressure);
+    }
+    if static_p_pa < TROPOPAUSE_PRESSURE_PA {
+        let p_ratio = static_p_pa / TROPOPAUSE_PRESSURE_PA;
+        let dh = -STRATOSPHERE_SCALE_HEIGHT_M * libm::logf(p_ratio);
+        return Ok(TROPOPAUSE_ALTITUDE_M + dh);
     }
     let pr = static_p_pa / STANDARD_PRESSURE_PA;
     let factor = 1.0 - libm::powf(pr, ISA_PRESSURE_EXPONENT);
