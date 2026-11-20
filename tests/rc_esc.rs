@@ -13,3 +13,22 @@ fn test_dshot_known_answer_1046() {
 fn test_crc8_dvb_s2_known_answer_vector() {
     assert_eq!(crc8_dvb_s2(b"123456789"), 0xBC);
 }
+
+use stm32_navcore::protocol::rc_esc::{CrsfError, CrsfParser};
+
+fn make_crsf_test_frame() -> ([u8; 26], [u16; 16]) {
+    let mut f = [0u8; 26];
+    f[..3].copy_from_slice(&[0xC8, 24, 0x16]);
+    let ch = [
+        172u16, 992, 1811, 500, 1500, 300, 1700, 800, 1200, 400, 1600, 600, 1400, 700, 1300, 1000,
+    ];
+    for (i, &c) in ch.iter().enumerate() {
+        for b in 0..11 {
+            if (c & (1 << b)) != 0 {
+                f[3 + (i * 11 + b) / 8] |= 1 << ((i * 11 + b) % 8);
+            }
+        }
+    }
+    f[25] = crc8_dvb_s2(&f[2..25]);
+    (f, ch)
+}
