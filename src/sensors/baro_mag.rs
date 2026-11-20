@@ -447,6 +447,30 @@ mod tests {
     }
 
     #[test]
+    fn test_dps310_known_answer_compensation() {
+        let calib = Dps310Calib {
+            c0: -120.0,
+            c1: 850.0,
+            c00: 101325.0,
+            c10: -450.0,
+            c01: -120.0,
+            c11: 25.0,
+            c20: -15.0,
+            c21: 2.0,
+            c30: -1.0,
+        };
+        let driver = Dps310Driver::new(calib);
+        let raw_t = Dps310Driver::parse_raw_temperature(&[0x04, 0x00, 0x00]).unwrap();
+        let raw_p = Dps310Driver::parse_raw_pressure(&[0x06, 0x00, 0x00]).unwrap();
+        assert_eq!(raw_t, 262144);
+        assert_eq!(raw_p, 393216);
+        let temp_c = driver.compensate_temperature(raw_t).unwrap();
+        assert!((temp_c - 365.0).abs() < 1e-4);
+        let press_pa = driver.compensate_pressure(raw_p, raw_t).unwrap();
+        assert!((press_pa - 100928.58).abs() < 0.1);
+    }
+
+    #[test]
     fn test_ist8310_raw_parsing_and_bounds() {
         assert_eq!(
             Ist8310Driver::parse_raw_mag(&[0u8; 5]),
