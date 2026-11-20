@@ -41,14 +41,8 @@ impl XorShift64 {
     }
 }
 
-fn wrap_pi(mut a: f32) -> f32 {
-    while a > PI {
-        a -= 2.0 * PI;
-    }
-    while a < -PI {
-        a += 2.0 * PI;
-    }
-    a
+fn wrap_pi(a: f32) -> f32 {
+    (a + PI).rem_euclid(2.0 * PI) - PI
 }
 
 fn altitude_to_pressure_hpa(alt_m: f32, p0_hpa: f32) -> f32 {
