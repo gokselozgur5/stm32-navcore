@@ -41,13 +41,14 @@ fn zero_vector_maps_to_identity() {
 
 #[test]
 fn log_inverts_exp_across_angles() {
+    let limit = core::f32::consts::PI - 1e-3;
     let mut angle = 1e-8f32;
-    while angle < core::f32::consts::PI - 1e-3 {
+    while angle < limit {
         let e = worst_error(angle);
         assert!(e < 1e-6, "angle {angle} error {e}");
         angle *= 1.5;
     }
-    assert!(worst_error(core::f32::consts::PI - 1e-3) < 1e-6);
+    assert!(worst_error(limit) < 1e-6);
 }
 
 #[test]
@@ -78,8 +79,9 @@ fn log_dcm_recovers_known_rotation() {
 
 #[test]
 fn log_dcm_inverts_exp_dcm_across_angles() {
+    let limit = core::f32::consts::PI - 1e-3;
     let mut angle = 1e-8f32;
-    while angle < core::f32::consts::PI - 1e-3 {
+    while angle < limit {
         let e = worst_dcm_error(angle);
         assert!(e < 1e-5, "dcm angle {angle} error {e}");
         angle *= 1.5;
