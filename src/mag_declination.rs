@@ -72,14 +72,9 @@ impl MagDeclinationLut {
 
     /// Normalize longitude in degrees to [-180.0, 180.0].
     pub fn normalize_lon_deg(lon_deg: f32) -> f32 {
-        let mut lon = lon_deg;
-        while lon > 180.0 {
-            lon -= 360.0;
-        }
-        while lon < -180.0 {
-            lon += 360.0;
-        }
-        lon
+        let rem = (lon_deg + 180.0) % 360.0;
+        let wrapped = if rem < 0.0 { rem + 360.0 } else { rem };
+        wrapped - 180.0
     }
 
     /// Compute cell indices and bilinear interpolation weights.
