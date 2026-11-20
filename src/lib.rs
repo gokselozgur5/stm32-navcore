@@ -135,7 +135,7 @@ mod footprint {
 
     #[test]
     fn nav_ekf_fits_sram_budget() {
-// Size check removed (pinned in tests/public_api.rs)
+        // Size check removed (pinned in tests/public_api.rs)
     }
 }
 pub mod filters;
