@@ -170,7 +170,11 @@ pub enum DeclinationError {
 pub fn normalize_heading_deg(deg: f32) -> f32 {
     let rem = deg % 360.0;
     let res = if rem < 0.0 { rem + 360.0 } else { rem };
-    if res >= 360.0 { 0.0 } else { res }
+    if res >= 360.0 {
+        0.0
+    } else {
+        res
+    }
 }
 
 /// Normalize an angle in radians into [0.0, 2*PI).
@@ -179,7 +183,11 @@ pub fn normalize_heading_rad(rad: f32) -> f32 {
     let two_pi = 2.0 * core::f32::consts::PI;
     let rem = rad % two_pi;
     let res = if rem < 0.0 { rem + two_pi } else { rem };
-    if res >= two_pi { 0.0 } else { res }
+    if res >= two_pi {
+        0.0
+    } else {
+        res
+    }
 }
 
 /// Compute true heading from magnetic heading and declination (in degrees).
