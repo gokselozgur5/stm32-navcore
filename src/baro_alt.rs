@@ -45,13 +45,18 @@ pub const STRATOSPHERE_TEMP_K: f32 = 216.65;
 pub const STRATOSPHERE_SCALE_HEIGHT_M: f32 =
     (GAS_CONSTANT_DRY_AIR * STRATOSPHERE_TEMP_K) / STANDARD_GRAVITY_M_S2;
 
-/// Computes altitude in meters above sea level from pressure under standard ISA conditions.
+/// Computes altitude in meters above sea level from pressure under standard ISA conditions (0 to 20000 m).
 pub fn altitude_from_pressure_isa(pressure_pa: f32) -> Result<f32, BaroAltError> {
     if !pressure_pa.is_finite() {
         return Err(BaroAltError::NonFinite);
     }
     if pressure_pa <= 0.0 {
         return Err(BaroAltError::InvalidPressure);
+    }
+    if pressure_pa < TROPOPAUSE_PRESSURE_PA {
+        let p_ratio = pressure_pa / TROPOPAUSE_PRESSURE_PA;
+        let dh = -STRATOSPHERE_SCALE_HEIGHT_M * libm::logf(p_ratio);
+        return Ok(TROPOPAUSE_ALTITUDE_M + dh);
     }
     let ratio = pressure_pa / STANDARD_SEA_LEVEL_PRESSURE_PA;
     let factor = 1.0 - libm::powf(ratio, HYPSOMETRIC_EXPONENT);
