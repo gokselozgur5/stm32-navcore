@@ -67,7 +67,10 @@ fn improper_reflection_is_rejected() {
     for i in 0..3 {
         neg_i.0[i][i] = -1.0;
     }
-    assert_eq!(Dcm(neg_i).orthonormalize(), Err(RotationError::NotOrthonormal));
+    assert_eq!(
+        Dcm(neg_i).orthonormalize(),
+        Err(RotationError::NotOrthonormal)
+    );
 }
 
 #[test]
@@ -92,13 +95,19 @@ fn gram_schmidt_removes_noise() {
 fn gram_schmidt_rejects_non_finite() {
     let mut d = noisy();
     d.0 .0[0][0] = f32::NAN;
-    assert_eq!(d.orthonormalize_gram_schmidt(), Err(RotationError::NotOrthonormal));
+    assert_eq!(
+        d.orthonormalize_gram_schmidt(),
+        Err(RotationError::NotOrthonormal)
+    );
 }
 
 #[test]
 fn gram_schmidt_rejects_singular() {
     let d = Dcm(Mat::<3, 3>::zeros());
-    assert_eq!(d.orthonormalize_gram_schmidt(), Err(RotationError::NotOrthonormal));
+    assert_eq!(
+        d.orthonormalize_gram_schmidt(),
+        Err(RotationError::NotOrthonormal)
+    );
 }
 
 #[test]
@@ -107,7 +116,10 @@ fn gram_schmidt_rejects_reflection() {
     for i in 0..3 {
         neg_i.0[i][i] = -1.0;
     }
-    assert_eq!(Dcm(neg_i).orthonormalize_gram_schmidt(), Err(RotationError::NotOrthonormal));
+    assert_eq!(
+        Dcm(neg_i).orthonormalize_gram_schmidt(),
+        Err(RotationError::NotOrthonormal)
+    );
 }
 
 #[test]
