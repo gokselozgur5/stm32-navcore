@@ -133,7 +133,7 @@ pub fn pressure_at_altitude_isa(altitude_m: f32) -> Result<f32, BaroAltError> {
     Ok(STANDARD_SEA_LEVEL_PRESSURE_PA * libm::powf(temp_ratio, inv_exp))
 }
 
-/// Calibrates QNH sea-level pressure in Pascals from pressure at a known altitude.
+/// Calibrates QNH sea-level pressure in Pascals from pressure at a known altitude (0 to 20000 m).
 pub fn calibrate_qnh(
     measured_pressure_pa: f32,
     known_altitude_m: f32,
@@ -143,6 +143,12 @@ pub fn calibrate_qnh(
     }
     if measured_pressure_pa <= 0.0 {
         return Err(BaroAltError::InvalidPressure);
+    }
+    if known_altitude_m > TROPOPAUSE_ALTITUDE_M {
+        let dh = known_altitude_m - TROPOPAUSE_ALTITUDE_M;
+        let factor = (TROPOPAUSE_PRESSURE_PA / STANDARD_SEA_LEVEL_PRESSURE_PA)
+            * libm::expf(-dh / STRATOSPHERE_SCALE_HEIGHT_M);
+        return Ok(measured_pressure_pa / factor);
     }
     let temp_ratio =
         1.0 - (STANDARD_LAPSE_RATE_K_PER_M * known_altitude_m) / STANDARD_SEA_LEVEL_TEMP_K;
