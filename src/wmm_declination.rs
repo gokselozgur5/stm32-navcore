@@ -79,7 +79,10 @@ fn accumulate_wmm_order(
 }
 
 #[inline]
-fn compute_wmm_geom(lat_deg: f32, lon_deg: f32) -> (f32, f32, f32, f32, f32, f32, [f32; 13], [f32; 13]) {
+fn compute_wmm_geom(
+    lat_deg: f32,
+    lon_deg: f32,
+) -> (f32, f32, f32, f32, f32, f32, [f32; 13], [f32; 13]) {
     let dtr = core::f32::consts::PI / 180.0;
     let (srlon, crlon) = (sinf(lon_deg * dtr), cosf(lon_deg * dtr));
     let (srlat, crlat) = (sinf(lat_deg * dtr), cosf(lat_deg * dtr));
@@ -102,7 +105,16 @@ fn compute_wmm_geom(lat_deg: f32, lon_deg: f32) -> (f32, f32, f32, f32, f32, f32
     let st = sqrtf((1.0 - ct * ct).max(0.0));
     let r = sqrtf((a4 - c4 * srlat2) / (q * q));
     let d = sqrtf(a2 * crlat2 + b2 * srlat2);
-    (ct, st, d / r, c2 * crlat * srlat / (r * d), re / r, dtr, sp, cp)
+    (
+        ct,
+        st,
+        d / r,
+        c2 * crlat * srlat / (r * d),
+        re / r,
+        dtr,
+        sp,
+        cp,
+    )
 }
 
 #[inline]
