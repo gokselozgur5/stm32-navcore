@@ -32,6 +32,19 @@ pub const HYPSOMETRIC_EXPONENT: f32 =
 /// Standard troposphere temperature scale height factor: T0 / L.
 pub const TROPOSPHERE_TEMP_SCALE: f32 = STANDARD_SEA_LEVEL_TEMP_K / STANDARD_LAPSE_RATE_K_PER_M;
 
+/// Standard altitude of the tropopause in meters (ICAO Doc 7488).
+pub const TROPOPAUSE_ALTITUDE_M: f32 = 11000.0;
+
+/// Standard atmospheric pressure at the tropopause in Pascals (ICAO Doc 7488).
+pub const TROPOPAUSE_PRESSURE_PA: f32 = 22632.04;
+
+/// Standard isothermal stratosphere temperature in Kelvin (216.65 K).
+pub const STRATOSPHERE_TEMP_K: f32 = 216.65;
+
+/// Scale height for the isothermal stratosphere in meters: (R * T) / g0.
+pub const STRATOSPHERE_SCALE_HEIGHT_M: f32 =
+    (GAS_CONSTANT_DRY_AIR * STRATOSPHERE_TEMP_K) / STANDARD_GRAVITY_M_S2;
+
 /// Computes altitude in meters above sea level from pressure under standard ISA conditions.
 pub fn altitude_from_pressure_isa(pressure_pa: f32) -> Result<f32, BaroAltError> {
     if !pressure_pa.is_finite() {
