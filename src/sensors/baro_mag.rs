@@ -419,6 +419,34 @@ mod tests {
     }
 
     #[test]
+    fn test_dps310_known_answer_signed_coefficients() {
+        let mut raw = [0u8; 18];
+        raw[0] = 0xF8;
+        raw[1] = 0x83;
+        raw[2] = 0x52;
+        raw[3] = 0x18;
+        raw[4] = 0xBC;
+        raw[5] = 0xDF;
+        raw[6] = 0xFE;
+        raw[7] = 0x3E;
+        raw[8..10].copy_from_slice(&(-120i16).to_be_bytes());
+        raw[10..12].copy_from_slice(&25i16.to_be_bytes());
+        raw[12..14].copy_from_slice(&(-15i16).to_be_bytes());
+        raw[14..16].copy_from_slice(&2i16.to_be_bytes());
+        raw[16..18].copy_from_slice(&(-1i16).to_be_bytes());
+        let cal = Dps310Calib::from_raw_bytes(&raw).unwrap();
+        assert_eq!(cal.c0, -120.0);
+        assert_eq!(cal.c1, 850.0);
+        assert_eq!(cal.c00, 101325.0);
+        assert_eq!(cal.c10, -450.0);
+        assert_eq!(cal.c01, -120.0);
+        assert_eq!(cal.c11, 25.0);
+        assert_eq!(cal.c20, -15.0);
+        assert_eq!(cal.c21, 2.0);
+        assert_eq!(cal.c30, -1.0);
+    }
+
+    #[test]
     fn test_ist8310_raw_parsing_and_bounds() {
         assert_eq!(
             Ist8310Driver::parse_raw_mag(&[0u8; 5]),
