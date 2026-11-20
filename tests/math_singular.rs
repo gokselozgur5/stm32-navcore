@@ -11,12 +11,12 @@ fn exactly_singular_matrices_are_rejected() {
 
 #[test]
 fn non_finite_inputs_are_rejected() {
-    assert!(Mat([[f32::NAN]]).inv_1x1().is_none());
-    assert!(Mat([[f32::INFINITY]]).inv_1x1().is_none());
-    assert!(Mat([[f32::NAN, 0.0], [0.0, 1.0]]).inv_2x2().is_none());
+    assert_eq!(Mat([[f32::NAN]]).inv_1x1(), None);
+    assert_eq!(Mat([[f32::INFINITY]]).inv_1x1(), None);
+    assert_eq!(Mat([[f32::NAN, 0.0], [0.0, 1.0]]).inv_2x2(), None);
     let mut m = Mat::<3, 3>::identity();
     m.0[1][1] = f32::INFINITY;
-    assert!(m.inv_3x3().is_none());
+    assert_eq!(m.inv_3x3(), None);
 }
 
 #[test]
