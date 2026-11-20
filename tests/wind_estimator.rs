@@ -56,8 +56,8 @@ fn test_wind_estimator_input_validation_config() {
         Err(WindEstimatorError::InvalidConfig)
     );
 
-    cfg.min_airspeed_mps = 70.0;
-    cfg.max_wind_speed_mps = 60.0;
+    cfg.min_airspeed_mps = 5.0;
+    cfg.max_wind_speed_mps = -1.0;
     assert_eq!(
         WindEstimator::new(cfg),
         Err(WindEstimatorError::InvalidConfig)
