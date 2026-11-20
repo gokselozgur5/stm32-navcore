@@ -1,6 +1,6 @@
 use stm32_navcore::math::{Mat, Quaternion};
 use stm32_navcore::rotation::orthonormalize::{skew, unskew};
-use stm32_navcore::rotation::Dcm;
+use stm32_navcore::rotation::{Dcm, RotationError};
 
 #[test]
 fn unskew_recovers_vector() {
@@ -52,13 +52,13 @@ fn noise_is_removed() {
 fn non_finite_input_is_rejected() {
     let mut d = noisy();
     d.0 .0[0][0] = f32::NAN;
-    assert!(d.orthonormalize().is_err());
+    assert_eq!(d.orthonormalize(), Err(RotationError::NotOrthonormal));
 }
 
 #[test]
 fn singular_zero_matrix_is_rejected() {
     let d = Dcm(Mat::<3, 3>::zeros());
-    assert!(d.orthonormalize().is_err());
+    assert_eq!(d.orthonormalize(), Err(RotationError::NotOrthonormal));
 }
 
 #[test]
@@ -67,7 +67,7 @@ fn improper_reflection_is_rejected() {
     for i in 0..3 {
         neg_i.0[i][i] = -1.0;
     }
-    assert!(Dcm(neg_i).orthonormalize().is_err());
+    assert_eq!(Dcm(neg_i).orthonormalize(), Err(RotationError::NotOrthonormal));
 }
 
 #[test]
@@ -92,13 +92,13 @@ fn gram_schmidt_removes_noise() {
 fn gram_schmidt_rejects_non_finite() {
     let mut d = noisy();
     d.0 .0[0][0] = f32::NAN;
-    assert!(d.orthonormalize_gram_schmidt().is_err());
+    assert_eq!(d.orthonormalize_gram_schmidt(), Err(RotationError::NotOrthonormal));
 }
 
 #[test]
 fn gram_schmidt_rejects_singular() {
     let d = Dcm(Mat::<3, 3>::zeros());
-    assert!(d.orthonormalize_gram_schmidt().is_err());
+    assert_eq!(d.orthonormalize_gram_schmidt(), Err(RotationError::NotOrthonormal));
 }
 
 #[test]
@@ -107,7 +107,7 @@ fn gram_schmidt_rejects_reflection() {
     for i in 0..3 {
         neg_i.0[i][i] = -1.0;
     }
-    assert!(Dcm(neg_i).orthonormalize_gram_schmidt().is_err());
+    assert_eq!(Dcm(neg_i).orthonormalize_gram_schmidt(), Err(RotationError::NotOrthonormal));
 }
 
 #[test]
