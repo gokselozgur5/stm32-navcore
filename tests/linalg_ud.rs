@@ -26,9 +26,10 @@ fn correlated_covariance_round_trips() {
 
 #[test]
 fn non_positive_pivot_is_reported() {
+    use stm32_navcore::linalg::LinalgError;
     let mut p = NavEkf::new().cov;
     p.0[4][4] = -1.0;
-    assert!(ud_factor(&p).is_err());
+    assert_eq!(ud_factor(&p), Err(LinalgError::NotPositiveDefinite));
 }
 
 #[test]
