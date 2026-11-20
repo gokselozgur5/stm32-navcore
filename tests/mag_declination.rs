@@ -41,8 +41,8 @@ fn test_wmm_exact_grid_nodes() {
 #[test]
 fn test_wmm_bilinear_interpolation_midpoint() {
     let mid = estimate_wmm2020(15.0, 15.0).unwrap();
-    assert!(mid.declination_deg.is_finite());
-    assert!(mid.inclination_deg.is_finite());
+    assert!((mid.declination_deg - (-4.5)).abs() < 1e-3);
+    assert!((mid.inclination_deg - 24.0).abs() < 1e-3);
 
     let rad = estimate_wmm2020_rad(0.0, 0.0).unwrap();
     let expected_rad = -10.0 * core::f32::consts::PI / 180.0;
