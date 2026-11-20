@@ -34,17 +34,23 @@ fn near_singular_above_threshold_inverts_with_small_residual() {
 
 #[test]
 fn tiny_well_conditioned_inverts_and_tiny_singular_is_rejected() {
-    assert!(Mat([[1e-13, 0.0], [0.0, 1e-13]]).inv_2x2().is_some());
-    assert!(Mat([[1e-13, 2e-13], [2e-13, 4e-13]]).inv_2x2().is_none());
+    assert_eq!(
+        Mat([[1e-13, 0.0], [0.0, 1e-13]]).inv_2x2(),
+        Some(Mat([[1e13, 0.0], [0.0, 1e13]]))
+    );
+    assert_eq!(Mat([[1e-13, 2e-13], [2e-13, 4e-13]]).inv_2x2(), None);
     let tiny3 = Mat([[1e-12, 0.0, 0.0], [0.0, 1e-12, 0.0], [0.0, 0.0, 1e-12]]);
-    assert!(tiny3.inv_3x3().is_some());
+    assert_eq!(
+        tiny3.inv_3x3(),
+        Some(Mat([[1e12, 0.0, 0.0], [0.0, 1e12, 0.0], [0.0, 0.0, 1e12]]))
+    );
     let rank2 = Mat([
         [1e-13, 2e-13, 3e-13],
         [4e-13, 5e-13, 6e-13],
         [7e-13, 8e-13, 9e-13],
     ]);
-    assert!(rank2.inv_3x3().is_none());
+    assert_eq!(rank2.inv_3x3(), None);
     let ill = Mat([[1.0, 1.0], [1.0, 1.0 + 1e-7]]);
-    assert!(ill.inv_2x2().is_none());
-    assert!(Mat([[1e-13]]).inv_1x1().is_none());
+    assert_eq!(ill.inv_2x2(), None);
+    assert_eq!(Mat([[1e-13]]).inv_1x1(), None);
 }
