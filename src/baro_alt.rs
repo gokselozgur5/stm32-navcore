@@ -115,10 +115,15 @@ pub fn hypsometric_altitude(
     Ok((t_ref_k / lapse_rate) * (1.0 - libm::powf(ratio, exp)))
 }
 
-/// Computes atmospheric pressure in Pascals at altitude under standard ISA conditions.
+/// Computes atmospheric pressure in Pascals at altitude under standard ISA conditions (0 to 20000 m).
 pub fn pressure_at_altitude_isa(altitude_m: f32) -> Result<f32, BaroAltError> {
     if !altitude_m.is_finite() {
         return Err(BaroAltError::NonFinite);
+    }
+    if altitude_m > TROPOPAUSE_ALTITUDE_M {
+        let dh = altitude_m - TROPOPAUSE_ALTITUDE_M;
+        let p = TROPOPAUSE_PRESSURE_PA * libm::expf(-dh / STRATOSPHERE_SCALE_HEIGHT_M);
+        return Ok(p);
     }
     let temp_ratio = 1.0 - (STANDARD_LAPSE_RATE_K_PER_M * altitude_m) / STANDARD_SEA_LEVEL_TEMP_K;
     if temp_ratio <= 0.0 {
