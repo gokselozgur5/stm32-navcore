@@ -39,3 +39,29 @@ fn test_crsf_parse_frame_distinct_channels() {
     let parsed = CrsfParser::parse_frame(&frame).unwrap();
     assert_eq!(parsed.raw_channels, ch);
 }
+
+#[test]
+fn test_crsf_push_byte_garbage_and_split_frame() {
+    let (frame, ch) = make_crsf_test_frame();
+    let mut parser = CrsfParser::new();
+    assert_eq!(parser.push_byte(0x55), Ok(None));
+    assert_eq!(parser.push_byte(0xAA), Ok(None));
+    let mut bad_frame = [0u8; 6];
+    bad_frame[0] = 0xC8;
+    bad_frame[1] = 4;
+    bad_frame[2] = 0x28;
+    for &b in &bad_frame[..5] {
+        assert_eq!(parser.push_byte(b), Ok(None));
+    }
+    assert_eq!(parser.push_byte(0x00), Err(CrsfError::UnsupportedFrameType));
+    for &b in &frame[..10] {
+        assert_eq!(parser.push_byte(b), Ok(None));
+    }
+    let mut parsed = None;
+    for &b in &frame[10..] {
+        if let Ok(Some(f)) = parser.push_byte(b) {
+            parsed = Some(f);
+        }
+    }
+    assert_eq!(parsed.unwrap().raw_channels, ch);
+}
