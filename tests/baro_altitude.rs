@@ -1,3 +1,4 @@
+use stm32_navcore::math::MathError;
 use stm32_navcore::sensors::baro::BaroFilter;
 use stm32_navcore::sensors::baro::{compensated_altitude_m, BaroError};
 use stm32_navcore::sensors::baro::{BaroMeasurement, ISA_SEA_LEVEL_HPA};
@@ -17,8 +18,14 @@ fn one_km_altitude_near_898_7_hpa() {
 
 #[test]
 fn invalid_pressure_is_rejected() {
-    assert!(BaroMeasurement::from_pressure(0.0, ISA_SEA_LEVEL_HPA, 1.0).is_err());
-    assert!(BaroMeasurement::from_pressure(f32::NAN, ISA_SEA_LEVEL_HPA, 1.0).is_err());
+    assert_eq!(
+        BaroMeasurement::from_pressure(0.0, ISA_SEA_LEVEL_HPA, 1.0),
+        Err(MathError::InvalidPressure)
+    );
+    assert_eq!(
+        BaroMeasurement::from_pressure(f32::NAN, ISA_SEA_LEVEL_HPA, 1.0),
+        Err(MathError::InvalidPressure)
+    );
 }
 
 #[test]
