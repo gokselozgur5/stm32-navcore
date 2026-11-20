@@ -19,9 +19,9 @@ fn recovers_known_sphere() {
 #[test]
 fn rejects_too_few_or_degenerate_samples() {
     let mut f = SphereFit::new();
-    assert!(f.solve().is_none());
+    assert_eq!(f.solve(), None);
     for _ in 0..10 {
         f.add([1.0, 2.0, 3.0]);
     }
-    assert!(f.solve().is_none());
+    assert_eq!(f.solve(), None);
 }
