@@ -19,7 +19,11 @@ pub fn max_abs_norm<const R: usize, const C: usize>(a: &Mat<R, C>) -> f32 {
     let mut max_val = 0.0;
     for r in 0..R {
         for c in 0..C {
-            let abs_v = libm::fabsf(a.0[r][c]);
+            let v = a.0[r][c];
+            if v.is_nan() {
+                return f32::NAN;
+            }
+            let abs_v = libm::fabsf(v);
             if abs_v > max_val {
                 max_val = abs_v;
             }
