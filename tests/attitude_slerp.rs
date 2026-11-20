@@ -27,8 +27,11 @@ fn test_attitude_slerp_shortest_path() {
 fn test_attitude_slerp_collinear_fallback() {
     let q0 = Quaternion::new(1.0, 0.0, 0.0, 0.0);
     let q1 = Quaternion::new(1.0, 1e-6, 0.0, 0.0).normalize().unwrap();
-    let res = attitude_slerp(&q0, &q1, 0.5);
-    assert!(res.is_ok());
+    let res = attitude_slerp(&q0, &q1, 0.5).unwrap();
+    assert!((res.w - 1.0).abs() < 1e-5);
+    assert!((res.x - 5e-7).abs() < 1e-8);
+    assert_eq!(res.y, 0.0);
+    assert_eq!(res.z, 0.0);
 }
 
 #[test]
