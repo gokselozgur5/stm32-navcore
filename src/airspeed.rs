@@ -37,6 +37,15 @@ pub const HEAT_CAPACITY_RATIO: f32 = 1.4;
 /// Standard speed of sound in m/s.
 pub const STANDARD_SPEED_OF_SOUND_MPS: f32 = 340.294;
 
+/// Standard altitude of the tropopause in meters (ICAO Doc 7488).
+pub const TROPOPAUSE_ALTITUDE_M: f32 = 11000.0;
+
+/// Standard atmospheric pressure at the tropopause in Pascals (ICAO Doc 7488).
+pub const TROPOPAUSE_PRESSURE_PA: f32 = 22632.04;
+
+/// Scale height for the isothermal stratosphere in meters: (R * T) / g0.
+pub const STRATOSPHERE_SCALE_HEIGHT_M: f32 = 6341.6157;
+
 /// Tropospheric lapse rate in K/m.
 pub const TROPO_LAPSE_RATE_K_PER_M: f32 = 0.0065;
 
