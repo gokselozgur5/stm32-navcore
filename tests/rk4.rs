@@ -1,4 +1,4 @@
-use stm32_navcore::rk4::{rk4_step_scalar, rk4_step, rk4_integrate_scalar, Rk4Error};
+use stm32_navcore::rk4::{rk4_integrate_scalar, rk4_step, rk4_step_scalar, Rk4Error};
 
 #[test]
 fn scalar_exponential_decay() {
