@@ -12,13 +12,13 @@ fn tiny_diagonal_2x2_inverts() {
 #[test]
 fn tiny_scale_preserves_rejection_2x2() {
     let m = Mat([[1e-7, 2e-7], [2e-7, 4e-7]]);
-    assert!(m.inv_2x2().is_none());
+    assert_eq!(m.inv_2x2(), None);
 }
 
 #[test]
 fn large_nearly_singular_2x2_is_rejected() {
     let m = Mat([[1e6, 1e6], [1e6, 1e6 + 1.0]]);
-    assert!(m.inv_2x2().is_none());
+    assert_eq!(m.inv_2x2(), None);
 }
 
 #[test]
