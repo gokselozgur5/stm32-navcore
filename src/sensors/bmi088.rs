@@ -272,4 +272,16 @@ mod tests {
         let gyr = decode_gyro_bytes(&raw_gyr, GyroRange::Range1000Dps);
         assert_eq!(gyr.gx_rad_s, 0.0);
     }
+
+    #[test]
+    fn test_accel_decode_known_answer_distinct_axes() {
+        let raw_x = (-1200i16).to_le_bytes();
+        let raw_y = 2400i16.to_le_bytes();
+        let raw_z = (-3600i16).to_le_bytes();
+        let buf = [raw_x[0], raw_x[1], raw_y[0], raw_y[1], raw_z[0], raw_z[1]];
+        let acc = decode_accel_bytes(&buf, AccelRange::Range6g);
+        assert!((acc.ax_m_s2 - (-2.15478)).abs() < 1e-4);
+        assert!((acc.ay_m_s2 - 4.30956).abs() < 1e-4);
+        assert!((acc.az_m_s2 - (-6.46434)).abs() < 1e-4);
+    }
 }
