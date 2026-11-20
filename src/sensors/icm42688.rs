@@ -381,4 +381,29 @@ mod tests {
         assert!(Icm42688::parse_fifo_packet_16bit(&[0x80; 16]).is_none());
         assert!(Icm42688::parse_fifo_packet_16bit(&[0u8; 10]).is_none());
     }
+
+    #[test]
+    fn test_icm42688_fifo_packet_16bit_distinct_fields() {
+        let mut pkt = [0u8; 16];
+        pkt[0] = 0x00;
+        pkt[1..3].copy_from_slice(&1500i16.to_be_bytes());
+        pkt[3..5].copy_from_slice(&(-2500i16).to_be_bytes());
+        pkt[5..7].copy_from_slice(&4000i16.to_be_bytes());
+        pkt[7..9].copy_from_slice(&(-1000i16).to_be_bytes());
+        pkt[9..11].copy_from_slice(&2000i16.to_be_bytes());
+        pkt[11..13].copy_from_slice(&(-3000i16).to_be_bytes());
+        pkt[13] = 20;
+        let raw = Icm42688::parse_fifo_packet_16bit(&pkt).unwrap();
+        assert_eq!(raw.accel, [1500, -2500, 4000]);
+        assert_eq!(raw.gyro, [-1000, 2000, -3000]);
+        assert_eq!(raw.temp, 1280);
+        let scaled = Icm42688::new().scale_sample(&raw);
+        assert!((scaled.accel_m_s2[0] - 7.1826).abs() < 1e-3);
+        assert!((scaled.accel_m_s2[1] - (-11.9710)).abs() < 1e-3);
+        assert!((scaled.accel_m_s2[2] - 19.1536).abs() < 1e-3);
+        assert!((scaled.gyro_rad_s[0] - (-1.06526)).abs() < 1e-4);
+        assert!((scaled.gyro_rad_s[1] - 2.13053).abs() < 1e-4);
+        assert!((scaled.gyro_rad_s[2] - (-3.19579)).abs() < 1e-4);
+        assert!((scaled.temp_c - 34.6618).abs() < 1e-3);
+    }
 }
