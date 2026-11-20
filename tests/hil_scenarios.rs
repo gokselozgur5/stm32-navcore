@@ -18,13 +18,7 @@ fn ideal_imu(a_ned: [f32; 3], yaw: f32, yaw_rate: f32) -> ([f32; 3], [f32; 3]) {
 
 fn yaw_error(ekf: &NavEkf, truth: f32) -> f32 {
     let (_, _, y) = ekf.att.to_euler_zyx();
-    let mut d = y - truth;
-    while d > PI {
-        d -= 2.0 * PI;
-    }
-    while d < -PI {
-        d += 2.0 * PI;
-    }
+    let d = (y - truth + PI).rem_euclid(2.0 * PI) - PI;
     d.abs()
 }
 
