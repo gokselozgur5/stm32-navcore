@@ -52,8 +52,19 @@ fn finish(u: [f64; 4], sl: f64, cl: f64, x: f64, t: &[f64; 6]) -> Inverse {
 }
 
 /// Solves the inverse problem; inputs in radians. Returns `None` if the
-/// iteration fails to converge (nearly antipodal points) or inputs are not finite.
+/// iteration fails to converge (nearly antipodal points), inputs are not finite,
+/// or latitude is outside `[-pi/2, pi/2]`.
 pub fn inverse(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> Option<Inverse> {
+    let max_lat = core::f64::consts::FRAC_PI_2;
+    if !lat1.is_finite()
+        || !lon1.is_finite()
+        || !lat2.is_finite()
+        || !lon2.is_finite()
+        || libm::fabs(lat1) > max_lat
+        || libm::fabs(lat2) > max_lat
+    {
+        return None;
+    }
     let l = lon2 - lon1;
     let (su1, cu1) = libm::sincos(libm::atan((1.0 - F) * libm::tan(lat1)));
     let (su2, cu2) = libm::sincos(libm::atan((1.0 - F) * libm::tan(lat2)));
