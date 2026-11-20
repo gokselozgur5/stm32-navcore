@@ -582,4 +582,15 @@ mod tests {
             .expect("f32");
         assert!(st_f32.pos_ned[0] > 5.0);
     }
+
+    #[test]
+    fn test_strapdown_matches_wgs84_reference_at_60_degrees() {
+        let lat = 60.0f64.to_radians();
+        let state = StrapdownState::new(lat, 0.0, 0.0);
+        let mut ins = InsStrapdownIntegrator::new(state);
+        ins.update_position([100.0, 100.0, 0.0], 1.0).unwrap();
+        let dlat = ins.state().lat_rad - lat;
+        assert!((ins.state().lon_rad - 3.127_914_98e-5).abs() < 1e-12);
+        assert!((dlat - 1.566_550_06e-5).abs() < 1e-12);
+    }
 }
