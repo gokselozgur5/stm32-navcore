@@ -131,14 +131,29 @@ fn eval_wmm_field(lat_deg: f32, lon_deg: f32) -> f32 {
         ar *= aor;
         compute_wmm_harmonics(n, st, ct, &mut p, &mut dp, &mut pp);
         for m in 0..=n {
-            accumulate_wmm_order(n, m, ar, p[n + m * 13], dp[m][n], cp[m], sp[m], &mut bt, &mut bp, &mut br);
+            accumulate_wmm_order(
+                n,
+                m,
+                ar,
+                p[n + m * 13],
+                dp[m][n],
+                cp[m],
+                sp[m],
+                &mut bt,
+                &mut bp,
+                &mut br,
+            );
             if st == 0.0 && m == 1 {
                 let t2 = WMM2020_COEFFS[m][n] * sp[m] - WMM2020_COEFFS[n][m - 1] * cp[m];
                 bpp += (m as f32) * t2 * ar * pp[n];
             }
         }
     }
-    if st == 0.0 { bp = bpp; } else { bp /= st; }
+    if st == 0.0 {
+        bp = bpp;
+    } else {
+        bp /= st;
+    }
     atan2f(bp, -bt * ca - br * sa) / dtr
 }
 
