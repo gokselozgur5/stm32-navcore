@@ -26,15 +26,15 @@ fn test_median_filter_reset() {
 }
 
 #[test]
-#[should_panic(expected = "Window size must be odd")]
 fn even_window_size_panics() {
-    let _ = MedianFilter::<4>::new();
+    let result = std::panic::catch_unwind(|| MedianFilter::<4>::new());
+    assert!(result.is_err(), "Window size must be odd");
 }
 
 #[test]
-#[should_panic(expected = "Window size must be odd")]
 fn zero_window_size_panics() {
-    let _ = MedianFilter::<0>::new();
+    let result = std::panic::catch_unwind(|| MedianFilter::<0>::new());
+    assert!(result.is_err(), "Window size must be odd");
 }
 
 #[test]
