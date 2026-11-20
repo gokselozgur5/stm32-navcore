@@ -107,7 +107,11 @@ pub fn wrap_2pi(angle_rad: f32) -> f32 {
     if wrapped < 0.0 {
         wrapped += two_pi;
     }
-    wrapped
+    if wrapped >= two_pi {
+        0.0
+    } else {
+        wrapped
+    }
 }
 
 /// Wrap angle into [-pi, pi] radians.
