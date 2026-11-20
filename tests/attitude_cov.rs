@@ -1,4 +1,5 @@
 use stm32_navcore::attitude::cov::propagate_attitude_cov;
+use stm32_navcore::attitude::AttitudeError;
 use stm32_navcore::math::{Mat, Quaternion};
 
 #[test]
@@ -42,9 +43,18 @@ fn test_attitude_cov_invalid_inputs() {
     let q = Quaternion::IDENTITY;
     let cov = Mat::<3, 3>::identity();
 
-    assert!(propagate_attitude_cov(&cov, &q, -0.1, 0.1).is_err());
-    assert!(propagate_attitude_cov(&cov, &q, 0.1, 0.0).is_err());
+    assert_eq!(
+        propagate_attitude_cov(&cov, &q, -0.1, 0.1),
+        Err(AttitudeError::InvalidInput)
+    );
+    assert_eq!(
+        propagate_attitude_cov(&cov, &q, 0.1, 0.0),
+        Err(AttitudeError::InvalidInput)
+    );
 
     let nan_cov = Mat::<3, 3>([[f32::NAN; 3]; 3]);
-    assert!(propagate_attitude_cov(&nan_cov, &q, 0.1, 0.1).is_err());
+    assert_eq!(
+        propagate_attitude_cov(&nan_cov, &q, 0.1, 0.1),
+        Err(AttitudeError::NonFinite)
+    );
 }
