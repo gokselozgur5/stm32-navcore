@@ -8,8 +8,10 @@ fn rz(a: f32) -> Dcm {
 
 #[test]
 fn try_new_accepts_rotations() {
-    assert!(Dcm::try_new(Mat::identity()).is_ok());
-    assert!(Dcm::try_new(rz(0.7).0).is_ok());
+    let id = Mat::identity();
+    assert_eq!(Dcm::try_new(id), Ok(Dcm(id)));
+    let rot = rz(0.7);
+    assert_eq!(Dcm::try_new(rot.0), Ok(rot));
 }
 
 #[test]
