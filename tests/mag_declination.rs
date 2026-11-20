@@ -60,3 +60,18 @@ fn test_heading_conversions() {
     let wrap_true = magnetic_to_true_heading_rad(2.0 * pi - 0.1, 0.2);
     assert!((wrap_true - 0.1).abs() < 1e-5);
 }
+
+#[test]
+fn normalize_lon_deg_large_input_terminates() {
+    use std::sync::mpsc::channel;
+    use std::time::Duration;
+    use stm32_navcore::mag_declination::MagDeclinationLut;
+
+    let (tx, rx) = channel();
+    std::thread::spawn(move || {
+        let _ = tx.send(MagDeclinationLut::normalize_lon_deg(1.0e20));
+    });
+    let done = rx.recv_timeout(Duration::from_millis(500));
+    assert!(done.is_ok(), "normalize_lon_deg(1.0e20) did not return");
+}
+
