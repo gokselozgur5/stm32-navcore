@@ -291,6 +291,9 @@ mod tests {
         let vdop_sq = dop.vdop * dop.vdop;
         assert!((gdop_sq - (pdop_sq + tdop_sq)).abs() < 1e-3);
         assert!((pdop_sq - (hdop_sq + vdop_sq)).abs() < 1e-3);
+        assert!((dop.hdop - 1.333).abs() < 1e-3);
+        assert!((dop.vdop - 2.309).abs() < 1e-3);
+        assert!((dop.tdop - 1.528).abs() < 1e-3);
     }
 
     #[test]
