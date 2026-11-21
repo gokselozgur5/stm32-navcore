@@ -100,7 +100,18 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
             (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         } else if t < 10.0 {
             let (s, ds, d2s) = quintic_blend((t - 5.0) / 5.0);
-            (0.0, 0.0, -10.0 * s, 0.0, 0.0, -2.0 * ds, 0.0, 0.0, -0.4 * d2s, 0.0)
+            (
+                0.0,
+                0.0,
+                -10.0 * s,
+                0.0,
+                0.0,
+                -2.0 * ds,
+                0.0,
+                0.0,
+                -0.4 * d2s,
+                0.0,
+            )
         } else if t < 30.0 {
             let (s, ds, d2s) = quintic_blend((t - 10.0) / 20.0);
             let (tau, dtau, d2tau) = (20.0 * s, ds, 0.05 * d2s);
@@ -122,7 +133,18 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
             (pn, pe, -10.0, vn, ve, 0.0, an, ae, 0.0, y)
         } else {
             let (s, ds, d2s) = quintic_blend((t - 30.0) / 10.0);
-            (0.0, 0.0, -10.0 * (1.0 - s), 0.0, 0.0, 1.0 * ds, 0.0, 0.0, 0.1 * d2s, 0.0)
+            (
+                0.0,
+                0.0,
+                -10.0 * (1.0 - s),
+                0.0,
+                0.0,
+                1.0 * ds,
+                0.0,
+                0.0,
+                0.1 * d2s,
+                0.0,
+            )
         };
 
         let next_t = (step + 1) as f32 * dt;
