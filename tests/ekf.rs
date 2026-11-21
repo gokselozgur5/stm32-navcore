@@ -37,3 +37,43 @@ fn test_dual_antenna_heading_custom_gate_rejection() {
     let res = ekf.update_dual_antenna_heading(1.0, 0.01, 1.0);
     assert!(res.is_err());
 }
+
+#[test]
+fn test_ekf_stationary_equator_gravity_drift_repro() {
+    let mut ekf = NavEkf::new();
+    let g_eq = 9.780325f32; // Somigliana at equator
+    let dt = 0.01;
+    for _ in 0..6000 {
+        ekf.predict_with_gravity([0.0, 0.0, -g_eq], [0.0, 0.0, 0.0], dt, g_eq)
+            .unwrap();
+    }
+    // A stationary unit at the equator measures specific force -9.7803 m/s^2.
+    // If fixed 9.80665 is assumed, predict integrates spurious +0.0263 m/s^2,
+    // causing ~47 m drift after 60 s (0.5 * 0.0263 * 60^2).
+    // The vertical position error must be within 1.0 m under true local gravity.
+    assert!(
+        ekf.p_ned_m[2].abs() < 1.0,
+        "down position drifted excessively due to fixed gravity: {}",
+        ekf.p_ned_m[2]
+    );
+}
+
+#[test]
+fn test_accel_bias_estimator_equator_gravity_repro() {
+    use stm32_navcore::ekf::AccelBiasEstimator;
+    use stm32_navcore::math::Quaternion;
+    let mut est = AccelBiasEstimator::new(1.0, 0.01);
+    let g_eq = 9.780325f32;
+    let accel = [0.0, 0.0, -g_eq];
+    for _ in 0..500 {
+        est.update_with_gravity(&Quaternion::IDENTITY, accel, g_eq)
+            .unwrap();
+    }
+    // AccelBiasEstimator learns a false ~+0.026 m/s^2 z bias at the equator
+    // when using standard fixed gravity instead of equator normal gravity.
+    assert!(
+        est.bias_mps2[2].abs() < 0.005,
+        "learned false z-bias at equator: {}",
+        est.bias_mps2[2]
+    );
+}
