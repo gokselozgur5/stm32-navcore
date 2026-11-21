@@ -24,7 +24,7 @@ pub struct BiquadCoefficients {
     pub a2: f32,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct BiquadFilter {
     coeffs: BiquadCoefficients,
     s1: f32,
