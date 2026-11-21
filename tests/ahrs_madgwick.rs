@@ -55,8 +55,8 @@ fn test_ahrs_pure_gyro_integration() {
 fn test_ahrs_gravity_tilt_convergence() {
     let mut ahrs = MadgwickAhrs::new(0.4);
     let target_pitch = 20.0f32.to_radians();
-    let ax = -libm::sinf(target_pitch) * 9.80665;
-    let az = libm::cosf(target_pitch) * 9.80665;
+    let ax = libm::sinf(target_pitch) * 9.80665;
+    let az = -libm::cosf(target_pitch) * 9.80665;
     let dt = 0.01;
 
     for _ in 0..1000 {
