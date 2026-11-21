@@ -135,6 +135,9 @@ impl MagCal {
 
 /// Streaming least-squares sphere fit using normal-equation sums.
 ///
+/// Note: Accumulator sums and system solve use double-precision (`f64`) to avoid
+/// ill-conditioned normal equations during magnetometer calibration.
+///
 /// Model: `x^2 + y^2 + z^2 = 2ax + 2by + 2cz + d`.
 #[derive(Clone, Copy, Debug)]
 pub struct SphereFit {
