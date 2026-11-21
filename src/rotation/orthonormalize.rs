@@ -87,3 +87,37 @@ impl Dcm {
         Dcm::try_new(r)
     }
 }
+
+impl Dcm {
+    /// Restores orthogonality via symmetric error correction and cross product.
+    pub fn orthonormalize_symmetric(&self) -> Result<Dcm, RotationError> {
+        let (mut x, mut y) = (self.0 .0[0], self.0 .0[1]);
+        let half_err = 0.5 * (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]);
+        for i in 0..3 {
+            let (xi, yi) = (x[i] - half_err * y[i], y[i] - half_err * x[i]);
+            x[i] = xi;
+            y[i] = yi;
+        }
+        let z = [
+            x[1] * y[2] - x[2] * y[1],
+            x[2] * y[0] - x[0] * y[2],
+            x[0] * y[1] - x[1] * y[0],
+        ];
+        let nx = vec3_norm(x);
+        let ny = vec3_norm(y);
+        let nz = vec3_norm(z);
+        if nx <= 1e-6
+            || !nx.is_finite()
+            || ny <= 1e-6
+            || !ny.is_finite()
+            || nz <= 1e-6
+            || !nz.is_finite()
+        {
+            return Err(RotationError::NotOrthonormal);
+        }
+        let r0 = [x[0] / nx, x[1] / nx, x[2] / nx];
+        let r1 = [y[0] / ny, y[1] / ny, y[2] / ny];
+        let r2 = [z[0] / nz, z[1] / nz, z[2] / nz];
+        Dcm::try_new(Mat([r0, r1, r2]))
+    }
+}
