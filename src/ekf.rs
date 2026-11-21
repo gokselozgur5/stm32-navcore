@@ -821,7 +821,7 @@ mod zupt_tests_drift {
         let mut ekf = NavEkf::new();
         let mut detector = StationaryDetector::new(10, 0.05, 0.03);
         let dt = 0.01;
-        let accel = [0.0, 0.0, -9.80665];
+        let accel = [0.0005, -0.0005, -9.80665];
         let gyro = [0.0, 0.0, 0.0];
         for _ in 0..5000 {
             ekf.predict(accel, gyro, dt).unwrap();
