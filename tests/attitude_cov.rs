@@ -58,3 +58,23 @@ fn test_attitude_cov_invalid_inputs() {
         Err(AttitudeError::NonFinite)
     );
 }
+
+#[test]
+fn test_repro_issue_338_anisotropic_covariance_propagation() {
+    let cov = Mat::<3, 3>([[0.01, 0.002, 0.0], [0.002, 0.04, 0.0], [0.0, 0.0, 0.09]]);
+    let gyro_var = 0.05;
+    let dt = 0.2;
+    let expected_noise = gyro_var * dt;
+
+    let res = propagate_attitude_cov(&cov, gyro_var, dt).unwrap();
+
+    assert!((res.0[0][0] - (0.01 + expected_noise)).abs() < 1e-6);
+    assert!((res.0[1][1] - (0.04 + expected_noise)).abs() < 1e-6);
+    assert!((res.0[2][2] - (0.09 + expected_noise)).abs() < 1e-6);
+    assert!((res.0[0][1] - 0.002).abs() < 1e-6);
+    assert!((res.0[1][0] - 0.002).abs() < 1e-6);
+    assert_eq!(res.0[0][2], 0.0);
+    assert_eq!(res.0[2][0], 0.0);
+    assert_eq!(res.0[1][2], 0.0);
+    assert_eq!(res.0[2][1], 0.0);
+}
