@@ -118,4 +118,39 @@ impl BiquadFilter {
     pub const fn state(&self) -> (f32, f32) {
         (self.s1, self.s2)
     }
+
+    /// Sets internal delay states explicitly.
+    pub fn set_state(&mut self, s1: f32, s2: f32) {
+        self.s1 = s1;
+        self.s2 = s2;
+    }
+
+    /// Validates sample is finite before executing filter step.
+    pub fn try_update(&mut self, x: f32) -> Result<f32, BiquadError> {
+        if !x.is_finite() {
+            return Err(BiquadError::NonFinite);
+        }
+        Ok(self.update(x))
+    }
+
+    /// Dynamically retunes filter coefficients without resetting states.
+    pub fn retune(&mut self, cutoff_hz: f32, sample_interval_s: f32) -> Result<(), BiquadError> {
+        let coeffs = BiquadCoefficients::butterworth(cutoff_hz, sample_interval_s)?;
+        self.coeffs = coeffs;
+        Ok(())
+    }
+
+    /// Filters an array of input samples into an equal-sized output slice.
+    pub fn batch_filter(&mut self, input: &[f32], output: &mut [f32]) -> Result<(), BiquadError> {
+        if input.len() != output.len() {
+            return Err(BiquadError::BufferLengthMismatch);
+        }
+        for (idx, &x) in input.iter().enumerate() {
+            if !x.is_finite() {
+                return Err(BiquadError::NonFinite);
+            }
+            output[idx] = self.update(x);
+        }
+        Ok(())
+    }
 }
