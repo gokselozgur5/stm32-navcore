@@ -249,24 +249,27 @@ impl Quaternion {
 
 impl Quaternion {
     pub fn to_euler_zyx(&self) -> (f32, f32, f32) {
-        let sinr_cosp = 2.0 * (self.w * self.x + self.y * self.z);
-        let cosr_cosp = 1.0 - 2.0 * (self.x * self.x + self.y * self.y);
-        let roll = libm::atan2f(sinr_cosp, cosr_cosp);
-
         let sinp = 2.0 * (self.w * self.y - self.z * self.x);
-        let pitch = if sinp >= 1.0 {
-            core::f32::consts::FRAC_PI_2
+        if sinp >= 1.0 {
+            let r01 = 2.0 * (self.x * self.y - self.w * self.z);
+            let r11 = 1.0 - 2.0 * (self.x * self.x + self.z * self.z);
+            let yaw = libm::atan2f(-r01, r11);
+            (0.0, core::f32::consts::FRAC_PI_2, yaw)
         } else if sinp <= -1.0 {
-            -core::f32::consts::FRAC_PI_2
+            let r01 = 2.0 * (self.x * self.y - self.w * self.z);
+            let r11 = 1.0 - 2.0 * (self.x * self.x + self.z * self.z);
+            let yaw = libm::atan2f(-r01, r11);
+            (0.0, -core::f32::consts::FRAC_PI_2, yaw)
         } else {
-            libm::asinf(sinp)
-        };
-
-        let siny_cosp = 2.0 * (self.w * self.z + self.x * self.y);
-        let cosy_cosp = 1.0 - 2.0 * (self.y * self.y + self.z * self.z);
-        let yaw = libm::atan2f(siny_cosp, cosy_cosp);
-
-        (roll, pitch, yaw)
+            let sinr_cosp = 2.0 * (self.w * self.x + self.y * self.z);
+            let cosr_cosp = 1.0 - 2.0 * (self.x * self.x + self.y * self.y);
+            let roll = libm::atan2f(sinr_cosp, cosr_cosp);
+            let pitch = libm::asinf(sinp);
+            let siny_cosp = 2.0 * (self.w * self.z + self.x * self.y);
+            let cosy_cosp = 1.0 - 2.0 * (self.y * self.y + self.z * self.z);
+            let yaw = libm::atan2f(siny_cosp, cosy_cosp);
+            (roll, pitch, yaw)
+        }
     }
 }
 
