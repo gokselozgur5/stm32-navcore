@@ -1,79 +1,51 @@
-//! NED to Body frame rotation matrix operations.
+//! Backward compatibility aliases and wrappers for [`crate::rotation::Dcm`].
+//!
+//! Deprecated: use [`crate::rotation::Dcm`] and [`crate::rotation::RotationError`].
 
-use crate::math::Mat;
-use libm::{asinf, atan2f, cosf, sinf, sqrtf};
+pub use crate::rotation::dcm::DCM_TOLERANCE as BODY_ROT_TOLERANCE;
+pub use crate::rotation::RotationError as BodyRotError;
 
-/// Error types for NED to Body rotations.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum BodyRotError {
-    /// Non-finite coordinate, vector, or matrix component.
-    NonFinite,
-    /// Matrix failed orthonormality verification.
-    NotOrthonormal,
-    /// Gimbal lock condition in Euler conversion.
-    GimbalLock,
-}
-
-/// Numerical tolerance for DCM orthonormality checks.
-pub const BODY_ROT_TOLERANCE: f32 = 1e-4;
-
-/// Rotation representation between NED and Body coordinate frames.
+/// Compatibility wrapper around [`crate::rotation::Dcm`] with field `dcm_nb`.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BodyRot {
-    pub dcm_nb: Mat<3, 3>,
+    pub dcm_nb: crate::math::Mat<3, 3>,
 }
 
 impl BodyRot {
     /// Creates an identity rotation where NED and Body frames align.
     pub fn identity() -> Self {
         Self {
-            dcm_nb: Mat::identity(),
+            dcm_nb: crate::math::Mat::identity(),
         }
     }
 
     /// Returns a reference to the NED-to-Body DCM (C_n_b).
-    pub fn dcm_ned_to_body(&self) -> &Mat<3, 3> {
+    pub fn dcm_ned_to_body(&self) -> &crate::math::Mat<3, 3> {
         &self.dcm_nb
     }
 
     /// Returns the transposed Body-to-NED DCM (C_b_n).
-    pub fn dcm_body_to_ned(&self) -> Mat<3, 3> {
+    pub fn dcm_body_to_ned(&self) -> crate::math::Mat<3, 3> {
         self.dcm_nb.transpose()
     }
-}
 
-impl BodyRot {
     /// Computes determinant of the 3x3 rotation matrix.
     pub fn det(&self) -> f32 {
-        let m = &self.dcm_nb.0;
-        m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
-            - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
-            + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
+        crate::rotation::Dcm(self.dcm_nb).det()
     }
 
     /// Checks if inner DCM satisfies orthonormality.
     pub fn is_orthonormal(&self) -> bool {
-        let p = self.dcm_nb.matmul(&self.dcm_nb.transpose());
-        for i in 0..3 {
-            for j in 0..3 {
-                let target = if i == j { 1.0 } else { 0.0 };
-                if (p.0[i][j] - target).abs() > BODY_ROT_TOLERANCE {
-                    return false;
-                }
-            }
-        }
-        (self.det() - 1.0).abs() <= BODY_ROT_TOLERANCE
+        crate::rotation::Dcm(self.dcm_nb).is_orthonormal()
     }
-}
 
-impl BodyRot {
     /// Builds a rotation from an existing NED-to-Body DCM.
-    pub fn from_dcm_ned_to_body(m: Mat<3, 3>) -> Result<Self, BodyRotError> {
+    pub fn from_dcm_ned_to_body(m: crate::math::Mat<3, 3>) -> Result<Self, BodyRotError> {
         crate::rotation::Dcm::from_dcm_ned_to_body(m).map(|d| Self { dcm_nb: d.0 })
     }
 
     /// Builds a rotation from an existing Body-to-NED DCM.
-    pub fn from_dcm_body_to_ned(m: Mat<3, 3>) -> Result<Self, BodyRotError> {
+    pub fn from_dcm_body_to_ned(m: crate::math::Mat<3, 3>) -> Result<Self, BodyRotError> {
         crate::rotation::Dcm::from_dcm_body_to_ned(m).map(|d| Self { dcm_nb: d.0 })
     }
 
