@@ -781,6 +781,10 @@ impl StationaryDetector {
     }
 }
 
+
+
+
+
 impl NavEkf {
     pub fn update_zupt(&mut self, r_zupt: f32, gate: f32) -> Result<[f32; 3], EkfError> {
         let mut trial = *self;
@@ -799,15 +803,22 @@ impl NavEkf {
 #[cfg(test)]
 mod zupt_tests {
     use super::*;
+    use crate::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
     fn test_stationary_detector_detects_static_motion() {
-        let mut detector = StationaryDetector::new(5, 0.05, 0.03);
+        let mut detector = ZuptDetector::<5>::new(ZuptConfig {
+            accel_var_thresh: 0.05,
+            gyro_norm_thresh: 0.03,
+            accel_mag_thresh: 0.35,
+            min_stance_samples: 1,
+            gravity_magnitude: 9.80665,
+        }).unwrap();
         let accel = [0.0, 0.0, -9.80665];
         let gyro = [0.001, -0.001, 0.0];
         let mut detected = false;
         for _ in 0..5 {
-            detected = detector.update(accel, gyro);
+            detected = detector.update(accel, gyro).unwrap();
         }
         assert!(detected);
     }
@@ -816,15 +827,22 @@ mod zupt_tests {
 #[cfg(test)]
 mod zupt_tests_dynamic {
     use super::*;
+    use crate::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
     fn test_stationary_detector_rejects_high_motion() {
-        let mut detector = StationaryDetector::new(5, 0.05, 0.03);
+        let mut detector = ZuptDetector::<5>::new(ZuptConfig {
+            accel_var_thresh: 0.05,
+            gyro_norm_thresh: 0.03,
+            accel_mag_thresh: 0.35,
+            min_stance_samples: 1,
+            gravity_magnitude: 9.80665,
+        }).unwrap();
         let accel = [2.5, 0.0, -9.8];
         let gyro = [0.2, 0.0, 0.0];
         let mut detected = false;
         for _ in 0..5 {
-            detected = detector.update(accel, gyro);
+            detected = detector.update(accel, gyro).unwrap();
         }
         assert!(!detected);
     }
@@ -849,17 +867,24 @@ mod zupt_tests_clamp {
 #[cfg(test)]
 mod zupt_tests_drift {
     use super::*;
+    use crate::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
     fn test_zero_velocity_drift_5000_epochs() {
         let mut ekf = NavEkf::new();
-        let mut detector = StationaryDetector::new(10, 0.05, 0.03);
+        let mut detector = ZuptDetector::<10>::new(ZuptConfig {
+            accel_var_thresh: 0.05,
+            gyro_norm_thresh: 0.03,
+            accel_mag_thresh: 0.35,
+            min_stance_samples: 1,
+            gravity_magnitude: 9.80665,
+        }).unwrap();
         let dt = 0.01;
         let accel = [0.0005, -0.0005, -9.80665];
         let gyro = [0.0, 0.0, 0.0];
         for _ in 0..5000 {
             ekf.predict(accel, gyro, dt).unwrap();
-            if detector.update(accel, gyro) {
+            if detector.update(accel, gyro).unwrap() {
                 ekf.update_zupt(0.0001, 25.0).unwrap();
             }
         }
