@@ -1,4 +1,7 @@
 //! Vincenty inverse geodetic solution on WGS84.
+//!
+//! Note: Ellipsoidal inverse geodesy computes in double-precision (`f64`) to
+//! guarantee sub-millimeter precision over global baselines.
 
 /// WGS84 semi-major axis in metres.
 pub const A: f64 = 6_378_137.0;
