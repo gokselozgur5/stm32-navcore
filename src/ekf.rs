@@ -226,20 +226,30 @@ mod cov_pd_long_run {
 }
 
 impl NavEkf {
-    pub fn predict(
+    pub fn predict_with_gravity(
         &mut self,
         accel_body_mps2: [f32; 3],
         gyro_body_rads: [f32; 3],
         dt_s: f32,
+        gravity_mps2: f32,
     ) -> Result<(), EkfError> {
         if !dt_s.is_finite() || dt_s <= 0.0 {
             return Err(EkfError::InvalidInput);
         }
         check_finite_3(accel_body_mps2)?;
         check_finite_3(gyro_body_rads)?;
-        self.update_kinematics(accel_body_mps2, gyro_body_rads, dt_s)?;
+        self.update_kinematics_with_gravity(accel_body_mps2, gyro_body_rads, dt_s, gravity_mps2)?;
         self.propagate_covariance(dt_s);
         Ok(())
+    }
+
+    pub fn predict(
+        &mut self,
+        accel_body_mps2: [f32; 3],
+        gyro_body_rads: [f32; 3],
+        dt_s: f32,
+    ) -> Result<(), EkfError> {
+        self.predict_with_gravity(accel_body_mps2, gyro_body_rads, dt_s, 9.80665)
     }
 }
 
