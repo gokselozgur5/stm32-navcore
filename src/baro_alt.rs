@@ -92,7 +92,7 @@ fn validate_baro_inputs(p: f32, p_ref: f32, t_ref: f32, lapse: f32) -> Result<()
     if t_ref <= 0.0 {
         return Err(BaroAltError::InvalidTemperature);
     }
-    if lapse < 0.0 {
+    if lapse < 0.0 || lapse > 0.05 {
         return Err(BaroAltError::InvalidLapseRate);
     }
     Ok(())
