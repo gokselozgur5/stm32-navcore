@@ -29,107 +29,30 @@ pub fn ecef_to_geodetic(ecef: &EcefPos) -> Result<GeodeticPos, EcefNedError> {
 }
 
 /// Local tangent plane reference frame caching trigonometric components.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct NedFrame {
-    pub origin_geo: GeodeticPos,
-    pub origin_ecef: EcefPos,
-    sin_lat: f64,
-    cos_lat: f64,
-    sin_lon: f64,
-    cos_lon: f64,
-}
-
-impl NedFrame {
-    /// Initialize local tangent plane frame at a given geodetic origin.
-    pub fn from_geodetic(origin: &GeodeticPos) -> Self {
-        let origin_ecef = geodetic_to_ecef(origin);
-        Self {
-            origin_geo: *origin,
-            origin_ecef,
-            sin_lat: libm::sin(origin.lat_rad),
-            cos_lat: libm::cos(origin.lat_rad),
-            sin_lon: libm::sin(origin.lon_rad),
-            cos_lon: libm::cos(origin.lon_rad),
-        }
-    }
-}
-
-impl NedFrame {
-    /// Convert an ECEF point into NED coordinates relative to this frame.
-    pub fn ecef_to_ned(&self, point: &EcefPos) -> Result<NedPos, EcefNedError> {
-        if !point.x.is_finite() || !point.y.is_finite() || !point.z.is_finite() {
-            return Err(EcefNedError::NonFinite);
-        }
-        let dx = point.x - self.origin_ecef.x;
-        let dy = point.y - self.origin_ecef.y;
-        let dz = point.z - self.origin_ecef.z;
-
-        let north = -self.sin_lat * self.cos_lon * dx - self.sin_lat * self.sin_lon * dy
-            + self.cos_lat * dz;
-        let east = -self.sin_lon * dx + self.cos_lon * dy;
-        let down = -self.cos_lat * self.cos_lon * dx
-            - self.cos_lat * self.sin_lon * dy
-            - self.sin_lat * dz;
-
-        Ok(NedPos::new(north, east, down))
-    }
-}
-
-impl NedFrame {
-    /// Convert NED coordinates back into ECEF coordinates.
-    pub fn ned_to_ecef(&self, ned: &NedPos) -> Result<EcefPos, EcefNedError> {
-        if !ned.north.is_finite() || !ned.east.is_finite() || !ned.down.is_finite() {
-            return Err(EcefNedError::NonFinite);
-        }
-        let x = self.origin_ecef.x
-            - self.sin_lat * self.cos_lon * ned.north
-            - self.sin_lon * ned.east
-            - self.cos_lat * self.cos_lon * ned.down;
-        let y = self.origin_ecef.y - self.sin_lat * self.sin_lon * ned.north
-            + self.cos_lon * ned.east
-            - self.cos_lat * self.sin_lon * ned.down;
-        let z = self.origin_ecef.z + self.cos_lat * ned.north - self.sin_lat * ned.down;
-
-        Ok(EcefPos::new(x, y, z))
-    }
-}
+pub use crate::geo::ned::NedFrame;
 
 /// Transform ECEF coordinates to NED coordinates relative to a geodetic reference point.
+#[inline]
 pub fn ecef_to_ned(point: &EcefPos, ref_geo: &GeodeticPos) -> Result<NedPos, EcefNedError> {
-    let frame = NedFrame::from_geodetic(ref_geo);
-    frame.ecef_to_ned(point)
+    crate::geo::ned::NedFrame::from_geodetic(ref_geo).ecef_to_ned(point)
 }
 
 /// Transform NED coordinates to ECEF coordinates relative to a geodetic reference point.
+#[inline]
 pub fn ned_to_ecef(ned: &NedPos, ref_geo: &GeodeticPos) -> Result<EcefPos, EcefNedError> {
-    let frame = NedFrame::from_geodetic(ref_geo);
-    frame.ned_to_ecef(ned)
-}
-
-impl NedFrame {
-    /// Convert a geodetic point directly into NED coordinates.
-    pub fn geodetic_to_ned(&self, point: &GeodeticPos) -> Result<NedPos, EcefNedError> {
-        let ecef = geodetic_to_ecef(point);
-        self.ecef_to_ned(&ecef)
-    }
-
-    /// Convert NED coordinates directly into geodetic coordinates.
-    pub fn ned_to_geodetic(&self, ned: &NedPos) -> Result<GeodeticPos, EcefNedError> {
-        let ecef = self.ned_to_ecef(ned)?;
-        ecef_to_geodetic(&ecef)
-    }
+    crate::geo::ned::NedFrame::from_geodetic(ref_geo).ned_to_ecef(ned)
 }
 
 /// Direct transform from geodetic point to NED given a geodetic reference point.
+#[inline]
 pub fn geodetic_to_ned(point: &GeodeticPos, ref_geo: &GeodeticPos) -> Result<NedPos, EcefNedError> {
-    let frame = NedFrame::from_geodetic(ref_geo);
-    frame.geodetic_to_ned(point)
+    crate::geo::ned::NedFrame::from_geodetic(ref_geo).geodetic_to_ned(point)
 }
 
 /// Direct transform from NED to geodetic given a geodetic reference point.
+#[inline]
 pub fn ned_to_geodetic(ned: &NedPos, ref_geo: &GeodeticPos) -> Result<GeodeticPos, EcefNedError> {
-    let frame = NedFrame::from_geodetic(ref_geo);
-    frame.ned_to_geodetic(ned)
+    crate::geo::ned::NedFrame::from_geodetic(ref_geo).ned_to_geodetic(ned)
 }
 
 #[cfg(test)]
