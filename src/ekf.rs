@@ -251,6 +251,17 @@ impl NavEkf {
     ) -> Result<(), EkfError> {
         self.predict_with_gravity(accel_body_mps2, gyro_body_rads, dt_s, 9.80665)
     }
+
+    pub fn predict_with_latitude(
+        &mut self,
+        accel_body_mps2: [f32; 3],
+        gyro_body_rads: [f32; 3],
+        dt_s: f32,
+        lat_rad: f32,
+    ) -> Result<(), EkfError> {
+        let g = crate::gravity::somigliana_surface(lat_rad).map_err(|_| EkfError::InvalidInput)?;
+        self.predict_with_gravity(accel_body_mps2, gyro_body_rads, dt_s, g)
+    }
 }
 
 impl NavEkf {
