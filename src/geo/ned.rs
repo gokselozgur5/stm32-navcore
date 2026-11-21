@@ -26,6 +26,10 @@ pub struct LtpFrame {
 }
 
 impl LtpFrame {
+    pub fn from_geodetic(origin: &Lla) -> Self {
+        Self::from_lla(origin)
+    }
+
     pub fn from_lla(origin: &Lla) -> Self {
         let origin_ecef = lla_to_ecef(origin);
         let sin_lat = libm::sin(origin.lat_rad);
@@ -85,4 +89,14 @@ impl LtpFrame {
         let ecef = self.ned_to_ecef(ned)?;
         ecef_to_lla(&ecef)
     }
+
+    pub fn geodetic_to_ned(&self, point: &Lla) -> Result<Ned, GeoError> {
+        self.lla_to_ned(point)
+    }
+
+    pub fn ned_to_geodetic(&self, ned: &Ned) -> Result<Lla, GeoError> {
+        self.ned_to_lla(ned)
+    }
 }
+
+pub type NedFrame = LtpFrame;
