@@ -1,4 +1,7 @@
 //! Madgwick AHRS sensor fusion filter for MARG and IMU configurations.
+//!
+//! Accelerometer measurements follow the NED specific-force convention: a level
+//! sensor at rest measures `[0, 0, -g]`.
 
 use crate::math::{MathError, Quaternion};
 
@@ -153,15 +156,15 @@ impl MadgwickAhrs {
         let (ax, ay, az) = (a[0] * inv_a, a[1] * inv_a, a[2] * inv_a);
 
         let (w, x, y, z) = (q.w, q.x, q.y, q.z);
-        let f1 = 2.0 * (x * z - w * y) - ax;
-        let f2 = 2.0 * (w * x + y * z) - ay;
-        let f3 = 1.0 - 2.0 * (x * x + y * y) - az;
+        let f1 = 2.0 * (w * y - x * z) - ax;
+        let f2 = -2.0 * (w * x + y * z) - ay;
+        let f3 = 2.0 * (x * x + y * y) - 1.0 - az;
 
         [
-            -2.0 * y * f1 + 2.0 * x * f2,
-            2.0 * z * f1 + 2.0 * w * f2 - 4.0 * x * f3,
-            -2.0 * w * f1 + 2.0 * z * f2 - 4.0 * y * f3,
-            2.0 * x * f1 + 2.0 * y * f2,
+            2.0 * y * f1 - 2.0 * x * f2,
+            -2.0 * z * f1 - 2.0 * w * f2 + 4.0 * x * f3,
+            2.0 * w * f1 - 2.0 * z * f2 + 4.0 * y * f3,
+            -2.0 * x * f1 - 2.0 * y * f2,
         ]
     }
 
