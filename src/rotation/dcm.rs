@@ -189,3 +189,35 @@ impl Dcm {
         self.0.transpose()
     }
 }
+
+impl Dcm {
+    /// Builds NED-to-Body DCM from Euler angles (roll, pitch, yaw) in radians.
+    pub fn from_euler(roll: f32, pitch: f32, yaw: f32) -> Result<Self, RotationError> {
+        if !roll.is_finite() || !pitch.is_finite() || !yaw.is_finite() {
+            return Err(RotationError::NonFinite);
+        }
+        let (sr, cr) = (libm::sinf(roll), libm::cosf(roll));
+        let (sp, cp) = (libm::sinf(pitch), libm::cosf(pitch));
+        let (sy, cy) = (libm::sinf(yaw), libm::cosf(yaw));
+
+        let m = Mat([
+            [cp * cy, cp * sy, -sp],
+            [sr * sp * cy - cr * sy, sr * sp * sy + cr * cy, sr * cp],
+            [cr * sp * cy + sr * sy, cr * sp * sy - sr * cy, cr * cp],
+        ]);
+        Ok(Self(m))
+    }
+
+    /// Extracts Euler angles (roll, pitch, yaw) in radians from NED-to-Body DCM.
+    pub fn to_euler(&self) -> Result<(f32, f32, f32), RotationError> {
+        let m = &self.0 .0;
+        let sin_pitch = -m[0][2];
+        if sin_pitch.abs() > 0.9999 {
+            return Err(RotationError::GimbalLock);
+        }
+        let pitch = libm::asinf(sin_pitch);
+        let roll = libm::atan2f(m[1][2], m[2][2]);
+        let yaw = libm::atan2f(m[0][1], m[0][0]);
+        Ok((roll, pitch, yaw))
+    }
+}
