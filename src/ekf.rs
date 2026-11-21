@@ -900,13 +900,21 @@ impl AccelBiasEstimator {
 
 impl AccelBiasEstimator {
     /// Fuses one stationary sample against the expected specific force R^T * [0, 0, -g].
-    pub fn update(&mut self, att: &Quaternion, accel_body: [f32; 3]) -> Result<(), EkfError> {
+    pub fn update_with_gravity(
+        &mut self,
+        att: &Quaternion,
+        accel_body: [f32; 3],
+        gravity_mps2: f32,
+    ) -> Result<(), EkfError> {
         check_finite_3(accel_body)?;
         if !self.r_mps2_sq.is_finite() || self.r_mps2_sq <= 0.0 {
             return Err(EkfError::InvalidInput);
         }
+        if !gravity_mps2.is_finite() || gravity_mps2 <= 0.0 {
+            return Err(EkfError::InvalidInput);
+        }
         let conj = Quaternion::new(att.w, -att.x, -att.y, -att.z);
-        let expected = conj.rotate_vec([0.0, 0.0, -9.80665]);
+        let expected = conj.rotate_vec([0.0, 0.0, -gravity_mps2]);
         check_finite_3(expected)?;
         for i in 0..3 {
             let k = self.var_mps2_sq[i] / (self.var_mps2_sq[i] + self.r_mps2_sq);
@@ -914,6 +922,10 @@ impl AccelBiasEstimator {
             self.var_mps2_sq[i] *= 1.0 - k;
         }
         Ok(())
+    }
+
+    pub fn update(&mut self, att: &Quaternion, accel_body: [f32; 3]) -> Result<(), EkfError> {
+        self.update_with_gravity(att, accel_body, 9.80665)
     }
 }
 
