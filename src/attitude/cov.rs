@@ -1,12 +1,16 @@
-//! Attitude covariance propagation under angular rate noise.
+//! Attitude covariance propagation under isotropic angular rate noise.
 
 use super::AttitudeError;
-use crate::math::{Mat, Quaternion};
+use crate::math::Mat;
 
-/// Propagate 3x3 orientation error covariance under rate noise variance and timestep.
+/// Propagate 3x3 orientation error covariance under isotropic rate noise.
+///
+/// Adds isotropic process-noise inflation `gyro_var * dt` on each diagonal entry.
+/// `gyro_var` is the angular rate noise variance in (rad/s)^2, and `dt` is the
+/// timestep in seconds. The orientation error covariance is assumed to be in the
+/// body frame under an identity error state transition.
 pub fn propagate_attitude_cov(
     cov: &Mat<3, 3>,
-    q: &Quaternion,
     gyro_var: f32,
     dt: f32,
 ) -> Result<Mat<3, 3>, AttitudeError> {
@@ -16,7 +20,6 @@ pub fn propagate_attitude_cov(
     if !cov.0.iter().flatten().all(|v| v.is_finite()) {
         return Err(AttitudeError::NonFinite);
     }
-    let _ = q.normalize().map_err(|_| AttitudeError::InvalidInput)?;
 
     let mut out = *cov;
     let noise = gyro_var * dt;
