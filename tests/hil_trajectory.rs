@@ -99,8 +99,8 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         let (p_n, p_e, p_d, v_n, v_e, v_d, a_n, a_e, a_d, yaw) = if t < 5.0 {
             (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         } else if t < 10.0 {
-            let tau = t - 5.0;
-            (0.0, 0.0, -2.0 * tau, 0.0, 0.0, -2.0, 0.0, 0.0, 0.0, 0.0)
+            let (s, ds, d2s) = quintic_blend((t - 5.0) / 5.0);
+            (0.0, 0.0, -10.0 * s, 0.0, 0.0, -2.0 * ds, 0.0, 0.0, -0.4 * d2s, 0.0)
         } else if t < 30.0 {
             let tau = t - 10.0;
             let omega = 2.0 * PI / 20.0;
