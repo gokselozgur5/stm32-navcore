@@ -221,8 +221,10 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
                 v_e + rng.next_gaussian_approx(0.02),
                 v_d + rng.next_gaussian_approx(0.02),
             ];
-            let _ = ekf.update_gnss_pos(gnss_p, 0.02, 16.0);
-            let _ = ekf.update_gnss_vel(gnss_v, 0.005, 16.0);
+            let pos_res = ekf.update_gnss_pos(gnss_p, 0.02, 16.0);
+            assert!(pos_res.is_ok(), "GNSS position update must not be rejected");
+            let vel_res = ekf.update_gnss_vel(gnss_v, 0.005, 16.0);
+            assert!(vel_res.is_ok(), "GNSS velocity update must not be rejected");
         }
 
         if (t - 19.99).abs() < 0.005 {
