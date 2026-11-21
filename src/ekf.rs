@@ -757,6 +757,13 @@ impl NavEkf {
             let y = 0.0 - trial.v_ned_mps[i];
             nis[i] = trial.update_joseph_scalar(h, y, r_zupt, gate)?;
         }
+        let y_n = 0.0 - self.v_ned_mps[0];
+        let y_e = 0.0 - self.v_ned_mps[1];
+        let k_tilt = 0.05 * (trial.cov.0[3][3] / (trial.cov.0[3][3] + r_zupt));
+        let dq = Quaternion::new(1.0, 0.5 * k_tilt * y_e, -0.5 * k_tilt * y_n, 0.0);
+        if let Ok(new_att) = dq.mul(&trial.att).normalize() {
+            trial.att = new_att;
+        }
         *self = trial;
         Ok(nis)
     }
