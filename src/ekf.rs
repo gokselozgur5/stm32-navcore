@@ -509,14 +509,10 @@ impl NavEkf {
     pub fn update_dual_antenna_heading(
         &mut self,
         yaw_rad: f32,
-        pitch_rad: f32,
         variance: f32,
+        gate: f32,
     ) -> Result<f32, EkfError> {
-        if !yaw_rad.is_finite()
-            || !pitch_rad.is_finite()
-            || !variance.is_finite()
-            || variance <= 0.0
-        {
+        if !yaw_rad.is_finite() || !variance.is_finite() || variance <= 0.0 {
             return Err(EkfError::InvalidInput);
         }
         let (_, _, current_yaw) = self.att.to_euler_zyx();
@@ -524,7 +520,7 @@ impl NavEkf {
         y -= 2.0 * core::f32::consts::PI * libm::roundf(y / (2.0 * core::f32::consts::PI));
         let mut h = [0.0f32; STATE_DIM];
         h[6] = 1.0;
-        self.update_joseph_scalar(h, y, variance, 25.0)
+        self.update_joseph_scalar(h, y, variance, gate)
     }
 
     pub fn fuse_heading_with_declination(
@@ -532,13 +528,14 @@ impl NavEkf {
         mag_yaw_rad: f32,
         mag_variance: f32,
         declination_rad: f32,
+        gate: f32,
         dual_ant_yaw_rad: Option<(f32, f32)>,
     ) -> Result<f32, EkfError> {
         if let Some((dual_yaw, dual_var)) = dual_ant_yaw_rad {
-            self.update_dual_antenna_heading(dual_yaw, 0.0, dual_var)
+            self.update_dual_antenna_heading(dual_yaw, dual_var, gate)
         } else {
             let true_mag_yaw = mag_yaw_rad + declination_rad;
-            self.update_mag_yaw(true_mag_yaw, mag_variance, 16.0)
+            self.update_mag_yaw(true_mag_yaw, mag_variance, gate)
         }
     }
 }
@@ -633,7 +630,7 @@ mod tests {
         for _ in 0..50 {
             ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], 0.02)
                 .unwrap();
-            let _ = ekf.update_dual_antenna_heading(target_yaw, 0.0, 0.01);
+            let _ = ekf.update_dual_antenna_heading(target_yaw, 0.01, 25.0);
         }
         let (_, _, est_yaw) = ekf.att.to_euler_zyx();
         assert!((est_yaw - target_yaw).abs() < 0.05);
@@ -651,6 +648,7 @@ mod tests {
                 corrupted_mag_yaw,
                 1.0,
                 0.0,
+                25.0,
                 Some((true_yaw, 0.005)),
             );
         }
