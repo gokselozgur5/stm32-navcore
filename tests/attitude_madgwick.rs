@@ -41,8 +41,8 @@ fn test_madgwick_invalid_inputs_and_gyro_only() {
 fn test_madgwick_static_tilt_convergence() {
     let mut f = Madgwick::new(0.5);
     let target_pitch = 30.0f32.to_radians();
-    let ax = -libm::sinf(target_pitch) * 9.80665;
-    let az = libm::cosf(target_pitch) * 9.80665;
+    let ax = libm::sinf(target_pitch) * 9.80665;
+    let az = -libm::cosf(target_pitch) * 9.80665;
     let dt = 0.01;
 
     for _ in 0..1000 {
