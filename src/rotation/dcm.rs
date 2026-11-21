@@ -5,8 +5,12 @@ use crate::math::Mat;
 /// Errors reported by rotation utilities.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum RotationError {
+    /// Non-finite coordinate, vector, or matrix component.
+    NonFinite,
     /// The matrix is not a proper rotation or holds non-finite values.
     NotOrthonormal,
+    /// Gimbal lock condition in Euler conversion.
+    GimbalLock,
 }
 
 /// A 3x3 rotation matrix. The field is public, so unchecked values are
@@ -75,6 +79,13 @@ impl Dcm {
 
     /// Returns true if the matrix satisfies SO(3) orthonormality within [`DCM_TOLERANCE`].
     pub fn is_orthonormal(&self) -> bool {
+        for row in &self.0 .0 {
+            for &val in row {
+                if !val.is_finite() {
+                    return false;
+                }
+            }
+        }
         self.orthogonality_error() <= DCM_TOLERANCE && (self.det() - 1.0).abs() <= DCM_TOLERANCE
     }
 
