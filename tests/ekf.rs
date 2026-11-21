@@ -30,3 +30,10 @@ fn test_quat_to_euler_zyx_exact_gimbal_lock_heading() {
     assert!((pitch - (-core::f32::consts::FRAC_PI_2)).abs() < 1e-5);
     assert!((yaw - (-core::f32::consts::FRAC_PI_2)).abs() < 1e-5);
 }
+
+#[test]
+fn test_dual_antenna_heading_custom_gate_rejection() {
+    let mut ekf = NavEkf::new();
+    let res = ekf.update_dual_antenna_heading(1.0, 0.01, 1.0);
+    assert!(res.is_err());
+}
