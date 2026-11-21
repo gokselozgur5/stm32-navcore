@@ -264,4 +264,9 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         "Gyro bias z error should be bounded <0.005 rad/s, got {}",
         (ekf.bg_z - true_gyro_bias_z).abs()
     );
+    let final_err_xy = libm::hypotf(ekf.p_ned_m[0], ekf.p_ned_m[1]);
+    assert!(
+        final_err_xy < 1.0,
+        "Final horizontal position error under GNSS lock must be < 1.0m, got {final_err_xy}"
+    );
 }
