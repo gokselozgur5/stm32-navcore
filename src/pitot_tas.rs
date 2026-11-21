@@ -107,9 +107,16 @@ pub fn diff_pressure_to_tas(
     if diff_pressure_pa < 0.0 {
         return Err(PitotError::NegativeDifferentialPressure);
     }
-    let rho = air_density(static_pressure_pa, temp_k)?;
-    let v_sq = (2.0 * diff_pressure_pa) / rho;
-    Ok(libm::sqrtf(v_sq))
+    crate::airspeed::true_airspeed(diff_pressure_pa, static_pressure_pa, temp_k).map_err(
+        |e| match e {
+            crate::airspeed::AirspeedError::NonFinite => PitotError::NonFinite,
+            crate::airspeed::AirspeedError::NegativeDifferentialPressure => {
+                PitotError::NegativeDifferentialPressure
+            }
+            crate::airspeed::AirspeedError::InvalidPressure => PitotError::InvalidPressure,
+            _ => PitotError::InvalidTemperature,
+        },
+    )
 }
 
 /// Complete airspeed telemetry reading including IAS, TAS, air density, and dynamic pressure.
