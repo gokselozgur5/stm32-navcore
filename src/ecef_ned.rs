@@ -75,49 +75,12 @@ impl GeodeticPos {
 }
 
 /// Earth-Centered, Earth-Fixed Cartesian coordinates in meters.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct EcefPos {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-}
-
-impl EcefPos {
-    /// Construct a new ECEF coordinate tuple.
-    pub const fn new(x: f64, y: f64, z: f64) -> Self {
-        Self { x, y, z }
-    }
-}
+pub use crate::geo::Ecef as EcefPos;
 
 /// Local Tangent Plane North-East-Down (NED) coordinates in meters.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct NedPos {
-    pub north: f64,
-    pub east: f64,
-    pub down: f64,
-}
+pub use crate::geo::Ned as NedPos;
 
-impl NedPos {
-    /// Construct a new NED coordinate tuple.
-    pub const fn new(north: f64, east: f64, down: f64) -> Self {
-        Self { north, east, down }
-    }
-}
-
-/// WGS-84 semi-major axis in meters.
-pub const WGS84_A: f64 = 6_378_137.0;
-
-/// WGS-84 reciprocal flattening (1/f).
-pub const WGS84_INV_F: f64 = 298.257_223_563;
-
-/// WGS-84 flattening: f = 1 / 298.257223563.
-pub const WGS84_F: f64 = 1.0 / WGS84_INV_F;
-
-/// WGS-84 semi-minor axis in meters: b = a * (1 - f).
-pub const WGS84_B: f64 = 6_356_752.314_245_179;
-
-/// WGS-84 first eccentricity squared: e^2 = 2f - f^2.
-pub const WGS84_E2: f64 = 0.006_694_379_990_141_316_5;
+pub use crate::geo::{WGS84_A, WGS84_B, WGS84_E2, WGS84_F, WGS84_INV_F};
 
 /// Transform geodetic coordinates to ECEF Cartesian coordinates.
 pub fn geodetic_to_ecef(geo: &GeodeticPos) -> EcefPos {
