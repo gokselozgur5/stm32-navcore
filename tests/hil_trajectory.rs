@@ -102,16 +102,23 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
             let (s, ds, d2s) = quintic_blend((t - 5.0) / 5.0);
             (0.0, 0.0, -10.0 * s, 0.0, 0.0, -2.0 * ds, 0.0, 0.0, -0.4 * d2s, 0.0)
         } else if t < 30.0 {
-            let tau = t - 10.0;
-            let omega = 2.0 * PI / 20.0;
-            let r_traj = 20.0f32;
-            let pn = r_traj * libm::sinf(omega * tau);
-            let pe = r_traj * libm::sinf(2.0 * omega * tau);
-            let vn = r_traj * omega * libm::cosf(omega * tau);
-            let ve = 2.0 * r_traj * omega * libm::cosf(2.0 * omega * tau);
-            let an = -r_traj * omega * omega * libm::sinf(omega * tau);
-            let ae = -4.0 * r_traj * omega * omega * libm::sinf(2.0 * omega * tau);
-            let y = libm::atan2f(ve, vn);
+            let (s, ds, d2s) = quintic_blend((t - 10.0) / 20.0);
+            let (tau, dtau, d2tau) = (20.0 * s, ds, 0.05 * d2s);
+            let (omega, r) = (2.0 * PI / 20.0, 20.0f32);
+            let pn = r * libm::sinf(omega * tau);
+            let pe = r * libm::sinf(2.0 * omega * tau);
+            let dpn = r * omega * libm::cosf(omega * tau);
+            let dpe = 2.0 * r * omega * libm::cosf(2.0 * omega * tau);
+            let (vn, ve) = (dpn * dtau, dpe * dtau);
+            let d2pn = -r * omega * omega * libm::sinf(omega * tau);
+            let d2pe = -4.0 * r * omega * omega * libm::sinf(2.0 * omega * tau);
+            let an = d2pn * dtau * dtau + dpn * d2tau;
+            let ae = d2pe * dtau * dtau + dpe * d2tau;
+            let y = if vn.abs() + ve.abs() > 1e-4 {
+                libm::atan2f(ve, vn)
+            } else {
+                0.0
+            };
             (pn, pe, -10.0, vn, ve, 0.0, an, ae, 0.0, y)
         } else {
             let (s, ds, d2s) = quintic_blend((t - 30.0) / 10.0);
