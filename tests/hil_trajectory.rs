@@ -45,6 +45,16 @@ fn wrap_pi(a: f32) -> f32 {
     (a + PI).rem_euclid(2.0 * PI) - PI
 }
 
+fn quintic_blend(u: f32) -> (f32, f32, f32) {
+    let u = u.clamp(0.0, 1.0);
+    let u2 = u * u;
+    let u3 = u2 * u;
+    let s = u3 * (10.0 + u * (-15.0 + 6.0 * u));
+    let ds = 30.0 * u2 * (1.0 + u * (-2.0 + u));
+    let d2s = 60.0 * u * (1.0 + u * (-3.0 + 2.0 * u));
+    (s, ds, d2s)
+}
+
 fn altitude_to_pressure_hpa(alt_m: f32, p0_hpa: f32) -> f32 {
     let base = 1.0f32 - (alt_m / 44330.0f32);
     p0_hpa * libm::powf(base, 5.255f32)
