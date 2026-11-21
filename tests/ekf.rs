@@ -37,3 +37,30 @@ fn test_dual_antenna_heading_custom_gate_rejection() {
     let res = ekf.update_dual_antenna_heading(1.0, 0.01, 1.0);
     assert!(res.is_err());
 }
+
+#[test]
+fn test_ekf_zupt_damps_velocity_drift_under_attitude_tilt() {
+    let mut ekf = NavEkf::new();
+    let roll_offset = 0.02f32;
+    ekf.att = stm32_navcore::math::Quaternion::new(
+        libm::cosf(0.5 * roll_offset),
+        libm::sinf(0.5 * roll_offset),
+        0.0,
+        0.0,
+    );
+    let dt = 0.01;
+    let accel = [0.0, 0.0, -9.80665];
+    let gyro = [0.0, 0.0, 0.0];
+    let mut detector = stm32_navcore::ekf::StationaryDetector::new(10, 0.05, 0.03);
+    for _ in 0..5000 {
+        ekf.predict(accel, gyro, dt).unwrap();
+        if detector.update(accel, gyro) {
+            let _ = ekf.update_zupt(0.0001, 25.0);
+        }
+    }
+    assert!(
+        ekf.v_ned_mps[1].abs() < 1e-4,
+        "v_ned_mps[1] {} exceeds 1e-4 m/s threshold under 0.02 rad roll tilt",
+        ekf.v_ned_mps[1]
+    );
+}
