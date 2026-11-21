@@ -47,6 +47,18 @@
 //! The legacy `ahrs::MadgwickAhrs` is a standalone 6-DOF implementation retained for backward
 //! compatibility.
 //!
+//!
+//! ## Target Floating-Point Precision
+//!
+//! While the Cortex-M4F target provides a single-precision (`f32`) hardware FPU,
+//! specific geodesy and high-dynamic navigation routines compute in double-precision
+//! (`f64`) using software floating point to preserve numerical precision:
+//!
+//! - [`ins_strapdown`]: Geodetic navigation state, Earth rotation, and Coriolis compensation.
+//! - [`nav::dead_reckoning`]: Geodetic position and velocity propagation on ellipsoidal coordinates.
+//! - [`geo::vincenty`]: High-precision ellipsoidal geodesic distance and azimuth calculations.
+//! - [`sensors::mag_cal::SphereFit`]: Accumulation and normal equations for magnetometer sphere fitting.
+//!
 //! See `docs/architecture.md` in the repository for the data flow between modules.
 #![cfg_attr(not(test), no_std)]
 
