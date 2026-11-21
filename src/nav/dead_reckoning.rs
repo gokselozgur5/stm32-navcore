@@ -1,4 +1,7 @@
 //! Inertial navigation dead reckoning position and velocity propagation.
+//!
+//! Note: Position and velocity integration use double-precision (`f64`) arithmetic
+//! to avoid truncation errors during long-duration navigation updates.
 
 use crate::geo::GeoError;
 
