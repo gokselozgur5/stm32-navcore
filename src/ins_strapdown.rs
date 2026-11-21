@@ -1,4 +1,7 @@
 //! Deterministic INS strapdown integration and Coriolis compensator.
+//!
+//! Note: Computations are carried out in double-precision (`f64`) using software
+//! floating point on single-precision targets to prevent numerical drift.
 
 /// Errors occurring during strapdown mechanization and Coriolis compensation.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
