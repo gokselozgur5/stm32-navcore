@@ -22,13 +22,17 @@ fn crate_root_reexports_are_usable() {
     let _ = core::mem::size_of::<UbxNavPvt>();
     let _ = core::mem::size_of::<UbxNavRelPosNed>();
     let q = stm32_navcore::math::Quaternion::IDENTITY;
-    let _ = quat_slerp(&q, &q, 0.5);
-    let _ = quat_nlerp(&q, &q, 0.5);
+    let slerp_q = quat_slerp(&q, &q, 0.5).expect("slerp identity");
+    assert_eq!(slerp_q, stm32_navcore::math::Quaternion::IDENTITY);
+    let nlerp_q = quat_nlerp(&q, &q, 0.5).expect("nlerp identity");
+    assert_eq!(nlerp_q, stm32_navcore::math::Quaternion::IDENTITY);
     let _ = wmm_declination_deg(0.0, 0.0);
     let _ = wmm_declination_rad(0.0, 0.0);
-    let _ = stm32_navcore::STANDARD_GRAVITY_MPS2;
-    let _ = stm32_navcore::turn_rate_deg_s(50.0, 15.0, 9.80665);
-    let _ = stm32_navcore::bank_angle_deg(50.0, 3.0, 9.80665);
+    assert_eq!(stm32_navcore::STANDARD_GRAVITY_MPS2, 9.80665);
+    let turn_rate = stm32_navcore::turn_rate_deg_s(50.0, 15.0, 9.80665).expect("turn rate");
+    assert!((turn_rate - 3.011104).abs() < 1e-4);
+    let bank_angle = stm32_navcore::bank_angle_deg(50.0, 3.0, 9.80665).expect("bank angle");
+    assert!((bank_angle - 14.947165).abs() < 1e-4);
     let _ = stm32_navcore::MahonyAhrs::default();
     let _ = core::mem::size_of::<Variometer>();
     let _ = core::mem::size_of::<VariometerConfig>();
@@ -41,9 +45,14 @@ fn crate_root_reexports_are_usable() {
     let _ = core::mem::size_of::<GyroBiasTracker>();
     let _ = core::mem::size_of::<stm32_navcore::Wgs84GravityCalculator>();
     let _ = core::mem::size_of::<stm32_navcore::Wgs84GravityError>();
-    let _ = stm32_navcore::somigliana_surface(0.0);
-    let _ = stm32_navcore::normal_gravity_elevation(0.0, 0.0);
-    let _ = stm32_navcore::gravity_ned(0.0, 0.0);
+    let g_eq = stm32_navcore::somigliana_surface(0.0).expect("somigliana equator");
+    assert!((g_eq - 9.780327).abs() < 1e-4);
+    let g_elev = stm32_navcore::normal_gravity_elevation(0.0, 0.0).expect("normal gravity");
+    assert!((g_elev - 9.780327).abs() < 1e-4);
+    let g_ned = stm32_navcore::gravity_ned(0.0, 0.0).expect("gravity ned");
+    assert_eq!(g_ned[0], 0.0);
+    assert_eq!(g_ned[1], 0.0);
+    assert!((g_ned[2] - 9.780327).abs() < 1e-4);
 }
 
 use core::mem::{align_of, size_of};
