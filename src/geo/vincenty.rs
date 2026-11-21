@@ -3,11 +3,7 @@
 //! Note: Ellipsoidal inverse geodesy computes in double-precision (`f64`) to
 //! guarantee sub-millimeter precision over global baselines.
 
-/// WGS84 semi-major axis in metres.
-pub const A: f64 = 6_378_137.0;
-/// WGS84 flattening.
-pub const F: f64 = 1.0 / 298.257_223_563;
-const B: f64 = A * (1.0 - F);
+pub use crate::geo::{WGS84_A as A, WGS84_B as B, WGS84_F as F};
 
 /// Result of the inverse problem.
 #[derive(Debug, Clone, Copy, PartialEq)]
