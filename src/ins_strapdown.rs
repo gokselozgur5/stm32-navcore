@@ -30,62 +30,41 @@ impl core::fmt::Display for InsStrapdownError {
     }
 }
 
-/// WGS-84 semi-major axis in meters.
-pub const WGS84_A: f64 = 6_378_137.0;
-
-/// WGS-84 first eccentricity squared.
-pub const WGS84_E2: f64 = 0.006_694_379_990_14;
+pub use crate::geo::earth_rate::principal_radii_of_curvature;
+pub use crate::geo::{WGS84_A, WGS84_E2, WGS84_OMEGA_EARTH};
 
 /// Earth rotation angular velocity in rad/s.
-pub const EARTH_ROTATION_RATE: f64 = 7.292_115e-5;
+pub const EARTH_ROTATION_RATE: f64 = WGS84_OMEGA_EARTH;
 
-/// Somigliana formula equatorial normal gravity in m/s^2.
-pub const GAMMA_E: f64 = 9.780_325_335_9;
-
-/// Somigliana formula parameter k.
-pub const SOMIGLIANA_K: f64 = 0.001_931_852_652_41;
+/// Maps GeoError to InsStrapdownError.
+fn map_geo_err(e: crate::geo::GeoError) -> InsStrapdownError {
+    match e {
+        crate::geo::GeoError::NonFinite => InsStrapdownError::NonFinite,
+        crate::geo::GeoError::InvalidLatitude | crate::geo::GeoError::InvalidLongitude => {
+            InsStrapdownError::InvalidLatitude
+        }
+    }
+}
 
 /// Computes WGS-84 meridian radius of curvature R_M in meters.
 pub fn meridian_radius(lat_rad: f64) -> Result<f64, InsStrapdownError> {
-    if !lat_rad.is_finite() {
-        return Err(InsStrapdownError::NonFinite);
-    }
-    let half_pi = core::f64::consts::FRAC_PI_2;
-    if lat_rad < -half_pi || lat_rad > half_pi {
-        return Err(InsStrapdownError::InvalidLatitude);
-    }
-    let s = libm::sin(lat_rad);
-    let denom = 1.0 - WGS84_E2 * s * s;
-    let sqrt_denom = libm::sqrt(denom);
-    Ok(WGS84_A * (1.0 - WGS84_E2) / (denom * sqrt_denom))
+    principal_radii_of_curvature(lat_rad)
+        .map(|(rm, _)| rm)
+        .map_err(map_geo_err)
 }
 
 /// Computes WGS-84 prime vertical (transverse) radius of curvature R_N in meters.
 pub fn transverse_radius(lat_rad: f64) -> Result<f64, InsStrapdownError> {
-    if !lat_rad.is_finite() {
-        return Err(InsStrapdownError::NonFinite);
-    }
-    let half_pi = core::f64::consts::FRAC_PI_2;
-    if lat_rad < -half_pi || lat_rad > half_pi {
-        return Err(InsStrapdownError::InvalidLatitude);
-    }
-    let s = libm::sin(lat_rad);
-    let denom = 1.0 - WGS84_E2 * s * s;
-    Ok(WGS84_A / libm::sqrt(denom))
+    principal_radii_of_curvature(lat_rad)
+        .map(|(_, rn)| rn)
+        .map_err(map_geo_err)
 }
 
 /// Computes Earth rotation rate vector in local NED navigation frame.
 pub fn earth_rate_ned(lat_rad: f64) -> Result<[f64; 3], InsStrapdownError> {
-    if !lat_rad.is_finite() {
-        return Err(InsStrapdownError::NonFinite);
-    }
-    let half_pi = core::f64::consts::FRAC_PI_2;
-    if lat_rad < -half_pi || lat_rad > half_pi {
-        return Err(InsStrapdownError::InvalidLatitude);
-    }
-    let c = libm::cos(lat_rad);
-    let s = libm::sin(lat_rad);
-    Ok([EARTH_ROTATION_RATE * c, 0.0, -EARTH_ROTATION_RATE * s])
+    crate::geo::earth_rate::earth_rotation_rate(lat_rad)
+        .map(|ned| [ned.north, ned.east, ned.down])
+        .map_err(map_geo_err)
 }
 
 /// Computes 3D vector cross product u x v.
@@ -104,26 +83,15 @@ pub fn transport_rate_ned(
     alt_m: f64,
     vel_ned: [f64; 3],
 ) -> Result<[f64; 3], InsStrapdownError> {
-    if !alt_m.is_finite()
-        || !vel_ned[0].is_finite()
-        || !vel_ned[1].is_finite()
-        || !vel_ned[2].is_finite()
-    {
+    if !alt_m.is_finite() {
         return Err(InsStrapdownError::NonFinite);
     }
     if alt_m < -10_000.0 || alt_m > 100_000.0 {
         return Err(InsStrapdownError::InvalidAltitude);
     }
-    let r_m = meridian_radius(lat_rad)?;
-    let r_n = transverse_radius(lat_rad)?;
-    let tan_lat = libm::tan(lat_rad);
-    let v_n = vel_ned[0];
-    let v_e = vel_ned[1];
-    Ok([
-        v_e / (r_n + alt_m),
-        -v_n / (r_m + alt_m),
-        -v_e * tan_lat / (r_n + alt_m),
-    ])
+    crate::geo::earth_rate::transport_rate(lat_rad, alt_m, vel_ned[0], vel_ned[1])
+        .map(|ned| [ned.north, ned.east, ned.down])
+        .map_err(map_geo_err)
 }
 
 /// Computes Coriolis and transport acceleration in NED frame.
@@ -154,12 +122,6 @@ pub fn somigliana_gravity(lat_rad: f64, alt_m: f64) -> Result<f64, InsStrapdownE
         }
         crate::gravity_wgs84::Wgs84GravityError::SingularRadius => InsStrapdownError::NonFinite,
     })
-}
-
-/// Computes gravity vector in NED frame [0, 0, g].
-pub fn gravity_ned(lat_rad: f64, alt_m: f64) -> Result<[f64; 3], InsStrapdownError> {
-    let g = somigliana_gravity(lat_rad, alt_m)?;
-    Ok([0.0, 0.0, g])
 }
 
 /// Navigation state for INS strapdown integration in local navigation frame.
