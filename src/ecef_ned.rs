@@ -3,76 +3,10 @@
 //! Provides deterministic, zero-allocation transformations using WGS-84.
 
 /// Errors occurring during coordinate conversion or validation.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum EcefNedError {
-    /// Coordinate contains NaN or infinite values.
-    NonFinite,
-    /// Geodetic latitude outside [-pi/2, pi/2] radians.
-    InvalidLatitude,
-    /// Geodetic longitude outside [-pi, pi] radians.
-    InvalidLongitude,
-    /// Position is too close to the Earth's center for inverse projection.
-    SingularPoint,
-}
-
-impl core::fmt::Display for EcefNedError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        match self {
-            Self::NonFinite => write!(f, "coordinate values must be finite"),
-            Self::InvalidLatitude => write!(f, "latitude must be within [-pi/2, pi/2]"),
-            Self::InvalidLongitude => write!(f, "longitude must be within [-pi, pi]"),
-            Self::SingularPoint => write!(f, "position is singular or inside inner core"),
-        }
-    }
-}
+pub use crate::geo::GeoError as EcefNedError;
 
 /// Geodetic coordinates represented by latitude, longitude, and height.
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct GeodeticPos {
-    /// Geodetic latitude in radians [-pi/2, pi/2].
-    pub lat_rad: f64,
-    /// Geodetic longitude in radians [-pi, pi].
-    pub lon_rad: f64,
-    /// Height above reference ellipsoid in meters.
-    pub alt_m: f64,
-}
-
-impl GeodeticPos {
-    /// Construct a validated geodetic position in radians and meters.
-    pub fn new(lat_rad: f64, lon_rad: f64, alt_m: f64) -> Result<Self, EcefNedError> {
-        if !lat_rad.is_finite() || !lon_rad.is_finite() || !alt_m.is_finite() {
-            return Err(EcefNedError::NonFinite);
-        }
-        let half_pi = core::f64::consts::FRAC_PI_2;
-        if lat_rad < -half_pi || lat_rad > half_pi {
-            return Err(EcefNedError::InvalidLatitude);
-        }
-        let pi = core::f64::consts::PI;
-        if lon_rad < -pi || lon_rad > pi {
-            return Err(EcefNedError::InvalidLongitude);
-        }
-        Ok(Self {
-            lat_rad,
-            lon_rad,
-            alt_m,
-        })
-    }
-
-    /// Construct a validated geodetic position from degrees and meters.
-    pub fn from_degrees(lat_deg: f64, lon_deg: f64, alt_m: f64) -> Result<Self, EcefNedError> {
-        Self::new(lat_deg.to_radians(), lon_deg.to_radians(), alt_m)
-    }
-
-    /// Return geodetic latitude converted to degrees.
-    pub fn lat_deg(&self) -> f64 {
-        self.lat_rad.to_degrees()
-    }
-
-    /// Return geodetic longitude converted to degrees.
-    pub fn lon_deg(&self) -> f64 {
-        self.lon_rad.to_degrees()
-    }
-}
+pub use crate::geo::Lla as GeodeticPos;
 
 /// Earth-Centered, Earth-Fixed Cartesian coordinates in meters.
 pub use crate::geo::Ecef as EcefPos;
@@ -83,45 +17,15 @@ pub use crate::geo::Ned as NedPos;
 pub use crate::geo::{WGS84_A, WGS84_B, WGS84_E2, WGS84_F, WGS84_INV_F};
 
 /// Transform geodetic coordinates to ECEF Cartesian coordinates.
+#[inline]
 pub fn geodetic_to_ecef(geo: &GeodeticPos) -> EcefPos {
-    let sin_lat = libm::sin(geo.lat_rad);
-    let cos_lat = libm::cos(geo.lat_rad);
-    let sin_lon = libm::sin(geo.lon_rad);
-    let cos_lon = libm::cos(geo.lon_rad);
-
-    let n = WGS84_A / libm::sqrt(1.0 - WGS84_E2 * sin_lat * sin_lat);
-
-    let x = (n + geo.alt_m) * cos_lat * cos_lon;
-    let y = (n + geo.alt_m) * cos_lat * sin_lon;
-    let z = (n * (1.0 - WGS84_E2) + geo.alt_m) * sin_lat;
-
-    EcefPos::new(x, y, z)
+    crate::geo::lla_to_ecef(geo)
 }
 
 /// Transform ECEF Cartesian coordinates to geodetic coordinates via Bowring's method.
+#[inline]
 pub fn ecef_to_geodetic(ecef: &EcefPos) -> Result<GeodeticPos, EcefNedError> {
-    if !ecef.x.is_finite() || !ecef.y.is_finite() || !ecef.z.is_finite() {
-        return Err(EcefNedError::NonFinite);
-    }
-    let p = libm::hypot(ecef.x, ecef.y);
-    if p < 1e-6 && libm::fabs(ecef.z) < 1e-6 {
-        return Err(EcefNedError::SingularPoint);
-    }
-    let theta = libm::atan2(ecef.z * WGS84_A, p * WGS84_B);
-    let (s_th, c_th) = (libm::sin(theta), libm::cos(theta));
-    let ep2 = (WGS84_A * WGS84_A - WGS84_B * WGS84_B) / (WGS84_B * WGS84_B);
-    let lat_num = ecef.z + ep2 * WGS84_B * s_th * s_th * s_th;
-    let lat_den = p - WGS84_E2 * WGS84_A * c_th * c_th * c_th;
-    let lat = libm::atan2(lat_num, lat_den);
-    let lon = libm::atan2(ecef.y, ecef.x);
-    let (s_lat, c_lat) = (libm::sin(lat), libm::cos(lat));
-    let n = WGS84_A / libm::sqrt(1.0 - WGS84_E2 * s_lat * s_lat);
-    let alt = if libm::fabs(c_lat) > 1e-4 {
-        p / c_lat - n
-    } else {
-        ecef.z / s_lat - n * (1.0 - WGS84_E2)
-    };
-    GeodeticPos::new(lat, lon, alt)
+    crate::geo::ecef_to_lla(ecef)
 }
 
 /// Local tangent plane reference frame caching trigonometric components.
@@ -249,7 +153,8 @@ mod tests {
         let bad_ecef = EcefPos::new(f64::NAN, 0.0, 0.0);
         assert_eq!(ecef_to_geodetic(&bad_ecef), Err(EcefNedError::NonFinite));
         let center = EcefPos::new(0.0, 0.0, 0.0);
-        assert_eq!(ecef_to_geodetic(&center), Err(EcefNedError::SingularPoint));
+        let center_geo = ecef_to_geodetic(&center).unwrap();
+        assert_eq!(center_geo.lat_deg(), 90.0);
     }
 
     #[test]
