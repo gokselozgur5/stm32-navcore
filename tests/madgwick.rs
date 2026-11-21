@@ -95,7 +95,8 @@ fn test_madgwick_imu_convergence() {
 
 #[test]
 fn test_madgwick_marg_heading_tracking() {
-    let mut ahrs = MadgwickAhrs::new(0.5).unwrap();
+    let q_init = Quaternion::new(0.9659, 0.0, 0.0, 0.2588);
+    let mut ahrs = MadgwickAhrs::with_attitude(0.5, q_init).unwrap();
     let dt = 0.02;
     let accel = [0.0, 0.0, -9.81];
     let mag = [0.2, 0.0, 0.4];
