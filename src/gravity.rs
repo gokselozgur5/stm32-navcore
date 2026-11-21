@@ -1,105 +1,50 @@
 //! Somigliana normal gravity formula and elevation correction.
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum GravityError {
-    NonFinite,
-    InvalidLatitude,
-    InvalidAltitude,
-}
+pub use crate::gravity_wgs84::Wgs84GravityError as GravityError;
 
-/// WGS-84 equatorial normal gravity in m/s^2.
-pub const GAMMA_E: f32 = 9.780_325;
+/// WGS-84 equatorial normal gravity in m/s^2 (f32).
+pub const GAMMA_E: f32 = crate::gravity_wgs84::GAMMA_E as f32;
 
-/// WGS-84 polar normal gravity in m/s^2.
-pub const GAMMA_P: f32 = 9.832_185;
+/// WGS-84 polar normal gravity in m/s^2 (f32).
+pub const GAMMA_P: f32 = crate::gravity_wgs84::GAMMA_P as f32;
 
-/// Somigliana formula parameter k.
-pub const SOMIGLIANA_K: f32 = 0.001_931_853;
+/// Somigliana formula parameter k (f32).
+pub const SOMIGLIANA_K: f32 = crate::gravity_wgs84::SOMIGLIANA_K as f32;
 
-/// WGS-84 first eccentricity squared.
-pub const WGS84_E2: f32 = 0.006_694_38;
+/// WGS-84 first eccentricity squared (f32).
+pub const WGS84_E2: f32 = crate::geo::WGS84_E2 as f32;
 
-/// WGS-84 semi-major axis in meters.
-pub const WGS84_A: f32 = 6_378_137.0;
+/// WGS-84 semi-major axis in meters (f32).
+pub const WGS84_A: f32 = crate::geo::WGS84_A as f32;
 
 /// Somigliana normal gravity at the surface of the WGS-84 ellipsoid.
 pub fn somigliana_surface(lat_rad: f32) -> Result<f32, GravityError> {
-    if !lat_rad.is_finite() {
-        return Err(GravityError::NonFinite);
-    }
-    let half_pi = core::f32::consts::FRAC_PI_2;
-    if lat_rad < -half_pi || lat_rad > half_pi {
-        return Err(GravityError::InvalidLatitude);
-    }
-    let s = libm::sinf(lat_rad);
-    let s2 = s * s;
-    let num = 1.0 + SOMIGLIANA_K * s2;
-    let den = libm::sqrtf(1.0 - WGS84_E2 * s2);
-    Ok(GAMMA_E * (num / den))
+    crate::gravity_wgs84::somigliana_surface_f32(lat_rad)
 }
 
 /// Free-air elevation gravity correction in m/s^2.
 pub fn elevation_correction(lat_rad: f32, alt_m: f32) -> Result<f32, GravityError> {
-    if !alt_m.is_finite() {
-        return Err(GravityError::NonFinite);
-    }
-    if alt_m < -10_000.0 || alt_m > 100_000.0 {
-        return Err(GravityError::InvalidAltitude);
-    }
     let g0 = somigliana_surface(lat_rad)?;
-    let f = 0.003_352_810_7;
-    let m = 0.003_449_786_5;
-    let s = libm::sinf(lat_rad);
-    let s2 = s * s;
-    let term1 = (2.0 / WGS84_A) * (1.0 + f + m - 2.0 * f * s2) * alt_m;
-    let term2 = (3.0 / (WGS84_A * WGS84_A)) * alt_m * alt_m;
-    Ok(-g0 * (term1 - term2))
+    let g = normal_gravity(lat_rad, alt_m)?;
+    Ok(g - g0)
 }
 
 /// Somigliana normal gravity with elevation correction.
 pub fn normal_gravity(lat_rad: f32, alt_m: f32) -> Result<f32, GravityError> {
-    let g0 = somigliana_surface(lat_rad)?;
-    let dg = elevation_correction(lat_rad, alt_m)?;
-    Ok(g0 + dg)
+    crate::gravity_wgs84::normal_gravity_elevation_f32(lat_rad, alt_m)
 }
 
 /// Normal gravity vector in NED frame [0, 0, g_down] in m/s^2.
 pub fn gravity_vector_ned(lat_rad: f32, alt_m: f32) -> Result<[f32; 3], GravityError> {
-    let g = normal_gravity(lat_rad, alt_m)?;
-    Ok([0.0, 0.0, g])
+    crate::gravity_wgs84::gravity_ned_f32(lat_rad, alt_m)
 }
 
 /// Somigliana normal gravity at surface in f64.
 pub fn somigliana_surface_f64(lat_rad: f64) -> Result<f64, GravityError> {
-    if !lat_rad.is_finite() {
-        return Err(GravityError::NonFinite);
-    }
-    let half_pi = core::f64::consts::FRAC_PI_2;
-    if lat_rad < -half_pi || lat_rad > half_pi {
-        return Err(GravityError::InvalidLatitude);
-    }
-    let s = libm::sin(lat_rad);
-    let s2 = s * s;
-    let num = 1.0 + 0.001_931_852_652_41 * s2;
-    let den = libm::sqrt(1.0 - 0.006_694_379_990_14 * s2);
-    Ok(9.780_325_335_9 * (num / den))
+    crate::gravity_wgs84::somigliana_surface(lat_rad)
 }
 
 /// Somigliana normal gravity with elevation in f64.
 pub fn normal_gravity_f64(lat_rad: f64, alt_m: f64) -> Result<f64, GravityError> {
-    if !alt_m.is_finite() {
-        return Err(GravityError::NonFinite);
-    }
-    if alt_m < -10_000.0 || alt_m > 100_000.0 {
-        return Err(GravityError::InvalidAltitude);
-    }
-    let g0 = somigliana_surface_f64(lat_rad)?;
-    let a = 6_378_137.0;
-    let f = 0.003_352_810_664_74;
-    let m = 0.003_449_786_506_84;
-    let s = libm::sin(lat_rad);
-    let s2 = s * s;
-    let term1 = (2.0 / a) * (1.0 + f + m - 2.0 * f * s2) * alt_m;
-    let term2 = (3.0 / (a * a)) * alt_m * alt_m;
-    Ok(g0 * (1.0 - term1 + term2))
+    crate::gravity_wgs84::normal_gravity_elevation(lat_rad, alt_m)
 }
