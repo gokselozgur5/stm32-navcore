@@ -90,3 +90,11 @@ fn test_dcm_constructors_with_mat_identity() {
     let rot_bn = BodyRot::from_dcm_body_to_ned(Mat::identity()).expect("identity dcm");
     assert!(rot_bn.is_orthonormal());
 }
+
+#[test]
+fn test_dcm_ned_body_rotations() {
+    let dcm = stm32_navcore::rotation::Dcm::identity();
+    let v_ned = [1.0f32, 2.0, 3.0];
+    let v_b = dcm.rotate_ned_to_body(v_ned).expect("valid ned to body");
+    assert_eq!(v_b, v_ned);
+}
