@@ -156,3 +156,36 @@ impl core::ops::Mul<[f32; 3]> for Dcm {
         self.rotate_vec(rhs)
     }
 }
+
+impl Dcm {
+    /// Builds a rotation from an existing NED-to-Body DCM.
+    pub fn from_dcm_ned_to_body(m: Mat<3, 3>) -> Result<Self, RotationError> {
+        for row in &m.0 {
+            for &val in row {
+                if !val.is_finite() {
+                    return Err(RotationError::NonFinite);
+                }
+            }
+        }
+        let rot = Self(m);
+        if !rot.is_orthonormal() {
+            return Err(RotationError::NotOrthonormal);
+        }
+        Ok(rot)
+    }
+
+    /// Builds a rotation from an existing Body-to-NED DCM.
+    pub fn from_dcm_body_to_ned(m: Mat<3, 3>) -> Result<Self, RotationError> {
+        Self::from_dcm_ned_to_body(m.transpose())
+    }
+
+    /// Returns a reference to the inner matrix as NED-to-Body DCM.
+    pub fn dcm_ned_to_body(&self) -> &Mat<3, 3> {
+        &self.0
+    }
+
+    /// Returns the transposed Body-to-NED DCM.
+    pub fn dcm_body_to_ned(&self) -> Mat<3, 3> {
+        self.0.transpose()
+    }
+}
