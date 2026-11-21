@@ -15,7 +15,7 @@ pub struct Mahony {
 
 impl Mahony {
     /// Default proportional gain for accelerometer correction.
-    pub const DEFAULT_KP: f32 = 2.0;
+    pub const DEFAULT_KP: f32 = 1.0;
 
     /// Default integral gain for gyro bias correction.
     pub const DEFAULT_KI: f32 = 0.05;
