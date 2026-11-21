@@ -293,10 +293,9 @@ pub fn pressure_hpa_to_altitude_m(p_hpa: f32, p0_hpa: f32) -> Result<f32, MathEr
     if !p_hpa.is_finite() || !p0_hpa.is_finite() || p_hpa <= 0.0 || p0_hpa <= 0.0 {
         return Err(MathError::InvalidPressure);
     }
-    let ratio = p_hpa / p0_hpa;
-    let exp = 1.0f32 / 5.255f32;
-    let pow_val = libm::powf(ratio, exp);
-    Ok(44330.0f32 * (1.0f32 - pow_val))
+    let p_pa = p_hpa * 100.0;
+    let p0_pa = p0_hpa * 100.0;
+    crate::baro_alt::altitude_from_pressure_qnh(p_pa, p0_pa).map_err(|_| MathError::InvalidPressure)
 }
 
 pub fn tilt_compensated_yaw(
