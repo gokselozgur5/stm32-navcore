@@ -709,16 +709,7 @@ mod tests {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct StationaryDetector {
-    pub window_size: usize,
-    pub count: usize,
-    pub var_accel_thresh: f32,
-    pub norm_gyro_thresh: f32,
-    sum_accel_mag: f32,
-    sum_accel_mag_sq: f32,
-    max_gyro_norm: f32,
-}
+
 
 impl StationaryDetector {
     pub const fn new(window_size: usize, var_accel_thresh: f32, norm_gyro_thresh: f32) -> Self {
