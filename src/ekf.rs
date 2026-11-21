@@ -598,9 +598,9 @@ mod tests {
         ekf.p_ned_m[2] = -50.0;
         ekf.cov.0[2][2] = 0.25;
         let dt = 0.01;
+        let accel = [0.0, 0.0, -9.80665 + 0.02];
         for step in 0..1000 {
-            ekf.predict([0.0, 0.0, -9.80665], [0.0, 0.0, 0.0], dt)
-                .unwrap();
+            ekf.predict(accel, [0.0, 0.0, 0.0], dt).unwrap();
             if step % 10 == 0 {
                 let _ = ekf.update_baro_altitude(50.0, 0.09, 16.0);
             }
