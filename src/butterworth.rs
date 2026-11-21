@@ -1,7 +1,6 @@
 //! Second-order low-pass IIR Butterworth filter with bilinear transform.
 
-use core::f32::consts::PI;
-use libm::tanf;
+use crate::filters::{BiquadCoefficients, BiquadError, BiquadFilter};
 
 /// Errors returned by Butterworth filter operations.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -14,6 +13,19 @@ pub enum ButterworthError {
     NonFinite,
     /// Buffer length mismatch in batch processing.
     BufferLengthMismatch,
+}
+
+impl From<BiquadError> for ButterworthError {
+    fn from(err: BiquadError) -> Self {
+        match err {
+            BiquadError::InvalidCutoffFrequency | BiquadError::InvalidQ => {
+                Self::InvalidCutoffFrequency
+            }
+            BiquadError::InvalidSampleInterval => Self::InvalidSampleInterval,
+            BiquadError::NonFinite => Self::NonFinite,
+            BiquadError::BufferLengthMismatch => Self::BufferLengthMismatch,
+        }
+    }
 }
 
 /// Biquad filter transfer function coefficients for 2nd-order Butterworth.
@@ -31,49 +43,43 @@ pub struct ButterworthCoefficients {
 impl ButterworthCoefficients {
     /// Computes 2nd-order low-pass Butterworth coefficients via bilinear transform.
     pub fn try_new(cutoff_hz: f32, sample_interval_s: f32) -> Result<Self, ButterworthError> {
-        if !sample_interval_s.is_finite() || sample_interval_s <= 0.0 {
-            return Err(ButterworthError::InvalidSampleInterval);
-        }
-        let nyquist = 0.5 / sample_interval_s;
-        if !cutoff_hz.is_finite() || cutoff_hz <= 0.0 || cutoff_hz >= nyquist {
-            return Err(ButterworthError::InvalidCutoffFrequency);
-        }
-        let k = tanf(PI * cutoff_hz * sample_interval_s);
-        let k2 = k * k;
-        let sqrt2_k = core::f32::consts::SQRT_2 * k;
-        let a0 = 1.0 + sqrt2_k + k2;
-        let inv_a0 = 1.0 / a0;
-
-        let b0 = k2 * inv_a0;
-        let b1 = 2.0 * b0;
-        let b2 = b0;
-        let a1 = 2.0 * (k2 - 1.0) * inv_a0;
-        let a2 = (1.0 - sqrt2_k + k2) * inv_a0;
-
-        let coeffs = Self { b0, b1, b2, a1, a2 };
-        if !coeffs.is_stable() {
-            return Err(ButterworthError::InvalidCutoffFrequency);
-        }
-        Ok(coeffs)
+        let biquad = BiquadCoefficients::butterworth(cutoff_hz, sample_interval_s)?;
+        Ok(Self::from_biquad(biquad))
     }
-}
 
-impl ButterworthCoefficients {
+    /// Converts from generic BiquadCoefficients.
+    pub const fn from_biquad(b: BiquadCoefficients) -> Self {
+        Self {
+            b0: b.b0,
+            b1: b.b1,
+            b2: b.b2,
+            a1: b.a1,
+            a2: b.a2,
+        }
+    }
+
+    /// Converts to generic BiquadCoefficients.
+    pub const fn to_biquad(&self) -> BiquadCoefficients {
+        BiquadCoefficients {
+            b0: self.b0,
+            b1: self.b1,
+            b2: self.b2,
+            a1: self.a1,
+            a2: self.a2,
+        }
+    }
+
     /// Verifies Bounded-Input Bounded-Output (BIBO) stability.
-    ///
-    /// Requires poles to lie strictly inside the unit circle:
-    /// |a2| < 1.0 and |a1| < 1.0 + a2.
     pub fn is_stable(&self) -> bool {
-        self.a2.abs() < 1.0 && self.a1.abs() < (1.0 + self.a2)
+        self.to_biquad().is_stable()
     }
 }
 
 /// Second-order low-pass Butterworth IIR filter (DF2T).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ButterworthFilter {
+    biquad: BiquadFilter,
     coeffs: ButterworthCoefficients,
-    s1: f32,
-    s2: f32,
 }
 
 impl ButterworthFilter {
@@ -86,56 +92,41 @@ impl ButterworthFilter {
     /// Creates a filter from precomputed coefficients.
     pub const fn from_coeffs(coeffs: ButterworthCoefficients) -> Self {
         Self {
+            biquad: BiquadFilter::new(coeffs.to_biquad()),
             coeffs,
-            s1: 0.0,
-            s2: 0.0,
         }
     }
-}
 
-impl ButterworthFilter {
     /// Resets filter delay states to zero.
     pub fn reset(&mut self) {
-        self.s1 = 0.0;
-        self.s2 = 0.0;
+        self.biquad.reset();
     }
 
     /// Direct Form II Transposed update step.
     pub fn update(&mut self, x: f32) -> f32 {
-        let y = self.coeffs.b0 * x + self.s1;
-        self.s1 = self.coeffs.b1 * x - self.coeffs.a1 * y + self.s2;
-        self.s2 = self.coeffs.b2 * x - self.coeffs.a2 * y;
-        y
+        self.biquad.update(x)
     }
 
     /// Returns current filter internal state (s1, s2).
     pub const fn state(&self) -> (f32, f32) {
-        (self.s1, self.s2)
+        self.biquad.state()
     }
 
     /// Sets internal delay states explicitly.
     pub fn set_state(&mut self, s1: f32, s2: f32) {
-        self.s1 = s1;
-        self.s2 = s2;
+        self.biquad.set_state(s1, s2);
     }
-}
 
-impl ButterworthFilter {
     /// Validates sample is finite before executing filter step.
     pub fn try_update(&mut self, x: f32) -> Result<f32, ButterworthError> {
-        if !x.is_finite() {
-            return Err(ButterworthError::NonFinite);
-        }
-        Ok(self.update(x))
+        self.biquad.try_update(x).map_err(Into::into)
     }
 
     /// Returns a reference to the active coefficients.
     pub fn coefficients(&self) -> &ButterworthCoefficients {
         &self.coeffs
     }
-}
 
-impl ButterworthFilter {
     /// Dynamically retunes filter coefficients without resetting states.
     pub fn retune(
         &mut self,
@@ -143,32 +134,22 @@ impl ButterworthFilter {
         sample_interval_s: f32,
     ) -> Result<(), ButterworthError> {
         let coeffs = ButterworthCoefficients::try_new(cutoff_hz, sample_interval_s)?;
-        self.coeffs = coeffs;
+        self.set_coefficients(coeffs);
         Ok(())
     }
 
     /// Replaces coefficients explicitly.
     pub fn set_coefficients(&mut self, coeffs: ButterworthCoefficients) {
         self.coeffs = coeffs;
+        self.biquad.set_coefficients(coeffs.to_biquad());
     }
-}
 
-impl ButterworthFilter {
     /// Filters an array of input samples into an equal-sized output slice.
     pub fn batch_filter(
         &mut self,
         input: &[f32],
         output: &mut [f32],
     ) -> Result<(), ButterworthError> {
-        if input.len() != output.len() {
-            return Err(ButterworthError::BufferLengthMismatch);
-        }
-        for (idx, &x) in input.iter().enumerate() {
-            if !x.is_finite() {
-                return Err(ButterworthError::NonFinite);
-            }
-            output[idx] = self.update(x);
-        }
-        Ok(())
+        self.biquad.batch_filter(input, output).map_err(Into::into)
     }
 }
