@@ -45,6 +45,14 @@ impl Lla {
     pub fn from_degrees(lat_deg: f64, lon_deg: f64, alt_m: f64) -> Result<Self, GeoError> {
         Self::new(lat_deg.to_radians(), lon_deg.to_radians(), alt_m)
     }
+
+    pub fn lat_deg(&self) -> f64 {
+        self.lat_rad.to_degrees()
+    }
+
+    pub fn lon_deg(&self) -> f64 {
+        self.lon_rad.to_degrees()
+    }
 }
 
 pub fn lla_to_ecef(lla: &Lla) -> Ecef {
