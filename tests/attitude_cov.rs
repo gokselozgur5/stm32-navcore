@@ -1,20 +1,18 @@
 use stm32_navcore::attitude::cov::propagate_attitude_cov;
 use stm32_navcore::attitude::AttitudeError;
-use stm32_navcore::math::{Mat, Quaternion};
+use stm32_navcore::math::Mat;
 
 #[test]
 fn test_repro_attitude_cov_propagation() {
-    let q = Quaternion::IDENTITY;
     let cov = Mat::<3, 3>::identity();
-    let q_cov = propagate_attitude_cov(&cov, &q, 0.01, 0.1).unwrap();
+    let q_cov = propagate_attitude_cov(&cov, 0.01, 0.1).unwrap();
     assert!(q_cov.0[0][0] > 1.0);
 }
 
 #[test]
 fn test_attitude_cov_symmetric_and_pd() {
-    let q = Quaternion::IDENTITY;
     let cov = Mat::<3, 3>::identity();
-    let res = propagate_attitude_cov(&cov, &q, 0.05, 0.1).unwrap();
+    let res = propagate_attitude_cov(&cov, 0.05, 0.1).unwrap();
 
     for i in 0..3 {
         for j in 0..3 {
@@ -28,11 +26,10 @@ fn test_attitude_cov_symmetric_and_pd() {
 
 #[test]
 fn test_attitude_cov_monotonic_growth() {
-    let q = Quaternion::IDENTITY;
     let cov = Mat::<3, 3>::identity();
-    let res1 = propagate_attitude_cov(&cov, &q, 0.01, 0.1).unwrap();
-    let res2 = propagate_attitude_cov(&cov, &q, 0.05, 0.1).unwrap();
-    let res3 = propagate_attitude_cov(&cov, &q, 0.05, 0.5).unwrap();
+    let res1 = propagate_attitude_cov(&cov, 0.01, 0.1).unwrap();
+    let res2 = propagate_attitude_cov(&cov, 0.05, 0.1).unwrap();
+    let res3 = propagate_attitude_cov(&cov, 0.05, 0.5).unwrap();
 
     assert!(res2.0[0][0] > res1.0[0][0]);
     assert!(res3.0[0][0] > res2.0[0][0]);
@@ -40,21 +37,20 @@ fn test_attitude_cov_monotonic_growth() {
 
 #[test]
 fn test_attitude_cov_invalid_inputs() {
-    let q = Quaternion::IDENTITY;
     let cov = Mat::<3, 3>::identity();
 
     assert_eq!(
-        propagate_attitude_cov(&cov, &q, -0.1, 0.1),
+        propagate_attitude_cov(&cov, -0.1, 0.1),
         Err(AttitudeError::InvalidInput)
     );
     assert_eq!(
-        propagate_attitude_cov(&cov, &q, 0.1, 0.0),
+        propagate_attitude_cov(&cov, 0.1, 0.0),
         Err(AttitudeError::InvalidInput)
     );
 
     let nan_cov = Mat::<3, 3>([[f32::NAN; 3]; 3]);
     assert_eq!(
-        propagate_attitude_cov(&nan_cov, &q, 0.1, 0.1),
+        propagate_attitude_cov(&nan_cov, 0.1, 0.1),
         Err(AttitudeError::NonFinite)
     );
 }
