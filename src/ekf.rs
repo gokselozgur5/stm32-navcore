@@ -58,12 +58,16 @@ fn check_finite_3(v: [f32; 3]) -> Result<(), EkfError> {
 }
 
 impl NavEkf {
-    pub fn update_kinematics(
+    pub fn update_kinematics_with_gravity(
         &mut self,
         accel_body_mps2: [f32; 3],
         gyro_body_rads: [f32; 3],
         dt_s: f32,
+        gravity_mps2: f32,
     ) -> Result<(), EkfError> {
+        if !gravity_mps2.is_finite() || gravity_mps2 <= 0.0 {
+            return Err(EkfError::InvalidInput);
+        }
         let corrected_gyro = [
             gyro_body_rads[0],
             gyro_body_rads[1],
@@ -74,7 +78,7 @@ impl NavEkf {
             .integrate_gyro(corrected_gyro, dt_s)
             .map_err(|_| EkfError::InvalidInput)?;
         let a_nav = self.att.rotate_vec(accel_body_mps2);
-        let a_eff = [a_nav[0], a_nav[1], a_nav[2] + 9.80665];
+        let a_eff = [a_nav[0], a_nav[1], a_nav[2] + gravity_mps2];
         let half_dt2 = 0.5 * dt_s * dt_s;
         for i in 0..3 {
             let step = self.v_ned_mps[i] * dt_s + a_eff[i] * half_dt2;
@@ -87,6 +91,15 @@ impl NavEkf {
         self.v_ned_mps[1] += a_eff[1] * dt_s;
         self.v_ned_mps[2] += a_eff[2] * dt_s;
         Ok(())
+    }
+
+    pub fn update_kinematics(
+        &mut self,
+        accel_body_mps2: [f32; 3],
+        gyro_body_rads: [f32; 3],
+        dt_s: f32,
+    ) -> Result<(), EkfError> {
+        self.update_kinematics_with_gravity(accel_body_mps2, gyro_body_rads, dt_s, 9.80665)
     }
 }
 
