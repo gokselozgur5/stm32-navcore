@@ -77,3 +77,37 @@ fn test_accel_bias_estimator_equator_gravity_repro() {
         est.bias_mps2[2]
     );
 }
+
+#[test]
+fn test_ekf_predict_with_latitude() {
+    let mut ekf = NavEkf::new();
+    let g_eq = 9.780325f32;
+    let dt = 0.01;
+    for _ in 0..6000 {
+        ekf.predict_with_latitude([0.0, 0.0, -g_eq], [0.0, 0.0, 0.0], dt, 0.0)
+            .unwrap();
+    }
+    assert!(
+        ekf.p_ned_m[2].abs() < 1.0,
+        "down position drifted excessively at equator: {}",
+        ekf.p_ned_m[2]
+    );
+}
+
+#[test]
+fn test_accel_bias_estimator_update_with_latitude() {
+    use stm32_navcore::ekf::AccelBiasEstimator;
+    use stm32_navcore::math::Quaternion;
+    let mut est = AccelBiasEstimator::new(1.0, 0.01);
+    let g_eq = 9.780325f32;
+    let accel = [0.0, 0.0, -g_eq];
+    for _ in 0..500 {
+        est.update_with_latitude(&Quaternion::IDENTITY, accel, 0.0)
+            .unwrap();
+    }
+    assert!(
+        est.bias_mps2[2].abs() < 0.005,
+        "learned false z-bias at equator: {}",
+        est.bias_mps2[2]
+    );
+}
