@@ -21,3 +21,12 @@ fn test_ekf_roll_pitch_bounded_under_gyro_bias() {
         roll
     );
 }
+
+#[test]
+fn test_quat_to_euler_zyx_exact_gimbal_lock_heading() {
+    let q = stm32_navcore::math::Quaternion::new(-0.5, 0.5, 0.5, 0.5);
+    let (roll, pitch, yaw) = q.to_euler_zyx();
+    assert!((roll - 0.0).abs() < 1e-5);
+    assert!((pitch - (-core::f32::consts::FRAC_PI_2)).abs() < 1e-5);
+    assert!((yaw - (-core::f32::consts::FRAC_PI_2)).abs() < 1e-5);
+}
