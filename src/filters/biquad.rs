@@ -9,6 +9,10 @@ pub enum BiquadError {
     InvalidSampleInterval,
     /// Q factor must be positive and finite.
     InvalidQ,
+    /// Non-finite sample encountered.
+    NonFinite,
+    /// Buffer length mismatch in batch processing.
+    BufferLengthMismatch,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -67,6 +71,15 @@ impl BiquadCoefficients {
     /// Checks whether the filter is BIBO stable (|a2| < 1 and |a1| < 1 + a2).
     pub fn is_stable(&self) -> bool {
         self.a2.abs() < 1.0 && self.a1.abs() < 1.0 + self.a2
+    }
+
+    /// Computes 2nd-order low-pass Butterworth coefficients (Q = 1/sqrt(2)).
+    pub fn butterworth(cutoff_hz: f32, sample_interval_s: f32) -> Result<Self, BiquadError> {
+        Self::try_lowpass_rbj(
+            cutoff_hz,
+            sample_interval_s,
+            core::f32::consts::FRAC_1_SQRT_2,
+        )
     }
 }
 
