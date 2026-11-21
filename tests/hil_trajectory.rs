@@ -114,20 +114,8 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
             let y = libm::atan2f(ve, vn);
             (pn, pe, -10.0, vn, ve, 0.0, an, ae, 0.0, y)
         } else {
-            let tau = t - 30.0;
-            let p_down = -10.0 + 1.0 * tau;
-            (
-                0.0,
-                0.0,
-                p_down.min(0.0),
-                0.0,
-                0.0,
-                if p_down < 0.0 { 1.0 } else { 0.0 },
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-            )
+            let (s, ds, d2s) = quintic_blend((t - 30.0) / 10.0);
+            (0.0, 0.0, -10.0 * (1.0 - s), 0.0, 0.0, 1.0 * ds, 0.0, 0.0, 0.1 * d2s, 0.0)
         };
 
         let next_t = (step + 1) as f32 * dt;
