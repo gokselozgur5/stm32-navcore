@@ -84,7 +84,7 @@ fn test_madgwick_imu_convergence() {
     let q_init = Quaternion::new(0.92388, 0.38268, 0.0, 0.0);
     let mut ahrs = MadgwickAhrs::with_attitude(0.5, q_init).unwrap();
     let dt = 0.02;
-    let accel = [0.0, 0.0, 9.81];
+    let accel = [0.0, 0.0, -9.81];
     for _ in 0..300 {
         ahrs.update_imu([0.0, 0.0, 0.0], accel, dt).unwrap();
     }
@@ -97,7 +97,7 @@ fn test_madgwick_imu_convergence() {
 fn test_madgwick_marg_heading_tracking() {
     let mut ahrs = MadgwickAhrs::new(0.5).unwrap();
     let dt = 0.02;
-    let accel = [0.0, 0.0, 9.81];
+    let accel = [0.0, 0.0, -9.81];
     let mag = [0.2, 0.0, 0.4];
     for _ in 0..300 {
         ahrs.update_marg([0.0, 0.0, 0.0], accel, mag, dt).unwrap();
