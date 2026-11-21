@@ -1,4 +1,7 @@
 //! Madgwick AHRS 6-DOF sensor fusion implementation.
+//!
+//! Accelerometer measurements follow the NED specific-force convention: a level
+//! sensor at rest measures `[0, 0, -g]`.
 
 use crate::math::{MathError, Quaternion};
 
@@ -69,14 +72,14 @@ impl MadgwickAhrs {
 impl MadgwickAhrs {
     fn accel_gradient(q: &Quaternion, a: [f32; 3]) -> Option<[f32; 4]> {
         let (w, x, y, z) = (q.w, q.x, q.y, q.z);
-        let f1 = 2.0 * (x * z - w * y) - a[0];
-        let f2 = 2.0 * (w * x + y * z) - a[1];
-        let f3 = 1.0 - 2.0 * (x * x + y * y) - a[2];
+        let f1 = 2.0 * (w * y - x * z) - a[0];
+        let f2 = -2.0 * (w * x + y * z) - a[1];
+        let f3 = 2.0 * (x * x + y * y) - 1.0 - a[2];
 
-        let gw = -2.0 * y * f1 + 2.0 * x * f2;
-        let gx = 2.0 * z * f1 + 2.0 * w * f2 - 4.0 * x * f3;
-        let gy = -2.0 * w * f1 + 2.0 * z * f2 - 4.0 * y * f3;
-        let gz = 2.0 * x * f1 + 2.0 * y * f2;
+        let gw = 2.0 * y * f1 - 2.0 * x * f2;
+        let gx = -2.0 * z * f1 - 2.0 * w * f2 + 4.0 * x * f3;
+        let gy = 2.0 * w * f1 - 2.0 * z * f2 + 4.0 * y * f3;
+        let gz = -2.0 * x * f1 - 2.0 * y * f2;
 
         let norm_sq = gw * gw + gx * gx + gy * gy + gz * gz;
         if norm_sq < 1e-12 || !norm_sq.is_finite() {
