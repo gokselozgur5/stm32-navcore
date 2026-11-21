@@ -104,3 +104,15 @@ fn test_biquad_state_accessors() {
     let (s1, s2) = filter.state();
     assert!(s1 != 0.0 || s2 != 0.0);
 }
+
+#[test]
+fn test_biquad_butterworth_and_batch() {
+    use stm32_navcore::filters::BiquadError;
+
+    let coeffs = BiquadCoefficients::butterworth(10.0, 0.001).unwrap();
+    let mut filter = BiquadFilter::new(coeffs);
+    assert_eq!(filter.try_update(f32::NAN), Err(BiquadError::NonFinite));
+    assert!(filter.retune(15.0, 0.001).is_ok());
+    let mut out = [0.0f32; 4];
+    assert!(filter.batch_filter(&[1.0, 2.0, 3.0, 4.0], &mut out).is_ok());
+}
