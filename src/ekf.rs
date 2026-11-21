@@ -927,6 +927,16 @@ impl AccelBiasEstimator {
     pub fn update(&mut self, att: &Quaternion, accel_body: [f32; 3]) -> Result<(), EkfError> {
         self.update_with_gravity(att, accel_body, 9.80665)
     }
+
+    pub fn update_with_latitude(
+        &mut self,
+        att: &Quaternion,
+        accel_body: [f32; 3],
+        lat_rad: f32,
+    ) -> Result<(), EkfError> {
+        let g = crate::gravity::somigliana_surface(lat_rad).map_err(|_| EkfError::InvalidInput)?;
+        self.update_with_gravity(att, accel_body, g)
+    }
 }
 
 #[cfg(test)]
