@@ -33,7 +33,7 @@ pub struct MadgwickAhrs {
 
 impl MadgwickAhrs {
     /// Default filter gain for IMU 6-DOF fusion.
-    pub const DEFAULT_BETA: f32 = 0.033;
+    pub const DEFAULT_BETA: f32 = 0.1;
 }
 
 impl MadgwickAhrs {
