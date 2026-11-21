@@ -69,38 +69,6 @@ impl MadgwickAhrs {
     }
 }
 
-impl MadgwickAhrs {
-    fn accel_gradient(q: &Quaternion, a: [f32; 3]) -> Option<[f32; 4]> {
-        let (w, x, y, z) = (q.w, q.x, q.y, q.z);
-        let f1 = 2.0 * (w * y - x * z) - a[0];
-        let f2 = -2.0 * (w * x + y * z) - a[1];
-        let f3 = 2.0 * (x * x + y * y) - 1.0 - a[2];
-
-        let gw = 2.0 * y * f1 - 2.0 * x * f2;
-        let gx = -2.0 * z * f1 - 2.0 * w * f2 + 4.0 * x * f3;
-        let gy = 2.0 * w * f1 - 2.0 * z * f2 + 4.0 * y * f3;
-        let gz = -2.0 * x * f1 - 2.0 * y * f2;
-
-        let norm_sq = gw * gw + gx * gx + gy * gy + gz * gz;
-        if norm_sq < 1e-12 || !norm_sq.is_finite() {
-            return None;
-        }
-        let inv_norm = 1.0 / libm::sqrtf(norm_sq);
-        Some([gw * inv_norm, gx * inv_norm, gy * inv_norm, gz * inv_norm])
-    }
-}
-
-impl MadgwickAhrs {
-    fn gyro_rate(q: &Quaternion, w: [f32; 3]) -> [f32; 4] {
-        [
-            0.5 * (-q.x * w[0] - q.y * w[1] - q.z * w[2]),
-            0.5 * (q.w * w[0] + q.y * w[2] - q.z * w[1]),
-            0.5 * (q.w * w[1] - q.x * w[2] + q.z * w[0]),
-            0.5 * (q.w * w[2] + q.x * w[1] - q.y * w[0]),
-        ]
-    }
-}
-
 fn validate_inputs(gyro: [f32; 3], accel: [f32; 3], dt: f32) -> Result<(), AhrsError> {
     if !dt.is_finite() || dt <= 0.0 {
         return Err(AhrsError::InvalidDt);
@@ -127,22 +95,27 @@ pub fn madgwick_ahrs_6dof_step(
     dt: f32,
 ) -> Result<Quaternion, AhrsError> {
     validate_inputs(gyro, accel, dt)?;
-    let qw = MadgwickAhrs::gyro_rate(&q, gyro);
-    let a_sq = accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2];
-    let g = if a_sq > 1e-12 {
-        let inv = 1.0 / libm::sqrtf(a_sq);
-        let ah = [accel[0] * inv, accel[1] * inv, accel[2] * inv];
-        MadgwickAhrs::accel_gradient(&q, ah).unwrap_or([0.0; 4])
-    } else {
-        [0.0; 4]
-    };
-    let next = Quaternion::new(
-        q.w + (qw[0] - beta * g[0]) * dt,
-        q.x + (qw[1] - beta * g[1]) * dt,
-        q.y + (qw[2] - beta * g[2]) * dt,
-        q.z + (qw[3] - beta * g[3]) * dt,
-    );
-    Ok(next.normalize()?)
+    if beta == 0.0 {
+        let qw = [
+            0.5 * (-q.x * gyro[0] - q.y * gyro[1] - q.z * gyro[2]),
+            0.5 * (q.w * gyro[0] + q.y * gyro[2] - q.z * gyro[1]),
+            0.5 * (q.w * gyro[1] - q.x * gyro[2] + q.z * gyro[0]),
+            0.5 * (q.w * gyro[2] + q.x * gyro[1] - q.y * gyro[0]),
+        ];
+        let next = Quaternion::new(
+            q.w + qw[0] * dt,
+            q.x + qw[1] * dt,
+            q.y + qw[2] * dt,
+            q.z + qw[3] * dt,
+        );
+        return Ok(next.normalize()?);
+    }
+    crate::madgwick::madgwick_imu_step(q, gyro, accel, beta, dt).map_err(|e| match e {
+        crate::madgwick::MadgwickAhrsError::InvalidDt => AhrsError::InvalidDt,
+        crate::madgwick::MadgwickAhrsError::InvalidBeta => AhrsError::InvalidDt,
+        crate::madgwick::MadgwickAhrsError::NonFinite => AhrsError::NonFinite,
+        crate::madgwick::MadgwickAhrsError::NormalizationFailed => AhrsError::NormalizationFailed,
+    })
 }
 
 impl MadgwickAhrs {
