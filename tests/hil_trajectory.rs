@@ -1,5 +1,6 @@
 use core::f32::consts::PI;
-use stm32_navcore::ekf::{NavEkf, StationaryDetector};
+use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::StationaryDetector;
 use stm32_navcore::math::{pressure_hpa_to_altitude_m, tilt_compensated_yaw, Mat, Quaternion};
 use stm32_navcore::protocol::NavTelemetry;
 
@@ -63,7 +64,8 @@ fn altitude_to_pressure_hpa(alt_m: f32, p0_hpa: f32) -> f32 {
 #[test]
 fn test_cortex_m4f_stack_and_state_footprint_invariants() {
     // Size check removed (pinned in tests/public_api.rs)
-    assert!(core::mem::size_of::<StationaryDetector>() <= 64);
+    // Cortex-M4F stack limit for sliding-window detector buffer
+    assert!(core::mem::size_of::<StationaryDetector>() <= 384);
     assert!(core::mem::size_of::<NavTelemetry>() <= 128);
 }
 
@@ -71,7 +73,13 @@ fn test_cortex_m4f_stack_and_state_footprint_invariants() {
 fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
     let mut rng = XorShift64::new(1337);
     let mut ekf = NavEkf::new();
-    let mut zupt_detector = StationaryDetector::new(10, 0.05, 0.03);
+    let mut zupt_detector = StationaryDetector::new(stm32_navcore::ZuptConfig {
+        accel_var_thresh: 0.05,
+        gyro_norm_thresh: 0.03,
+        accel_mag_thresh: 0.35,
+        min_stance_samples: 5,
+        gravity_magnitude: 9.80665,
+    }).unwrap();
 
     let total_steps = 4000;
     let dt = 0.01f32;
@@ -193,7 +201,7 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         ekf.predict(meas_accel_b, meas_gyro_b, dt)
             .expect("EKF predict must succeed");
 
-        let is_stationary = zupt_detector.update(meas_accel_b, meas_gyro_b);
+        let is_stationary = zupt_detector.update(meas_accel_b, meas_gyro_b).unwrap_or(false);
         if is_stationary && t < 4.5 {
             let _ = ekf.update_zupt(0.001, 25.0);
             stationary_zupt_count += 1;
