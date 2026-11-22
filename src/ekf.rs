@@ -709,12 +709,6 @@ mod tests {
     }
 }
 
-
-
-
-
-
-
 impl NavEkf {
     pub fn update_zupt(&mut self, r_zupt: f32, gate: f32) -> Result<[f32; 3], EkfError> {
         let mut trial = *self;
@@ -743,7 +737,8 @@ mod zupt_tests {
             accel_mag_thresh: 0.35,
             min_stance_samples: 1,
             gravity_magnitude: 9.80665,
-        }).unwrap();
+        })
+        .unwrap();
         let accel = [0.0, 0.0, -9.80665];
         let gyro = [0.001, -0.001, 0.0];
         let mut detected = false;
@@ -767,7 +762,8 @@ mod zupt_tests_dynamic {
             accel_mag_thresh: 0.35,
             min_stance_samples: 1,
             gravity_magnitude: 9.80665,
-        }).unwrap();
+        })
+        .unwrap();
         let accel = [2.5, 0.0, -9.8];
         let gyro = [0.2, 0.0, 0.0];
         let mut detected = false;
@@ -808,7 +804,8 @@ mod zupt_tests_drift {
             accel_mag_thresh: 0.35,
             min_stance_samples: 1,
             gravity_magnitude: 9.80665,
-        }).unwrap();
+        })
+        .unwrap();
         let dt = 0.01;
         let accel = [0.0005, -0.0005, -9.80665];
         let gyro = [0.0, 0.0, 0.0];

@@ -68,7 +68,9 @@ pub mod body_rot;
 pub mod butterworth;
 pub mod ekf;
 /// Zero-velocity detector over a sliding window of accelerometer and gyro samples.
-pub use zupt::{DefaultZuptDetector, StancePhase, ZuptConfig, ZuptDetector, ZuptError, ZuptMetrics};
+pub use zupt::{
+    DefaultZuptDetector, StancePhase, ZuptConfig, ZuptDetector, ZuptError, ZuptMetrics,
+};
 pub type StationaryDetector = ZuptDetector<10>;
 pub mod fdir;
 pub mod geo;

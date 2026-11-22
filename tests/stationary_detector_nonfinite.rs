@@ -12,7 +12,9 @@ fn nan_gyro_window_is_not_stationary() {
     .unwrap();
     let mut stationary = false;
     for _ in 0..5 {
-        stationary = detector.update([0.0, 0.0, -9.80665], [f32::NAN; 3]).unwrap_or(false);
+        stationary = detector
+            .update([0.0, 0.0, -9.80665], [f32::NAN; 3])
+            .unwrap_or(false);
     }
     assert!(
         !stationary,
@@ -32,7 +34,9 @@ fn nonfinite_accel_window_is_rejected_and_not_stationary() {
     .unwrap();
     let mut stationary = false;
     for _ in 0..5 {
-        stationary = detector.update([f32::NAN, 0.0, -9.80665], [0.0; 3]).unwrap_or(false);
+        stationary = detector
+            .update([f32::NAN, 0.0, -9.80665], [0.0; 3])
+            .unwrap_or(false);
     }
     assert!(
         !stationary,
