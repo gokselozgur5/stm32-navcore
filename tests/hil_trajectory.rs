@@ -1,8 +1,8 @@
 use core::f32::consts::PI;
 use stm32_navcore::ekf::NavEkf;
-use stm32_navcore::StationaryDetector;
 use stm32_navcore::math::{pressure_hpa_to_altitude_m, tilt_compensated_yaw, Mat, Quaternion};
 use stm32_navcore::protocol::NavTelemetry;
+use stm32_navcore::StationaryDetector;
 
 struct XorShift64 {
     state: u64,
@@ -79,7 +79,8 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         accel_mag_thresh: 0.35,
         min_stance_samples: 5,
         gravity_magnitude: 9.80665,
-    }).unwrap();
+    })
+    .unwrap();
 
     let total_steps = 4000;
     let dt = 0.01f32;
@@ -201,7 +202,9 @@ fn test_multimodal_flight_hil_trajectory_with_baro_zupt_and_outage() {
         ekf.predict(meas_accel_b, meas_gyro_b, dt)
             .expect("EKF predict must succeed");
 
-        let is_stationary = zupt_detector.update(meas_accel_b, meas_gyro_b).unwrap_or(false);
+        let is_stationary = zupt_detector
+            .update(meas_accel_b, meas_gyro_b)
+            .unwrap_or(false);
         if is_stationary && t < 4.5 {
             let _ = ekf.update_zupt(0.001, 25.0);
             stationary_zupt_count += 1;
