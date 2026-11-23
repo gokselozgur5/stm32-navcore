@@ -6,7 +6,7 @@ fn low_cutoff_ratio_is_rejected_or_stays_bounded() {
         let mut peak = 0.0f32;
         for _ in 0..40_000 {
             let y = filter.update(1.0).abs();
-            if y > peak {
+            if y.is_nan() || y > peak {
                 peak = y;
             }
         }
