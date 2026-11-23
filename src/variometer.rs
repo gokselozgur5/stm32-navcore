@@ -130,7 +130,13 @@ impl Variometer {
 
 impl Default for Variometer {
     fn default() -> Self {
-        Self::new(VariometerConfig::default()).expect("default config is valid")
+        Self {
+            config: VariometerConfig::default(),
+            raw_altitude_m: 0.0,
+            filtered_altitude_m: 0.0,
+            vertical_speed_mps: 0.0,
+            initialized: false,
+        }
     }
 }
 
