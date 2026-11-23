@@ -148,8 +148,11 @@ impl PitotTasEstimator {
     }
 
     /// Create new estimator with custom calibration factor.
-    pub const fn with_factor(pitot_factor: f32) -> Self {
-        Self { pitot_factor }
+    pub fn with_factor(pitot_factor: f32) -> Result<Self, PitotError> {
+        if !pitot_factor.is_finite() || pitot_factor <= 0.0 {
+            return Err(PitotError::InvalidFactor);
+        }
+        Ok(Self { pitot_factor })
     }
 }
 
