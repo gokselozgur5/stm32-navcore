@@ -5,7 +5,7 @@ edition = "2021"
 license = "MIT"
 description = "Navigation core library for STM32."
 repository = "https://github.com/gokselozgur5/stm32-navcore"
-rust-version = "1.75"
+rust-version = "1.85"
 
 [dependencies]
 libm = { version = "0.2", default-features = false }
