@@ -51,8 +51,8 @@ fn compute_wmm_harmonics(
     }
 }
 
-#[inline]
-fn accumulate_wmm_order(
+#[derive(Clone, Copy, Debug)]
+struct WmmOrderInput {
     n: usize,
     m: usize,
     ar: f32,
@@ -60,22 +60,27 @@ fn accumulate_wmm_order(
     dp_val: f32,
     cp_m: f32,
     sp_m: f32,
-    bt: &mut f32,
-    bp: &mut f32,
-    br: &mut f32,
-) {
-    let par = ar * p_val;
-    let (t1, t2) = if m == 0 {
-        (WMM2020_COEFFS[m][n] * cp_m, WMM2020_COEFFS[m][n] * sp_m)
+}
+
+#[inline]
+fn accumulate_wmm_order(input: WmmOrderInput, bt: &mut f32, bp: &mut f32, br: &mut f32) {
+    let par = input.ar * input.p_val;
+    let (t1, t2) = if input.m == 0 {
+        (
+            WMM2020_COEFFS[input.m][input.n] * input.cp_m,
+            WMM2020_COEFFS[input.m][input.n] * input.sp_m,
+        )
     } else {
         (
-            WMM2020_COEFFS[m][n] * cp_m + WMM2020_COEFFS[n][m - 1] * sp_m,
-            WMM2020_COEFFS[m][n] * sp_m - WMM2020_COEFFS[n][m - 1] * cp_m,
+            WMM2020_COEFFS[input.m][input.n] * input.cp_m
+                + WMM2020_COEFFS[input.n][input.m - 1] * input.sp_m,
+            WMM2020_COEFFS[input.m][input.n] * input.sp_m
+                - WMM2020_COEFFS[input.n][input.m - 1] * input.cp_m,
         )
     };
-    *bt -= ar * t1 * dp_val;
-    *bp += (m as f32) * t2 * par;
-    *br += ((n + 1) as f32) * t1 * par;
+    *bt -= input.ar * t1 * input.dp_val;
+    *bp += (input.m as f32) * t2 * par;
+    *br += ((input.n + 1) as f32) * t1 * par;
 }
 
 #[inline]
@@ -132,13 +137,15 @@ fn eval_wmm_field(lat_deg: f32, lon_deg: f32) -> f32 {
         compute_wmm_harmonics(n, st, ct, &mut p, &mut dp, &mut pp);
         for m in 0..=n {
             accumulate_wmm_order(
-                n,
-                m,
-                ar,
-                p[n + m * 13],
-                dp[m][n],
-                cp[m],
-                sp[m],
+                WmmOrderInput {
+                    n,
+                    m,
+                    ar,
+                    p_val: p[n + m * 13],
+                    dp_val: dp[m][n],
+                    cp_m: cp[m],
+                    sp_m: sp[m],
+                },
                 &mut bt,
                 &mut bp,
                 &mut br,
