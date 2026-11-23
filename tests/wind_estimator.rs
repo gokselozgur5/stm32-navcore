@@ -113,13 +113,13 @@ fn test_wind_estimator_reset_and_from_course() {
 
 #[test]
 fn test_wind_correction_angle_and_bearing() {
-    // Ground track 045 deg, aircraft heading 040 deg -> drift +5 deg
+    // Ground track (course) 045 deg, aircraft heading 040 deg -> WCA = heading - course = -5 deg
     let course = 45.0 * PI / 180.0;
     let heading = 40.0 * PI / 180.0;
     let wca = wind_correction_angle_rad(course, heading).unwrap();
-    assert!((wca - (5.0 * PI / 180.0)).abs() < 1e-5);
+    assert!((wca - (-5.0 * PI / 180.0)).abs() < 1e-5);
 
-    // Negative drift angle
-    let wca_neg = wind_correction_angle_rad(heading, course).unwrap();
-    assert!((wca_neg - (-5.0 * PI / 180.0)).abs() < 1e-5);
+    // Opposite drift angle
+    let wca_pos = wind_correction_angle_rad(heading, course).unwrap();
+    assert!((wca_pos - (5.0 * PI / 180.0)).abs() < 1e-5);
 }
