@@ -10,8 +10,8 @@ The only dependency is `libm`. Library code never touches `std` or the heap.
 
 | Module | Purpose | Precision |
 | --- | --- | --- |
-| `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading | f64 |
-| `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating | f64 |
+| `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading | f32 |
+| `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating | f32 |
 | `ins_strapdown` | Deterministic INS strapdown integration and Coriolis compensator | f64 |
 | `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames | f32 |
 | `fdir` | Dual-IMU fault detection and switchover (`DualImuManager`) | f32 |
@@ -56,16 +56,17 @@ UART frames are COBS-encoded and terminated by `0x00`. CAN frames use 29-bit ext
 
 ## HIL trajectory results
 
-`tests/hil_trajectory.rs` runs a deterministic 60 s figure-eight (100 Hz IMU, 10 Hz magnetometer, 5 Hz GNSS) with a 5 s GNSS outage.
+`tests/hil_trajectory.rs` runs a deterministic 40 s flight trajectory (4000 steps at 100 Hz IMU, 10 Hz magnetometer and baro, 5 Hz GNSS) with a 10 s GNSS outage from 20 s to 30 s.
 
-Every epoch is round-tripped through the COBS/CRC-16 UART and CAN 2.0B codecs.
+Every epoch is round-tripped through the COBS/CRC-16 UART codec.
 
 | Metric | Measured | Test bound |
 | --- | --- | --- |
-| Horizontal position RMSE under GNSS lock | 0.060 m | < 1.0 m |
-| Max position drift during 5 s outage | 0.094 m | < 5.0 m |
-| Position error after reacquisition | 0.010 m | < 1.0 m |
-| Gyro Z bias error at end of flight | 0.000038 rad/s | < 0.005 rad/s |
+| Stationary ZUPT detection count | 437 | > 0 |
+| Horizontal position covariance growth across 10 s outage | 71.51 m^2 | post-outage > pre-outage |
+| Vertical position drift aided by baro during 10 s outage | 0.481 m | < 1.0 m |
+| Gyro Z bias error at end of flight | 0.000137 rad/s | < 0.005 rad/s |
+| Final horizontal position error under GNSS lock | 0.049 m | < 1.0 m |
 
 Measured on a host build with a fixed `XorShift64` seed, so the values are reproducible.
 
