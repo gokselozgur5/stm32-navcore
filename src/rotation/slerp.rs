@@ -1,13 +1,18 @@
-//! Quaternion interpolation.
+//! Quaternion interpolation along shortest geodesic path.
 
 use crate::math::{MathError, Quaternion};
 
-fn dot(a: &Quaternion, b: &Quaternion) -> f32 {
+/// Compute dot product between two quaternions.
+#[inline]
+pub fn dot(a: &Quaternion, b: &Quaternion) -> f32 {
     a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z
 }
 
 /// Normalized linear interpolation along the shortest path.
 pub fn nlerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathError> {
+    if !t.is_finite() {
+        return Err(MathError::InvalidNorm);
+    }
     let a = a.normalize()?;
     let b = b.normalize()?;
     let s = if dot(&a, &b) < 0.0 { -1.0 } else { 1.0 };
@@ -22,8 +27,11 @@ pub fn nlerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathE
 
 /// Spherical linear interpolation along the shortest path.
 ///
-/// Returns `a` for `t <= 0` and `b` for `t >= 1`.
+/// Clamps `t <= 0.0` to `a` and `t >= 1.0` to `b`.
 pub fn slerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathError> {
+    if !t.is_finite() {
+        return Err(MathError::InvalidNorm);
+    }
     let a = a.normalize()?;
     let b = b.normalize()?;
     if t <= 0.0 {
@@ -34,10 +42,11 @@ pub fn slerp(a: &Quaternion, b: &Quaternion, t: f32) -> Result<Quaternion, MathE
     }
     let d = dot(&a, &b);
     let s = if d < 0.0 { -1.0 } else { 1.0 };
-    if d * s > 0.9995 {
+    let cos_t = (d * s).clamp(-1.0, 1.0);
+    if cos_t > 0.9995 {
         return nlerp(&a, &b, t);
     }
-    let theta = libm::acosf(d * s);
+    let theta = libm::acosf(cos_t);
     let k = 1.0 / libm::sinf(theta);
     let (wa, wb) = (
         libm::sinf((1.0 - t) * theta) * k,
