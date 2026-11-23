@@ -27,6 +27,11 @@ fn test_high_subsonic_compressibility() {
     assert!(cas < ias);
     let mach = impact_pressure_to_mach(q, STANDARD_PRESSURE_PA).unwrap();
     assert!(mach > 0.4 && mach < 0.5);
+
+    assert_eq!(
+        calibrated_airspeed(95000.0),
+        Err(AirspeedError::SupersonicFlow)
+    );
 }
 
 #[test]
