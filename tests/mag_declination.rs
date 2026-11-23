@@ -74,3 +74,25 @@ fn normalize_lon_deg_large_input_terminates() {
     let done = rx.recv_timeout(Duration::from_millis(500));
     assert!(done.is_ok(), "normalize_lon_deg(1.0e20) did not return");
 }
+
+#[test]
+fn test_wmm_repro_60s_90e() {
+    let est = estimate_wmm2020(-60.0, 90.0).unwrap();
+    assert!(
+        est.declination_deg >= -75.0 && est.declination_deg <= -65.0,
+        "declination at 60S 90E = {}",
+        est.declination_deg
+    );
+}
+
+#[test]
+fn test_wmm_seam_continuity_antimeridian() {
+    let east = estimate_wmm2020(10.0, 180.0).unwrap();
+    let west = estimate_wmm2020(10.0, -180.0).unwrap();
+    assert!(
+        (east.declination_deg - west.declination_deg).abs() < 1e-3,
+        "antimeridian declination discontinuity: east={}, west={}",
+        east.declination_deg,
+        west.declination_deg
+    );
+}
