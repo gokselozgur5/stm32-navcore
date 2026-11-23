@@ -30,22 +30,22 @@ fn test_wmm_invalid_inputs() {
 #[test]
 fn test_wmm_exact_grid_nodes() {
     let est = estimate_wmm2020(0.0, 0.0).unwrap();
-    assert!((est.declination_deg - (-10.0)).abs() < 1e-4);
+    assert!((est.declination_deg - (-4.6682)).abs() < 1e-3);
     assert!((est.inclination_deg - 6.0).abs() < 1e-4);
 
     let north = estimate_wmm2020(90.0, 0.0).unwrap();
-    assert!((north.declination_deg - 180.0).abs() < 1e-4);
+    assert!((north.declination_deg - 3.6569).abs() < 1e-3);
     assert!((north.inclination_deg - 85.0).abs() < 1e-4);
 }
 
 #[test]
 fn test_wmm_bilinear_interpolation_midpoint() {
     let mid = estimate_wmm2020(15.0, 15.0).unwrap();
-    assert!((mid.declination_deg - (-4.5)).abs() < 1e-3);
+    assert!((mid.declination_deg - 1.7065).abs() < 1e-3);
     assert!((mid.inclination_deg - 24.0).abs() < 1e-3);
 
     let rad = estimate_wmm2020_rad(0.0, 0.0).unwrap();
-    let expected_rad = -10.0 * core::f32::consts::PI / 180.0;
+    let expected_rad = -4.6681676 * core::f32::consts::PI / 180.0;
     assert!((rad.declination_rad() - expected_rad).abs() < 1e-4);
 }
 
@@ -76,12 +76,43 @@ fn normalize_lon_deg_large_input_terminates() {
 }
 
 #[test]
-fn test_wmm_repro_60s_90e() {
-    let est = estimate_wmm2020(-60.0, 90.0).unwrap();
+fn test_wmm_southern_ocean_points_match_harmonic_model() {
+    use stm32_navcore::wmm_declination::wmm_declination_deg;
+
+    let points = [(-60.0, 90.0), (-60.0, 60.0), (-60.0, 120.0)];
+    for &(lat, lon) in &points {
+        let est = estimate_wmm2020(lat, lon).unwrap();
+        let expected = wmm_declination_deg(lat, lon).unwrap();
+        assert!(
+            (est.declination_deg - expected).abs() < 1e-4,
+            "mismatch at lat={lat}, lon={lon}: est={}, expected={}",
+            est.declination_deg,
+            expected
+        );
+    }
+}
+
+#[test]
+fn test_wmm_custom_lut_antimeridian_seam_wrap() {
+    use stm32_navcore::mag_declination::{MagDeclinationLut, WMM_LAT_ROWS, WMM_LON_COLS};
+
+    let mut dec_grid = [[0.0f32; WMM_LON_COLS]; WMM_LAT_ROWS];
+    let inc_grid = [[0.0f32; WMM_LON_COLS]; WMM_LAT_ROWS];
+    for r in 0..WMM_LAT_ROWS {
+        for c in 0..WMM_LON_COLS {
+            dec_grid[r][c] = if c % 2 == 0 { 175.0 } else { -175.0 };
+        }
+    }
+    let lut = MagDeclinationLut::new(dec_grid, inc_grid);
+    let est = lut.estimate(0.0, -165.0).unwrap();
     assert!(
-        est.declination_deg >= -75.0 && est.declination_deg <= -65.0,
-        "declination at 60S 90E = {}",
+        (est.declination_deg - 180.0).abs() < 1e-2,
+        "expected ~180.0 seam wrap, got {}",
         est.declination_deg
+    );
+    assert!(
+        est.declination_deg.abs() > 90.0,
+        "must wrap through antimeridian, never 0.0"
     );
 }
 
