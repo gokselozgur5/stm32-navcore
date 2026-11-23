@@ -147,6 +147,13 @@ fn test_stationary_rejection_on_motion() {
     assert!(!updated);
     assert_eq!(tracker.stationary_count(), 0);
     assert_eq!(tracker.bias(), [0.0; 3]);
+
+    // Coordinated turn rate (e.g. standard rate 3 deg/s = 0.052 rad/s) must not be stationary
+    let turn_sample = [0.0, 0.0, 0.052];
+    assert!(!tracker.is_stationary(turn_sample));
+    let turn_updated = tracker.update_stationary(turn_sample, 0.01).unwrap();
+    assert!(!turn_updated);
+    assert_eq!(tracker.stationary_count(), 0);
 }
 
 #[test]
