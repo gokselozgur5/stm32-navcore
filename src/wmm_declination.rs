@@ -41,10 +41,10 @@ fn compute_wmm_harmonics(
             dp[m][n] = ct * dp[m][n - 1] - st * p[n - 1 + m * 13] - k * dp[m][n - 2];
         }
         if st == 0.0 && m == 1 {
-            let k1 = (((n - 1) * (n - 1) - 1) as f32) / (((2 * n - 1) * (2 * n - 3)) as f32);
             pp[n] = if n == 1 {
                 pp[n - 1]
             } else {
+                let k1 = (((n - 1) * (n - 1) - 1) as f32) / (((2 * n - 1) * (2 * n - 3)) as f32);
                 ct * pp[n - 1] - k1 * pp[n - 2]
             };
         }
