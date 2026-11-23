@@ -124,27 +124,39 @@ pub fn wrap_pi(angle_rad: f32) -> f32 {
     wrapped - PI
 }
 
-/// Calculate instantaneous wind vector [North, East] in m/s from ground velocity and airspeed/heading.
-pub fn instantaneous_wind_vector(
+/// Calculate instantaneous wind vector [North, East] in m/s from ground velocity, 3D TAS, heading, and pitch.
+pub fn instantaneous_wind_vector_3d(
     ground_vel_ne: [f32; 2],
     tas_mps: f32,
     heading_rad: f32,
+    pitch_rad: f32,
 ) -> Result<[f32; 2], WindEstimatorError> {
     if !ground_vel_ne[0].is_finite()
         || !ground_vel_ne[1].is_finite()
         || !tas_mps.is_finite()
         || !heading_rad.is_finite()
+        || !pitch_rad.is_finite()
     {
         return Err(WindEstimatorError::NonFinite);
     }
     if tas_mps < 0.0 {
         return Err(WindEstimatorError::NegativeAirspeed);
     }
-    let v_air_n = tas_mps * libm::cosf(heading_rad);
-    let v_air_e = tas_mps * libm::sinf(heading_rad);
+    let horizontal_tas = tas_mps * libm::cosf(pitch_rad);
+    let v_air_n = horizontal_tas * libm::cosf(heading_rad);
+    let v_air_e = horizontal_tas * libm::sinf(heading_rad);
     let w_n = ground_vel_ne[0] - v_air_n;
     let w_e = ground_vel_ne[1] - v_air_e;
     Ok([w_n, w_e])
+}
+
+/// Calculate instantaneous wind vector [North, East] in m/s from ground velocity and airspeed/heading.
+pub fn instantaneous_wind_vector(
+    ground_vel_ne: [f32; 2],
+    tas_mps: f32,
+    heading_rad: f32,
+) -> Result<[f32; 2], WindEstimatorError> {
+    instantaneous_wind_vector_3d(ground_vel_ne, tas_mps, heading_rad, 0.0)
 }
 
 /// Calculate instantaneous wind vector [North, East] from ground speed, course track, TAS, and heading.
