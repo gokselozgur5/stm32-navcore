@@ -17,6 +17,8 @@ pub enum AirspeedError {
     NegativeAirspeed,
     /// Subsonic model exceeded (Mach >= 1.0).
     SupersonicFlow,
+    /// Pitot scale factor is non-positive or non-finite.
+    InvalidScale,
 }
 
 /// Standard sea-level pressure in Pa.
