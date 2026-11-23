@@ -7,6 +7,8 @@ pub enum LowPassError {
     InvalidCutoffFrequency,
     /// Sample interval must be positive and finite.
     InvalidSampleInterval,
+    /// Quality factor Q must be positive and finite.
+    InvalidQ,
 }
 
 /// First-order single-pole discrete IIR low-pass filter.
