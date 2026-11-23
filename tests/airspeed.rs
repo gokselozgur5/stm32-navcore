@@ -74,4 +74,8 @@ fn test_calculator_struct_and_errors() {
         calc.compute(1000.0, STANDARD_PRESSURE_PA, -50.0),
         Err(AirspeedError::InvalidTemperature)
     );
+    assert_eq!(
+        AirspeedCalculator::with_calibration(-1.0, 0.0),
+        Err(AirspeedError::InvalidScale)
+    );
 }
