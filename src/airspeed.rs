@@ -231,11 +231,20 @@ impl AirspeedCalculator {
     }
 
     /// Create calculator with custom calibration scale and static bias.
-    pub const fn with_calibration(pitot_scale: f32, static_bias_pa: f32) -> Self {
-        Self {
+    pub fn with_calibration(
+        pitot_scale: f32,
+        static_bias_pa: f32,
+    ) -> Result<Self, AirspeedError> {
+        if !pitot_scale.is_finite() || pitot_scale <= 0.0 {
+            return Err(AirspeedError::InvalidScale);
+        }
+        if !static_bias_pa.is_finite() {
+            return Err(AirspeedError::NonFinite);
+        }
+        Ok(Self {
             pitot_scale,
             static_bias_pa,
-        }
+        })
     }
 
     /// Compute complete airspeed and atmospheric state.
