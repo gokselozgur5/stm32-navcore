@@ -165,13 +165,13 @@ impl MagDeclinationLut {
 /// Baseline WMM2020 global declination grid in degrees (-90 to +90 lat, -180 to +180 lon).
 #[rustfmt::skip]
 pub const WMM2020_DECLINATION: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS] = [
-    [-60.0, -90.0, -120.0, -150.0, 180.0, 150.0, 120.0, 90.0, 60.0, 30.0, 0.0, -30.0, -60.0],
-    [25.0, 15.0, 5.0, -5.0, -15.0, -25.0, -30.0, -20.0, -10.0, -68.0, 15.0, 25.0, 25.0],
-    [15.0, 10.0, 5.0, -2.0, -10.0, -15.0, -18.0, -12.0, -5.0, 2.0, 10.0, 15.0, 15.0],
-    [10.0, 8.0, 3.0, -2.0, -8.0, -12.0, -10.0, -5.0, 1.0, 4.0, 6.0, 9.0, 10.0],
-    [8.0, 5.0, 2.0, -1.0, -5.0, -8.0, -4.0, 1.0, 3.0, 2.0, 4.0, 7.0, 8.0],
-    [5.0, 2.0, -5.0, -12.0, -20.0, -15.0, 0.0, 5.0, 8.0, 2.0, -1.0, 3.0, 5.0],
-    [0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, -150.0, -120.0, -90.0, -60.0, -30.0, 0.0],
+    [149.26, 119.26, 89.26, 59.26, 29.26, -0.74, -30.74, -60.74, -90.74, -120.74, -150.74, 179.26, 149.26],
+    [47.77, 43.46, 39.00, 28.44, 9.92, -5.59, -20.06, -42.05, -62.62, -74.79, -61.31, 42.85, 47.77],
+    [16.87, 17.60, 16.64, 13.14, -10.45, -24.47, -21.70, -25.72, -31.52, -16.05, 0.50, 10.88, 16.87],
+    [9.72, 9.34, 8.53, 3.01, -16.04, -17.30, -4.67, 1.72, -3.65, -1.92, 0.16, 5.00, 9.72],
+    [6.41, 11.33, 11.37, -1.06, -15.27, -9.62, 0.43, 4.49, 2.73, 0.11, -5.61, -3.31, 6.41],
+    [2.13, 15.61, 18.26, -7.00, -24.34, -15.21, -0.90, 11.14, 17.67, 7.13, -13.56, -11.65, 2.13],
+    [-176.34, -146.34, -116.34, -86.34, -56.34, -26.34, 3.66, 33.66, 63.66, 93.66, 123.66, 153.66, -176.34],
 ];
 
 /// Baseline WMM2020 global inclination grid in degrees (-90 to +90 lat, -180 to +180 lon).
@@ -190,13 +190,27 @@ pub const WMM2020_INCLINATION: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS] = [
 pub const WMM2020_LUT: MagDeclinationLut =
     MagDeclinationLut::new(WMM2020_DECLINATION, WMM2020_INCLINATION);
 
-/// Estimate magnetic declination and inclination in degrees using WMM2020 LUT.
+/// Estimate magnetic declination and inclination in degrees using WMM2020 LUT and harmonic model.
 #[inline]
 pub fn estimate_wmm2020(
     lat_deg: f32,
     lon_deg: f32,
 ) -> Result<MagFieldEstimate, MagDeclinationError> {
-    WMM2020_LUT.estimate(lat_deg, lon_deg)
+    if !lat_deg.is_finite() || !lon_deg.is_finite() {
+        return Err(MagDeclinationError::NonFinite);
+    }
+    if !(-90.0..=90.0).contains(&lat_deg) {
+        return Err(MagDeclinationError::InvalidLatitude);
+    }
+    if !(-360.0..=360.0).contains(&lon_deg) {
+        return Err(MagDeclinationError::InvalidLongitude);
+    }
+    let lon_norm = MagDeclinationLut::normalize_lon_deg(lon_deg);
+    let dec = crate::wmm_declination::wmm_declination_deg(lat_deg, lon_norm)
+        .map_err(|_| MagDeclinationError::NonFinite)?;
+    let (r0, r1, c0, c1, u, v) = MagDeclinationLut::cell_weights(lat_deg, lon_norm);
+    let inc = MagDeclinationLut::interp_2d(&WMM2020_LUT.inclination, r0, r1, c0, c1, u, v);
+    Ok(MagFieldEstimate::new(dec, inc))
 }
 
 /// Estimate magnetic declination and inclination from lat/lon in radians.
