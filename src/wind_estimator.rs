@@ -215,7 +215,7 @@ pub fn decompose_relative_wind(
     })
 }
 
-/// Calculate wind correction angle (drift angle) in radians: `WCA = course - heading`.
+/// Calculate wind correction angle (WCA) in radians: `WCA = heading - course`.
 pub fn wind_correction_angle_rad(
     course_rad: f32,
     heading_rad: f32,
@@ -223,7 +223,7 @@ pub fn wind_correction_angle_rad(
     if !course_rad.is_finite() || !heading_rad.is_finite() {
         return Err(WindEstimatorError::NonFinite);
     }
-    Ok(wrap_pi(course_rad - heading_rad))
+    Ok(wrap_pi(heading_rad - course_rad))
 }
 
 /// Stateful recursive low-pass wind vector estimator.
