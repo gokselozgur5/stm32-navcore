@@ -15,6 +15,8 @@ pub enum PitotError {
     NegativeAirspeed,
     /// Calculated density is non-positive or non-finite.
     InvalidDensity,
+    /// Pitot calibration factor is non-positive or non-finite.
+    InvalidFactor,
 }
 
 /// Standard sea-level atmospheric pressure in Pascals (1013.25 hPa).
