@@ -142,7 +142,11 @@ pub fn calibrated_airspeed(diff_p_pa: f32) -> Result<f32, AirspeedError> {
     if factor < 0.0 {
         return Ok(0.0);
     }
-    let cas = STANDARD_SPEED_OF_SOUND_MPS * libm::sqrtf(5.0 * factor);
+    let m2 = 5.0 * factor;
+    if m2 >= 1.0 {
+        return Err(AirspeedError::SupersonicFlow);
+    }
+    let cas = STANDARD_SPEED_OF_SOUND_MPS * libm::sqrtf(m2);
     Ok(cas)
 }
 
