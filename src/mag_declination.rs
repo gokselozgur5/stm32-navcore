@@ -95,7 +95,7 @@ impl MagDeclinationLut {
         (r0, r1, c0, c1, u, v)
     }
 
-    /// Bilinear interpolation over a 2D scalar grid.
+    /// Bilinear circular interpolation over a 2D angular grid in degrees.
     fn interp_2d(
         grid: &[[f32; WMM_LON_COLS]; WMM_LAT_ROWS],
         r0: usize,
@@ -105,11 +105,39 @@ impl MagDeclinationLut {
         u: f32,
         v: f32,
     ) -> f32 {
-        let p00 = grid[r0][c0];
-        let p01 = grid[r0][c1];
-        let p10 = grid[r1][c0];
-        let p11 = grid[r1][c1];
-        (1.0 - u) * ((1.0 - v) * p00 + v * p01) + u * ((1.0 - v) * p10 + v * p11)
+        let dtr = core::f32::consts::PI / 180.0;
+        let p00 = grid[r0][c0] * dtr;
+        let p01 = grid[r0][c1] * dtr;
+        let p10 = grid[r1][c0] * dtr;
+        let p11 = grid[r1][c1] * dtr;
+
+        let s00 = libm::sinf(p00);
+        let c00 = libm::cosf(p00);
+        let s01 = libm::sinf(p01);
+        let c01 = libm::cosf(p01);
+        let s10 = libm::sinf(p10);
+        let c10 = libm::cosf(p10);
+        let s11 = libm::sinf(p11);
+        let c11 = libm::cosf(p11);
+
+        let s = (1.0 - u) * ((1.0 - v) * s00 + v * s01) + u * ((1.0 - v) * s10 + v * s11);
+        let c = (1.0 - u) * ((1.0 - v) * c00 + v * c01) + u * ((1.0 - v) * c10 + v * c11);
+
+        if s == 0.0 && c == 0.0 {
+            let p00_deg = grid[r0][c0];
+            let p01_deg = grid[r0][c1];
+            let p10_deg = grid[r1][c0];
+            let p11_deg = grid[r1][c1];
+            (1.0 - u) * ((1.0 - v) * p00_deg + v * p01_deg)
+                + u * ((1.0 - v) * p10_deg + v * p11_deg)
+        } else {
+            let deg = libm::atan2f(s, c) / dtr;
+            if deg <= -180.0 + 1e-4 {
+                180.0
+            } else {
+                deg
+            }
+        }
     }
 
     /// Estimate magnetic field angular components using bilinear interpolation.
@@ -138,7 +166,7 @@ impl MagDeclinationLut {
 #[rustfmt::skip]
 pub const WMM2020_DECLINATION: [[f32; WMM_LON_COLS]; WMM_LAT_ROWS] = [
     [-60.0, -90.0, -120.0, -150.0, 180.0, 150.0, 120.0, 90.0, 60.0, 30.0, 0.0, -30.0, -60.0],
-    [25.0, 15.0, 5.0, -5.0, -15.0, -25.0, -30.0, -20.0, -10.0, 5.0, 15.0, 25.0, 25.0],
+    [25.0, 15.0, 5.0, -5.0, -15.0, -25.0, -30.0, -20.0, -10.0, -68.0, 15.0, 25.0, 25.0],
     [15.0, 10.0, 5.0, -2.0, -10.0, -15.0, -18.0, -12.0, -5.0, 2.0, 10.0, 15.0, 15.0],
     [10.0, 8.0, 3.0, -2.0, -8.0, -12.0, -10.0, -5.0, 1.0, 4.0, 6.0, 9.0, 10.0],
     [8.0, 5.0, 2.0, -1.0, -5.0, -8.0, -4.0, 1.0, 3.0, 2.0, 4.0, 7.0, 8.0],
