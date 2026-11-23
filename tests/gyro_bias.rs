@@ -154,6 +154,19 @@ fn test_stationary_rejection_on_motion() {
     let turn_updated = tracker.update_stationary(turn_sample, 0.01).unwrap();
     assert!(!turn_updated);
     assert_eq!(tracker.stationary_count(), 0);
+
+    // Repro 1: Existing bias must not allow coordinated turn to be falsely detected as stationary
+    tracker.set_bias([0.0, 0.0, 0.05]).unwrap();
+    assert!(!tracker.is_stationary(turn_sample));
+    let false_turn_updated = tracker.update_stationary(turn_sample, 0.01).unwrap();
+    assert!(!false_turn_updated);
+
+    // Repro 2: Existing large bias must not prevent true stationary sample from being accepted
+    tracker.set_bias([0.0, 0.0, 0.08]).unwrap();
+    let static_near_zero = [0.0, 0.0, 0.01];
+    assert!(tracker.is_stationary(static_near_zero));
+    let static_updated = tracker.update_stationary(static_near_zero, 0.01).unwrap();
+    assert!(static_updated);
 }
 
 #[test]

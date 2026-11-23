@@ -235,12 +235,11 @@ impl GyroBiasTracker {
 
     /// Determine whether a raw measurement indicates stationary conditions.
     pub fn is_stationary(&self, gyro_raw: [f32; 3]) -> bool {
-        let corrected = match self.correct(gyro_raw) {
-            Ok(c) => c,
-            Err(_) => return false,
-        };
+        if !gyro_raw[0].is_finite() || !gyro_raw[1].is_finite() || !gyro_raw[2].is_finite() {
+            return false;
+        }
         let mag_sq =
-            corrected[0] * corrected[0] + corrected[1] * corrected[1] + corrected[2] * corrected[2];
+            gyro_raw[0] * gyro_raw[0] + gyro_raw[1] * gyro_raw[1] + gyro_raw[2] * gyro_raw[2];
         let thresh = self.config.stationary_threshold_rad_s;
         mag_sq <= thresh * thresh
     }
