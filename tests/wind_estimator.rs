@@ -39,6 +39,17 @@ fn test_wind_triangle_geometry_crosswind() {
 }
 
 #[test]
+fn test_instantaneous_wind_vector_with_pitch_projection() {
+    // Aircraft climbing at 30 deg pitch, heading North (psi = 0) with 30 m/s TAS.
+    // In zero wind, horizontal ground speed is tas * cos(30 deg) = 25.98076 m/s.
+    let pitch_rad = 30.0 * PI / 180.0;
+    let ground_vel_ne = [30.0 * libm::cosf(pitch_rad), 0.0];
+    let w_vec = instantaneous_wind_vector_3d(ground_vel_ne, 30.0, 0.0, pitch_rad).unwrap();
+    assert!(w_vec[0].abs() < 1e-5, "wind north: {}", w_vec[0]);
+    assert!(w_vec[1].abs() < 1e-5, "wind east: {}", w_vec[1]);
+}
+
+#[test]
 fn test_wind_estimator_input_validation_config() {
     let mut cfg = WindEstimatorConfig {
         time_constant_s: 0.0,
