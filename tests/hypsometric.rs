@@ -47,7 +47,7 @@ fn test_integration_density_altitude_and_errors() {
             STANDARD_SEA_LEVEL_TEMP_K + 10.0,
         )
         .unwrap();
-    assert!(da > 1000.0 && da < 1300.0);
+    assert!((da - 365.76).abs() < 1.0, "da at +10 K = {da}");
 
     assert_eq!(
         comp.density_altitude(0.0, 288.15),
