@@ -29,7 +29,7 @@ const MAX_FINAL_ERROR_M: f32 = 0.5;
 /// The alternating +/-0.3 m offset stands in for measurement noise, so the
 /// example is reproducible without a random number generator.
 fn gnss_fix(k: usize) -> [f32; 3] {
-    let offset = if k.is_multiple_of(2) { 0.3 } else { -0.3 };
+    let offset = if k % 2 == 0 { 0.3 } else { -0.3 };
     [offset, -offset, 0.0]
 }
 
@@ -52,12 +52,12 @@ fn main() {
         if let Err(e) = ekf.predict(STATIC_ACCEL_MPS2, STATIC_GYRO_RADS, dt_s) {
             panic!("predict rejected sample {step}: {e:?}");
         }
-        if step.is_multiple_of(GNSS_EVERY_N_IMU) {
+        if step % GNSS_EVERY_N_IMU == 0 {
             ekf.update_gnss_pos(gnss_fix(fix_index), GNSS_POS_VAR_M2, NIS_GATE)
                 .expect("GNSS update rejected");
             fix_index += 1;
         }
-        if step.is_multiple_of(IMU_RATE_HZ as usize) {
+        if step % (IMU_RATE_HZ as usize) == 0 {
             print_estimate(step as f32 * dt_s, &ekf);
         }
     }
