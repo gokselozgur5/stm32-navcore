@@ -309,8 +309,8 @@ impl TempLapseCompensator {
         )?;
         let isa_t = Self::isa_temperature_at_altitude(pressure_alt)?;
         let delta_isa = measured_temp_k - isa_t;
-        // Density altitude approximation: 118.8 m per 1 K temperature delta.
-        Ok(pressure_alt + 118.8 * delta_isa)
+        // Density altitude approximation: 120.0 ft/K = 36.576 m per 1 K temperature delta.
+        Ok(pressure_alt + 36.576 * delta_isa)
     }
 }
 
