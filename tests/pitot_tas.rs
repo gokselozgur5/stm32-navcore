@@ -71,4 +71,9 @@ fn test_diff_pressure_conversions_and_estimator() {
     assert!((r.ias_mps - 14.142).abs() < 0.05);
     assert!((r.tas_mps - 14.142).abs() < 0.05);
     assert!((r.dynamic_pressure_pa - dp).abs() < 1e-4);
+
+    assert_eq!(
+        PitotTasEstimator::with_factor(-1.0),
+        Err(PitotError::InvalidFactor)
+    );
 }
