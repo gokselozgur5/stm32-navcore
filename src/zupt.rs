@@ -254,7 +254,24 @@ pub type DefaultZuptDetector = ZuptDetector<16>;
 
 impl<const WINDOW: usize> Default for ZuptDetector<WINDOW> {
     fn default() -> Self {
-        Self::new(ZuptConfig::default()).expect("default ZuptConfig must be valid")
+        const {
+            assert!(WINDOW >= 2, "ZuptDetector WINDOW must be at least 2");
+        }
+        Self {
+            config: ZuptConfig::default(),
+            count: 0,
+            head: 0,
+            stance_streak: 0,
+            accel_buf: [[0.0; 3]; WINDOW],
+            gyro_buf: [[0.0; 3]; WINDOW],
+            current_metrics: ZuptMetrics {
+                accel_variance: 0.0,
+                max_gyro_norm: 0.0,
+                accel_mag_diff: 0.0,
+                test_statistic: 0.0,
+                phase: StancePhase::Moving,
+            },
+        }
     }
 }
 
