@@ -726,7 +726,6 @@ impl NavEkf {
 
 #[cfg(test)]
 mod zupt_tests {
-    use super::*;
     use crate::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
@@ -751,7 +750,6 @@ mod zupt_tests {
 
 #[cfg(test)]
 mod zupt_tests_dynamic {
-    use super::*;
     use crate::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
