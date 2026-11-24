@@ -2,6 +2,10 @@
 
 use crate::math::{MathError, Quaternion};
 
+pub use dot as quat_dot;
+pub use nlerp as quat_nlerp;
+pub use slerp as quat_slerp;
+
 /// Compute dot product between two quaternions.
 #[inline]
 pub fn dot(a: &Quaternion, b: &Quaternion) -> f32 {
