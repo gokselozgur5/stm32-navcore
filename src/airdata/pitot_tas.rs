@@ -109,13 +109,13 @@ pub fn diff_pressure_to_tas(
     if diff_pressure_pa < 0.0 {
         return Err(PitotError::NegativeDifferentialPressure);
     }
-    crate::airspeed::true_airspeed(diff_pressure_pa, static_pressure_pa, temp_k).map_err(
+    crate::airdata::airspeed::true_airspeed(diff_pressure_pa, static_pressure_pa, temp_k).map_err(
         |e| match e {
-            crate::airspeed::AirspeedError::NonFinite => PitotError::NonFinite,
-            crate::airspeed::AirspeedError::NegativeDifferentialPressure => {
+            crate::airdata::airspeed::AirspeedError::NonFinite => PitotError::NonFinite,
+            crate::airdata::airspeed::AirspeedError::NegativeDifferentialPressure => {
                 PitotError::NegativeDifferentialPressure
             }
-            crate::airspeed::AirspeedError::InvalidPressure => PitotError::InvalidPressure,
+            crate::airdata::airspeed::AirspeedError::InvalidPressure => PitotError::InvalidPressure,
             _ => PitotError::InvalidTemperature,
         },
     )
