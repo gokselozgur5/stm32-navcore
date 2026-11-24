@@ -5,7 +5,7 @@
 //!
 //! Run with `cargo run --example ubx_frame_parse`.
 
-use stm32_navcore::ubx::{
+use stm32_navcore::protocol::ubx::{
     ubx_checksum, UbxMessage, UbxNavPvt, UbxParser, UBX_CLASS_NAV, UBX_ID_NAV_PVT, UBX_NAV_PVT_LEN,
     UBX_SYNC_1, UBX_SYNC_2,
 };

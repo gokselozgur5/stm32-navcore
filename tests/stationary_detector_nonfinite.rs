@@ -1,4 +1,4 @@
-use stm32_navcore::{ZuptConfig, ZuptDetector};
+use stm32_navcore::nav::zupt::{ZuptConfig, ZuptDetector};
 
 #[test]
 fn nan_gyro_window_is_not_stationary() {

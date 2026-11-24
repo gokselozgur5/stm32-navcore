@@ -5,7 +5,7 @@
 //!
 //! Run with `cargo run --example ekf_predict_update`.
 
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::nav::NavEkf;
 
 /// IMU sample rate in Hz.
 const IMU_RATE_HZ: f32 = 100.0;

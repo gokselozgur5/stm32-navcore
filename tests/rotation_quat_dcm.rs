@@ -1,5 +1,5 @@
+use stm32_navcore::math::rotation::Dcm;
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::Dcm;
 
 fn max_err(a: &Quaternion, b: &Quaternion) -> f32 {
     let s = if a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z < 0.0 {
@@ -67,7 +67,7 @@ fn matrix_rotates_like_quaternion() {
 
 #[test]
 fn try_to_quaternion_validates_orthonormality() {
-    use stm32_navcore::rotation::RotationError;
+    use stm32_navcore::math::rotation::RotationError;
     let q = Quaternion::new(0.9, 0.1, -0.3, 0.2).normalize().unwrap();
     let d = Dcm::from_quaternion(&q).unwrap();
     assert!(d.try_to_quaternion().is_ok());
@@ -122,8 +122,8 @@ fn small_angle_rotations_round_trip() {
 
 #[test]
 fn non_finite_and_degenerate_inputs_rejected() {
+    use stm32_navcore::math::rotation::RotationError;
     use stm32_navcore::math::{Mat, MathError};
-    use stm32_navcore::rotation::RotationError;
     let nan_q = Quaternion::new(f32::NAN, 0.0, 0.0, 0.0);
     assert_eq!(Dcm::from_quaternion(&nan_q), Err(MathError::InvalidNorm));
     let zero_q = Quaternion::new(0.0, 0.0, 0.0, 0.0);

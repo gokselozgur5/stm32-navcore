@@ -1,4 +1,4 @@
-use stm32_navcore::rotation::so3_exp::{so3_exp_dcm, so3_log_dcm};
+use stm32_navcore::math::rotation::so3_exp::{so3_exp_dcm, so3_log_dcm};
 
 #[test]
 fn log_dcm_near_pi_retains_accuracy() {

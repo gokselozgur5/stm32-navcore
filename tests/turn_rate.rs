@@ -1,4 +1,4 @@
-use stm32_navcore::turn_rate::*;
+use stm32_navcore::nav::turn_rate::*;
 
 #[test]
 fn test_turn_rate_error_variants() {

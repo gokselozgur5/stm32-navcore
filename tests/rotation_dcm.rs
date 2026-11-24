@@ -1,5 +1,5 @@
+use stm32_navcore::math::rotation::{Dcm, RotationError};
 use stm32_navcore::math::Mat;
-use stm32_navcore::rotation::{Dcm, RotationError};
 
 fn rz(a: f32) -> Dcm {
     let (s, c) = (a.sin(), a.cos());

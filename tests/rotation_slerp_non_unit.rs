@@ -1,5 +1,5 @@
+use stm32_navcore::math::rotation::slerp::slerp;
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::slerp::slerp;
 
 #[test]
 fn slerp_normalizes_inputs_before_interpolating() {

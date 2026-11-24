@@ -1,6 +1,6 @@
+use stm32_navcore::math::rotation::orthonormalize::{skew, unskew};
+use stm32_navcore::math::rotation::{Dcm, RotationError};
 use stm32_navcore::math::{Mat, Quaternion};
-use stm32_navcore::rotation::orthonormalize::{skew, unskew};
-use stm32_navcore::rotation::{Dcm, RotationError};
 
 #[test]
 fn unskew_recovers_vector() {

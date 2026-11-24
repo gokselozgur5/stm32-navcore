@@ -1,4 +1,4 @@
-use stm32_navcore::wind_estimator::{WindEstimator, WindEstimatorConfig};
+use stm32_navcore::airdata::wind_estimator::{WindEstimator, WindEstimatorConfig};
 
 #[test]
 fn min_airspeed_above_wind_gate_is_a_valid_config() {

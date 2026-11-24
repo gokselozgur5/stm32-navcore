@@ -4,9 +4,9 @@
 use cortex_m_rt::entry;
 use cortex_m_semihosting::{debug, hprintln};
 use panic_halt as _;
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::attitude::MadgwickAhrs;
 use stm32_navcore::filters::MedianFilter;
-use stm32_navcore::madgwick::MadgwickAhrs;
+use stm32_navcore::nav::NavEkf;
 use stm32_navcore::protocol::NavTelemetry;
 
 #[entry]

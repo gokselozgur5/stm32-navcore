@@ -1,4 +1,4 @@
-use stm32_navcore::ubx::*;
+use stm32_navcore::protocol::ubx::*;
 
 fn pvt_with_flags(flags: u8) -> UbxNavPvt {
     let mut p = [0u8; 92];

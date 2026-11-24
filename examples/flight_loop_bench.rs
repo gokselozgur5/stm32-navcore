@@ -5,8 +5,8 @@
 
 use std::time::Instant;
 
-use stm32_navcore::ekf::NavEkf;
 use stm32_navcore::math::{tilt_compensated_yaw, Mat};
+use stm32_navcore::nav::NavEkf;
 use stm32_navcore::protocol::NavTelemetry;
 
 /// Performance timing and update acceptance summary for flight loop benchmark.

@@ -1,6 +1,6 @@
+use stm32_navcore::math::rotation::attitude_error::{attitude_error, attitude_error_vector};
+use stm32_navcore::math::rotation::so3_exp::so3_exp;
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::attitude_error::{attitude_error, attitude_error_vector};
-use stm32_navcore::rotation::so3_exp::so3_exp;
 
 fn base() -> Quaternion {
     Quaternion::new(0.7, 0.2, -0.5, 0.4).normalize().unwrap()

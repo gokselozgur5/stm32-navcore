@@ -1,4 +1,4 @@
-use stm32_navcore::wmm_declination::wmm_declination_deg;
+use stm32_navcore::geo::wmm_declination::wmm_declination_deg;
 
 // WMM2020 report test values, epoch 2020.0, altitude 0 km:
 //   lat 0, lon 120 E    -> D = 0.16 deg
