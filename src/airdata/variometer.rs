@@ -190,7 +190,7 @@ impl Variometer {
         if pressure_pa <= 0.0 {
             return Err(VariometerError::InvalidPressure);
         }
-        let alt_m = crate::baro_alt::altitude_from_pressure_isa(pressure_pa)
+        let alt_m = crate::airdata::baro_alt::altitude_from_pressure_isa(pressure_pa)
             .map_err(|_| VariometerError::InvalidPressure)?;
         self.update_altitude(alt_m, dt_s)
     }
@@ -210,7 +210,7 @@ impl Variometer {
         if pressure_pa <= 0.0 || qnh_pa <= 0.0 {
             return Err(VariometerError::InvalidPressure);
         }
-        let alt_m = crate::baro_alt::altitude_from_pressure_qnh(pressure_pa, qnh_pa)
+        let alt_m = crate::airdata::baro_alt::altitude_from_pressure_qnh(pressure_pa, qnh_pa)
             .map_err(|_| VariometerError::InvalidPressure)?;
         self.update_altitude(alt_m, dt_s)
     }
