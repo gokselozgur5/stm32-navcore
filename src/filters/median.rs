@@ -9,7 +9,9 @@ pub struct MedianFilter<const N: usize> {
 
 impl<const N: usize> MedianFilter<N> {
     pub const fn new() -> Self {
-        assert!(N > 0 && N % 2 == 1, "Window size must be odd");
+        const {
+            assert!(N > 0 && N % 2 == 1, "Window size must be odd");
+        }
         Self {
             buffer: [0.0; N],
             count: 0,
