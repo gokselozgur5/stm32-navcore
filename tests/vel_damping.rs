@@ -1,4 +1,4 @@
-use stm32_navcore::vel_damping::{VelDampingConfig, VelDampingError};
+use stm32_navcore::nav::vel_damping::{VelDampingConfig, VelDampingError};
 
 #[test]
 fn test_config_validation_and_errors() {
@@ -22,7 +22,7 @@ fn test_config_validation_and_errors() {
 
 #[test]
 fn test_damp_velocity_step_decay() {
-    use stm32_navcore::vel_damping::damp_velocity_step;
+    use stm32_navcore::nav::vel_damping::damp_velocity_step;
 
     let v0 = [10.0, -20.0, 5.0];
     let tau = 100.0;
@@ -43,7 +43,7 @@ fn test_damp_velocity_step_decay() {
 
 #[test]
 fn test_innovation_and_gate_outlier_rejection() {
-    use stm32_navcore::vel_damping::{calculate_innovation, fuse_velocity_step};
+    use stm32_navcore::nav::vel_damping::{calculate_innovation, fuse_velocity_step};
 
     let v_dr = [10.0, 0.0, 0.0];
     let v_gps = [13.0, 4.0, 0.0];
@@ -60,7 +60,7 @@ fn test_innovation_and_gate_outlier_rejection() {
 
 #[test]
 fn test_gps_fusion_convergence() {
-    use stm32_navcore::vel_damping::VelDampingFilter;
+    use stm32_navcore::nav::vel_damping::VelDampingFilter;
 
     let cfg = VelDampingConfig {
         tau_s: 1000.0,
@@ -84,7 +84,7 @@ fn test_gps_fusion_convergence() {
 
 #[test]
 fn test_dead_reckoning_outage_propagation() {
-    use stm32_navcore::vel_damping::VelDampingFilter;
+    use stm32_navcore::nav::vel_damping::VelDampingFilter;
 
     let cfg = VelDampingConfig {
         tau_s: 100.0,
@@ -106,7 +106,7 @@ fn test_dead_reckoning_outage_propagation() {
 
 #[test]
 fn test_step_and_non_finite_rejection() {
-    use stm32_navcore::vel_damping::VelDampingFilter;
+    use stm32_navcore::nav::vel_damping::VelDampingFilter;
 
     let cfg = VelDampingConfig::default();
     let mut filter = VelDampingFilter::new(cfg).unwrap();
@@ -126,7 +126,7 @@ fn test_step_and_non_finite_rejection() {
 
 #[test]
 fn test_reacquire_gps_when_not_valid() {
-    use stm32_navcore::vel_damping::VelDampingFilter;
+    use stm32_navcore::nav::vel_damping::VelDampingFilter;
 
     let mut filter = VelDampingFilter::new(VelDampingConfig::default()).unwrap();
     assert!(!filter.is_gps_valid());
@@ -140,7 +140,7 @@ fn test_reacquire_gps_when_not_valid() {
 
 #[test]
 fn constant_speed_flight_with_gps_does_not_decay() {
-    use stm32_navcore::vel_damping::VelDampingFilter;
+    use stm32_navcore::nav::vel_damping::VelDampingFilter;
 
     let cfg = VelDampingConfig::default();
     let mut filter = VelDampingFilter::with_initial_velocity(cfg, [20.0, 0.0, 0.0]).unwrap();

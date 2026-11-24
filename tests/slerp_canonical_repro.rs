@@ -1,7 +1,7 @@
 use stm32_navcore::attitude::attitude_slerp;
+use stm32_navcore::math::rotation::slerp::quat_slerp;
+use stm32_navcore::math::rotation::slerp::slerp as rotation_slerp;
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::slerp::slerp as rotation_slerp;
-use stm32_navcore::slerp::quat_slerp;
 
 #[test]
 fn test_three_slerp_paths_produce_identical_results_for_non_unit_quaternions() {

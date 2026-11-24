@@ -1,4 +1,4 @@
-use stm32_navcore::ubx::*;
+use stm32_navcore::protocol::ubx::*;
 
 fn relposned_frame() -> [u8; 72] {
     let mut f = [0u8; 72];

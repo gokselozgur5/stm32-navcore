@@ -1,6 +1,6 @@
+use stm32_navcore::math::rotation::so3_exp::{so3_exp, so3_exp_dcm, so3_log, so3_log_dcm};
+use stm32_navcore::math::rotation::{Dcm, RotationError};
 use stm32_navcore::math::{Mat, Quaternion};
-use stm32_navcore::rotation::so3_exp::{so3_exp, so3_exp_dcm, so3_log, so3_log_dcm};
-use stm32_navcore::rotation::{Dcm, RotationError};
 
 const AXES: [[f32; 3]; 4] = [
     [1.0, 0.0, 0.0],

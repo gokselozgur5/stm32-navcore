@@ -1,4 +1,4 @@
-use stm32_navcore::variometer::*;
+use stm32_navcore::airdata::variometer::*;
 
 #[test]
 fn test_unit_conversions_and_roundtrip() {

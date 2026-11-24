@@ -1,5 +1,5 @@
 use core::f32::consts::PI;
-use stm32_navcore::wind_estimator::*;
+use stm32_navcore::airdata::wind_estimator::*;
 
 #[test]
 fn test_wind_estimator_public_api_and_reexports() {

@@ -1,5 +1,5 @@
+use stm32_navcore::math::rotation::slerp::{nlerp, slerp};
 use stm32_navcore::math::Quaternion;
-use stm32_navcore::rotation::slerp::{nlerp, slerp};
 
 fn about_z(angle: f32) -> Quaternion {
     Quaternion::new((0.5 * angle).cos(), 0.0, 0.0, (0.5 * angle).sin())
