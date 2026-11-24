@@ -4,7 +4,7 @@
 //! vertical (VDOP), and time (TDOP) precision metrics computed
 //! from satellite line-of-sight unit vectors or azimuth/elevation.
 
-use crate::linalg::spd::spd_inverse;
+use crate::math::linalg::spd::spd_inverse;
 use crate::math::Mat;
 
 /// Errors produced during GNSS DOP metric computation.

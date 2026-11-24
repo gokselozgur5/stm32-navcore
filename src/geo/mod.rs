@@ -36,8 +36,34 @@ pub mod bowring;
 pub use bowring::ecef_to_lla;
 pub mod ned;
 pub use ned::{LtpFrame, Ned};
+pub mod ecef_ned;
+pub use ecef_ned::{
+    ecef_to_geodetic, ecef_to_ned, geodetic_to_ecef, geodetic_to_ned, ned_to_ecef, ned_to_geodetic,
+    EcefNedError, EcefPos, GeodeticPos, NedFrame, NedPos,
+};
+
+pub mod gravity_wgs84;
+pub use gravity_wgs84::{
+    gravity_ned, gravity_ned_f32, normal_gravity_elevation, normal_gravity_elevation_f32,
+    somigliana_surface, somigliana_surface_f32, SphericalHarmonicGravity, Wgs84GravityCalculator,
+    Wgs84GravityError,
+};
+
 pub mod gravity;
 pub use gravity::{normal_gravity, normal_gravity_surface};
+
+pub mod gravity_somigliana;
+
+pub mod mag_declination;
+pub use mag_declination::{
+    estimate_wmm2020, estimate_wmm2020_rad, magnetic_to_true_heading_rad, MagDeclinationError,
+    MagDeclinationLut, MagFieldEstimate, WMM2020_DECLINATION, WMM2020_INCLINATION, WMM2020_LUT,
+};
+
+pub mod wmm_declination;
+pub use wmm_declination::{
+    wmm_declination_deg, wmm_declination_rad, DeclinationError, DeclinationPolynomial,
+};
 
 pub mod bearing;
 pub use bearing::{initial_bearing_deg, initial_bearing_rad};

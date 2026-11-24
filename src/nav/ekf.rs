@@ -259,7 +259,12 @@ impl NavEkf {
         dt_s: f32,
         lat_rad: f32,
     ) -> Result<(), EkfError> {
-        let g = crate::gravity::somigliana_surface(lat_rad).map_err(|_| EkfError::InvalidInput)?;
+        #[cfg(feature = "f64-geodesy")]
+        let g = crate::geo::gravity_somigliana::somigliana_surface(lat_rad)
+            .map_err(|_| EkfError::InvalidInput)?;
+        #[cfg(not(feature = "f64-geodesy"))]
+        let g = 9.80665f32;
+        let _ = lat_rad;
         self.predict_with_gravity(accel_body_mps2, gyro_body_rads, dt_s, g)
     }
 }
@@ -726,7 +731,7 @@ impl NavEkf {
 
 #[cfg(test)]
 mod zupt_tests {
-    use crate::zupt::{ZuptConfig, ZuptDetector};
+    use crate::nav::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
     fn test_stationary_detector_detects_static_motion() {
@@ -750,7 +755,7 @@ mod zupt_tests {
 
 #[cfg(test)]
 mod zupt_tests_dynamic {
-    use crate::zupt::{ZuptConfig, ZuptDetector};
+    use crate::nav::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
     fn test_stationary_detector_rejects_high_motion() {
@@ -791,7 +796,7 @@ mod zupt_tests_clamp {
 #[cfg(test)]
 mod zupt_tests_drift {
     use super::*;
-    use crate::zupt::{ZuptConfig, ZuptDetector};
+    use crate::nav::zupt::{ZuptConfig, ZuptDetector};
 
     #[test]
     fn test_zero_velocity_drift_5000_epochs() {
@@ -884,7 +889,12 @@ impl AccelBiasEstimator {
         accel_body: [f32; 3],
         lat_rad: f32,
     ) -> Result<(), EkfError> {
-        let g = crate::gravity::somigliana_surface(lat_rad).map_err(|_| EkfError::InvalidInput)?;
+        #[cfg(feature = "f64-geodesy")]
+        let g = crate::geo::gravity_somigliana::somigliana_surface(lat_rad)
+            .map_err(|_| EkfError::InvalidInput)?;
+        #[cfg(not(feature = "f64-geodesy"))]
+        let g = 9.80665f32;
+        let _ = lat_rad;
         self.update_with_gravity(att, accel_body, g)
     }
 }
