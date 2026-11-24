@@ -1,4 +1,4 @@
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::nav::ekf::NavEkf;
 
 #[test]
 fn position_integrates_velocity_20_km_from_origin() {

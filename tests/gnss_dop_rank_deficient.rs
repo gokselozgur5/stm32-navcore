@@ -1,4 +1,4 @@
-use stm32_navcore::gnss_dop::{compute_dop, DopError, SatelliteLos};
+use stm32_navcore::nav::gnss_dop::{compute_dop, DopError, SatelliteLos};
 
 // Four unknowns (east, north, up, clock) need four independent rows.
 // Three distinct directions give a rank 3 geometry matrix.

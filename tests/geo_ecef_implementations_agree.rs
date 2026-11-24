@@ -1,4 +1,4 @@
-use stm32_navcore::ecef_ned::{ecef_to_geodetic, EcefPos};
+use stm32_navcore::geo::ecef_ned::{ecef_to_geodetic, EcefPos};
 use stm32_navcore::geo::{ecef_to_lla, Ecef};
 
 // Both functions implement the same Bowring conversion and must agree.

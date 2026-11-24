@@ -1,4 +1,4 @@
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::nav::ekf::NavEkf;
 
 fn block(d: f32, upper: f32, lower: f32) -> NavEkf {
     let mut e = NavEkf::new();

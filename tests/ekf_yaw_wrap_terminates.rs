@@ -1,6 +1,6 @@
 use std::sync::mpsc::channel;
 use std::time::Duration;
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::nav::ekf::NavEkf;
 
 #[test]
 fn large_finite_yaw_observation_returns() {

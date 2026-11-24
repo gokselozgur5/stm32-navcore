@@ -1,4 +1,4 @@
-use stm32_navcore::kinematics::*;
+use stm32_navcore::math::kinematics::*;
 use stm32_navcore::math::Quaternion;
 
 #[test]

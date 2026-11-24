@@ -1,5 +1,5 @@
 use stm32_navcore::geo::earth_rate::principal_radii_of_curvature;
-use stm32_navcore::ins_strapdown::meridian_radius;
+use stm32_navcore::nav::ins_strapdown::meridian_radius;
 
 #[test]
 fn test_ins_strapdown_uses_geo_helpers() {

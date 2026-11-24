@@ -1,4 +1,4 @@
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::nav::ekf::NavEkf;
 
 #[test]
 fn test_ekf_roll_pitch_bounded_under_gyro_bias() {
@@ -60,8 +60,8 @@ fn test_ekf_stationary_equator_gravity_drift_repro() {
 
 #[test]
 fn test_accel_bias_estimator_equator_gravity_repro() {
-    use stm32_navcore::ekf::AccelBiasEstimator;
     use stm32_navcore::math::Quaternion;
+    use stm32_navcore::nav::ekf::AccelBiasEstimator;
     let mut est = AccelBiasEstimator::new(1.0, 0.01);
     let g_eq = 9.780325f32;
     let accel = [0.0, 0.0, -g_eq];
@@ -96,8 +96,8 @@ fn test_ekf_predict_with_latitude() {
 
 #[test]
 fn test_accel_bias_estimator_update_with_latitude() {
-    use stm32_navcore::ekf::AccelBiasEstimator;
     use stm32_navcore::math::Quaternion;
+    use stm32_navcore::nav::ekf::AccelBiasEstimator;
     let mut est = AccelBiasEstimator::new(1.0, 0.01);
     let g_eq = 9.780325f32;
     let accel = [0.0, 0.0, -g_eq];
