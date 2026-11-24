@@ -11,14 +11,24 @@ The only dependency is `libm`, used for mathematical functions (trigonometry, sq
 
 ## Module map
 
-| Module | Source | Role |
+| Module | Source | Role | Feature Gate |
+| --- | --- | --- | --- |
+| `math` | `src/math/` | `Mat<R, C>`, `Quaternion`, kinematics, RK4 integration, SO(3) rotations | Core (always present) |
+| `attitude` | `src/attitude/` | Madgwick AHRS, Mahony AHRS, gyro bias tracking, attitude error | Core (always present) |
+| `nav` | `src/nav/` | `NavEkf`, strapdown INS, FDIR dual-IMU, ZUPT, turn rate, velocity damping | Core (always present) |
+| `airdata` | `src/airdata/` | Airspeed, pitot-static TAS/CAS, barometric altitude, variometer, wind estimator | Core (always present) |
+| `filters` | `src/filters/` | Butterworth, Biquad, Median, Low-pass, Alpha-Beta, Slew rate | Core (always present) |
+| `geo` | `src/geo/` | Geodesy ellipsoids, Somigliana/WGS-84 gravity, ECEF/NED transforms, WMM magnetic declination | `f64-geodesy` |
+| `sensors` | `src/sensors/` | Register codecs and scaling for BMI088, ICM-42688-P, DPS310, IST8310, Allan variance | `sensors` |
+| `protocol` | `src/protocol/` | COBS, CRC-16-CCITT, `NavTelemetry` UART/CAN framing, RC ESC protocols, UBX parser | `protocol` |
+
+## Cargo Features
+
+| Feature | Default | Description |
 | --- | --- | --- |
-| `math` | `src/math.rs` | `Mat<R, C>`, `Quaternion`, magnetometer calibration, tilt-compensated yaw |
-| `ekf` | `src/ekf.rs` | `NavEkf` error-state filter, scalar Joseph updates, stationary detector |
-| `fdir` | `src/fdir.rs` | `DualImuManager` chi-square comparison and primary/secondary switchover |
-| `sensors` | `src/sensors/` | Register codecs and scaling for BMI088, ICM-42688-P, DPS310, IST8310 |
-| `protocol` | `src/protocol/mod.rs`, `src/protocol/rc_esc.rs` | COBS, CRC-16-CCITT, `NavTelemetry` UART and CAN framing, calibration block, CRSF and DShot codecs |
-| `ubx` | `src/ubx.rs` | Streaming UBX parser for NAV-PVT and NAV-RELPOSNED |
+| `f64-geodesy` | Yes | Geodesy ellipsoids, gravity, and magnetic declination in `geo` |
+| `sensors` | Yes | Hardware sensor codecs and drivers in `sensors` |
+| `protocol` | Yes | Telemetry framing, UBX parser, and RC ESC protocols in `protocol` |
 
 ## Data flow
 

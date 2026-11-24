@@ -10,14 +10,24 @@ The only dependency is `libm`. Library code never touches `std` or the heap.
 
 | Module | Purpose | Precision |
 | --- | --- | --- |
-| `math` | Fixed-size `Mat<R, C>`, SO(3) `Quaternion`, tilt-compensated heading | f32 |
-| `ekf` | Joseph-form IMU/GNSS Extended Kalman Filter with NIS gating | f32 |
-| `ins_strapdown` | Deterministic INS strapdown integration and Coriolis compensator | f64 |
-| `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B and UART telemetry frames | f32 |
-| `fdir` | Dual-IMU fault detection and switchover (`DualImuManager`) | f32 |
-| `sensors` | Flight sensor drivers and codecs: BMI088, ICM-42688-P, DPS310, IST8310 | f32 |
-| `ubx` | Zero-alloc u-blox UBX parser for NAV-PVT and NAV-RELPOSNED | f32 |
-The crate root re-exports `StationaryDetector`, `DualImuManager`, `ImuId`, `ImuReading`, `CalibrationBlock`, `UbxMessage`, `UbxNavPvt`, `UbxNavRelPosNed`, and `UbxParser`.
+| `math` | Linear algebra (`Mat`), SO(3) `Quaternion`, kinematics, Runge-Kutta numerical integration | f32 |
+| `attitude` | Attitude estimation (Madgwick AHRS, Mahony AHRS, gyro bias tracking) | f32 |
+| `nav` | Extended Kalman Filter (`NavEkf`), strapdown INS, FDIR dual-IMU, ZUPT, turn rate, velocity damping | f32 / f64 |
+| `airdata` | Pitot-static indicated/true airspeed, barometric altitude, variometer, and wind triangle estimation | f32 |
+| `filters` | Signal conditioning (Butterworth, Biquad, Median, Low-pass, Alpha-Beta, Slew rate) | f32 |
+| `geo` | Geodesy ellipsoids, WGS-84 gravity (Somigliana/WGS-84), coordinate transforms (ECEF/NED), and WMM magnetic declination (feature: `f64-geodesy`) | f64 |
+| `sensors` | Flight sensor drivers and codecs: BMI088, ICM-42688-P, DPS310, IST8310, Allan variance (feature: `sensors`) | f32 |
+| `protocol` | COBS framing, CRC-16-CCITT, CAN 2.0B / UART telemetry, RC ESC protocols (CRSF/DShot), UBX binary parser (feature: `protocol`) | f32 |
+
+The crate root re-exports `StationaryDetector`, `DualImuManager`, `ImuId`, `ImuReading`, `NavEkf`, `ZuptConfig`, `ZuptDetector`, `MadgwickAhrs`, `MahonyAhrs`, `Mat`, `Vec3`, and `Quaternion`.
+
+## Cargo Features
+
+| Feature | Default | Description |
+| --- | --- | --- |
+| `f64-geodesy` | Yes | High-precision WGS-84 geodesy, ellipsoids, gravity, and magnetic declination (`geo` module) |
+| `sensors` | Yes | Flight sensor drivers and hardware codecs (`sensors` module) |
+| `protocol` | Yes | Telemetry framing, UBX GNSS parser, and RC ESC protocols (`protocol` module) |
 
 The data flow between these modules is described in [`docs/architecture.md`](docs/architecture.md).
 
