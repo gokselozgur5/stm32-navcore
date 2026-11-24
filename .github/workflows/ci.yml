@@ -33,7 +33,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install 1.99.0 --profile minimal --target thumbv7em-none-eabihf && rustup default 1.99.0
-      - run: cargo check --target thumbv7em-none-eabihf
+      - run: cargo build --release --target thumbv7em-none-eabihf
+      - run: sudo apt-get update && sudo apt-get install -y qemu-system-arm binutils-arm-none-eabi
+      - run: |
+          cd embedded/qemu-m4f-smoke
+          cargo build --release --target thumbv7em-none-eabihf
+          arm-none-eabi-size target/thumbv7em-none-eabihf/release/qemu-m4f-smoke
+          timeout 30s qemu-system-arm -cpu cortex-m4 -machine mps2-an386 -nographic -semihosting-config enable=on,target=native -kernel target/thumbv7em-none-eabihf/release/qemu-m4f-smoke
 
   msrv:
     runs-on: ubuntu-latest
