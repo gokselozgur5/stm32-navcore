@@ -3,6 +3,23 @@
 //! Rate samples are integrated into a phase record kept in a fixed ring
 //! buffer. Averaging factors are octave spaced (m = 1, 2, 4, ...).
 
+/// Error returned when initializing an [`AllanEstimator`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AllanError {
+    /// Sample period `tau0` is non-positive or non-finite.
+    InvalidSamplePeriod,
+}
+
+impl core::fmt::Display for AllanError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidSamplePeriod => {
+                write!(f, "Invalid sample period: tau0 must be finite and > 0.0")
+            }
+        }
+    }
+}
+
 /// Overlapping Allan variance over `L` octave levels, with a phase ring of `N`.
 pub struct AllanEstimator<const N: usize, const L: usize> {
     tau0: f64,
@@ -16,18 +33,33 @@ pub struct AllanEstimator<const N: usize, const L: usize> {
 impl<const N: usize, const L: usize> AllanEstimator<N, L> {
     /// Create an estimator for samples spaced `tau0` seconds apart.
     ///
-    /// Panics if the ring cannot hold `2 * 2^(L-1) + 1` phase values.
-    pub fn new(tau0: f64) -> Self {
-        assert!(L > 0 && L < 32 && tau0 > 0.0);
-        assert!(N > (2usize << (L - 1)));
-        Self {
+    /// Returns `Err(AllanError::InvalidSamplePeriod)` if `tau0` is non-positive or non-finite.
+    /// Enforces ring size and level bounds at compile time.
+    pub fn try_new(tau0: f64) -> Result<Self, AllanError> {
+        const {
+            assert!(
+                L > 0 && L < 32 && N > (2usize << (L - 1)),
+                "Invalid AllanEstimator configuration: L must be in 1..32 and N > 2^L"
+            );
+        }
+        if !tau0.is_finite() || tau0 <= 0.0 {
+            return Err(AllanError::InvalidSamplePeriod);
+        }
+        Ok(Self {
             tau0,
             phase: [0.0; N],
             acc: 0.0,
             samples: 0,
             sum: [0.0; L],
             count: [0; L],
-        }
+        })
+    }
+
+    /// Create an estimator for samples spaced `tau0` seconds apart.
+    ///
+    /// Panics if `tau0` is non-positive or non-finite.
+    pub fn new(tau0: f64) -> Self {
+        Self::try_new(tau0).expect("tau0 must be positive and finite")
     }
 }
 

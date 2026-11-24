@@ -57,7 +57,21 @@ fn counts_follow_tau_schedule() {
 }
 
 #[test]
-fn undersized_ring_panics() {
-    let result = std::panic::catch_unwind(|| AllanEstimator::<8, 3>::new(1.0));
-    assert!(result.is_err(), "undersized ring buffer must panic");
+fn try_new_validates_sample_period() {
+    use stm32_navcore::sensors::allan::AllanError;
+
+    let valid = AllanEstimator::<17, 3>::try_new(0.01);
+    assert!(valid.is_ok());
+
+    let zero = AllanEstimator::<17, 3>::try_new(0.0);
+    assert_eq!(zero.err(), Some(AllanError::InvalidSamplePeriod));
+
+    let negative = AllanEstimator::<17, 3>::try_new(-1.0);
+    assert_eq!(negative.err(), Some(AllanError::InvalidSamplePeriod));
+
+    let nan = AllanEstimator::<17, 3>::try_new(f64::NAN);
+    assert_eq!(nan.err(), Some(AllanError::InvalidSamplePeriod));
+
+    let inf = AllanEstimator::<17, 3>::try_new(f64::INFINITY);
+    assert_eq!(inf.err(), Some(AllanError::InvalidSamplePeriod));
 }
