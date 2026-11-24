@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::jacobi_eig::jacobi_eig;
+use stm32_navcore::math::linalg::jacobi_eig::jacobi_eig;
 use stm32_navcore::math::Mat;
 
 #[test]

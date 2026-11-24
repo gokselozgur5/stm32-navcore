@@ -1,5 +1,5 @@
 use core::f64::consts::PI;
-use stm32_navcore::ins_strapdown::{InsStrapdownIntegrator, StrapdownState};
+use stm32_navcore::nav::ins_strapdown::{InsStrapdownIntegrator, StrapdownState};
 use stm32_navcore::nav::{dead_reckoning_step, DeadReckoningState};
 
 #[test]

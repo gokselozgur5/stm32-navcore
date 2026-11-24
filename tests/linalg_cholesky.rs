@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::cholesky::cholesky;
+use stm32_navcore::math::linalg::cholesky::cholesky;
 use stm32_navcore::math::Mat;
 
 fn spd<const N: usize>() -> Mat<N, N> {
@@ -39,7 +39,7 @@ fn llt_reproduces_spd_6x6() {
 
 #[test]
 fn rejects_non_pd_and_non_finite() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut a = spd::<3>();
     a.0[1][1] = -1.0;
     assert_eq!(cholesky(&a), Err(LinalgError::NotPositiveDefinite));
@@ -52,7 +52,7 @@ fn rejects_non_pd_and_non_finite() {
 
 #[test]
 fn cholesky_det_reproduces_spd_determinant() {
-    use stm32_navcore::linalg::cholesky::cholesky_det;
+    use stm32_navcore::math::linalg::cholesky::cholesky_det;
     let a = spd::<3>();
     let l = cholesky(&a).unwrap();
     let det = cholesky_det(&l);
@@ -61,7 +61,7 @@ fn cholesky_det_reproduces_spd_determinant() {
 
 #[test]
 fn cholesky_log_det_matches_log_of_det() {
-    use stm32_navcore::linalg::cholesky::cholesky_log_det;
+    use stm32_navcore::math::linalg::cholesky::cholesky_log_det;
     let a = spd::<3>();
     let l = cholesky(&a).unwrap();
     let log_det = cholesky_log_det(&l);
@@ -71,7 +71,7 @@ fn cholesky_log_det_matches_log_of_det() {
 
 #[test]
 fn rejects_zero_matrix() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let z = Mat::<3, 3>::zeros();
     assert_eq!(cholesky(&z), Err(LinalgError::NotPositiveDefinite));
 }

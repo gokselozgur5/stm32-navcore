@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::norms::{infinity_norm, max_abs_norm, norm_inf};
+use stm32_navcore::math::linalg::norms::{infinity_norm, max_abs_norm, norm_inf};
 use stm32_navcore::math::Mat;
 
 #[test]

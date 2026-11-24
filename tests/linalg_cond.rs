@@ -1,7 +1,7 @@
-use stm32_navcore::linalg::cond::{
+use stm32_navcore::math::linalg::cond::{
     cond_est_spd, is_invertible_spd, is_well_conditioned_spd, norm_1, rcond_est_spd,
 };
-use stm32_navcore::linalg::LinalgError;
+use stm32_navcore::math::linalg::LinalgError;
 use stm32_navcore::math::Mat;
 
 #[test]

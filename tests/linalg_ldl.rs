@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::ldl::{ldl, ldl_det, ldl_log_det, ldl_reconstruct, ldl_solve};
+use stm32_navcore::math::linalg::ldl::{ldl, ldl_det, ldl_log_det, ldl_reconstruct, ldl_solve};
 use stm32_navcore::math::Mat;
 
 fn spd<const N: usize>() -> Mat<N, N> {
@@ -42,7 +42,7 @@ fn ldlt_reproduces_spd_input() {
 
 #[test]
 fn non_positive_pivot_is_reported() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut a = spd::<3>();
     a.0[1][1] = -0.5;
     assert_eq!(ldl(&a), Err(LinalgError::NotPositiveDefinite));
@@ -118,14 +118,14 @@ fn ldl_reproduces_spd_1x1_and_2x2() {
 
 #[test]
 fn ldl_rejects_zero_matrix() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let z = Mat::<3, 3>::zeros();
     assert_eq!(ldl(&z), Err(LinalgError::NotPositiveDefinite));
 }
 
 #[test]
 fn ldl_solve_rejects_invalid_inputs() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let a = spd::<3>();
     let (l, d) = ldl(&a).unwrap();
     let b_nan = [f32::NAN, 1.0, 2.0];

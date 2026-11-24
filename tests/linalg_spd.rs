@@ -1,5 +1,5 @@
-use stm32_navcore::linalg::spd::{spd_inverse, spd_solve};
-use stm32_navcore::linalg::LinalgError;
+use stm32_navcore::math::linalg::spd::{spd_inverse, spd_solve};
+use stm32_navcore::math::linalg::LinalgError;
 use stm32_navcore::math::Mat;
 
 fn spd<const N: usize>() -> Mat<N, N> {

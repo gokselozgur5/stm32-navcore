@@ -1,4 +1,4 @@
-use stm32_navcore::mag_declination::{
+use stm32_navcore::geo::mag_declination::{
     estimate_wmm2020, estimate_wmm2020_rad, magnetic_to_true_heading_rad,
     true_to_magnetic_heading_rad, MagDeclinationError,
 };
@@ -65,7 +65,7 @@ fn test_heading_conversions() {
 fn normalize_lon_deg_large_input_terminates() {
     use std::sync::mpsc::channel;
     use std::time::Duration;
-    use stm32_navcore::mag_declination::MagDeclinationLut;
+    use stm32_navcore::geo::mag_declination::MagDeclinationLut;
 
     let (tx, rx) = channel();
     std::thread::spawn(move || {
@@ -77,7 +77,7 @@ fn normalize_lon_deg_large_input_terminates() {
 
 #[test]
 fn test_wmm_southern_ocean_points_match_harmonic_model() {
-    use stm32_navcore::wmm_declination::wmm_declination_deg;
+    use stm32_navcore::geo::wmm_declination::wmm_declination_deg;
 
     let points = [(-60.0, 90.0), (-60.0, 60.0), (-60.0, 120.0)];
     for &(lat, lon) in &points {
@@ -94,7 +94,7 @@ fn test_wmm_southern_ocean_points_match_harmonic_model() {
 
 #[test]
 fn test_wmm_custom_lut_antimeridian_seam_wrap() {
-    use stm32_navcore::mag_declination::{MagDeclinationLut, WMM_LAT_ROWS, WMM_LON_COLS};
+    use stm32_navcore::geo::mag_declination::{MagDeclinationLut, WMM_LAT_ROWS, WMM_LON_COLS};
 
     let mut dec_grid = [[0.0f32; WMM_LON_COLS]; WMM_LAT_ROWS];
     let inc_grid = [[0.0f32; WMM_LON_COLS]; WMM_LAT_ROWS];

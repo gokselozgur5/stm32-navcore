@@ -1,6 +1,6 @@
-use stm32_navcore::ekf::NavEkf;
-use stm32_navcore::linalg::ud::{ud_factor, ud_reconstruct};
+use stm32_navcore::math::linalg::ud::{ud_factor, ud_reconstruct};
 use stm32_navcore::math::Mat;
+use stm32_navcore::nav::ekf::NavEkf;
 
 fn max_diff(a: &Mat<8, 8>, b: &Mat<8, 8>) -> f32 {
     a.sub(b).0.iter().flatten().fold(0.0, |m, v| m.max(v.abs()))
@@ -26,7 +26,7 @@ fn correlated_covariance_round_trips() {
 
 #[test]
 fn non_positive_pivot_is_reported() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut p = NavEkf::new().cov;
     p.0[4][4] = -1.0;
     assert_eq!(ud_factor(&p), Err(LinalgError::NotPositiveDefinite));
@@ -48,7 +48,7 @@ fn ud_reproduces_spd_1x1_and_2x2() {
 
 #[test]
 fn ud_det_reproduces_determinant() {
-    use stm32_navcore::linalg::ud::ud_det;
+    use stm32_navcore::math::linalg::ud::ud_det;
     let p = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
     let (_u, d) = ud_factor(&p).unwrap();
     let det = ud_det(&d);
@@ -57,7 +57,7 @@ fn ud_det_reproduces_determinant() {
 
 #[test]
 fn ud_log_det_matches_log_of_det() {
-    use stm32_navcore::linalg::ud::{ud_det, ud_log_det};
+    use stm32_navcore::math::linalg::ud::{ud_det, ud_log_det};
     let p = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
     let (_u, d) = ud_factor(&p).unwrap();
     let log_det = ud_log_det(&d);
@@ -67,7 +67,7 @@ fn ud_log_det_matches_log_of_det() {
 
 #[test]
 fn rejects_zero_matrix() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let z = Mat::<3, 3>::zeros();
     assert_eq!(ud_factor(&z), Err(LinalgError::NotPositiveDefinite));
 }
@@ -83,7 +83,7 @@ fn ud_reads_only_upper_triangle() {
 
 #[test]
 fn rejects_non_finite_entries() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut p = Mat::<2, 2>([[4.0, 1.0], [1.0, 2.0]]);
     p.0[0][1] = f32::NAN;
     assert_eq!(ud_factor(&p), Err(LinalgError::NonFinite));

@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::triangular::{solve_lower, solve_upper};
+use stm32_navcore::math::linalg::triangular::{solve_lower, solve_upper};
 use stm32_navcore::math::Mat;
 
 const X: [f32; 4] = [1.0, -2.0, 0.5, 3.0];
@@ -35,7 +35,7 @@ fn upper_recovers_known_x() {
 
 #[test]
 fn zero_pivot_is_an_error() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut l = tri(true);
     l.0[2][2] = 0.0;
     assert_eq!(solve_lower(&l, &[1.0; 4]), Err(LinalgError::ZeroPivot));
@@ -46,7 +46,7 @@ fn zero_pivot_is_an_error() {
 
 #[test]
 fn lower_rejects_non_finite_inputs() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut m = tri(true);
     m.0[0][0] = f32::NAN;
     assert_eq!(solve_lower(&m, &[1.0; 4]), Err(LinalgError::NonFinite));
@@ -59,7 +59,7 @@ fn lower_rejects_non_finite_inputs() {
 
 #[test]
 fn upper_rejects_non_finite_inputs() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut m = tri(false);
     m.0[0][0] = f32::INFINITY;
     assert_eq!(solve_upper(&m, &[1.0; 4]), Err(LinalgError::NonFinite));
