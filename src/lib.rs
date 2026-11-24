@@ -147,10 +147,23 @@ pub use wmm_declination::{
 
 #[cfg(test)]
 mod footprint {
+    use crate::ekf::NavEkf;
+    use crate::filters::MedianFilter;
+    use crate::madgwick::MadgwickAhrs;
+    use crate::sensors::allan::AllanEstimator;
+    use core::mem::size_of;
 
     #[test]
     fn nav_ekf_fits_sram_budget() {
-        // Size check removed (pinned in tests/public_api.rs)
+        assert_eq!(size_of::<NavEkf>(), 312);
+        assert_eq!(size_of::<MadgwickAhrs>(), 20);
+        assert_eq!(size_of::<MedianFilter<9>>(), 56);
+        assert_eq!(size_of::<AllanEstimator<128, 5>>(), 1128);
+
+        assert!(size_of::<NavEkf>() <= 512);
+        assert!(size_of::<MadgwickAhrs>() <= 64);
+        assert!(size_of::<MedianFilter<9>>() <= 128);
+        assert!(size_of::<AllanEstimator<128, 5>>() <= 2048);
     }
 }
 pub mod filters;
