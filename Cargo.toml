@@ -118,3 +118,122 @@ required-features = ["f64-geodesy"]
 name = "heading_normalization_upper_bound"
 required-features = ["f64-geodesy"]
 
+[[test]]
+name = "hil_trajectory"
+required-features = ["protocol"]
+
+[[test]]
+name = "ins_strapdown"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "mag_cal_degenerate"
+required-features = ["sensors"]
+
+[[test]]
+name = "mag_cal_metrics"
+required-features = ["sensors"]
+
+[[test]]
+name = "mag_cal_minmax"
+required-features = ["sensors"]
+
+[[test]]
+name = "mag_cal_sphere"
+required-features = ["sensors"]
+
+[[test]]
+name = "mag_cal_valid_empty"
+required-features = ["sensors"]
+
+[[test]]
+name = "mag_declination"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "nav_dead_reckoning"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "nav_dead_reckoning_nonfinite_velocity"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "nav_longitude_wrap"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "output_ranges_wrap_and_stick"
+required-features = ["protocol"]
+
+[[test]]
+name = "protocol_codec"
+required-features = ["protocol"]
+
+[[test]]
+name = "protocol_codec_can"
+required-features = ["protocol"]
+
+[[test]]
+name = "protocol_codec_crc"
+required-features = ["protocol"]
+
+[[test]]
+name = "protocol_crsf_resync"
+required-features = ["protocol"]
+
+[[test]]
+name = "public_api"
+required-features = ["f64-geodesy", "protocol"]
+
+[[test]]
+name = "rc_esc"
+required-features = ["protocol"]
+
+[[test]]
+name = "sensors_icm42688_aaf_table"
+required-features = ["sensors"]
+
+[[test]]
+name = "sensors_icm42688_fifo_20bit"
+required-features = ["sensors"]
+
+[[test]]
+name = "sensors_icm42688_fifo_temperature"
+required-features = ["sensors"]
+
+[[test]]
+name = "ubx_rescan_latency"
+required-features = ["protocol"]
+
+[[test]]
+name = "ubx_rtk"
+required-features = ["protocol"]
+
+[[test]]
+name = "vel_damping"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "wmm_declination"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "wmm_declination_reference_values"
+required-features = ["f64-geodesy"]
+
+[[example]]
+name = "cobs_roundtrip"
+required-features = ["protocol"]
+
+[[example]]
+name = "flight_loop_bench"
+required-features = ["protocol"]
+
+[[example]]
+name = "ubx_frame_parse"
+required-features = ["protocol"]
+
+[[test]]
+name = "ekf"
+required-features = ["f64-geodesy"]
