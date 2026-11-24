@@ -161,6 +161,9 @@ impl Mat<3, 3> {
     }
 }
 
+/// 3-element column vector alias.
+pub type Vec3 = Mat<3, 1>;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Quaternion {
     pub w: f32,
@@ -295,7 +298,8 @@ pub fn pressure_hpa_to_altitude_m(p_hpa: f32, p0_hpa: f32) -> Result<f32, MathEr
     }
     let p_pa = p_hpa * 100.0;
     let p0_pa = p0_hpa * 100.0;
-    crate::baro_alt::altitude_from_pressure_qnh(p_pa, p0_pa).map_err(|_| MathError::InvalidPressure)
+    crate::airdata::baro_alt::altitude_from_pressure_qnh(p_pa, p0_pa)
+        .map_err(|_| MathError::InvalidPressure)
 }
 
 pub fn tilt_compensated_yaw(
