@@ -1,4 +1,4 @@
-use stm32_navcore::baro_alt::{altitude_from_pressure_isa, pressure_at_altitude_isa};
+use stm32_navcore::airdata::baro_alt::{altitude_from_pressure_isa, pressure_at_altitude_isa};
 
 // ICAO standard atmosphere (Doc 7488): the layer from 11 000 m to 20 000 m is isothermal at 216.65 K.
 // p(15 000 m) = 22632.04 Pa * exp(-g0 * 4000 m / (R * 216.65 K)) = 12044.55 Pa.

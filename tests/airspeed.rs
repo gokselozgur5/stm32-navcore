@@ -1,4 +1,4 @@
-use stm32_navcore::airspeed::*;
+use stm32_navcore::airdata::airspeed::*;
 
 #[test]
 fn test_standard_sea_level_density_and_sound() {

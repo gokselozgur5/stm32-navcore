@@ -1,6 +1,6 @@
 use core::mem::size_of;
-use stm32_navcore::ekf::NavEkf;
 use stm32_navcore::math::Quaternion;
+use stm32_navcore::nav::ekf::NavEkf;
 use stm32_navcore::protocol::{CanFrame20B, NavTelemetry};
 
 const TEST_STEPS: usize = 1000;

@@ -1,6 +1,6 @@
 //! Exhaustive FDIR state machine transition scenarios.
 
-use stm32_navcore::fdir::{DualImuManager, ImuId, ImuReading};
+use stm32_navcore::nav::fdir::{DualImuManager, ImuId, ImuReading};
 
 const VAR: [f32; 3] = [0.01; 3];
 

@@ -1,4 +1,6 @@
-use stm32_navcore::butterworth::{ButterworthCoefficients, ButterworthError, ButterworthFilter};
+use stm32_navcore::filters::butterworth::{
+    ButterworthCoefficients, ButterworthError, ButterworthFilter,
+};
 
 #[test]
 fn test_dc_unity_gain_step_response() {

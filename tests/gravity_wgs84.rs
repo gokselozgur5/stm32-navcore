@@ -1,6 +1,6 @@
 //! Integration tests for WGS-84 normal gravity and spherical harmonics.
 
-use stm32_navcore::gravity_wgs84::*;
+use stm32_navcore::geo::gravity_wgs84::*;
 
 #[test]
 fn test_wgs84_equator_polar_gravity() {

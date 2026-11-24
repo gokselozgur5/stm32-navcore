@@ -1,4 +1,4 @@
-use stm32_navcore::gyro_bias::{
+use stm32_navcore::attitude::gyro_bias::{
     apply_bias_slew_limit, clamp_bias_vector, correct_gyro_sample, track_bias_from_error,
     track_bias_stationary, GyroBiasConfig, GyroBiasError, GyroBiasTracker,
 };

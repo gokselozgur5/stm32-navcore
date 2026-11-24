@@ -1,4 +1,4 @@
-use stm32_navcore::body_rot::{BodyRot, BodyRotError};
+use stm32_navcore::math::body_rot::{BodyRot, BodyRotError};
 use stm32_navcore::math::Mat;
 
 #[test]
@@ -93,7 +93,7 @@ fn test_dcm_constructors_with_mat_identity() {
 
 #[test]
 fn test_dcm_ned_body_rotations() {
-    let dcm = stm32_navcore::rotation::Dcm::identity();
+    let dcm = stm32_navcore::math::rotation::Dcm::identity();
     let v_ned = [1.0f32, 2.0, 3.0];
     let v_b = dcm.rotate_ned_to_body(v_ned).expect("valid ned to body");
     assert_eq!(v_b, v_ned);

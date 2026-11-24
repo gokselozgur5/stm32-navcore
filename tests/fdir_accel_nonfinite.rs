@@ -1,5 +1,5 @@
-use stm32_navcore::ekf::NavEkf;
-use stm32_navcore::fdir::{DualImuManager, ImuId, ImuReading};
+use stm32_navcore::nav::ekf::NavEkf;
+use stm32_navcore::nav::fdir::{DualImuManager, ImuId, ImuReading};
 
 const GOOD: ImuReading = ImuReading {
     accel_mps2: [0.0, 0.0, -9.81],

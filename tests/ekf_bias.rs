@@ -1,6 +1,6 @@
 //! Gyro bias observability and convergence tests for the navigation EKF.
 
-use stm32_navcore::ekf::NavEkf;
+use stm32_navcore::nav::ekf::NavEkf;
 
 const DT: f32 = 0.02;
 const GRAVITY_BODY: [f32; 3] = [0.0, 0.0, -9.80665];

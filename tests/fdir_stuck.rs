@@ -1,4 +1,4 @@
-use stm32_navcore::fdir::StuckDetector;
+use stm32_navcore::nav::fdir::StuckDetector;
 
 #[test]
 fn frozen_sample_is_flagged_after_limit() {

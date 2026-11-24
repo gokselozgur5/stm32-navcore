@@ -1,4 +1,4 @@
-use stm32_navcore::{ecef_to_geodetic, geodetic_to_ecef, GeodeticPos};
+use stm32_navcore::geo::ecef_ned::{ecef_to_geodetic, geodetic_to_ecef, GeodeticPos};
 
 #[test]
 fn test_integration_public_api_types_and_reexports() {
@@ -10,7 +10,7 @@ fn test_integration_public_api_types_and_reexports() {
     assert!(recovered_geo.alt_m.abs() < 1e-3);
 }
 
-use stm32_navcore::{NedFrame, NedPos};
+use stm32_navcore::geo::ecef_ned::{NedFrame, NedPos};
 
 #[test]
 fn test_integration_ned_frame_displacement() {

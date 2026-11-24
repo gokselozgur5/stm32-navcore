@@ -1,4 +1,4 @@
-use stm32_navcore::gravity::{somigliana_surface, GAMMA_E, GAMMA_P};
+use stm32_navcore::geo::gravity_somigliana::{somigliana_surface, GAMMA_E, GAMMA_P};
 
 #[test]
 fn equator_and_pole_surface_gravity() {
@@ -13,7 +13,7 @@ fn equator_and_pole_surface_gravity() {
     assert!((g_south - GAMMA_P).abs() < 1e-4);
 }
 
-use stm32_navcore::gravity::{elevation_correction, normal_gravity};
+use stm32_navcore::geo::gravity_somigliana::{elevation_correction, normal_gravity};
 
 #[test]
 fn elevation_correction_decreases_gravity() {
@@ -29,7 +29,7 @@ fn elevation_correction_decreases_gravity() {
     assert!((corr - (-0.00308)).abs() < 1e-4);
 }
 
-use stm32_navcore::gravity::{gravity_vector_ned, GravityError};
+use stm32_navcore::geo::gravity_somigliana::{gravity_vector_ned, GravityError};
 
 #[test]
 fn ned_vector_and_input_validation() {
@@ -46,7 +46,7 @@ fn ned_vector_and_input_validation() {
     );
 }
 
-use stm32_navcore::gravity::{normal_gravity_f64, somigliana_surface_f64};
+use stm32_navcore::geo::gravity_somigliana::{normal_gravity_f64, somigliana_surface_f64};
 
 #[test]
 fn high_precision_f64_surface_and_elevation() {

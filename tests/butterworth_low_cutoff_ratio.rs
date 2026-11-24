@@ -1,4 +1,4 @@
-use stm32_navcore::butterworth::ButterworthFilter;
+use stm32_navcore::filters::butterworth::ButterworthFilter;
 
 #[test]
 fn low_cutoff_ratio_is_rejected_or_stays_bounded() {

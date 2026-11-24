@@ -1,4 +1,5 @@
-use stm32_navcore::{airspeed, baro_alt, hypsometric, math, pitot_tas};
+use stm32_navcore::airdata::{airspeed, baro_alt, hypsometric, pitot_tas};
+use stm32_navcore::math;
 
 #[test]
 fn test_cross_module_isa_pressure_altitude_consistency() {

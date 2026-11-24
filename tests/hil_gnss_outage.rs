@@ -1,5 +1,5 @@
-use stm32_navcore::ekf::NavEkf;
 use stm32_navcore::math::Quaternion;
+use stm32_navcore::nav::ekf::NavEkf;
 
 const DT: f32 = 0.01;
 const G: f32 = 9.80665;

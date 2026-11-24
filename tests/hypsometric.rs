@@ -1,4 +1,4 @@
-use stm32_navcore::hypsometric::{
+use stm32_navcore::airdata::hypsometric::{
     hypsometric_altitude, hypsometric_thickness, HypsometricError, HypsometricProfile,
     TempLapseCompensator, STANDARD_SEA_LEVEL_PRESSURE_PA, STANDARD_SEA_LEVEL_TEMP_K,
 };

@@ -1,4 +1,4 @@
-use stm32_navcore::fdir::{DualImuManager, ImuId, ImuReading};
+use stm32_navcore::nav::fdir::{DualImuManager, ImuId, ImuReading};
 
 #[test]
 fn finite_accel_fault_switches_active_imu() {

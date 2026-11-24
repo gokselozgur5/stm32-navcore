@@ -1,4 +1,4 @@
-use stm32_navcore::baro_alt::BaroAltEstimator;
+use stm32_navcore::airdata::baro_alt::BaroAltEstimator;
 
 #[test]
 fn calibration_reproduces_known_altitude_with_custom_reference() {

@@ -1,5 +1,5 @@
 use stm32_navcore::geo::initial_bearing_deg;
-use stm32_navcore::wmm_declination::{
+use stm32_navcore::geo::wmm_declination::{
     normalize_heading_deg, normalize_heading_rad, true_to_magnetic_heading_deg,
 };
 

@@ -1,4 +1,4 @@
-use stm32_navcore::fdir::{DualImuManager, ImuReading};
+use stm32_navcore::nav::fdir::{DualImuManager, ImuReading};
 
 #[test]
 fn finite_primary_is_selected_when_secondary_dies_after_failover() {
