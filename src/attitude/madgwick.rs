@@ -43,9 +43,10 @@ impl Madgwick {
         accel: [f32; 3],
         dt_s: f32,
     ) -> Result<Quaternion, MathError> {
-        let q_next =
-            crate::madgwick::madgwick_imu_step(self.quat, gyro_rad_s, accel, self.beta, dt_s)
-                .map_err(|_| MathError::InvalidNorm)?;
+        let q_next = crate::attitude::madgwick_ahrs::madgwick_imu_step(
+            self.quat, gyro_rad_s, accel, self.beta, dt_s,
+        )
+        .map_err(|_| MathError::InvalidNorm)?;
         self.quat = q_next;
         Ok(self.quat)
     }

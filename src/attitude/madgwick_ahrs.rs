@@ -36,6 +36,8 @@ pub struct MadgwickAhrs {
 impl MadgwickAhrs {
     /// Default filter gain for IMU applications.
     pub const DEFAULT_BETA_IMU: f32 = 0.1;
+    /// Default filter gain alias for compatibility.
+    pub const DEFAULT_BETA: f32 = 0.1;
     /// Default filter gain for MARG applications.
     pub const DEFAULT_BETA_MARG: f32 = 0.041;
 
@@ -250,6 +252,10 @@ pub fn madgwick_imu_step(
     let sh = normalize_gradient(s);
     integrate_step(q, qw, sh, beta, dt)
 }
+
+pub use madgwick_imu_step as madgwick_ahrs_6dof_step;
+/// Perform one 9-DOF Madgwick AHRS MARG integration step.
+pub use MadgwickAhrsError as AhrsError;
 
 /// Perform one 9-DOF Madgwick AHRS MARG integration step.
 pub fn madgwick_marg_step(
