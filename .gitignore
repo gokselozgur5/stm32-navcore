@@ -1,4 +1,6 @@
-/target
+target/
+**/target/
 Cargo.lock
+**/Cargo.lock
 .DS_Store
 *.swp
