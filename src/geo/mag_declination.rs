@@ -206,7 +206,7 @@ pub fn estimate_wmm2020(
         return Err(MagDeclinationError::InvalidLongitude);
     }
     let lon_norm = MagDeclinationLut::normalize_lon_deg(lon_deg);
-    let dec = crate::wmm_declination::wmm_declination_deg(lat_deg, lon_norm)
+    let dec = crate::geo::wmm_declination::wmm_declination_deg(lat_deg, lon_norm)
         .map_err(|_| MagDeclinationError::NonFinite)?;
     let (r0, r1, c0, c1, u, v) = MagDeclinationLut::cell_weights(lat_deg, lon_norm);
     let inc = MagDeclinationLut::interp_2d(&WMM2020_LUT.inclination, r0, r1, c0, c1, u, v);

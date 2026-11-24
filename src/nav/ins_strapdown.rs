@@ -112,15 +112,17 @@ pub fn coriolis_acceleration(
 
 /// Computes Somigliana normal gravity with elevation correction.
 pub fn somigliana_gravity(lat_rad: f64, alt_m: f64) -> Result<f64, InsStrapdownError> {
-    crate::gravity_wgs84::normal_gravity_elevation(lat_rad, alt_m).map_err(|e| match e {
-        crate::gravity_wgs84::Wgs84GravityError::NonFinite => InsStrapdownError::NonFinite,
-        crate::gravity_wgs84::Wgs84GravityError::InvalidLatitude => {
+    crate::geo::gravity_wgs84::normal_gravity_elevation(lat_rad, alt_m).map_err(|e| match e {
+        crate::geo::gravity_wgs84::Wgs84GravityError::NonFinite => InsStrapdownError::NonFinite,
+        crate::geo::gravity_wgs84::Wgs84GravityError::InvalidLatitude => {
             InsStrapdownError::InvalidLatitude
         }
-        crate::gravity_wgs84::Wgs84GravityError::InvalidAltitude => {
+        crate::geo::gravity_wgs84::Wgs84GravityError::InvalidAltitude => {
             InsStrapdownError::InvalidAltitude
         }
-        crate::gravity_wgs84::Wgs84GravityError::SingularRadius => InsStrapdownError::NonFinite,
+        crate::geo::gravity_wgs84::Wgs84GravityError::SingularRadius => {
+            InsStrapdownError::NonFinite
+        }
     })
 }
 
