@@ -1,4 +1,4 @@
-use stm32_navcore::madgwick::{
+use stm32_navcore::attitude::madgwick_ahrs::{
     madgwick_imu_step, madgwick_marg_step, MadgwickAhrs, MadgwickAhrsError,
 };
 use stm32_navcore::math::Quaternion;

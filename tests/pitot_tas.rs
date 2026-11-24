@@ -1,4 +1,4 @@
-use stm32_navcore::pitot_tas::*;
+use stm32_navcore::airdata::pitot_tas::*;
 
 #[test]
 fn test_standard_sea_level_density_and_ratio() {

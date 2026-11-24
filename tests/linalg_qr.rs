@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::qr::qr;
+use stm32_navcore::math::linalg::qr::qr;
 use stm32_navcore::math::Mat;
 
 #[test]
@@ -27,8 +27,8 @@ fn qr_reconstructs_and_orthonormal_6x4() {
 
 #[test]
 fn qr_square_3x3_and_non_finite() {
-    use stm32_navcore::linalg::qr::Givens;
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::qr::Givens;
+    use stm32_navcore::math::linalg::LinalgError;
     let g = Givens::compute(3.0, 4.0);
     assert!((g.r - 5.0).abs() < 1e-6);
     assert!((g.c - 0.6).abs() < 1e-6);
@@ -48,7 +48,7 @@ fn qr_square_3x3_and_non_finite() {
 
 #[test]
 fn givens_identity_and_zero_rotation() {
-    use stm32_navcore::linalg::qr::Givens;
+    use stm32_navcore::math::linalg::qr::Givens;
     let id = Givens::identity();
     assert_eq!(id.c, 1.0);
     assert_eq!(id.s, 0.0);

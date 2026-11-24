@@ -1,5 +1,5 @@
+use stm32_navcore::airdata::wind_estimator::{wind_speed_and_direction, wrap_2pi};
 use stm32_navcore::protocol::rc_esc::CrsfFrame;
-use stm32_navcore::wind_estimator::{wind_speed_and_direction, wrap_2pi};
 
 #[test]
 fn wind_from_direction_stays_below_360_degrees() {

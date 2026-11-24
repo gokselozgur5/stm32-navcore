@@ -1,5 +1,5 @@
-use stm32_navcore::linalg::lstsq::lstsq;
-use stm32_navcore::linalg::LinalgError;
+use stm32_navcore::math::linalg::lstsq::lstsq;
+use stm32_navcore::math::linalg::LinalgError;
 use stm32_navcore::math::Mat;
 
 #[test]

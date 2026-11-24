@@ -1,4 +1,4 @@
-use stm32_navcore::mahony_ahrs::{
+use stm32_navcore::attitude::mahony_ahrs::{
     mahony_ahrs_6dof_step, mahony_ahrs_9dof_step, MahonyAhrs, MahonyAhrsError, MahonyInputs,
 };
 use stm32_navcore::math::Quaternion;

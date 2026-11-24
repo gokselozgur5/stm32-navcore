@@ -1,4 +1,4 @@
-use stm32_navcore::linalg::jacobi_eig::jacobi_eig;
+use stm32_navcore::math::linalg::jacobi_eig::jacobi_eig;
 use stm32_navcore::math::Mat;
 
 fn symmetric_matrix<const N: usize>() -> Mat<N, N> {
@@ -75,7 +75,7 @@ fn eigenvectors_are_orthonormal() {
 
 #[test]
 fn rejects_non_finite_input() {
-    use stm32_navcore::linalg::LinalgError;
+    use stm32_navcore::math::linalg::LinalgError;
     let mut a = symmetric_matrix::<3>();
     a.0[0][1] = f32::NAN;
     assert_eq!(jacobi_eig(&a), Err(LinalgError::NonFinite));
