@@ -87,7 +87,7 @@ impl Mahony {
         accel: [f32; 3],
         dt: f32,
     ) -> Result<(), AttitudeError> {
-        let (nq, nb) = crate::mahony_ahrs::mahony_ahrs_6dof_step(
+        let (nq, nb) = crate::attitude::mahony_ahrs::mahony_ahrs_6dof_step(
             self.q,
             gyro,
             accel,
@@ -97,9 +97,11 @@ impl Mahony {
             dt,
         )
         .map_err(|e| match e {
-            crate::mahony_ahrs::MahonyAhrsError::InvalidDt => AttitudeError::InvalidInput,
-            crate::mahony_ahrs::MahonyAhrsError::NonFinite => AttitudeError::NonFinite,
-            crate::mahony_ahrs::MahonyAhrsError::NormalizationFailed => AttitudeError::InvalidInput,
+            crate::attitude::mahony_ahrs::MahonyAhrsError::InvalidDt => AttitudeError::InvalidInput,
+            crate::attitude::mahony_ahrs::MahonyAhrsError::NonFinite => AttitudeError::NonFinite,
+            crate::attitude::mahony_ahrs::MahonyAhrsError::NormalizationFailed => {
+                AttitudeError::InvalidInput
+            }
         })?;
         self.q = nq;
         self.gyro_bias = nb;
