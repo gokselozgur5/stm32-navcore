@@ -1,6 +1,6 @@
 [package]
 name = "stm32-navcore"
-version = "0.4.0"
+version = "1.0.0"
 edition = "2021"
 license = "MIT"
 description = "Navigation core library for STM32."
@@ -10,8 +10,111 @@ rust-version = "1.85"
 [dependencies]
 libm = { version = "0.2", default-features = false }
 
+[features]
+default = ["f64-geodesy", "sensors", "protocol"]
+f64-geodesy = []
+sensors = []
+protocol = []
+
 [lib]
 crate-type = ["rlib"]
 
 [lints.clippy]
 needless_range_loop = "allow"
+
+[[test]]
+name = "allan_coefficients"
+required-features = ["sensors"]
+
+[[test]]
+name = "allan_estimator"
+required-features = ["sensors"]
+
+[[test]]
+name = "baro_altitude"
+required-features = ["sensors"]
+
+[[test]]
+name = "baro_compensation"
+required-features = ["sensors"]
+
+[[test]]
+name = "baro_step_response"
+required-features = ["sensors"]
+
+[[test]]
+name = "determinism_audit"
+required-features = ["protocol"]
+
+[[test]]
+name = "ecef_ned"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "fault_injection"
+required-features = ["protocol"]
+
+[[test]]
+name = "fdir_accel_nonfinite"
+required-features = ["sensors"]
+
+[[test]]
+name = "fdir_scenarios"
+required-features = ["sensors"]
+
+[[test]]
+name = "geo_bearing"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_bowring"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_earth_rate"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_ecef"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_ecef_implementations_agree"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_gravity"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_haversine"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_ned"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_vincenty"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "geo_vincenty_latitude_range"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "gravity"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "gravity_implementations_agree"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "gravity_wgs84"
+required-features = ["f64-geodesy"]
+
+[[test]]
+name = "heading_normalization_upper_bound"
+required-features = ["f64-geodesy"]
+
