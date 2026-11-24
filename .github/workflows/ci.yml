@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup toolchain install 1.99.0 --profile minimal --component clippy && rustup default 1.99.0
       - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo clippy --no-default-features --all-targets -- -D warnings
 
   test:
     runs-on: ubuntu-latest
@@ -27,6 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup toolchain install 1.99.0 --profile minimal && rustup default 1.99.0
       - run: cargo test --all-targets
+      - run: cargo test --no-default-features --all-targets
 
   embedded:
     runs-on: ubuntu-latest
@@ -34,6 +36,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup toolchain install 1.99.0 --profile minimal --target thumbv7em-none-eabihf && rustup default 1.99.0
       - run: cargo build --release --target thumbv7em-none-eabihf
+      - run: cargo build --release --no-default-features --target thumbv7em-none-eabihf
       - run: sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends qemu-system-arm binutils-arm-none-eabi
       - run: |
           cd embedded/qemu-m4f-smoke
@@ -49,4 +52,6 @@ jobs:
         with:
           targets: thumbv7em-none-eabihf
       - run: cargo check --all-targets
+      - run: cargo check --no-default-features --all-targets
       - run: cargo check --target thumbv7em-none-eabihf
+      - run: cargo check --no-default-features --target thumbv7em-none-eabihf
